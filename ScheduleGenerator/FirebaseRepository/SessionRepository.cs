@@ -8,7 +8,7 @@ namespace FirebaseRepository
 {
     public class ScheduleSession
     {
-        public long Id;
+        public ulong Id;
         public string? SpreadsheetUrl;
         public string? InputRequirementsSheet;
         public string? ScheduleSheet;
