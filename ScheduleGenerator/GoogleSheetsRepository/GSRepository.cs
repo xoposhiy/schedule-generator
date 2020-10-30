@@ -130,7 +130,7 @@ namespace GoogleSheetsRepository
             var left = ConvertToTableIndex(leftIndex);
             var range = $"{left}{top}";
             var values = ReadRowStringRange(sheetName, range);
-            var value = values.First().First();
+            var value = values?.First()?.First();
             return value;
         }
 
