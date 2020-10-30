@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace GoogleSheetsRepository
 {
-    class GSRepository
+    public class GSRepository
     {
         private string CredentialsEnvVar = "GoogleApiCredentials";
         public GoogleCredential Credentials { get; private set; }
