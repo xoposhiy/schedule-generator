@@ -11,38 +11,26 @@ namespace GoogleSheetsRepository
 {
     public class GSRepository
     {
-        private string CredentialsEnvVar = "GoogleApiCredentials";
         public GoogleCredential Credentials { get; private set; }
         public SheetsService Service { get; private set; }
         public string[] Scopes { get; private set; }
         public string ApplicationName { get; private set; }
         public string CurrentSheetId { get; private set; }
         public SheetInfo CurrentSheetInfo { get; private set; }
-        public bool ZeroIndexing;
-        public GSRepository(string[] scopes, string applicationName)
+        public GSRepository(string applicationName, string pathToCredentials, string tableURL)
         {
-            Scopes = scopes;
+            Scopes = new string[] { SheetsService.Scope.Spreadsheets };
             ApplicationName = applicationName;
-            SetUpDefaultCredential();
+            SetUpCredential(pathToCredentials);
             SetUpDefaultService();
             CurrentSheetId = null;
             CurrentSheetInfo = null;
-            ZeroIndexing = false;
+            ChangeTable(tableURL);
         }
 
-        public GSRepository(string[] scopes, string applicationName, bool zeroIndexing) : this(scopes, applicationName)
+        private void SetUpCredential(string pathToCredentials)
         {
-            ZeroIndexing = zeroIndexing;
-        }
-
-        private void SetUpDefaultCredential()
-        {
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            if (credentialDirPath is null)
-                throw new Exception($"Credential path not found (check env var {CredentialsEnvVar})");
-            var credentialPath = credentialDirPath + "\\client_secrets.json"; // Поменял переменную, теперь она без файла
-
-            using (var stream = new FileStream(credentialPath, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read))
             {
                 Credentials = GoogleCredential.FromStream(stream)
                     .CreateScoped(Scopes);
@@ -58,7 +46,7 @@ namespace GoogleSheetsRepository
             });
         }
 
-        public void Use(string url)
+        public void ChangeTable(string url)
         {
             var urlParts = url.Split('/');
             var id = urlParts[urlParts.Length - 2];
@@ -105,13 +93,10 @@ namespace GoogleSheetsRepository
         {
             var (leftIndex, top) = rangeStart;
             var (rightIndex, bottom) = rangeEnd;
-            if (ZeroIndexing)
-            {
-                leftIndex++;
-                top++;
-                rightIndex++;
-                bottom++;
-            }
+            leftIndex++;
+            top++;
+            rightIndex++;
+            bottom++;
             var left = ConvertToTableIndex(leftIndex);
             var right = ConvertToTableIndex(rightIndex);
             var range = $"{left}{top}:{right}{bottom}";
@@ -122,11 +107,8 @@ namespace GoogleSheetsRepository
         public Object ReadRow(string sheetName, ValueTuple<int, int> rangeStart)
         {
             var (leftIndex, top) = rangeStart;
-            if (ZeroIndexing)
-            {
-                leftIndex++;
-                top++;
-            }
+            leftIndex++;
+            top++;
             var left = ConvertToTableIndex(leftIndex);
             var range = $"{left}{top}";
             var values = ReadRowStringRange(sheetName, range);
@@ -162,11 +144,6 @@ namespace GoogleSheetsRepository
         public void WriteRange(string pageName, ValueTuple<int, int> leftTop, List<List<string>> payload)
         {
             var (leftIndex, topIndex) = leftTop;
-            if (!ZeroIndexing)
-            {
-                leftIndex--;
-                topIndex--;
-            }
             var rowDatas = new List<RowData>();
             foreach (var row in payload)
             {

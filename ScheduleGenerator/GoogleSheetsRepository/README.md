@@ -51,10 +51,11 @@ GoogleSheetsRepository - репозиторий для работы с Google Sh
 ## Usage
 ```csharp
 
-var Scopes = { SheetsService.Scope.Spreadsheets };
 var ApplicationName = "MyApp";
-var repo = new GSRepository(Scopes, ApplicationName);
-repo.Use("https://docs.google.com/spreadsheets/...");
+var credentialDirPath = Environment.GetEnvironmentVariable("GoogleApiCredentials");
+var credentialPath = credentialDirPath + "\\client_secrets.json";
+var url = "https://docs.google.com/spreadsheets/...";
+var repo = new GSRepository(ApplicationName, credentialPath, url);
 IList<IList<string>> data = repo.ReadRow(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 1));
 
 

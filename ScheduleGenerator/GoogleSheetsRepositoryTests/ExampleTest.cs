@@ -18,11 +18,11 @@ namespace GoogleSheetsRepositoryTests
         [Test]
         public void Test1()
         {
-            var Scopes = new[] { SheetsService.Scope.Spreadsheets };
             var ApplicationName = "MyApp";
-            var repo = new GSRepository(Scopes, ApplicationName);
+            var credentialDirPath = Environment.GetEnvironmentVariable("GoogleApiCredentials");
+            var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1ncJ77JJJapPJpTeDpvWIsmuavStz5aXwQLs7fc89Rgo/edit#gid=0";
-            repo.Use(url);
+            var repo = new GSRepository(ApplicationName, credentialPath, url);
 
             var dataToWrite = new List<List<string>>()
             {
