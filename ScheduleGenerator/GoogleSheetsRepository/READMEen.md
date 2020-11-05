@@ -47,5 +47,7 @@ var dataToWrite = new List<List<string>>()
     new List<string>() { "31", "32"},
 };
 
-repo.WriteRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), dataToWrite);
+repo.ModifySpreadSheet(repo.CurrentSheetInfo.Sheets.Keys.First())
+                .WriteRange((1, 2), dataToWrite)
+                .Execute();
 ```

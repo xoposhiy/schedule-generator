@@ -73,23 +73,12 @@ namespace GoogleSheetsRepository
             return sheetTitles.ToList();
         }
 
-        public string[,] ReadRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public string ReadCell(string sheetName, ValueTuple<int, int> cellCoords)
         {
-            var rowValues = ReadRow(sheetName, rangeStart, rangeEnd);
-            var resultValues = new string[rowValues.Count, rowValues.First().Count];
-            for (int r = 0; r < rowValues.Count; r++)
-            {
-                var row = rowValues[r];
-                for (int c = 0; c < row.Count; c++)
-                {
-                    resultValues[r, c] = row[c].ToString();
-                }
-            }
-
-            return resultValues;
+            return ReadOneCellAsObject(sheetName, cellCoords)?.ToString();
         }
 
-        public IList<IList<Object>> ReadRow(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public List<List<string>> ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
             var (leftIndex, top) = rangeStart;
             var (rightIndex, bottom) = rangeEnd;
@@ -97,38 +86,39 @@ namespace GoogleSheetsRepository
             top++;
             rightIndex++;
             bottom++;
-            var left = ConvertToTableIndex(leftIndex);
-            var right = ConvertToTableIndex(rightIndex);
+            var left = ConvertIndexToTableColumnFormat(leftIndex);
+            var right = ConvertIndexToTableColumnFormat(rightIndex);
             var range = $"{left}{top}:{right}{bottom}";
-            var values = ReadRowStringRange(sheetName, range);
+            var values = ReadCellRangeUsingStringRangeFormat(sheetName, range);
             return values;
         }
 
-        public Object ReadRow(string sheetName, ValueTuple<int, int> rangeStart)
+        private object ReadOneCellAsObject(string sheetName, ValueTuple<int, int> rangeStart)
         {
             var (leftIndex, top) = rangeStart;
             leftIndex++;
             top++;
-            var left = ConvertToTableIndex(leftIndex);
+            var left = ConvertIndexToTableColumnFormat(leftIndex);
             var range = $"{left}{top}";
-            var values = ReadRowStringRange(sheetName, range);
+            var values = ReadCellRangeUsingStringRangeFormat(sheetName, range);
             var value = values?.First()?.First();
             return value;
         }
 
-        public IList<IList<Object>> ReadRowStringRange(string sheetName, string range)
+        public List<List<string>> ReadCellRangeUsingStringRangeFormat(string sheetName, string range)
         {
-            String fullRange = String.Format("{0}!{1}", sheetName, range);
+            var fullRange = string.Format("{0}!{1}", sheetName, range);
             var request = Service.Spreadsheets.Values.Get(CurrentSheetId, fullRange);
             var response = request.Execute();
             var values = response.Values;
-            return values;
+            var res = values?.Select(l => l?.Select(o => o?.ToString()).ToList()).ToList();
+            return res;
         }
 
-        public static string ConvertToTableIndex(int index)
+        public static string ConvertIndexToTableColumnFormat(int index)
         {
             int dividend = index;
-            string columnName = String.Empty;
+            var columnName = string.Empty;
             int modulo;
 
             while (dividend > 0)
@@ -141,16 +131,83 @@ namespace GoogleSheetsRepository
             return columnName;
         }
 
-        public void WriteRange(string pageName, ValueTuple<int, int> leftTop, List<List<string>> payload)
+        public SheetModifier ModifySpreadSheet(string sheetName)
+        {
+            var sheetId = CurrentSheetInfo.Sheets[sheetName];
+            if (sheetId is null)
+            {
+                throw new ArgumentException($"No sheets with name {sheetName}");
+            }
+            return new SheetModifier(Service, CurrentSheetId, (int)sheetId);
+        }
+
+        public void DeleteCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        {
+            var (leftIndex, top) = rangeStart;
+            var (rightIndex, bottom) = rangeEnd;
+            leftIndex++;
+            top++;
+            rightIndex++;
+            bottom++;
+            var left = ConvertIndexToTableColumnFormat(leftIndex);
+            var right = ConvertIndexToTableColumnFormat(rightIndex);
+            var range = $"{left}{top}:{right}{bottom}";
+            String fullRange = String.Format("{0}!{1}", sheetName, range);
+            var requestBody = new ClearValuesRequest();
+            var deleteRequest = Service.Spreadsheets.Values.Clear(requestBody, CurrentSheetId, fullRange);
+            var deleteResponse = deleteRequest.Execute();
+        }
+
+        public void CreateNewSheet(string title)
+        {
+            var requests = new List<Request>();
+            requests.Add(new Request()
+            {
+                AddSheet = new AddSheetRequest
+                {
+                    Properties = new SheetProperties
+                    {
+                        Title = title,
+                        TabColor = new Color()
+                        {
+                            Red = 1
+                        }
+                    }
+                }
+            });
+            var requestBody = new BatchUpdateSpreadsheetRequest();
+            requestBody.Requests = requests;
+            var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
+            var response = request.Execute();
+        }
+    }
+
+    public class SheetModifier
+    {
+
+        private List<Request> requests;
+        private SheetsService service;
+        private int sheetId;
+        private string spreadSheetId;
+        public SheetModifier(SheetsService service, string spreadSheetId, int sheetId)
+        {
+
+            this.service = service;
+            this.spreadSheetId = spreadSheetId;
+            this.sheetId = sheetId;
+            requests = new List<Request>();
+        }
+
+        public SheetModifier WriteRange(ValueTuple<int, int> leftTop, List<List<string>> payload)
         {
             var (leftIndex, topIndex) = leftTop;
-            var rowDatas = new List<RowData>();
+            var rows = new List<RowData>();
             foreach (var row in payload)
             {
-                var cellDatas = new List<CellData>();
+                var cells = new List<CellData>();
                 foreach (var value in row)
                 {
-                    cellDatas.Add(new CellData
+                    cells.Add(new CellData
                     {
                         UserEnteredValue = new ExtendedValue
                         {
@@ -158,33 +215,214 @@ namespace GoogleSheetsRepository
                         }
                     });
                 }
-                rowDatas.Add(
+                rows.Add(
                     new RowData
                     {
-                        Values = cellDatas
+                        Values = cells
                     }
                 );
             }
-            var requests = new List<Request>();
             requests.Add(new Request()
             {
                 UpdateCells = new UpdateCellsRequest
                 {
                     Start = new GridCoordinate
                     {
-                        SheetId = CurrentSheetInfo.Sheets[pageName],
+                        SheetId = sheetId,
                         RowIndex = topIndex,
                         ColumnIndex = leftIndex
                     },
-                    Rows = rowDatas,
+                    Rows = rows,
                     Fields = "*"
                 }
             });
+            return this;
+        }
 
+        public SheetModifier MergeCell(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        {
+            var (leftIndex, top) = rangeStart;
+            var (rightIndex, bottom) = rangeEnd;
+            requests.Add(new Request()
+            {
+                MergeCells = new MergeCellsRequest
+                {
+                    Range = new GridRange
+                    {
+                        SheetId = sheetId,
+                        StartRowIndex = top,
+                        StartColumnIndex = leftIndex,
+                        EndRowIndex = bottom + 1,
+                        EndColumnIndex = rightIndex + 1
+                    },
+                    MergeType = "MERGE_ALL"
+                }
+            });
+
+            return this;
+        }
+
+        public SheetModifier IncertRows(int startRow, int count)
+        {
+            requests.Add(new Request()
+            {
+                InsertDimension = new InsertDimensionRequest
+                {
+                    Range = new DimensionRange
+                    {
+                        SheetId = sheetId,
+                        StartIndex = startRow,
+                        EndIndex = startRow + count,
+                        Dimension = "ROWS"
+                    }
+                }
+            });
+
+            return this;
+        }
+
+        public SheetModifier IncertColumns(int startColumn, int count)
+        {
+            requests.Add(new Request()
+            {
+                InsertDimension = new InsertDimensionRequest
+                {
+                    Range = new DimensionRange
+                    {
+                        SheetId = sheetId,
+                        StartIndex = startColumn,
+                        EndIndex = startColumn + count,
+                        Dimension = "COLUMNS"
+                    }
+                }
+            });
+
+            return this;
+        }
+
+        public SheetModifier ColorizeRange(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
+        {
+            var (left, top) = rangeStart;
+            var (right, bottom) = rangeEnd;
+            var rows = new List<RowData>();
+            for (int r = top; r < bottom; r++)
+            {
+                var cells = new List<CellData>();
+                for (int c = left; c < right; c++)
+                {
+                    cells.Add(new CellData
+                    {
+                        UserEnteredFormat = new CellFormat
+                        {
+                            BackgroundColor = color
+                        }
+
+                    });
+                }
+                rows.Add(new RowData
+                {
+                    Values = cells
+                });
+            }
+            requests.Add(new Request()
+            {
+                UpdateCells = new UpdateCellsRequest
+                {
+                    Range = new GridRange
+                    {
+                        SheetId = sheetId,
+                        StartRowIndex = top,
+                        StartColumnIndex = left,
+                        EndRowIndex = bottom,
+                        EndColumnIndex = right
+                    },
+                    Rows = rows,
+                    Fields = "userEnteredFormat(backgroundColor)"
+                }
+            });
+
+            return this;
+        }
+
+        public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string comment)
+        {
+            var (leftIndex, top) = rangeStart;
+            requests.Add(new Request()
+            {
+                UpdateCells = new UpdateCellsRequest
+                {
+                    Range = new GridRange
+                    {
+                        SheetId = sheetId,
+                        StartRowIndex = top,
+                        StartColumnIndex = leftIndex,
+                        EndRowIndex = top + 1,
+                        EndColumnIndex = leftIndex + 1
+                    },
+                    Rows = new List<RowData>() {
+                        new RowData {
+                            Values = new List<CellData>{
+                                new CellData{
+                                    Note = comment
+                                }
+                            }
+                        }
+                    },
+                    Fields = "note"
+                }
+            });
+
+            return this;
+        }
+
+
+        public SheetModifier AddBorders(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
+        {
+            var (leftIndex, top) = rangeStart;
+            var (rightIndex, bottom) = rangeEnd;
+            requests.Add(new Request()
+            {
+                UpdateBorders = new UpdateBordersRequest
+                {
+                    Range = new GridRange
+                    {
+                        SheetId = sheetId,
+                        StartRowIndex = top,
+                        StartColumnIndex = leftIndex,
+                        EndRowIndex = bottom,
+                        EndColumnIndex = rightIndex
+                    },
+                    Top = new Border
+                    {
+                        Color = color,
+                        Style = "SOLID"
+                    },
+                    Bottom = new Border
+                    {
+                        Color = color,
+                        Style = "SOLID"
+                    },
+                    Left = new Border
+                    {
+                        Color = color,
+                        Style = "SOLID"
+                    },
+                    Right = new Border
+                    {
+                        Color = color,
+                        Style = "SOLID"
+                    }
+                }
+            });
+            return this;
+        }
+
+
+        public void Execute()
+        {
             var requestBody = new BatchUpdateSpreadsheetRequest();
             requestBody.Requests = requests;
-
-            var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
+            var request = service.Spreadsheets.BatchUpdate(requestBody, spreadSheetId);
             var response = request.Execute();
         }
     }

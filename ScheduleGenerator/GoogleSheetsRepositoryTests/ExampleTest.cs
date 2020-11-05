@@ -24,20 +24,25 @@ namespace GoogleSheetsRepositoryTests
             var url = "https://docs.google.com/spreadsheets/d/1ncJ77JJJapPJpTeDpvWIsmuavStz5aXwQLs7fc89Rgo/edit#gid=0";
             var repo = new GSRepository(ApplicationName, credentialPath, url);
 
+            repo.ChangeTable(url);
+            var readed = repo.ReadCell(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 1));
+
             var dataToWrite = new List<List<string>>()
             {
                 new List<string>() { "11", "12" },
                 new List<string>() { "21", "22"},
                 new List<string>() { "31", "32"},
             };
-            repo.WriteRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), dataToWrite);
+            repo.ModifySpreadSheet(repo.CurrentSheetInfo.Sheets.Keys.First())
+                .WriteRange((1, 2), dataToWrite)
+                .Execute();
 
-            var valRange = repo.ReadRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 5));
-            for (int r = 0; r < valRange.GetLength(0); r++)
+            var valRange = repo.ReadCellRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 4));
+            for (int r = 0; r < valRange.Count; r++)
             {
-                for (int c = 0; c < valRange.GetLength(1); c++)
+                for (int c = 0; c < valRange[r].Count; c++)
                 {
-                    Assert.AreEqual(dataToWrite[r][c], valRange[r, c]);
+                    Assert.AreEqual(dataToWrite[r][c], valRange[r][c]);
                 }
             }
         }
