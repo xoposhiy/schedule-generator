@@ -12,9 +12,24 @@ namespace ScheduleLib
         }
     }
 
+    public class Discipline
+    {
+        public string Name;
+
+        public Discipline(string name)
+        {
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+    }
+
     public class Meeting
     {
-        public string Discipline;
+        public Discipline Discipline;
         public MeetingGroup[] Groups;
         public string? Location;
         public MeetingType MeetingType;
@@ -22,11 +37,16 @@ namespace ScheduleLib
         public MeetingTime? MeetingTime;
         public WeekType? WeekType;
 
-        public Meeting(string discipline, MeetingType meetingType, MeetingGroup[] groups)
+        public Meeting(Discipline discipline, MeetingType meetingType, MeetingGroup[] groups)
         {
             Discipline = discipline;
             MeetingType = meetingType;
             Groups = groups;
+        }
+
+        public override string ToString()
+        {
+            return $"{Discipline}, {Groups}, {MeetingTime}, {WeekType}, Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
     }
 
@@ -40,12 +60,17 @@ namespace ScheduleLib
             GroupName = groupName;
             GroupPart = groupPart;
         }
+
+        public override string ToString()
+        {
+            return $"{GroupName} {GroupPart}";
+        }
     }
 
     public enum MeetingType
     {
         Lecture,
-        Lab,
+        ComputerLab,
         Seminar
     }
 
@@ -56,6 +81,11 @@ namespace ScheduleLib
         public Teacher(string name)
         {
             Name = name;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 
@@ -68,6 +98,11 @@ namespace ScheduleLib
         {
             Day = day;
             TimeSlotIndex = timeSlotIndex;
+        }
+
+        public override string ToString()
+        {
+            return $"Day: {Day}, TimeSlotIndex: {TimeSlotIndex}";
         }
     }
 
@@ -84,16 +119,5 @@ namespace ScheduleLib
         Part1,
         Part2,
         Part3
-    }
-
-    public enum Day
-    {
-        Monday,
-        Tuesday,
-        Wednesday,
-        Thursday,
-        Friday,
-        Saturday,
-        Sunday,
     }
 }

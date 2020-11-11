@@ -9,8 +9,8 @@ namespace ScheduleLibTests
         [Test]
         public void TestGroupMaskInit()
         {
-            var priority = new GroupPriorityRequesition("a + b + c + d");
-            Assert.AreEqual(new[] { "a", "b", "c", "d" }, priority.Masks);
+            var priority = new GroupRequisition("a + b + c + d");
+            Assert.AreEqual(new[] { "a", "b", "c", "d" }, priority.Groups);
         }
     }
 }
