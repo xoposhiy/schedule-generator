@@ -12,6 +12,10 @@ namespace Conversions
     {
         private GSRepository repository;
         private string sheetName;
+        private int timeBarRowOffset = 3;
+        private int timeBarColumnOffset = 0;
+        private int headersColumnOffset = 2;
+        private int headersRowOffset = 2;
         public ScheduleBuilder(GSRepository repo, string sheetName)
         {
             repository = repo;
@@ -51,24 +55,26 @@ namespace Conversions
             var weekDays = new[] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ" };
             var classStarts = new[] { "I 9:00", "II 10:40", "III 12:50",
                 "IV 14:30", "V 16:40", "VI 17:50"};
+            var weekDayCount = weekDays.Length;
+            var startIndexesCount = classStarts.Length;
             var modifier = repository
                     .ModifySpreadSheet(sheetName);
-            var currentStart = 3;
-            for (int i = 0; i < 6; i++)
+            var currentStart = timeBarRowOffset;
+            for (int i = 0; i < weekDayCount; i++)
             {
                 modifier
-                    .WriteRange((0, currentStart), new List<List<string>>() { new List<string>() { weekDays[i] } })
-                    .AddBorders((0, currentStart), (0, currentStart + 11), new Color() { Blue = 1 })
-                    .MergeCell((0, currentStart), (0, currentStart + 11));
+                    .WriteRange((currentStart, timeBarColumnOffset), new List<List<string>>() { new List<string>() { weekDays[i] } })
+                    .AddBorders((currentStart, timeBarColumnOffset), (currentStart + 11, timeBarColumnOffset), new Color() { Blue = 1 })
+                    .MergeCell((currentStart, timeBarColumnOffset), (currentStart + 11, timeBarColumnOffset));
                 currentStart += 12;
             }
-            currentStart = 3;
-            for (int i = 0; i < 6 * 6; i++)
+            currentStart = timeBarRowOffset;
+            for (int i = 0; i < weekDayCount * startIndexesCount; i++)
             {
                 modifier
-                    .WriteRange((1, currentStart), new List<List<string>>() { new List<string>() { classStarts[i % 6] } })
-                    .AddBorders((1, currentStart), (1, currentStart + 1), new Color() { Blue = 1 })
-                    .MergeCell((1, currentStart), (1, currentStart + 1));
+                    .WriteRange((currentStart, timeBarColumnOffset + 1), new List<List<string>>() { new List<string>() { classStarts[i % 6] } })
+                    .AddBorders((currentStart, timeBarColumnOffset + 1), (currentStart + 1, timeBarColumnOffset + 1), new Color() { Blue = 1 })
+                    .MergeCell((currentStart, timeBarColumnOffset + 1), (currentStart + 1, timeBarColumnOffset + 1));
                 currentStart += 2;
             }
             modifier.Execute();
@@ -76,16 +82,15 @@ namespace Conversions
 
         private void BuildGroupHeaders(List<string> groups)
         {
-            var offset = 2;
             var modifier = repository
                     .ModifySpreadSheet(sheetName);
-            var currentStart = offset;
+            var currentStart = headersColumnOffset;
             for (int i = 0; i < groups.Count; i++)
             {
                 modifier
-                    .WriteRange((currentStart, 2), new List<List<string>>() { new List<string>() { groups[i] } })
-                    .AddBorders((currentStart, 2), (currentStart + 1, 2), new Color() { Blue = 1 })
-                    .MergeCell((currentStart, 2), (currentStart + 1, 2));
+                    .WriteRange((headersRowOffset, currentStart), new List<List<string>>() { new List<string>() { groups[i] } })
+                    .AddBorders((headersRowOffset, currentStart), (headersRowOffset, currentStart + 1), new Color() { Blue = 1 })
+                    .MergeCell((headersRowOffset, currentStart), (headersRowOffset, currentStart + 1));
                 currentStart += 2;
             }
             modifier.Execute();
@@ -151,11 +156,11 @@ namespace Conversions
                 Console.WriteLine($"C: {colNum} R:{rowNum} C: {colNum + columnsInMeeting - 1} R: {rowNum + rowsInMeeting - 1}");
 
                 modifier
-                    .WriteRange((colNum, rowNum), new List<List<string>>() { new List<string>() { data } })
-                    .AddBorders((colNum, rowNum), (colNum + columnsInMeeting - 1, rowNum + rowsInMeeting - 1), new Color() { Green = 1 });
+                    .WriteRange((rowNum, colNum), new List<List<string>>() { new List<string>() { data } })
+                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1), new Color() { Green = 1 });
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
                 {
-                    modifier.MergeCell((colNum, rowNum), (colNum + columnsInMeeting - 1, rowNum + rowsInMeeting - 1));
+                    modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
                 }
             }
 

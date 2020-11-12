@@ -80,8 +80,8 @@ namespace GoogleSheetsRepository
 
         public List<List<string>> ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
-            var (leftIndex, top) = rangeStart;
-            var (rightIndex, bottom) = rangeEnd;
+            var (top, leftIndex) = rangeStart;
+            var (bottom, rightIndex) = rangeEnd;
             leftIndex++;
             top++;
             rightIndex++;
@@ -95,7 +95,7 @@ namespace GoogleSheetsRepository
 
         private object ReadOneCellAsObject(string sheetName, ValueTuple<int, int> rangeStart)
         {
-            var (leftIndex, top) = rangeStart;
+            var (top, leftIndex) = rangeStart;
             leftIndex++;
             top++;
             var left = ConvertIndexToTableColumnFormat(leftIndex);
@@ -141,10 +141,10 @@ namespace GoogleSheetsRepository
             return new SheetModifier(Service, CurrentSheetId, (int)sheetId);
         }
 
-        public void DeleteCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public void ClearCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
-            var (leftIndex, top) = rangeStart;
-            var (rightIndex, bottom) = rangeEnd;
+            var (top, leftIndex) = rangeStart;
+            var (bottom, rightIndex) = rangeEnd;
             leftIndex++;
             top++;
             rightIndex++;
@@ -200,7 +200,7 @@ namespace GoogleSheetsRepository
 
         public SheetModifier WriteRange(ValueTuple<int, int> leftTop, List<List<string>> payload)
         {
-            var (leftIndex, topIndex) = leftTop;
+            var (topIndex, leftIndex) = leftTop;
             var rows = new List<RowData>();
             foreach (var row in payload)
             {
@@ -241,8 +241,8 @@ namespace GoogleSheetsRepository
 
         public SheetModifier MergeCell(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
-            var (leftIndex, top) = rangeStart;
-            var (rightIndex, bottom) = rangeEnd;
+            var (top, leftIndex) = rangeStart;
+            var (bottom, rightIndex) = rangeEnd;
             requests.Add(new Request()
             {
                 MergeCells = new MergeCellsRequest
@@ -302,8 +302,8 @@ namespace GoogleSheetsRepository
 
         public SheetModifier ColorizeRange(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
         {
-            var (left, top) = rangeStart;
-            var (right, bottom) = rangeEnd;
+            var (top, left) = rangeStart;
+            var (bottom, right) = rangeEnd;
             var rows = new List<RowData>();
             for (int r = top; r < bottom; r++)
             {
@@ -346,7 +346,7 @@ namespace GoogleSheetsRepository
 
         public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string comment)
         {
-            var (leftIndex, top) = rangeStart;
+            var (top, leftIndex) = rangeStart;
             requests.Add(new Request()
             {
                 UpdateCells = new UpdateCellsRequest
@@ -378,8 +378,8 @@ namespace GoogleSheetsRepository
 
         public SheetModifier AddBorders(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
         {
-            var (leftIndex, top) = rangeStart;
-            var (rightIndex, bottom) = rangeEnd;
+            var (top, leftIndex) = rangeStart;
+            var (bottom, rightIndex) = rangeEnd;
             requests.Add(new Request()
             {
                 UpdateBorders = new UpdateBordersRequest
@@ -389,8 +389,8 @@ namespace GoogleSheetsRepository
                         SheetId = sheetId,
                         StartRowIndex = top,
                         StartColumnIndex = leftIndex,
-                        EndRowIndex = bottom,
-                        EndColumnIndex = rightIndex
+                        EndRowIndex = bottom + 1,
+                        EndColumnIndex = rightIndex + 1
                     },
                     Top = new Border
                     {
@@ -412,6 +412,73 @@ namespace GoogleSheetsRepository
                         Color = color,
                         Style = "SOLID"
                     }
+                }
+            });
+            return this;
+        }
+
+        public SheetModifier DeleteRows(int startRow, int count)
+        {
+            requests.Add(new Request()
+            {
+                DeleteDimension = new DeleteDimensionRequest()
+                {
+                    Range = new DimensionRange
+                    {
+                        SheetId = sheetId,
+                        Dimension = "ROWS",
+                        StartIndex = startRow,
+                        EndIndex = startRow + count
+                    }
+                }
+            });
+            return this;
+        }
+
+        public SheetModifier DeleteColumns(int startRow, int count)
+        {
+            requests.Add(new Request()
+            {
+                DeleteDimension = new DeleteDimensionRequest()
+                {
+                    Range = new DimensionRange
+                    {
+                        SheetId = sheetId,
+                        Dimension = "COLUMNS",
+                        StartIndex = startRow,
+                        EndIndex = startRow + count
+                    }
+                }
+            });
+            return this;
+        }
+
+        public SheetModifier UnMergeAll()
+        {
+            requests.Add(new Request()
+            {
+                UnmergeCells = new UnmergeCellsRequest()
+                {
+                    Range = new GridRange()
+                    {
+                        SheetId = sheetId
+                    }
+                }
+            });
+            return this;
+        }
+
+        public SheetModifier ClearAll()
+        {
+            requests.Add(new Request()
+            {
+                UpdateCells = new UpdateCellsRequest
+                {
+                    Range = new GridRange
+                    {
+                        SheetId = sheetId
+                    },
+                    Fields = "*"
                 }
             });
             return this;
