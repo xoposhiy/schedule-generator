@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Conversions", "Conversions\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConversionsTests", "ConversionsTests\ConversionsTests.csproj", "{C6180C82-936E-415A-AF3E-FC6A1001B701}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bot", "Bot\Bot.csproj", "{D6B8FB28-7BA5-4C7F-95D6-30CEAFA49DBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{C6180C82-936E-415A-AF3E-FC6A1001B701}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6180C82-936E-415A-AF3E-FC6A1001B701}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6180C82-936E-415A-AF3E-FC6A1001B701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6B8FB28-7BA5-4C7F-95D6-30CEAFA49DBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6B8FB28-7BA5-4C7F-95D6-30CEAFA49DBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6B8FB28-7BA5-4C7F-95D6-30CEAFA49DBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6B8FB28-7BA5-4C7F-95D6-30CEAFA49DBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
