@@ -33,7 +33,9 @@ How to set environment variables?
 ## Usage
 ```csharp
 
-var repo = new SessionRepository();
+var basePath = "https://schedule-generator...";
+var authSecret = Environment.GetEnvironmentVariable("FirebaseSecret");
+var repo = new SessionRepository(basePath, authSecret);
 
 var session = repo.Get(12345);
 

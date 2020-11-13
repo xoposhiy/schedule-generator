@@ -47,24 +47,9 @@ namespace FirebaseRepository
     public class SessionRepository : IDBRepository
     {
         private string sessionsKey = "scheduleSessions";
-        private string secretsEnvVar = "FirebaseSecret";
         private FirebaseClient dbClient;
         public SessionRepository(string basePath, string authSecret)
         {
-            dbClient = new FirebaseClient(
-              basePath,
-              new FirebaseOptions
-              {
-                  AuthTokenAsyncFactory = () => Task.FromResult(authSecret)
-              });
-        }
-
-        public SessionRepository()
-        {
-            var basePath = "https://schedule-generator-5f50e.firebaseio.com/";
-            var authSecret = Environment.GetEnvironmentVariable(secretsEnvVar);
-            if (authSecret is null)
-                throw new Exception($"Env Variable with secret not found (check env var {secretsEnvVar})");
             dbClient = new FirebaseClient(
               basePath,
               new FirebaseOptions
