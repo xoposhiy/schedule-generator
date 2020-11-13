@@ -5,6 +5,19 @@ using System.Text;
 
 namespace ScheduleLib
 {
+    public class EvaluationResult
+    {
+        public double Penalty;
+        public Meeting[] BadMeetings;
+        public string PenaltyDescription;
+        
+    }
+
+    public interface IRule
+    {
+         EvaluationResult Evaluate(Schedule schedule);
+    }
+    
     class Rule
     {
         public int Weight;
