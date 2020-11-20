@@ -37,11 +37,19 @@ namespace Conversions
 
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
+            PrepareSheet();
 
             BuildSchedulePattern(groupNames);
 
             FillScheduleData(meetingSet, groupNames);
 
+        }
+
+        private void PrepareSheet() {
+            repository.ModifySpreadSheet(sheetName)
+                .ClearAll()
+                .UnMergeAll()
+                .Execute();
         }
 
         private void BuildSchedulePattern(List<string> groups)
