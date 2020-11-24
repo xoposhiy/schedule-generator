@@ -8,7 +8,7 @@ using Google.Apis.Sheets.v4.Data;
 
 namespace Conversions
 {
-    public class ScheduleBuilder
+    public class ScheduleSpreadsheetConverter
     {
         private GSRepository repository;
         private string sheetName;
@@ -16,7 +16,7 @@ namespace Conversions
         private int timeBarColumnOffset = 0;
         private int headersColumnOffset = 2;
         private int headersRowOffset = 2;
-        public ScheduleBuilder(GSRepository repo, string sheetName)
+        public ScheduleSpreadsheetConverter(GSRepository repo, string sheetName)
         {
             repository = repo;
             this.sheetName = sheetName;
@@ -37,11 +37,19 @@ namespace Conversions
 
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
+            PrepareSheet();
 
             BuildSchedulePattern(groupNames);
 
             FillScheduleData(meetingSet, groupNames);
 
+        }
+
+        private void PrepareSheet() {
+            repository.ModifySpreadSheet(sheetName)
+                .ClearAll()
+                .UnMergeAll()
+                .Execute();
         }
 
         private void BuildSchedulePattern(List<string> groups)

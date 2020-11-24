@@ -499,8 +499,10 @@ namespace GoogleSheetsRepository
         public readonly string Id;
         public readonly string Url;
         public readonly Dictionary<string, int?> Sheets;
+        public readonly Spreadsheet spreadsheet;
         public SheetInfo(Spreadsheet spreadsheet)
         {
+            this.spreadsheet = spreadsheet;
             Id = spreadsheet.SpreadsheetId;
             Url = spreadsheet.SpreadsheetUrl;
             Sheets = spreadsheet.Sheets
