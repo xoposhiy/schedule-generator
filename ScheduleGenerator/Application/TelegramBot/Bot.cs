@@ -111,7 +111,7 @@ namespace Bot
             {
                 if (message.Text == "/help" || message.Text == "Помощь")
                 {
-                    var answer = "Я Бот для составления расписания";
+                    var answer = "Я Бот для составления расписания.\n Чтобы начать сначала введите \"Заново\" или /restart";
                     await client.SendTextMessageAsync(chatID, answer);
                 }
                 else if (message.Text == "/restart" || message.Text == "Заново")
@@ -119,7 +119,7 @@ namespace Bot
                     sessionDict.Remove(chatID);
                     additionalStateDict.Remove(chatID);
                     sessionRepository.Delete(chatID);
-                    var answer = "Начинаем все сначала";
+                    var answer = "Начинаем все сначала.";
                     await client.SendTextMessageAsync(chatID, answer);
                 }
                 else if (string.IsNullOrEmpty(currentSession.SpreadsheetUrl))
@@ -139,12 +139,12 @@ namespace Bot
                     {
                         if (isNew)
                         {
-                            var answer = "Привет. Я бот для создания расписаний. Чтобы начать киньте ссылку на Spreadsheet (url для таблицы в Google Sheets)";
+                            var answer = "Привет. Я бот для создания расписаний. Чтобы начать, отправьте сюда ссылку на Spreadsheet (url для таблицы в Google Sheets)";
                             await client.SendTextMessageAsync(chatID, answer);
                         }
                         else
                         {
-                            var answer = "Не осознал. Сначала скиньте ссылку на Spreadsheet (url для таблицы в Google Sheets). Просто отправьте суда текстом.";
+                            var answer = "Не понимаю. Сначала скиньте ссылку на Spreadsheet (url для таблицы в Google Sheets). Просто отправьте суда текстом.";
                             await client.SendTextMessageAsync(chatID, answer);
                         }
                     }
@@ -160,7 +160,7 @@ namespace Bot
                         }
                         catch (Exception e)
                         {
-                            await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова");
+                            await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова.");
                             return;
                         }
                         // If access accuired
@@ -172,7 +172,7 @@ namespace Bot
                         repo.SetUpSheetInfo();
                         var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                         sheetNames.Add("Создать");
-                        var keyboard = CreateKeyboard(sheetNames, 3);
+                        var keyboard = CreateKeyboard(sheetNames, 6);
 
                         await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
                     }
@@ -218,13 +218,13 @@ namespace Bot
                         repo.SetUpSheetInfo();
                         var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                         sheetNames.Add("Создать");
-                        var keyboard = CreateKeyboard(sheetNames, 4);
+                        var keyboard = CreateKeyboard(sheetNames, 6);
 
                         await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
                     }
                     else
                     {
-                        var answer = "Не нашел такой таблицы. Попробуйте снова";
+                        var answer = "Не нашел такой таблицы. Попробуйте снова.";
                         await client.SendTextMessageAsync(chatID, answer);
                     }
                 }
@@ -259,7 +259,7 @@ namespace Bot
                         currentSession.RoomsSheet = message.Text;
                         currentSession.LastModificationTime = DateTime.Now;
                         var answer = $"Хорошо, таблица найдена (или создана) \"{currentSession.RoomsSheet}\". Если вы еще не заполнили таблицы данными сделайте это. " +
-                            "Как будете готовы нажмите на кнопку \"Готово\"";
+                            "Как будете готовы, нажмите на кнопку \"Готово\"";
 
                         // keyboard update
                         var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
@@ -294,7 +294,7 @@ namespace Bot
                             repo.SetUpSheetInfo();
                             var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                             sheetNames.Add("Создать");
-                            var keyboard = CreateKeyboard(sheetNames, 4);
+                            var keyboard = CreateKeyboard(sheetNames, 6);
                             await client.SendTextMessageAsync(chatID, answer2, ParseMode.Default, false, false, 0, keyboard);
                         }
                         else
@@ -305,7 +305,7 @@ namespace Bot
                     }
                     else
                     {
-                        var answer = "Не понял. Нажмите \"Готово\" как закончите вводить данные.";
+                        var answer = "Не понял. Нажмите \"Готово\", как закончите вводить данные.";
                         await client.SendTextMessageAsync(chatID, answer);
                     }
                 }
@@ -347,7 +347,7 @@ namespace Bot
                     }
                     else
                     {
-                        var answer = "Не нашел такой таблицы. Попробуйте снова";
+                        var answer = "Не нашел такой таблицы. Попробуйте снова.";
                         // keyboard update
                         await client.SendTextMessageAsync(chatID, answer);
                     }
@@ -356,14 +356,14 @@ namespace Bot
                 {
                     if (currentAdditionalState.CreatingSchedule)
                     {
-                        var answer = "Составляю расписание. Ожидайте";
+                        var answer = "Составляю расписание. Ожидайте.";
                         await client.SendTextMessageAsync(chatID, answer);
                     }
 
                     // Save current session
                     sessionRepository.Save(chatID, currentSession);
-                    await client.SendTextMessageAsync(chatID, "Кажется что предыдущая сессия уже заверщиласть составлением расписания.\n" +
-                        "Напишите \"Заново\" или /restart чтоюы начать сначала.");
+                    await client.SendTextMessageAsync(chatID, "Кажется, что предыдущая сессия уже заверщиласть составлением расписания.\n" +
+                        "Напишите \"Заново\" или /restart, чтобы начать сначала.");
                 }
             }
         }
