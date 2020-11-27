@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Runtime.Serialization;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Linq;
-
+using Newtonsoft.Json;
 
 using Telegram.Bot;
 using Telegram.Bot.Args;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using GoogleSheetsRepository;
+using FirebaseRepository;
 
 namespace Bot
 {
@@ -21,26 +17,25 @@ namespace Bot
     {
         private TelegramBotClient client;
         private string repoSecret;
-        private Dictionary<Regex, Func<string, string>> preparedBehavior;
-        private Dictionary<long, string> ChatIdSheetLinkDict;
         private Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
-        private States State;
-        private string link;
-        private string sheetId;
         private GSRepository repo;
-        private bool GotAccess;
-        private string RequirementsSheet;
-        private string ScheduleSheet;
-        public TBot(string token, string repoSecret)
+        private SessionRepository sessionRepository;
+        private string credentialAddressToShare;
+        private Dictionary<long, ScheduleSession> sessionDict;
+        private Dictionary<long, AdditionalSessionState> additionalStateDict;
+        public TBot(string token, string repoSecret, string firebaseSecret, string dbBasePath)
         {
             client = new TelegramBotClient(token);
+            sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
+            sessionDict = new Dictionary<long, ScheduleSession>();
+            additionalStateDict = new Dictionary<long, AdditionalSessionState>();
             this.repoSecret = repoSecret;
-            preparedBehavior = new Dictionary<Regex, Func<string, string>>();
-            ChatIdSheetLinkDict = new Dictionary<long, string>();
             client.OnMessage += BotOnMessageReceived;
             client.OnMessageEdited += BotOnMessageReceived;
-            SetUpCommands();
-            State = States.NeedLink;
+
+            var readedString = System.IO.File.ReadAllText(repoSecret);
+            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readedString);
+            credentialAddressToShare = values["client_email"];
         }
 
         public void Start()
@@ -50,236 +45,383 @@ namespace Bot
 
         public void Stop()
         {
-            client.StartReceiving();
-        }
-
-        private void SetUpCommands()
-        {
-            preparedBehavior[new Regex("https://docs.google.com/spreadsheets/.*")] = (addr) => addr + "!";
+            client.StopReceiving();
+            // Session serialization
+            foreach (var chatIdSession in sessionDict)
+            {
+                sessionRepository.Save(chatIdSession.Key, chatIdSession.Value);
+            }
         }
 
         private async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
-            //switch (message?.Type) {
-            //    case MessageType.Text:
-            //        switch (State)
-            //        break;
-            //}
-            if (message?.Type == MessageType.Text)
+            var chatID = message.Chat.Id;
+            var isNew = false;
+            if (!sessionDict.ContainsKey(chatID))
             {
-                if (message.Text == "/help")
+                // Ask Firebase
+                //   if found check access to spreadsheet and set what access already recieved
+                var requestedSession = sessionRepository.Get(chatID);
+                if (requestedSession != null)
                 {
-                    var answer = "Im the Schedule Generator Bot. To start schedule creation send Spread Sheet link. Copy you Google Sheet url and send me =)";
-                    await client.SendTextMessageAsync(message.Chat.Id, answer);
-                    return;
+                    sessionDict[chatID] = requestedSession;
                 }
-                if (message.Text == "/restart")
+                else
                 {
-                    await client.SendTextMessageAsync(message.Chat.Id, "Restarted");
-                    State = States.NeedLink;
-                    link = null;
-                    sheetId = null;
-                    return;
+                    // If not found in db
+                    sessionDict[chatID] = new ScheduleSession();
+                    sessionDict[chatID].Id = chatID;
+                    sessionDict[chatID].LastModificationInitiator = "TelegramBot";
+                    sessionDict[chatID].LastModificationTime = DateTime.Now;
+                    sessionDict[chatID].DialogState = DialogState.Initial;
+                    isNew = true;
                 }
-                if (State == States.NeedLink)
+            }
+            var currentSession = sessionDict[chatID];
+
+
+            if (!additionalStateDict.ContainsKey(chatID))
+            {
+                additionalStateDict[chatID] = new AdditionalSessionState(chatID);
+                isNew = true;
+                if (!string.IsNullOrEmpty(currentSession.InputRequirementsSheet))
                 {
-                    var isLink = LinkRegex.IsMatch(message.Text);
-                    // Validate
-                    if (!isLink)
-                    {
-                        await client.SendTextMessageAsync(message.Chat.Id, "Invalid Link. Try send GoogleSheets Spread sheet link again.");
-                        return;
-                    }
-                    //
-                    link = message.Text;
-                    sheetId = LinkRegex.Match(link).Groups[1].Value;
-                    Console.WriteLine("Got Link {0} -> {1}", link, sheetId);
-                    
-                    var answer = "Give me access. Add me to your Google Sheet. Click Done when you give me access ";
-                    State = States.NeedAccess;
-                    var replyKeyboardMarkup = new ReplyKeyboardMarkup();
-                    //replyKeyboardMarkup.
-                    replyKeyboardMarkup.Keyboard = new KeyboardButton[][]
-                    {
-                        new KeyboardButton[]
-                        {
-                            new KeyboardButton("Done")
-                        }
-                    };
-
-                    await client.SendTextMessageAsync(message.Chat.Id, answer, ParseMode.Default, false, false, 0, replyKeyboardMarkup);
-
-                    
-
-                    return;
-                }
-                if (State == States.NeedAccess)
-                {
-                    if (message.Text != "Done") {
-                        await client.SendTextMessageAsync(message.Chat.Id, $"Click Done when you give me access");
-                        return;
-                    }
-                    // Check Access
-                    GotAccess = false;
                     try
                     {
-                        if (repo is null)
+                        repo = new GSRepository("PsA32710i", repoSecret, currentSession.SpreadsheetUrl);
+                        additionalStateDict[chatID].AccessRecieved = true;
+                        isNew = false;
+                    }
+                    catch (Exception e)
+                    {
+                        await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова");
+                        additionalStateDict[chatID].AccessRecieved = false;
+                    }
+                    if (!string.IsNullOrEmpty(currentSession.ScheduleSheet))
+                    {
+                        additionalStateDict[chatID].DataIsValid = true;
+                    }
+                }
+            }
+            var currentAdditionalState = additionalStateDict[chatID];
+
+
+            if (message?.Type == MessageType.Text)
+            {
+                if (message.Text == "/help" || message.Text == "Помощь")
+                {
+                    var answer = "Я Бот для составления расписания";
+                    await client.SendTextMessageAsync(chatID, answer);
+                }
+                else if (message.Text == "/restart" || message.Text == "Заново")
+                {
+                    sessionDict.Remove(chatID);
+                    additionalStateDict.Remove(chatID);
+                    sessionRepository.Delete(chatID);
+                    var answer = "Начинаем все сначала";
+                    await client.SendTextMessageAsync(chatID, answer);
+                }
+                else if (string.IsNullOrEmpty(currentSession.SpreadsheetUrl))
+                {
+                    if (LinkRegex.IsMatch(message.Text))
+                    {
+                        currentSession.SpreadsheetUrl = message.Text;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        var answer = "URL получен. Дайте мне доступ на редактирование. Добавьте мой адрес в редакторы вашей таблицы.\n";
+                        answer += $"Нажмите на кнопку \"Готово\" когда сделаете.\n";
+                        var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
+
+                        answer += $"Вот мой адрес: {credentialAddressToShare}";
+                        await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                    }
+                    else
+                    {
+                        if (isNew)
                         {
-                            repo = new GSRepository("Bot", repoSecret, link);
+                            var answer = "Привет. Я бот для создания расписаний. Чтобы начать киньте ссылку на Spreadsheet (url для таблицы в Google Sheets)";
+                            await client.SendTextMessageAsync(chatID, answer);
                         }
                         else
                         {
-                            repo.ChangeTable(link);
+                            var answer = "Не осознал. Сначала скиньте ссылку на Spreadsheet (url для таблицы в Google Sheets). Просто отправьте суда текстом.";
+                            await client.SendTextMessageAsync(chatID, answer);
                         }
                     }
-                    catch
-                    {
-                        await client.SendTextMessageAsync(message.Chat.Id, $"Give me access to {link}");
-                        return;
-                    }
-                    GotAccess = true;
-                    State = States.NeedRequirmentsSheet;
                 }
-                if (State == States.NeedRequirmentsSheet)
+                else if (!currentAdditionalState.AccessRecieved)
                 {
-                    var answer = "On which sheet of the table will there be scheduled wishes from teachers?";
-                    State = States.ScheduleCreation;
-                    var replyKeyboardMarkup = new ReplyKeyboardMarkup();
-                    var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
-                    sheetNames.Add("Create New");
-                    replyKeyboardMarkup.Keyboard = sheetNames.Select(name => new KeyboardButton[] { new KeyboardButton(name) });
-
-
-                    await client.SendTextMessageAsync(message.Chat.Id, answer, ParseMode.Default, false, false, 0, replyKeyboardMarkup);
-                    return;
-                }
-                if (State == States.ScheduleCreation)
-                {
-                    var isValid = false;
-                    if (message.Text == "Create New") {
-                        // Check if name exists
-                        var uniqueSheetName = FindUniqueName(repo.CurrentSheetInfo.Sheets.Keys.ToList());
-                        repo.CreateNewSheet(uniqueSheetName);
-                        RequirementsSheet = uniqueSheetName;
-                        isValid = true;
-                    }
-                    if (!isValid && !repo.CurrentSheetInfo.Sheets.ContainsKey(message.Text)) {
-                        RequirementsSheet = message.Text;
-                        await client.SendTextMessageAsync(message.Chat.Id, "Invalid Sheet name. Choose from keyboard button.");
-                        return;
-                    }
-
-                    // Creating Schedule
-                    // Validation
-                    var answer = "There are no errors in the input requirements! On which sheet of the table should the schedule be displayed?";
-                    State = States.NeedOutputSheet;
-                    var replyKeyboardMarkup = new ReplyKeyboardMarkup();
-                    var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
-                    sheetNames.Add("Create New");
-                    replyKeyboardMarkup.Keyboard = sheetNames.Select(name => new KeyboardButton[] { new KeyboardButton(name) });
-
-                    await client.SendTextMessageAsync(message.Chat.Id, answer, ParseMode.Default, false, false, 0, replyKeyboardMarkup);
-                    return;
-                }
-
-                if (State == States.ScheduleCreation)
-                {
-                    var isValid = false;
-                    if (message.Text == "Create New")
+                    if (message.Text == "Готово")
                     {
-                        // Check if name exists
-                        var uniqueSheetName = FindUniqueName(repo.CurrentSheetInfo.Sheets.Keys.ToList());
-                        repo.CreateNewSheet(uniqueSheetName);
-                        RequirementsSheet = uniqueSheetName;
-                        isValid = true;
-                    }
-                    if (!isValid && !repo.CurrentSheetInfo.Sheets.ContainsKey(message.Text))
-                    {
-                        RequirementsSheet = message.Text;
-                        await client.SendTextMessageAsync(message.Chat.Id, "Invalid Sheet name. Choose from keyboard button.");
-                        return;
-                    }
-                    State = States.NeedLink;
-                    await client.SendTextMessageAsync(message.Chat.Id, "Ok");
-                }
+                        // Access check
+                        try
+                        {
+                            repo = new GSRepository("PsA32710i", repoSecret, currentSession.SpreadsheetUrl);
+                        }
+                        catch (Exception e)
+                        {
+                            await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова");
+                            return;
+                        }
+                        // If access accuired
+                        var answer = "Доступ получен. " +
+                            "На каком листе таблицы будут пожелания по расписанию от преподавателей?";
+                        currentAdditionalState.AccessRecieved = true;
+                        // Buttons apiare
 
-                await client.SendTextMessageAsync(message.Chat.Id, "What? Type /help");
+                        repo.SetUpSheetInfo();
+                        var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        sheetNames.Add("Создать");
+                        var keyboard = CreateKeyboard(sheetNames, 3);
+
+                        await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                    }
+                    else
+                    {
+                        var answer = "Дайте мне доступ на редактирование. Добавьте мой адрес в редакторы вашей таблицы.\n" +
+                            $"Вот мой адрес: {credentialAddressToShare}";
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                }
+                else if (string.IsNullOrEmpty(currentSession.InputRequirementsSheet))
+                {
+                    var exists = false;
+                    // If specified "Create", create 
+                    if (message.Text == "Создать")
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        var newSheetName = FindUniqueName(takenNames, "Requestion");
+                        repo.CreateNewSheet(newSheetName);
+                        currentSession.InputRequirementsSheet = newSheetName;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        exists = true;
+                    }
+                    // Check what this sheet really exists
+                    else
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        if (takenNames.Contains(message.Text))
+                        {
+                            currentSession.InputRequirementsSheet = message.Text;
+                            currentSession.LastModificationTime = DateTime.Now;
+                            exists = true;
+                        }
+                    }
+
+                    if (exists)
+                    {
+
+                        var answer = $"Хорошо, таблица найдена (или создана) \"{currentSession.InputRequirementsSheet}\". Теперь укажите имя таблицы с учебным планом";
+                        // keyboard update
+                        repo.SetUpSheetInfo();
+                        var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        sheetNames.Add("Создать");
+                        var keyboard = CreateKeyboard(sheetNames, 4);
+
+                        await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                    }
+                    else
+                    {
+                        var answer = "Не нашел такой таблицы. Попробуйте снова";
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                }
+                else if (string.IsNullOrEmpty(currentSession.RoomsSheet))
+                {
+                    var exists = false;
+                    // If specified "Create", create 
+                    if (message.Text == "Создать")
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        var newSheetName = FindUniqueName(takenNames, "LearningPlan");
+                        repo.CreateNewSheet(newSheetName);
+                        currentSession.RoomsSheet = newSheetName;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        exists = true;
+                    }
+                    // Check what this sheet really exists
+                    else
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        if (takenNames.Contains(message.Text))
+                        {
+                            currentSession.RoomsSheet = message.Text;
+                            currentSession.LastModificationTime = DateTime.Now;
+                            exists = true;
+                        }
+                    }
+                    if (exists)
+                    {
+                        currentSession.RoomsSheet = message.Text;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        var answer = $"Хорошо, таблица найдена (или создана) \"{currentSession.RoomsSheet}\". Если вы еще не заполнили таблицы данными сделайте это. " +
+                            "Как будете готовы нажмите на кнопку \"Готово\"";
+
+                        // keyboard update
+                        var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
+                        await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                    }
+                    else
+                    {
+                        var answer = "Не нашел такой таблицы. Попробуйте снова";
+
+                        // keyboard update
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                }
+                else if (!currentAdditionalState.DataIsValid)
+                {
+                    if (message.Text == "Готово" && !currentAdditionalState.TableValidationInProgress)
+                    {
+                        var answer = "Сейчас проверю правильность введенных данных. Ожидайте.";
+                        await client.SendTextMessageAsync(chatID, answer);
+                        // Maybe async method t check and send message with report
+
+                        // Validation
+                        //var isValid, msg = ...
+                        var isValid = true;
+                        if (isValid)
+                        {
+                            currentAdditionalState.DataIsValid = true;
+                            currentAdditionalState.TableValidationInProgress = false;
+                            var answer2 = "Все отлично. Выберите имя таблицы, где вывести расписание";
+
+                            // keyboard update
+                            repo.SetUpSheetInfo();
+                            var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                            sheetNames.Add("Создать");
+                            var keyboard = CreateKeyboard(sheetNames, 4);
+                            await client.SendTextMessageAsync(chatID, answer2, ParseMode.Default, false, false, 0, keyboard);
+                        }
+                        else
+                        {
+                            // Error output
+                            Console.WriteLine("Schedule error output");
+                        }
+                    }
+                    else
+                    {
+                        var answer = "Не понял. Нажмите \"Готово\" как закончите вводить данные.";
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                }
+                else if (string.IsNullOrEmpty(currentSession.ScheduleSheet))
+                {
+                    var exists = false;
+                    // If specified "Create", create 
+                    if (message.Text == "Создать")
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        var newSheetName = FindUniqueName(takenNames, "Schedule");
+                        repo.CreateNewSheet(newSheetName);
+                        currentSession.ScheduleSheet = newSheetName;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        exists = true;
+                    }
+                    // Check what this sheet really exists
+                    else
+                    {
+                        repo.SetUpSheetInfo();
+                        var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                        if (takenNames.Contains(message.Text))
+                        {
+                            currentSession.ScheduleSheet = message.Text;
+                            currentSession.LastModificationTime = DateTime.Now;
+                            exists = true;
+                        }
+                    }
+
+                    if (exists)
+                    {
+                        currentSession.ScheduleSheet = message.Text;
+                        currentSession.LastModificationTime = DateTime.Now;
+                        var answer = $"Хорошо, таблица найдена (или создана) \"{currentSession.ScheduleSheet}\". Начинаю составление расписания. Напишу, когда будет готово";
+                        currentAdditionalState.CreatingSchedule = true;
+                        // Save current session if the schedule is ready
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                    else
+                    {
+                        var answer = "Не нашел такой таблицы. Попробуйте снова";
+                        // keyboard update
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+                }
+                else
+                {
+                    if (currentAdditionalState.CreatingSchedule)
+                    {
+                        var answer = "Составляю расписание. Ожидайте";
+                        await client.SendTextMessageAsync(chatID, answer);
+                    }
+
+                    // Save current session
+                    sessionRepository.Save(chatID, currentSession);
+                    await client.SendTextMessageAsync(chatID, "Кажется что предыдущая сессия уже заверщиласть составлением расписания.\n" +
+                        "Напишите \"Заново\" или /restart чтоюы начать сначала.");
+                }
             }
         }
 
-        private string FindUniqueName(List<string> takenNames, string desiredName="Schedule") {
-            while (takenNames.Contains(desiredName)) {
+        private string FindUniqueName(List<string> takenNames, string desiredName = "Schedule")
+        {
+            while (takenNames.Contains(desiredName))
+            {
                 desiredName += "I";
             }
             return desiredName;
         }
-    }
 
-    public class Scenario
-    {
-        public ScenarioStep Start { get; set; }
-        public ScenarioStep Current { get; set; }
-        public ScenarioStep Finish { get; set; }
-        public long ChatId { get; set; }
-    }
-
-    public class ScenarioStep
-    {
-        public string Description { get; set; }
-        public Regex Pattern { get; set; }
-        public OnErrorState OnErrorWay { get; set; }
-        public Action<TelegramBotClient, long> OnErrorAction;
-        public Func<string, TelegramBotClient, long, bool> React { get; set; }
-        public TelegramBotClient client { get; set; }
-    }
-
-
-    public enum OnErrorState
-    {
-        Fatal,
-        Repeat,
-        TryAgain
-    }
-
-    public enum States
-    {
-        None,
-        NeedLink,
-        NeedAccess,
-        NeedRequirmentsSheet,
-        ScheduleCreation,
-        NeedOutputSheet,
-    }
-
-    public class ConversationPoint
-    {
-        public string Description { get; set; }
-        public Regex ExpectedAnswer { get; set; }
-        public ConversationPoint PrevConvPoint { get; set; }
-        public ConversationPoint NextConvPoint { get; set; }
-        public Func<string, TelegramBotClient, string> Reaction { get; set; }
-
-        public ConversationPoint(string description, string pattern, Func<string, TelegramBotClient, string> reaction)
+        private static ReplyKeyboardMarkup CreateKeyboard(IEnumerable<string> buttonNames, int maxButtonCountPerRow = 4)
         {
-            Description = description;
-            ExpectedAnswer = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Reaction = reaction;
-        }
-
-        public bool CheckAnswer(string answer)
-        {
-            return ExpectedAnswer.IsMatch(answer);
-        }
-
-        public string React(string answer, TelegramBotClient client)
-        {
-            return Reaction(answer, client);
+            var rowCount = buttonNames.Count() / maxButtonCountPerRow;
+            if (buttonNames.Count() % maxButtonCountPerRow != 0)
+            {
+                rowCount++;
+            }
+            var buttons = new KeyboardButton[rowCount][];
+            var currentRow = new KeyboardButton[Math.Min(buttonNames.Count(), maxButtonCountPerRow)];
+            var currCount = 0;
+            var currRow = 0;
+            foreach (var buttonName in buttonNames)
+            {
+                currCount++;
+                if (currCount - maxButtonCountPerRow * currRow > maxButtonCountPerRow)
+                {
+                    buttons[currRow] = currentRow;
+                    currRow++;
+                    currentRow = new KeyboardButton[Math.Min(buttonNames.Count() - maxButtonCountPerRow * currRow, maxButtonCountPerRow)]; ;
+                    currentRow[0] = new KeyboardButton(buttonName);
+                    continue;
+                }
+                currentRow[currCount - maxButtonCountPerRow * currRow - 1] = new KeyboardButton(buttonName);
+            }
+            if (currentRow.Length > 0)
+            {
+                buttons[currRow] = currentRow;
+            }
+            var replyKeyboardMarkup = new ReplyKeyboardMarkup();
+            replyKeyboardMarkup.Keyboard = buttons;
+            return replyKeyboardMarkup;
         }
     }
 
-    public class Conversation
+    public class AdditionalSessionState
     {
+        public long ID { get; }
+        public bool AccessRecieved;
+        public bool TableValidationInProgress;
+        public bool DataIsValid;
+        public bool CreatingSchedule;
 
+        public AdditionalSessionState(long id)
+        {
+            ID = id;
+        }
     }
 }
