@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using ScheduleLib;
 using GoogleSheetsRepository;
+using System.Globalization;
 
-
-namespace Domain.Conversions
+namespace Conversions
 {
     public static class SheetToRequisitionConverter
     {
@@ -42,9 +42,9 @@ namespace Domain.Conversions
 
         private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
         {
-            var sheetId = repo.CurrentSheetInfo.Sheets.Keys.ToList().IndexOf(SheetName);
-
-            var ActualRowCount = repo.CurrentSheetInfo.spreadsheet.Sheets[sheetId].Properties.GridProperties.RowCount;
+            //var sheetId = repo.CurrentSheetInfo.Sheets.Keys.ToList().IndexOf(SheetName);
+            var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
+            var ActualRowCount = sheetObj.Properties.GridProperties.RowCount;
             var RowCountToRead = Math.Min((int)ActualRowCount, 300);
             var testData = repo.ReadCellRange(SheetName, start, (RowCountToRead + 1, width - 1));
             var RowsWithDataCount = testData.Count;
@@ -71,7 +71,7 @@ namespace Domain.Conversions
                 var discipline = new Discipline(disciplineRow);
                 var meetingType = meetingTypeDict[meetingTypeRow];
                 var groupSize = groupSizeDict.ContainsKey(groupSizeRow) ? groupSizeDict[groupSizeRow] : GroupSize.FullGroup;
-                var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow);
+                var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
                 foreach (var groupName in groups)
                 {
                     // Need to add locaton to Learning Plan Item through constructor
@@ -88,7 +88,7 @@ namespace Domain.Conversions
             var requisitions = new List<Requisition>();
             foreach (var requestionRow in sheetData)
             {
-                if (requestionRow.Count == 0)
+                if (requestionRow.Count == 0 || requestionRow.Take(7).All(s => string.IsNullOrEmpty(s)))
                 {
                     continue;
                 }
