@@ -8,18 +8,36 @@ using GoogleSheetsRepository;
 
 namespace Domain.Conversions
 {
-    public static class SheetToRequestionConverter
+    public static class SheetToRequisitionConverter
     {
-        public static List<Requisition> ConvertToRequestions(GSRepository repo, string requestionSheetName, string learningPlanSheetName)
+        private static Dictionary<string, MeetingType> meetingTypeDict = new Dictionary<string, MeetingType>() {
+            { "Лекция", MeetingType.Lecture },
+            { "КомпПрактика", MeetingType.ComputerLab },
+            { "Семинар", MeetingType.Seminar },
+            { "Онлайн", MeetingType.Online }
+        };
+
+        private static Dictionary<string, GroupSize> groupSizeDict = new Dictionary<string, GroupSize>() {
+            { "в половинках", GroupSize.HalfGroup }
+        };
+
+        private static Dictionary<string, DayOfWeek> weekDaysDict = new Dictionary<string, DayOfWeek>() {
+            { "пн", DayOfWeek.Monday },
+            { "вт", DayOfWeek.Tuesday },
+            { "ср", DayOfWeek.Wednesday },
+            { "чт", DayOfWeek.Thursday },
+            { "пт", DayOfWeek.Friday },
+            { "сб", DayOfWeek.Saturday },
+            { "вс", DayOfWeek.Sunday },
+        };
+
+        public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
             var PlanData = ReadRowsUsingBoundary(repo, learningPlanSheetName, (1, 0), 6);
             var planItemsAndLocations = ParseLearningPlanItems(PlanData);
-
-
-            var RequestionData = ReadRowsUsingBoundary(repo, requestionSheetName, (1, 0), 7);
-
-            var requirments = ParseRequirments(RequestionData, planItemsAndLocations);
-            return requirments;
+            var RequestionData = ReadRowsUsingBoundary(repo, requisitionSheetName, (1, 0), 7);
+            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations);
+            return requisitions;
         }
 
         private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
@@ -38,17 +56,6 @@ namespace Domain.Conversions
 
         private static List<(LearningPlanItem, string)> ParseLearningPlanItems(List<List<string>> sheetData)
         {
-            var MeetingTypeDict = new Dictionary<string, MeetingType>() {
-                { "Лекция", MeetingType.Lecture },
-                { "КомпПрактика", MeetingType.ComputerLab },
-                { "Семинар", MeetingType.Seminar },
-                { "Онлайн", MeetingType.Online }
-            };
-
-            var GroupSizeDict = new Dictionary<string, GroupSize>() {
-                { "в половинках", GroupSize.HalfGroup }
-            };
-
             var learningPlanItems = new List<(LearningPlanItem, string)>();
             foreach (var row in sheetData)
             {
@@ -62,8 +69,8 @@ namespace Domain.Conversions
 
                 var groups = groupsRow.Split(',').Select(s => s.Trim()).ToList();
                 var discipline = new Discipline(disciplineRow);
-                var meetingType = MeetingTypeDict[meetingTypeRow];
-                var groupSize = GroupSizeDict.ContainsKey(groupSizeRow) ? GroupSizeDict[groupSizeRow] : GroupSize.FullGroup;
+                var meetingType = meetingTypeDict[meetingTypeRow];
+                var groupSize = groupSizeDict.ContainsKey(groupSizeRow) ? groupSizeDict[groupSizeRow] : GroupSize.FullGroup;
                 var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow);
                 foreach (var groupName in groups)
                 {
@@ -73,13 +80,12 @@ namespace Domain.Conversions
                 }
             }
 
-
             return learningPlanItems;
         }
 
-        private static List<Requisition> ParseRequirments(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation)
+        private static List<Requisition> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation)
         {
-            var requestions = new List<Requisition>();
+            var requisitions = new List<Requisition>();
             foreach (var requestionRow in sheetData)
             {
                 if (requestionRow.Count == 0)
@@ -88,7 +94,8 @@ namespace Domain.Conversions
                 }
                 var teacherName = requestionRow[0];
                 var disciplineName = requestionRow[1];
-                var meetingType = requestionRow[2];
+                var meetingTypeStr = requestionRow[2];
+                var meetingType = meetingTypeDict[meetingTypeStr];
                 var repetitionCountRaw = requestionRow[3];
                 var groupPriorities = requestionRow[4];
                 var meetingTimesRaw = requestionRow[5];
@@ -100,35 +107,26 @@ namespace Domain.Conversions
                     .Split("\n")
                     .Select(p => new GroupRequisition(p))
                     .ToArray();
-                // Should use meetingType
                 var meetingTimes = ParseMeetingTime(meetingTimesRaw);
                 var meetingTimesArray = meetingTimes?.ToArray();
                 var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                 var learningPlanItems = learningPlanItemsLocation.Select(t => t.Item1).ToArray();
                 var learingPlan = new LearningPlan(learningPlanItems);
 
-                //var requestion = new Requisition(learingPlan, groupRequisitions, null, repetitionCount, meetingTimesArray, teacher);
-
-                // There is a mistake: How to specify LearningPlanItems properly. Next Line is NOT correct.
-                var requestion = new Requisition(learingPlan.Items.First(), groupRequisitions, null, repetitionCount, meetingTimesArray, teacher);
-                requestions.Add(requestion);
+                // How to specify LearningPlanItems properly
+                var learningPlanItem = learingPlan.Items
+                    .Where(lpi => lpi.Discipline.Name == disciplineName)
+                    .Where(lpi => lpi.MeetingType == meetingType)
+                    .FirstOrDefault();
+                var requisition = new Requisition(learningPlanItem, groupRequisitions, null, repetitionCount, meetingTimesArray, teacher);
+                requisitions.Add(requisition);
             }
 
-            return requestions;
+            return requisitions;
         }
 
         private static List<MeetingTime> ParseMeetingTime(string rawMeetingTime)
         {
-            var weekDaysDict = new Dictionary<string, DayOfWeek>() {
-                { "пн", DayOfWeek.Monday },
-                { "вт", DayOfWeek.Tuesday },
-                { "ср", DayOfWeek.Wednesday },
-                { "чт", DayOfWeek.Thursday },
-                { "пт", DayOfWeek.Friday },
-                { "сб", DayOfWeek.Saturday },
-                { "вс", DayOfWeek.Sunday },
-            };
-
             var weekDaysStrList = weekDaysDict.Keys.ToList();
             var weekDaysList = new List<DayOfWeek> {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
