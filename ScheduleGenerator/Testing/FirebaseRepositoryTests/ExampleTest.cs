@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using System;
-using FirebaseRepository;
+using Domain.FirebaseRepository;
 
 namespace SessionRepositoryTests
 {

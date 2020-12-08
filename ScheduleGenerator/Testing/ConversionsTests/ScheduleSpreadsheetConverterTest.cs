@@ -3,9 +3,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Conversions;
-using GoogleSheetsRepository;
-using ScheduleLib;
+using Domain.Conversions;
+using Domain.GoogleSheetsRepository;
+using Domain.ScheduleLib;
 
 namespace ConversionsTests
 {

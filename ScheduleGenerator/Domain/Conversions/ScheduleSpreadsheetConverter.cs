@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GoogleSheetsRepository;
-using ScheduleLib;
+using Domain.GoogleSheetsRepository;
+using Domain.ScheduleLib;
 using Google.Apis.Sheets.v4.Data;
 
-namespace Conversions
+namespace Domain.Conversions
 {
     public class ScheduleSpreadsheetConverter
     {

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
-using ScheduleLib;
-using GoogleSheetsRepository;
+using Domain.ScheduleLib;
+using Domain.GoogleSheetsRepository;
 using System.Globalization;
 
-namespace Conversions
+namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
     {
@@ -103,12 +103,18 @@ namespace Conversions
 
                 var teacher = new Teacher(teacherName);
 
-                var groupRequisitions = groupPriorities
+                var groupChoices = groupPriorities
                     .Split("\n")
-                    .Select(p => new GroupRequisition(p))
+                    .Select(groupNameString => {
+                        var groupNames = groupNameString.Split(", ");
+                        var groups = new GroupsChoice(groupNames);
+                        return groups;
+                    })
                     .ToArray();
-                var meetingTimes = ParseMeetingTime(meetingTimesRaw);
-                var meetingTimesArray = meetingTimes?.ToArray();
+                var groupRequisitions = new GroupRequisition(groupChoices);
+                var meetingTimeRequesitions = ParseMeetingTimeRequesitions(meetingTimesRaw);
+                var meetingTimeRequesitionArray = meetingTimeRequesitions.ToArray();
+                //var meetingTimesArray = meetingTimes?.ToArray();
                 var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                 var learningPlanItems = learningPlanItemsLocation.Select(t => t.Item1).ToArray();
                 var learingPlan = new LearningPlan(learningPlanItems);
@@ -118,14 +124,14 @@ namespace Conversions
                     .Where(lpi => lpi.Discipline.Name == disciplineName)
                     .Where(lpi => lpi.MeetingType == meetingType)
                     .FirstOrDefault();
-                var requisition = new Requisition(learningPlanItem, groupRequisitions, null, repetitionCount, meetingTimesArray, teacher);
+                var requisition = new Requisition(learningPlanItem, new[] { groupRequisitions }, null, repetitionCount, meetingTimeRequesitionArray, teacher);
                 requisitions.Add(requisition);
             }
 
             return requisitions;
         }
 
-        private static List<MeetingTime> ParseMeetingTime(string rawMeetingTime)
+        private static List<MeetingTimeRequesition> ParseMeetingTimeRequesitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();
             var weekDaysList = new List<DayOfWeek> {
@@ -135,7 +141,7 @@ namespace Conversions
             var pattern = @"(?:(?:((?:пн|вт|ср|чт|пт|сб|вс)\s?-\s?(?:пн|вт|ср|чт|пт|сб|вс))|(пн|вт|ср|чт|пт|сб|вс)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
             var compiledPattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            var meetingTimes = new List<MeetingTime>();
+            var meetingTimeRequesitions = new List<MeetingTimeRequesition>();
 
             var records = rawMeetingTime.Split('\n');
             foreach (var record in records)
@@ -182,7 +188,7 @@ namespace Conversions
                     currIndexes.Add(index);
                 }
 
-
+                var meetingTimes = new List<MeetingTime>();
                 foreach (var day in currWeekDays)
                 {
                     foreach (var index in currIndexes)
@@ -190,9 +196,12 @@ namespace Conversions
                         meetingTimes.Add(new MeetingTime(day, index));
                     }
                 }
+
+                var meetingTimeRequesition = new MeetingTimeRequesition(meetingTimes.ToArray());
+                meetingTimeRequesitions.Add(meetingTimeRequesition);
             }
 
-            return meetingTimes;
+            return meetingTimeRequesitions;
         }
     }
 }
