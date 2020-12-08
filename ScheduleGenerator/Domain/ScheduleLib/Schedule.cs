@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ScheduleLib
+namespace Domain.ScheduleLib
 {
     public class Schedule
     {

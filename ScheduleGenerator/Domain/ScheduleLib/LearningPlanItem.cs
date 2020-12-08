@@ -1,4 +1,4 @@
-﻿namespace ScheduleLib
+﻿namespace Domain.ScheduleLib
 {
     public class LearningPlanItem
     {
