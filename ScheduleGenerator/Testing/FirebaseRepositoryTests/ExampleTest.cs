@@ -19,7 +19,7 @@ namespace SessionRepositoryTests
 
             var repo = new SessionRepository(basePath, authSecret);
 
-            ulong sessionId = 27;
+            long sessionId = 27;
             var newSession = new ScheduleSession()
             {
                 Id = sessionId,

@@ -71,7 +71,8 @@ namespace ScheduleLib
     {
         Lecture,
         ComputerLab,
-        Seminar
+        Seminar,
+        Online
     }
 
     public class Teacher

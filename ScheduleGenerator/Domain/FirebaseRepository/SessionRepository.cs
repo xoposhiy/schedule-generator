@@ -8,7 +8,7 @@ namespace FirebaseRepository
 {
     public class ScheduleSession
     {
-        public ulong Id;
+        public long Id;
         public string? SpreadsheetUrl;
         public string? InputRequirementsSheet;
         public string? ScheduleSheet;
@@ -40,8 +40,9 @@ namespace FirebaseRepository
 
     public interface IDBRepository
     {
-        ScheduleSession Get(ulong telegramChatId);
-        void Save(ulong telegramChatId, ScheduleSession session);
+        ScheduleSession Get(long telegramChatId);
+        void Save(long telegramChatId, ScheduleSession session);
+        void Delete(long telegramChatId);
     }
 
     public class SessionRepository : IDBRepository
@@ -58,7 +59,7 @@ namespace FirebaseRepository
               });
         }
 
-        public ScheduleSession Get(ulong telegramChatId)
+        public ScheduleSession Get(long telegramChatId)
         {
             var sessionTask = dbClient
                 .Child(sessionsKey)
@@ -69,7 +70,7 @@ namespace FirebaseRepository
             return session;
         }
 
-        public void Save(ulong telegramChatId, ScheduleSession session)
+        public void Save(long telegramChatId, ScheduleSession session)
         {
             Console.WriteLine("<Saving>");
             var savingTask = dbClient
@@ -81,12 +82,20 @@ namespace FirebaseRepository
             Console.WriteLine("Saved on {0}/{1}", sessionsKey, telegramChatId);
         }
 
-        public async void SaveAsync(ulong telegramChatId, ScheduleSession session)
+        public async void SaveAsync(long telegramChatId, ScheduleSession session)
         {
             await dbClient
               .Child(sessionsKey)
               .Child(telegramChatId.ToString())
               .PutAsync(session);
+        }
+
+        public async void Delete(long telegramChatId)
+        {
+            await dbClient
+              .Child(sessionsKey)
+              .Child(telegramChatId.ToString())
+              .DeleteAsync();
         }
     }
 }
