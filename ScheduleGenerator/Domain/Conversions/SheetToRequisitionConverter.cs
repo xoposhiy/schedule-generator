@@ -6,6 +6,7 @@ using Domain.ScheduleLib;
 using Domain.GoogleSheetsRepository;
 using System.Globalization;
 
+
 namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
@@ -144,33 +145,39 @@ namespace Domain.Conversions
                 var meetingGroupsStrings = priorityLine.Split(',').Select(mgs => mgs.Trim());
                 foreach (var meetingGroupsString in meetingGroupsStrings)
                 {
-                    var meetingGroups = new List<MeetingGroup>();
-                    var MeetingGroupStringSplited = meetingGroupsString.Split("+").Select(x => x.Trim());
-                    foreach (var singleMeetingGroup in MeetingGroupStringSplited)
-                    {
-                        if (singleMeetingGroup.Contains("*"))
-                        {
-                            var possibleGroups = FindAllMatchingGroups(singleMeetingGroup, allGroups, isLecture);
-                            foreach (var matchedGroup in possibleGroups)
-                            {
-                                var currGroupPart = DetermineGroupPart(matchedGroup);
-                                var meetingGroup = new MeetingGroup(matchedGroup, currGroupPart);
-                                meetingGroups.Add(meetingGroup);
-                            }
-                            continue;
-                        }
-
-                        var groupPart = DetermineGroupPart(singleMeetingGroup);
-                        meetingGroups.Add(new MeetingGroup(singleMeetingGroup, groupPart));
-                    }
-
-                    groupChoices.Add(new GroupsChoice(meetingGroups.ToArray()));
+                    var groupChoice = CreateGroupChoices(meetingGroupsString, allGroups, isLecture);
+                    groupChoices.Add(groupChoice);
                 }
 
                 groupRequesitions.Add(new GroupRequisition(groupChoices.ToArray()));
             }
 
             return groupRequesitions;
+        }
+
+        private static GroupsChoice CreateGroupChoices(string meetingGroupString, HashSet<string> allGroups, bool isLecture)
+        {
+            var meetingGroups = new List<MeetingGroup>();
+            var MeetingGroupStringSplited = meetingGroupString.Split("+").Select(x => x.Trim());
+            foreach (var singleMeetingGroup in MeetingGroupStringSplited)
+            {
+                if (singleMeetingGroup.Contains("*"))
+                {
+                    var possibleGroups = FindAllMatchingGroups(singleMeetingGroup, allGroups, isLecture);
+                    foreach (var matchedGroup in possibleGroups)
+                    {
+                        var currGroupPart = DetermineGroupPart(matchedGroup);
+                        var meetingGroup = new MeetingGroup(matchedGroup, currGroupPart);
+                        meetingGroups.Add(meetingGroup);
+                    }
+                    continue;
+                }
+
+                var groupPart = DetermineGroupPart(singleMeetingGroup);
+                meetingGroups.Add(new MeetingGroup(singleMeetingGroup, groupPart));
+            }
+
+            return new GroupsChoice(meetingGroups.ToArray());
         }
 
         private static GroupPart DetermineGroupPart(string group)
