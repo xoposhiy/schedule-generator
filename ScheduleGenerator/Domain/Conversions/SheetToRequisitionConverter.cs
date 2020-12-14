@@ -49,7 +49,6 @@ namespace Domain.Conversions
 
         private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
         {
-            //var sheetId = repo.CurrentSheetInfo.Sheets.Keys.ToList().IndexOf(SheetName);
             var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
             var ActualRowCount = sheetObj.Properties.GridProperties.RowCount;
             var RowCountToRead = Math.Min((int)ActualRowCount, 300);
@@ -118,17 +117,13 @@ namespace Domain.Conversions
                 var groupRequisitions = ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
                 var meetingTimeRequesitions = ParseMeetingTimeRequesitions(meetingTimesRaw);
                 var meetingTimeRequesitionArray = meetingTimeRequesitions.ToArray();
-                //var meetingTimesArray = meetingTimes?.ToArray();
                 var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
-                var learningPlanItems = learningPlanItemsLocation.Select(t => t.Item1).ToArray();
-                var learingPlan = new LearningPlan(learningPlanItems);
-
-                // How to specify LearningPlanItems properly
-                var learningPlanItem = learingPlan.Items
-                    .Where(lpi => lpi.Discipline.Name == disciplineName)
-                    .Where(lpi => lpi.MeetingType == meetingType)
+                var planItemAndLocation = learningPlanItemsLocation
+                    .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
+                    .Where(lpi => lpi.Item1.MeetingType == meetingType)
                     .FirstOrDefault();
-                var requisition = new Requisition(learningPlanItem, groupRequisitions.ToArray(), null, repetitionCount, meetingTimeRequesitionArray, teacher);
+                var requisition = new Requisition(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequesitionArray, teacher);
                 requisitions.Add(requisition);
             }
 
