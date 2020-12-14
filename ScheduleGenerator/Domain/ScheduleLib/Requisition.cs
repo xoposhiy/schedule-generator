@@ -45,9 +45,9 @@
 
     public class GroupsChoice
     {
-        public string[] Groups;
+        public MeetingGroup[] Groups;
 
-        public GroupsChoice(string[] groups)
+        public GroupsChoice(MeetingGroup[] groups)
         {
             Groups = groups;
         }
