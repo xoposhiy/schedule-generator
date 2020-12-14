@@ -6,6 +6,7 @@ using Domain.ScheduleLib;
 using Domain.GoogleSheetsRepository;
 using System.Globalization;
 
+
 namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
@@ -31,18 +32,23 @@ namespace Domain.Conversions
             { "вс", DayOfWeek.Sunday },
         };
 
+        private static Dictionary<int, GroupPart> groupPartDict = new Dictionary<int, GroupPart>() {
+            { 1, GroupPart.Part1 },
+            { 2, GroupPart.Part2 },
+            { 3, GroupPart.Part3 }
+        };
+
         public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
             var PlanData = ReadRowsUsingBoundary(repo, learningPlanSheetName, (1, 0), 6);
-            var planItemsAndLocations = ParseLearningPlanItems(PlanData);
+            var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
             var RequestionData = ReadRowsUsingBoundary(repo, requisitionSheetName, (1, 0), 7);
-            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations);
+            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
             return requisitions;
         }
 
         private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
         {
-            //var sheetId = repo.CurrentSheetInfo.Sheets.Keys.ToList().IndexOf(SheetName);
             var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
             var ActualRowCount = sheetObj.Properties.GridProperties.RowCount;
             var RowCountToRead = Math.Min((int)ActualRowCount, 300);
@@ -54,9 +60,10 @@ namespace Domain.Conversions
             return PlanData;
         }
 
-        private static List<(LearningPlanItem, string)> ParseLearningPlanItems(List<List<string>> sheetData)
+        private static (List<(LearningPlanItem, string)>, HashSet<string>) ParseLearningPlanItems(List<List<string>> sheetData)
         {
             var learningPlanItems = new List<(LearningPlanItem, string)>();
+            var allGroups = new HashSet<string>();
             foreach (var row in sheetData)
             {
                 var groupsRow = row[0];
@@ -68,6 +75,10 @@ namespace Domain.Conversions
                 var locationRow = row[5];
 
                 var groups = groupsRow.Split(',').Select(s => s.Trim()).ToList();
+                foreach (var group in groups)
+                {
+                    allGroups.Add(group);
+                }
                 var discipline = new Discipline(disciplineRow);
                 var meetingType = meetingTypeDict[meetingTypeRow];
                 var groupSize = groupSizeDict.ContainsKey(groupSizeRow) ? groupSizeDict[groupSizeRow] : GroupSize.FullGroup;
@@ -80,10 +91,10 @@ namespace Domain.Conversions
                 }
             }
 
-            return learningPlanItems;
+            return (learningPlanItems, allGroups);
         }
 
-        private static List<Requisition> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation)
+        private static List<Requisition> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation, HashSet<string> allGroups)
         {
             var requisitions = new List<Requisition>();
             foreach (var requestionRow in sheetData)
@@ -103,32 +114,105 @@ namespace Domain.Conversions
 
                 var teacher = new Teacher(teacherName);
 
-                var groupChoices = groupPriorities
-                    .Split("\n")
-                    .Select(groupNameString => {
-                        var groupNames = groupNameString.Split(", ");
-                        var groups = new GroupsChoice(groupNames);
-                        return groups;
-                    })
-                    .ToArray();
-                var groupRequisitions = new GroupRequisition(groupChoices);
+                var groupRequisitions = ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
                 var meetingTimeRequesitions = ParseMeetingTimeRequesitions(meetingTimesRaw);
                 var meetingTimeRequesitionArray = meetingTimeRequesitions.ToArray();
-                //var meetingTimesArray = meetingTimes?.ToArray();
                 var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
-                var learningPlanItems = learningPlanItemsLocation.Select(t => t.Item1).ToArray();
-                var learingPlan = new LearningPlan(learningPlanItems);
-
-                // How to specify LearningPlanItems properly
-                var learningPlanItem = learingPlan.Items
-                    .Where(lpi => lpi.Discipline.Name == disciplineName)
-                    .Where(lpi => lpi.MeetingType == meetingType)
+                var planItemAndLocation = learningPlanItemsLocation
+                    .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
+                    .Where(lpi => lpi.Item1.MeetingType == meetingType)
                     .FirstOrDefault();
-                var requisition = new Requisition(learningPlanItem, new[] { groupRequisitions }, null, repetitionCount, meetingTimeRequesitionArray, teacher);
+                var requisition = new Requisition(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequesitionArray, teacher);
                 requisitions.Add(requisition);
             }
 
             return requisitions;
+        }
+
+        private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions, HashSet<string> allGroups, bool isLecture)
+        {
+            var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
+            var groupRequesitions = new List<GroupRequisition>();
+            foreach (var priorityLine in groupPriorityLines)
+            {
+                var groupChoices = new List<GroupsChoice>();
+                var meetingGroupsStrings = priorityLine.Split(',').Select(mgs => mgs.Trim());
+                foreach (var meetingGroupsString in meetingGroupsStrings)
+                {
+                    var groupChoice = CreateGroupChoices(meetingGroupsString, allGroups, isLecture);
+                    groupChoices.Add(groupChoice);
+                }
+
+                groupRequesitions.Add(new GroupRequisition(groupChoices.ToArray()));
+            }
+
+            return groupRequesitions;
+        }
+
+        private static GroupsChoice CreateGroupChoices(string meetingGroupString, HashSet<string> allGroups, bool isLecture)
+        {
+            var meetingGroups = new List<MeetingGroup>();
+            var MeetingGroupStringSplited = meetingGroupString.Split("+").Select(x => x.Trim());
+            foreach (var singleMeetingGroup in MeetingGroupStringSplited)
+            {
+                if (singleMeetingGroup.Contains("*"))
+                {
+                    var possibleGroups = FindAllMatchingGroups(singleMeetingGroup, allGroups, isLecture);
+                    foreach (var matchedGroup in possibleGroups)
+                    {
+                        var currGroupPart = DetermineGroupPart(matchedGroup);
+                        var meetingGroup = new MeetingGroup(matchedGroup, currGroupPart);
+                        meetingGroups.Add(meetingGroup);
+                    }
+                    continue;
+                }
+
+                var groupPart = DetermineGroupPart(singleMeetingGroup);
+                meetingGroups.Add(new MeetingGroup(singleMeetingGroup, groupPart));
+            }
+
+            return new GroupsChoice(meetingGroups.ToArray());
+        }
+
+        private static GroupPart DetermineGroupPart(string group)
+        {
+            var groupPartRegex = new Regex(@"-\s?(\d)$");
+            var partMatch = groupPartRegex.Match(group);
+            var groupPart = GroupPart.FullGroup;
+            if (partMatch.Success)
+            {
+                var groupPartString = partMatch.Groups[1].Value;
+                var groupPartNum = int.Parse(groupPartString);
+                groupPart = groupPartDict[groupPartNum];
+            }
+
+            return groupPart;
+        }
+
+        private static HashSet<string> FindAllMatchingGroups(string group, HashSet<string> groups, bool isLecture)
+        {
+            var regexedString = group.Replace(" ", "").Replace("-", @"\s?-\s?").Replace("*", @"(?:\d+)");
+            if (!isLecture)
+            {
+                if (Regex.Matches(regexedString, "-").Count < 2)
+                {
+                    regexedString += @"\s?-\s?(?:\d+)";
+                }
+            }
+            regexedString += "$";
+            var refex = new Regex(regexedString);
+            var matchedGroups = new HashSet<string>();
+            foreach (var suspectGroup in groups)
+            {
+                var isMatch = refex.IsMatch(suspectGroup);
+                if (isMatch)
+                {
+                    matchedGroups.Add(suspectGroup);
+                }
+            }
+
+            return matchedGroups;
         }
 
         private static List<MeetingTimeRequesition> ParseMeetingTimeRequesitions(string rawMeetingTime)
