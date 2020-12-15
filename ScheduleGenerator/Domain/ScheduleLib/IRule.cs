@@ -16,6 +16,6 @@
 
     public interface IRule
     {
-         EvaluationResult Evaluate(Schedule schedule);
+         EvaluationResult Evaluate(Schedule schedule, Requisition requisition);
     }
 }

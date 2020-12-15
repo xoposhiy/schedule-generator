@@ -6,28 +6,28 @@ namespace Domain.Rules
 {
     public class NoMoreThanOneMeetingAtTimeForTeacherRule : IRule
     {
-        public double Penalty;
+        public double UnitPenalty;
 
-        public NoMoreThanOneMeetingAtTimeForTeacherRule(double penalty = double.PositiveInfinity)
+        public NoMoreThanOneMeetingAtTimeForTeacherRule(double unitPenalty = double.PositiveInfinity)
         {
-            Penalty = penalty;
+            UnitPenalty = unitPenalty;
         }
 
-        public EvaluationResult Evaluate(Schedule schedule)
+        public EvaluationResult Evaluate(Schedule schedule, Requisition requisition)
         {
-            var badMeetings = FindBadMeetings(schedule.Meetings);
+            var badMeetings = GetBadMeetings(schedule);
             return new EvaluationResult
             (
-                badMeetings.Length != 0 ? Penalty : 0,
+                badMeetings.Length > 0 ? UnitPenalty : 0,
                 badMeetings,
                 "Преподаватель не должен проводить более одной пары одновременно"
             );
         }
 
-        private Meeting[] FindBadMeetings(Meeting[] meetings)
+        private Meeting[] GetBadMeetings(Schedule schedule)
         {
             var badMeetings = new List<Meeting>();
-            foreach (var grouping in meetings.GroupBy(meeting => meeting.Teacher))
+            foreach (var grouping in schedule.Meetings.GroupBy(meeting => meeting.Teacher))
             {
                 var sortedByTimeMeetings = new Dictionary<MeetingTime, List<Meeting>>();
                 foreach (var meeting in grouping)

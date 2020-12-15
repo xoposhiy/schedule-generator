@@ -4,30 +4,30 @@ using System.Linq;
 
 namespace Domain.Rules
 {
-    class NoMoreThanOneMeetingAtTimeForLocationRule : IRule
+    public class NoMoreThanOneMeetingAtTimeForLocationRule : IRule
     {
-        public double Penalty;
+        public double UnitPenalty;
 
-        public NoMoreThanOneMeetingAtTimeForLocationRule(double penalty = double.PositiveInfinity)
+        public NoMoreThanOneMeetingAtTimeForLocationRule(double unitPenalty = double.PositiveInfinity)
         {
-            Penalty = penalty;
+            UnitPenalty = unitPenalty;
         }
 
-        public EvaluationResult Evaluate(Schedule schedule)
+        public EvaluationResult Evaluate(Schedule schedule, Requisition requisition)
         {
-            var badMeetings = FindBadMeetings(schedule.Meetings);
+            var badMeetings = GetBadMeetings(schedule);
             return new EvaluationResult
             (
-                badMeetings.Length != 0 ? Penalty : 0,
+                badMeetings.Length > 0 ? UnitPenalty : 0,
                 badMeetings,
                 "Нельзя проводить более одной пары в одном месте одновременно"
             );
         }
 
-        private Meeting[] FindBadMeetings(Meeting[] meetings)
+        private Meeting[] GetBadMeetings(Schedule schedule)
         {
             var badMeetings = new List<Meeting>();
-            foreach (var grouping in meetings.GroupBy(meeting => meeting.Location))
+            foreach (var grouping in schedule.Meetings.GroupBy(meeting => meeting.Location))
             {
                 if(grouping.Key == "Online")
                 {
