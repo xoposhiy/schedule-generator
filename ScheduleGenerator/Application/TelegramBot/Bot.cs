@@ -177,7 +177,7 @@ namespace Bot
         private async void ShowHelp(long chatID)
         {
             var answer = "Я Бот для составления расписания.\n Чтобы начать сначала введите \"Заново\" или /restart";
-            await client.SendTextMessageAsync(chatID, answer);
+            await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
         private async void RestartSessionFor(long chatID)
@@ -185,8 +185,8 @@ namespace Bot
             sessionDict.Remove(chatID);
             additionalStateDict.Remove(chatID);
             sessionRepository.Delete(chatID);
-            var answer = "Начинаем все сначала.";
-            await client.SendTextMessageAsync(chatID, answer);
+            var answer = "Начинаем все сначала. Отправьте ссылку на Spreadsheet (url для таблицы в Google Sheets).";
+            await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
         private async void HandleSheetUrlAnswerAndAskForAccessIfSuccess(long chatID, string message,
@@ -201,7 +201,7 @@ namespace Bot
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
 
                 answer += $"Вот мой адрес: {credentialAddressToShare}";
-                await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
             else
             {
@@ -209,13 +209,13 @@ namespace Bot
                 {
                     var answer = "Привет. Я бот для создания расписаний. Чтобы начать, отправьте сюда " +
                         "ссылку на Spreadsheet (url для таблицы в Google Sheets)";
-                    await client.SendTextMessageAsync(chatID, answer);
+                    await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
                 else
                 {
                     var answer = "Не понимаю. Сначала скиньте ссылку на Spreadsheet (url для таблицы" +
                         " в Google Sheets). Просто отправьте суда текстом.";
-                    await client.SendTextMessageAsync(chatID, answer);
+                    await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
             }
         }
@@ -246,7 +246,7 @@ namespace Bot
                 sheetNames.Add("Создать");
                 var keyboard = CreateKeyboard(sheetNames, 6);
 
-                await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
             else
             {
@@ -295,7 +295,7 @@ namespace Bot
                 sheetNames.Add("Создать");
                 var keyboard = CreateKeyboard(sheetNames, 6);
 
-                await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
             else
             {
@@ -341,7 +341,7 @@ namespace Bot
 
                 // keyboard update
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
-                await client.SendTextMessageAsync(chatID, answer, ParseMode.Default, false, false, 0, keyboard);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
             else
             {
@@ -375,7 +375,7 @@ namespace Bot
                     var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                     sheetNames.Add("Создать");
                     var keyboard = CreateKeyboard(sheetNames, 6);
-                    await client.SendTextMessageAsync(chatID, answer2, ParseMode.Default, false, false, 0, keyboard);
+                    await client.SendTextMessageAsync(chatID, answer2, replyMarkup: keyboard);
                 }
                 else
                 {
@@ -394,12 +394,14 @@ namespace Bot
                 ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState)
         {
             var exists = false;
+            var sheetName = message;
             // If specified "Create", create 
             if (message == "Создать")
             {
                 repo.SetUpSheetInfo();
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                 var newSheetName = FindUniqueName(takenNames, "Schedule");
+                sheetName = newSheetName;
                 repo.CreateNewSheet(newSheetName);
                 scheduleSession.ScheduleSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
@@ -420,13 +422,13 @@ namespace Bot
 
             if (exists)
             {
-                scheduleSession.ScheduleSheet = message;
+                scheduleSession.ScheduleSheet = sheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
                 var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.ScheduleSheet}\"." +
                     " Начинаю составление расписания. Напишу, когда будет готово";
                 additionalSessionState.CreatingSchedule = true;
                 // Save current session if the schedule is ready
-                await client.SendTextMessageAsync(chatID, answer);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
             }
             else
             {
