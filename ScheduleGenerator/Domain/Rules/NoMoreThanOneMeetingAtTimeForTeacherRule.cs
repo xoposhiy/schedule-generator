@@ -6,9 +6,9 @@ namespace Domain.Rules
 {
     public class NoMoreThanOneMeetingAtTimeForTeacherRule : IRule
     {
-        public double UnitPenalty;
+        public readonly double UnitPenalty;
 
-        public NoMoreThanOneMeetingAtTimeForTeacherRule(double unitPenalty = double.PositiveInfinity)
+        public NoMoreThanOneMeetingAtTimeForTeacherRule(double unitPenalty = 1500)
         {
             UnitPenalty = unitPenalty;
         }
@@ -18,13 +18,13 @@ namespace Domain.Rules
             var badMeetings = GetBadMeetings(schedule);
             return new EvaluationResult
             (
-                badMeetings.Length > 0 ? UnitPenalty : 0,
+                badMeetings.Length * UnitPenalty,
                 badMeetings,
-                "Преподаватель не должен проводить более одной пары одновременно"
+                "Преподаватель не может проводить более чем одну пару одновременно"
             );
         }
 
-        private Meeting[] GetBadMeetings(Schedule schedule)
+        private static Meeting[] GetBadMeetings(Schedule schedule)
         {
             var badMeetings = new List<Meeting>();
             foreach (var grouping in schedule.Meetings.GroupBy(meeting => meeting.Teacher))
@@ -32,6 +32,10 @@ namespace Domain.Rules
                 var sortedByTimeMeetings = new Dictionary<MeetingTime, List<Meeting>>();
                 foreach (var meeting in grouping)
                 {
+                    if (meeting.MeetingTime is null)
+                    {
+                        continue;
+                    }
                     if (!sortedByTimeMeetings.ContainsKey(meeting.MeetingTime))
                     {
                         sortedByTimeMeetings[meeting.MeetingTime] = new List<Meeting>();
@@ -42,7 +46,7 @@ namespace Domain.Rules
                 {
                     if (sameTimeMeetings.Count > 1)
                     {
-                        badMeetings.Concat(sameTimeMeetings);
+                        badMeetings = badMeetings.Concat(sameTimeMeetings).ToList();
                     }
                 }
             }

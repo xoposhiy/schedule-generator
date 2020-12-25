@@ -6,9 +6,9 @@ namespace Domain.Rules
 {
     public class NoMoreThanOneMeetingAtTimeForLocationRule : IRule
     {
-        public double UnitPenalty;
+        public readonly double UnitPenalty;
 
-        public NoMoreThanOneMeetingAtTimeForLocationRule(double unitPenalty = double.PositiveInfinity)
+        public NoMoreThanOneMeetingAtTimeForLocationRule(double unitPenalty = 1500)
         {
             UnitPenalty = unitPenalty;
         }
@@ -20,11 +20,11 @@ namespace Domain.Rules
             (
                 badMeetings.Length > 0 ? UnitPenalty : 0,
                 badMeetings,
-                "Нельзя проводить более одной пары в одном месте одновременно"
+                "Нельзя проводить несколько пар в одном месте одновременно"
             );
         }
 
-        private Meeting[] GetBadMeetings(Schedule schedule)
+        private static Meeting[] GetBadMeetings(Schedule schedule)
         {
             var badMeetings = new List<Meeting>();
             foreach (var grouping in schedule.Meetings.GroupBy(meeting => meeting.Location))
@@ -36,6 +36,10 @@ namespace Domain.Rules
                 var sortedByTimeMeetings = new Dictionary<MeetingTime, List<Meeting>>();
                 foreach (var meeting in grouping)
                 {
+                    if (meeting.MeetingTime is null)
+                    {
+                        continue;
+                    }
                     if (!sortedByTimeMeetings.ContainsKey(meeting.MeetingTime))
                     {
                         sortedByTimeMeetings[meeting.MeetingTime] = new List<Meeting>();
@@ -46,7 +50,7 @@ namespace Domain.Rules
                 {
                     if (sameTimeMeetings.Count > 1)
                     {
-                        badMeetings.Concat(sameTimeMeetings);
+                        badMeetings = badMeetings.Concat(sameTimeMeetings).ToList();
                     }
                 }
             }
