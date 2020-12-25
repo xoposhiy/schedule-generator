@@ -38,6 +38,12 @@ namespace Domain.Conversions
             { 3, GroupPart.Part3 }
         };
 
+        private static Dictionary<string, WeekType> weekTypeDict = new Dictionary<string, WeekType>() {
+            { "любая", WeekType.Any },
+            { "четная", WeekType.Even },
+            { "нечетная", WeekType.Odd }
+        };
+
         public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
             var PlanData = ReadRowsUsingBoundary(repo, learningPlanSheetName, (1, 0), 6);
@@ -110,7 +116,7 @@ namespace Domain.Conversions
                 var repetitionCountRaw = requestionRow[3];
                 var groupPriorities = requestionRow[4];
                 var meetingTimesRaw = requestionRow[5];
-                var weekType = requestionRow[6];
+                var weekTypeRaw = requestionRow[6];
 
                 var teacher = new Teacher(teacherName);
 
@@ -122,8 +128,9 @@ namespace Domain.Conversions
                     .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
                     .Where(lpi => lpi.Item1.MeetingType == meetingType)
                     .FirstOrDefault();
+                var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
                 var requisition = new Requisition(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequesitionArray, teacher);
+                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequesitionArray, teacher, weekType);
                 requisitions.Add(requisition);
             }
 

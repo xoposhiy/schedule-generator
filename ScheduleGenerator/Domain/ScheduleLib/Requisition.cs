@@ -11,8 +11,9 @@
         
         public MeetingTimeRequesition[] MeetingTimePriorities;
         public Teacher Teacher;
+        public WeekType WeekType;
 
-        public Requisition(LearningPlanItem planItem, GroupRequisition[] groupPriorities, string location, int repetitionsCount, MeetingTimeRequesition[] meetingTimePriorities, Teacher teacher)
+        public Requisition(LearningPlanItem planItem, GroupRequisition[] groupPriorities, string location, int repetitionsCount, MeetingTimeRequesition[] meetingTimePriorities, Teacher teacher, WeekType weekType)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
@@ -20,6 +21,7 @@
             RepetitionsCount = repetitionsCount;
             MeetingTimePriorities = meetingTimePriorities;
             Teacher = teacher;
+            WeekType = weekType;
         }
     }
 

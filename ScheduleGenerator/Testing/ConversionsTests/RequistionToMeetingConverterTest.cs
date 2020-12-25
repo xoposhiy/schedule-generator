@@ -24,16 +24,12 @@ namespace ConversionsTests
                 "150",
                 2,
                 new[] { new MeetingTimeRequesition(new[] { new MeetingTime(DayOfWeek.Tuesday, 2) }) },
-                new Teacher("Pavel Egorov"));
+                new Teacher("Pavel Egorov"),
+                WeekType.Any);
             var meetings = RequistionToMeetingConverter.ConvertRequistionToMeetingWithoutTime(requisition);
-            Assert.AreEqual(1, meetings.Count);
-            Assert.AreEqual(2, meetings[0].Count);
-            var actualMeeting = meetings[0].First();
+            Assert.AreEqual(2, meetings.Count);
+            var actualMeeting = meetings.First();
             Assert.AreEqual("OOP", actualMeeting.Discipline.Name);
-            Assert.AreEqual(1, actualMeeting.Groups.Length);
-            Assert.AreEqual("FT-202", actualMeeting.Groups[0].GroupName);
-            Assert.AreEqual(GroupPart.FullGroup, actualMeeting.Groups[0].GroupPart);
-            Assert.AreEqual("150", actualMeeting.Location);
         }
     }
 }
