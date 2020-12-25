@@ -12,23 +12,22 @@ namespace Domain.FirebaseRepository
         public string? SpreadsheetUrl;
         public string? InputRequirementsSheet;
         public string? ScheduleSheet;
-        public string? RoomsSheet;
+        public string? LearningPlanSheet;
         public DateTime? LastModificationTime;
         public string? LastModificationInitiator;
         public DialogState DialogState;
 
         public override string ToString()
         {
-            var builder = new StringBuilder();
-            builder.Append(String.Format("Id: {0}\n", Id));
-            builder.Append(String.Format("SpreadsheetUrl: {0}\n", SpreadsheetUrl));
-            builder.Append(String.Format("InputRequirementsSheet: {0}\n", InputRequirementsSheet));
-            builder.Append(String.Format("RoomsSheet: {0}\n", RoomsSheet));
-            builder.Append(String.Format("ScheduleSheet: {0}\n", ScheduleSheet));
-            builder.Append(String.Format("LastModificationTime: {0}\n", LastModificationTime));
-            builder.Append(String.Format("LastModificationInitiator: {0}\n", LastModificationInitiator));
-            builder.Append(String.Format("DialogState: {0}\n", DialogState));
-            return builder.ToString();
+            return string.Format(@"Id: {0}
+SpreadsheetUrl: {1}
+InputRequirementsSheet: {2}
+LearningPlanSheet: {3}
+ScheduleSheet: {4}
+LastModificationTime: {5}
+LastModificationInitiator: {6}
+DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet, ScheduleSheet,
+    LastModificationTime, LastModificationInitiator, DialogState);
         }
     }
 

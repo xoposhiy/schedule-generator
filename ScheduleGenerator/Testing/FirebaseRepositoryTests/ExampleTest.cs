@@ -26,7 +26,7 @@ namespace SessionRepositoryTests
                 SpreadsheetUrl = "some url34567689",
                 ScheduleSheet = "forSchedule2",
                 InputRequirementsSheet = "inputSheet2",
-                RoomsSheet = "rooms2",
+                LearningPlanSheet = "rooms2",
                 DialogState = DialogState.WaitSpreadsheetChangeConfirmation,
                 LastModificationTime = DateTime.Now,
                 LastModificationInitiator = "RTDBRepository"
@@ -39,7 +39,7 @@ namespace SessionRepositoryTests
             Assert.AreEqual(newSession.SpreadsheetUrl, session.SpreadsheetUrl);
             Assert.AreEqual(newSession.ScheduleSheet, session.ScheduleSheet);
             Assert.AreEqual(newSession.InputRequirementsSheet, session.InputRequirementsSheet);
-            Assert.AreEqual(newSession.RoomsSheet, session.RoomsSheet);
+            Assert.AreEqual(newSession.LearningPlanSheet, session.LearningPlanSheet);
             Assert.AreEqual(newSession.DialogState, session.DialogState);
             Assert.AreEqual(newSession.LastModificationInitiator, session.LastModificationInitiator);
         }
