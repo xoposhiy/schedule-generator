@@ -8,8 +8,11 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+
 using Domain.GoogleSheetsRepository;
 using Domain.FirebaseRepository;
+using Domain.Conversions;
+
 
 namespace Bot
 {
@@ -18,17 +21,19 @@ namespace Bot
         private TelegramBotClient client;
         private string repoSecret;
         private Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
-        private GSRepository repo;
+        //private GSRepository repo;
         private SessionRepository sessionRepository;
         private string credentialAddressToShare;
         private Dictionary<long, ScheduleSession> sessionDict;
         private Dictionary<long, AdditionalSessionState> additionalStateDict;
+        private Dictionary<long, GSRepository> repoDict;
         public TBot(string token, string repoSecret, string firebaseSecret, string dbBasePath)
         {
             client = new TelegramBotClient(token);
             sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
             sessionDict = new Dictionary<long, ScheduleSession>();
             additionalStateDict = new Dictionary<long, AdditionalSessionState>();
+            repoDict = new Dictionary<long, GSRepository>();
             this.repoSecret = repoSecret;
             client.OnMessage += BotOnMessageReceived;
             client.OnMessageEdited += BotOnMessageReceived;
@@ -66,7 +71,6 @@ namespace Bot
 
             var currentSession = sessionDict[chatID];
 
-
             if (!additionalStateDict.ContainsKey(chatID))
             {
                 isNew = GetAdditionalSessionStateByChatId(chatID, currentSession, out var additionalSessionState);
@@ -74,6 +78,17 @@ namespace Bot
             }
             var currentAdditionalState = additionalStateDict[chatID];
 
+            GSRepository repo = null;
+            if (!string.IsNullOrEmpty(currentSession.SpreadsheetUrl) && currentAdditionalState.AccessRecieved)
+            {
+                if (!repoDict.ContainsKey(chatID))
+                {
+                    repoDict[chatID] = new GSRepository("ScheduleGenerator", repoSecret, currentSession.SpreadsheetUrl);
+                    repoDict[chatID].SetUpSheetInfo();
+                }
+
+                repo = repoDict[chatID];
+            }
 
             if (message?.Type == MessageType.Text)
             {
@@ -95,19 +110,19 @@ namespace Bot
                 }
                 else if (string.IsNullOrEmpty(currentSession.InputRequirementsSheet))
                 {
-                    HandleRequesitionSheetAndAskForLearningPlanIfSuccess(chatID, message.Text, currentSession);
+                    HandleRequesitionSheetAndAskForLearningPlanIfSuccess(chatID, message.Text, currentSession, repo);
                 }
-                else if (string.IsNullOrEmpty(currentSession.RoomsSheet))
+                else if (string.IsNullOrEmpty(currentSession.LearningPlanSheet))
                 {
-                    HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(chatID, message.Text, currentSession);
+                    HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(chatID, message.Text, currentSession, repo);
                 }
                 else if (!currentAdditionalState.DataIsValid)
                 {
-                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatID, message.Text, currentAdditionalState);
+                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatID, message.Text, currentAdditionalState, repo);
                 }
                 else if (string.IsNullOrEmpty(currentSession.ScheduleSheet))
                 {
-                    HandleScheduleSheetAndCreateSchedule(chatID, message.Text, currentSession, currentAdditionalState);
+                    HandleScheduleSheetAndCreateSchedule(chatID, message.Text, currentSession, currentAdditionalState, repo);
                 }
                 else
                 {
@@ -121,6 +136,7 @@ namespace Bot
                     sessionRepository.Save(chatID, currentSession);
                     await client.SendTextMessageAsync(chatID, "Кажется, что предыдущая сессия уже заверщиласть составлением расписания.\n" +
                         "Напишите \"Заново\" или /restart, чтобы начать сначала.");
+                    currentAdditionalState.CreatingSchedule = false; // it will be also removed
                 }
             }
         }
@@ -154,7 +170,6 @@ namespace Bot
             {
                 try
                 {
-                    repo = new GSRepository("PsA32710i", repoSecret, currentScheduleSession.SpreadsheetUrl);
                     additionalSessionState.AccessRecieved = true;
                     isFirstTime = false;
                 }
@@ -184,6 +199,7 @@ namespace Bot
         {
             sessionDict.Remove(chatID);
             additionalStateDict.Remove(chatID);
+            repoDict.Remove(chatID);
             sessionRepository.Delete(chatID);
             var answer = "Начинаем все сначала. Отправьте ссылку на Spreadsheet (url для таблицы в Google Sheets).";
             await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
@@ -225,6 +241,8 @@ namespace Bot
         {
             if (message == "Готово")
             {
+
+                GSRepository repo;
                 // Access check
                 try
                 {
@@ -252,12 +270,13 @@ namespace Bot
             {
                 var answer = "Дайте мне доступ на редактирование. Добавьте мой адрес в редакторы вашей таблицы.\n" +
                     $"Вот мой адрес: {credentialAddressToShare}";
-                await client.SendTextMessageAsync(chatID, answer);
+                var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
         }
 
         public async void HandleRequesitionSheetAndAskForLearningPlanIfSuccess(long chatID, string message,
-                ScheduleSession scheduleSession)
+                ScheduleSession scheduleSession, GSRepository repo)
         {
             var exists = false;
             // If specified "Create", create 
@@ -305,7 +324,7 @@ namespace Bot
         }
 
         public async void HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(long chatID, string message,
-                ScheduleSession scheduleSession)
+                ScheduleSession scheduleSession, GSRepository repo)
         {
             var exists = false;
             // If specified "Create", create 
@@ -315,7 +334,7 @@ namespace Bot
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                 var newSheetName = FindUniqueName(takenNames, "LearningPlan");
                 repo.CreateNewSheet(newSheetName);
-                scheduleSession.RoomsSheet = newSheetName;
+                scheduleSession.LearningPlanSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
             }
@@ -326,16 +345,16 @@ namespace Bot
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                 if (takenNames.Contains(message))
                 {
-                    scheduleSession.RoomsSheet = message;
+                    scheduleSession.LearningPlanSheet = message;
                     scheduleSession.LastModificationTime = DateTime.Now;
                     exists = true;
                 }
             }
             if (exists)
             {
-                scheduleSession.RoomsSheet = message;
+                scheduleSession.LearningPlanSheet = message;
                 scheduleSession.LastModificationTime = DateTime.Now;
-                var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.RoomsSheet}\"." +
+                var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.LearningPlanSheet}\"." +
                     " Если вы еще не заполнили таблицы данными сделайте это. " +
                     "Как будете готовы, нажмите на кнопку \"Готово\"";
 
@@ -353,7 +372,7 @@ namespace Bot
         }
 
         private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatID, string message,
-                AdditionalSessionState additionalSessionState)
+                AdditionalSessionState additionalSessionState, GSRepository repo)
         {
             if (message == "Готово" && !additionalSessionState.TableValidationInProgress)
             {
@@ -386,12 +405,13 @@ namespace Bot
             else
             {
                 var answer = "Не понял. Нажмите \"Готово\", как закончите вводить данные.";
-                await client.SendTextMessageAsync(chatID, answer);
+                var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
         }
 
         public async void HandleScheduleSheetAndCreateSchedule(long chatID, string message,
-                ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState)
+                ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState, GSRepository repo)
         {
             var exists = false;
             var sheetName = message;
@@ -478,6 +498,12 @@ namespace Bot
             var replyKeyboardMarkup = new ReplyKeyboardMarkup();
             replyKeyboardMarkup.Keyboard = buttons;
             return replyKeyboardMarkup;
+        }
+
+        public async void StartSolvingAndNotifyWhenDone(long chatID, ScheduleSession session, GSRepository repo)
+        {
+            var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
+                repo, session.InputRequirementsSheet, session.LearningPlanSheet);
         }
     }
 
