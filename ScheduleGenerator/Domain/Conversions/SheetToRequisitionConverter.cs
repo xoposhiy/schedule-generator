@@ -11,6 +11,7 @@ namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
     {
+        private const int MaxIndex = 5;
         private static Dictionary<string, MeetingType> meetingTypeDict = new Dictionary<string, MeetingType>() {
             { "Лекция", MeetingType.Lecture },
             { "КомпПрактика", MeetingType.ComputerLab },
@@ -46,24 +47,42 @@ namespace Domain.Conversions
 
         public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
-            var PlanData = ReadRowsUsingBoundary(repo, learningPlanSheetName, (1, 0), 6);
+            var PlanData = ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
             var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
-            var RequestionData = ReadRowsUsingBoundary(repo, requisitionSheetName, (1, 0), 7);
+            var RequestionData = ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
             var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
             return requisitions;
         }
 
-        private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
+        //private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
+        //{
+        //    var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
+        //    var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
+        //    var rowCountToRead = Math.Min((int)actualRowCount, 300);
+        //    var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
+        //    var rowsWithDataCount = testData.Count;
+        //    var dotBoundary = Enumerable.Repeat(new List<string>() { "." }, rowsWithDataCount).ToList();
+        //    repo.ModifySpreadSheet(SheetName).WriteRange((start.row, width), dotBoundary).Execute();
+        //    var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
+        //    return sheetData;
+        //}
+
+        private static List<List<string>> ReadRowsFromSheet(GSRepository repo, string SheetName, (int row, int col) start, int width)
         {
             var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
-            var ActualRowCount = sheetObj.Properties.GridProperties.RowCount;
-            var RowCountToRead = Math.Min((int)ActualRowCount, 300);
-            var testData = repo.ReadCellRange(SheetName, start, (RowCountToRead + 1, width - 1));
-            var RowsWithDataCount = testData.Count;
-            var dotBoundary = Enumerable.Repeat(new List<string>() { "." }, RowsWithDataCount).ToList();
-            repo.ModifySpreadSheet(SheetName).WriteRange((start.row, width), dotBoundary).Execute();
-            var PlanData = repo.ReadCellRange(SheetName, start, (RowsWithDataCount, width));
-            return PlanData;
+            var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
+            var rowCountToRead = Math.Min((int)actualRowCount, 300);
+            var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
+            var rowsWithDataCount = testData.Count;
+            var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
+            foreach (var row in sheetData)
+            {
+                for (var i = width - row.Count; i > 0; i++)
+                {
+                    row.Add("");
+                }
+            }
+            return sheetData;
         }
 
         private static (List<(LearningPlanItem, string)>, HashSet<string>) ParseLearningPlanItems(List<List<string>> sheetData)
@@ -139,8 +158,13 @@ namespace Domain.Conversions
 
         private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions, HashSet<string> allGroups, bool isLecture)
         {
+            if (string.IsNullOrWhiteSpace(rawGroupRequisitions))
+            {
+                rawGroupRequisitions = string.Join(", ", allGroups);
+            }
             var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
             var groupRequesitions = new List<GroupRequisition>();
+
             foreach (var priorityLine in groupPriorityLines)
             {
                 var groupChoices = new List<GroupsChoice>();
@@ -200,13 +224,6 @@ namespace Domain.Conversions
         private static HashSet<string> FindAllMatchingGroups(string group, HashSet<string> groups, bool isLecture)
         {
             var regexedString = group.Replace(" ", "").Replace("-", @"\s?-\s?").Replace("*", @"(?:\d+)");
-            if (!isLecture)
-            {
-                if (Regex.Matches(regexedString, "-").Count < 2)
-                {
-                    regexedString += @"\s?-\s?(?:\d+)";
-                }
-            }
             regexedString += "$";
             var refex = new Regex(regexedString);
             var matchedGroups = new HashSet<string>();
@@ -215,7 +232,15 @@ namespace Domain.Conversions
                 var isMatch = refex.IsMatch(suspectGroup);
                 if (isMatch)
                 {
-                    matchedGroups.Add(suspectGroup);
+                    if (!isLecture)
+                    {
+                        matchedGroups.Add($"{suspectGroup}-1");
+                        matchedGroups.Add($"{suspectGroup}-2");
+                    }
+                    else
+                    {
+                        matchedGroups.Add(suspectGroup);
+                    }
                 }
             }
 
@@ -225,6 +250,23 @@ namespace Domain.Conversions
         private static List<MeetingTimeRequesition> ParseMeetingTimeRequesitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();
+            var meetingTimeRequesitions = new List<MeetingTimeRequesition>();
+
+            if (string.IsNullOrWhiteSpace(rawMeetingTime))
+            {
+                var meetingTimes = new List<MeetingTime>();
+                foreach (var day in weekDaysDict.Values)
+                {
+                    for (var index = 0; index < MaxIndex + 1; index++)
+                    {
+                        meetingTimes.Add(new MeetingTime(day, index));
+                    }
+                }
+                var meetingTimeRequesition = new MeetingTimeRequesition(meetingTimes.ToArray());
+                meetingTimeRequesitions.Add(meetingTimeRequesition);
+                return meetingTimeRequesitions;
+            }
+
             var weekDaysList = new List<DayOfWeek> {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
                 DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
@@ -232,9 +274,10 @@ namespace Domain.Conversions
             var pattern = @"(?:(?:((?:пн|вт|ср|чт|пт|сб|вс)\s?-\s?(?:пн|вт|ср|чт|пт|сб|вс))|(пн|вт|ср|чт|пт|сб|вс)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
             var compiledPattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            var meetingTimeRequesitions = new List<MeetingTimeRequesition>();
+
 
             var records = rawMeetingTime.Split('\n');
+
             foreach (var record in records)
             {
                 var matches = compiledPattern.Matches(record);
@@ -251,7 +294,7 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = weekDaysStrList.IndexOf(rangeParts[0]);
                     var posEnd = weekDaysStrList.IndexOf(rangeParts[1]);
-                    for (int i = posStart; i < posStart + posEnd; i++)
+                    for (int i = posStart; i < posEnd + 1; i++)
                     {
                         currWeekDays.Add(weekDaysList[i]);
                     }
@@ -267,7 +310,7 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = int.Parse(rangeParts[0]);
                     var posEnd = int.Parse(rangeParts[1]);
-                    for (int i = posStart; i < posStart + posEnd; i++)
+                    for (int i = posStart; i < posEnd + 1; i++)
                     {
                         currIndexes.Add(i);
                     }
@@ -277,6 +320,16 @@ namespace Domain.Conversions
                 {
                     var index = int.Parse(indexStr.Value);
                     currIndexes.Add(index);
+                }
+
+                if (currWeekDays.Count == 0)
+                {
+                    currWeekDays = weekDaysDict.Values.ToList();
+                }
+
+                if (currIndexes.Count == 0)
+                {
+                    currIndexes.AddRange(new[] { 0, 1, 2, 3, 4, 5 });
                 }
 
                 var meetingTimes = new List<MeetingTime>();
