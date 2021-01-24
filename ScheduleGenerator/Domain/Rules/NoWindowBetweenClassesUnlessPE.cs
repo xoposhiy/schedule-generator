@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Domain.Rules
 {
-    class NoWindowBetweenClassesUnlessPE
+    class NoWindowBetweenClassesUnlessPE : IRule
     {
         public readonly double UnitPenalty;
         public List<MeetingTime> peClasses;
@@ -16,68 +16,75 @@ namespace Domain.Rules
             this.peClasses = peClasses is null ? new List<MeetingTime>() : peClasses;
         }
 
-        public EvaluationResult Evaluate(Schedule schedule, Requisition requisition)
+        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
         {
-            var badMeetings = GetBadMeetings(schedule);
-            return new EvaluationResult
-            (
-                badMeetings.Length * UnitPenalty,
-                badMeetings,
-                "Желательно избавляться от окон между парами, только если это не физкультура"
-            );
+            var windowDifference = FindWindowDifference(schedule, meetingToAdd);
+            if (windowDifference < 0)
+            {
+                return 0;
+            }
+            var totalPenalty = UnitPenalty * windowDifference;
+            return totalPenalty;
         }
 
-        private Meeting[] GetBadMeetings(Schedule schedule)
+        public static int FindWindowDifference(Schedule schedule, Meeting meetingToAdd)
         {
-            var badMeetings = new List<Meeting>();
-            foreach (var weekTypeGrouping in schedule.Meetings.GroupBy(m => m.WeekType))
-            {
-                // Should be exactly one group specified in meeting
-                foreach (var groupGrouping in weekTypeGrouping.GroupBy(m => m.Groups.First()))
-                {
-                    foreach (var dayGrouping in groupGrouping.GroupBy(m => m.MeetingTime.Day))
-                    {
-                        var currentBadMeetings = AnalizeDay((IEnumerable<Meeting>)dayGrouping.GetEnumerator(), dayGrouping.Key);
-                        badMeetings.AddRange(currentBadMeetings);
-                    }
-                }
-            }
-            return badMeetings.ToArray();
+            //var todaysPEClass = peClasses.Where(m => m.Day == day).FirstOrDefault();
+            var todaysMeetings = schedule.Meetings
+                .Where(m => m.WeekType == meetingToAdd.WeekType)
+                .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
+                .Where(m => m.Groups.First() == meetingToAdd.Groups.First());
+
+            var windowCountInSchedule = FindWindowCount(todaysMeetings);
+
+            var todaysMeetingsSet = todaysMeetings.ToHashSet();
+            todaysMeetingsSet.Add(meetingToAdd);
+            var windowCountInNewSchedule = FindWindowCount(todaysMeetings);
+
+            var difference = windowCountInNewSchedule - windowCountInSchedule;
+
+            return difference;
         }
 
-        private IEnumerable<Meeting> AnalizeDay(IEnumerable<Meeting> meetings, DayOfWeek day)
+        private static int FindMaxWindow(IEnumerable<Meeting> meetings)
         {
-            if (!meetings.Any())
-            {
-                return meetings;
-            }
-            var todaysBadMeetings = new List<Meeting>();
-            var todaysPEClass = peClasses.Where(m => m.Day == day).FirstOrDefault();
-
             var orderedMeetings = meetings.OrderBy(m => m.MeetingTime.TimeSlotIndex);
-            var lastMeeting = orderedMeetings.First();
-            var lastPointer = lastMeeting.MeetingTime.TimeSlotIndex;
-            var currentPointer = lastPointer;
+            var lastPointer = meetings.First().MeetingTime.TimeSlotIndex;
+            var maxWindow = 0;
 
             foreach (var meeting in orderedMeetings)
             {
-                currentPointer = meeting.MeetingTime.TimeSlotIndex;
-                if (currentPointer - lastPointer > 1)
+                var currentPointer = meeting.MeetingTime.TimeSlotIndex;
+                var currentWindow = currentPointer - lastPointer;
+                if (currentWindow > maxWindow)
                 {
-                    if (!(todaysPEClass != null &&
-                            todaysPEClass.TimeSlotIndex - lastPointer <= 2 &&
-                            currentPointer - todaysPEClass.TimeSlotIndex <= 2))
-                    {
-                        // bad meetings
-                        todaysBadMeetings.Add(lastMeeting);
-                        todaysBadMeetings.Add(meeting);
-                    }
+                    maxWindow = currentWindow;
                 }
-                lastMeeting = meeting;
                 lastPointer = currentPointer;
             }
 
-            return todaysBadMeetings;
+            return maxWindow;
+        }
+
+        private static int FindWindowCount(IEnumerable<Meeting> meetings)
+        {
+            var orderedMeetings = meetings.OrderBy(m => m.MeetingTime.TimeSlotIndex);
+            var lastPointer = meetings.First().MeetingTime.TimeSlotIndex;
+
+            var windowCount = 0;
+
+            foreach (var meeting in orderedMeetings)
+            {
+                var currentPointer = meeting.MeetingTime.TimeSlotIndex;
+                var currentWindow = currentPointer - lastPointer;
+                if (currentWindow > 1)
+                {
+                    windowCount++;
+                }
+                lastPointer = currentPointer;
+            }
+
+            return windowCount;
         }
     }
 }

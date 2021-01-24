@@ -21,6 +21,17 @@ namespace Domain.ScheduleLib
             Name = name;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Discipline discipline &&
+                   Name == discipline.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
+        }
+
         public override string ToString()
         {
             return Name;
@@ -61,6 +72,18 @@ namespace Domain.ScheduleLib
             GroupPart = groupPart;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is MeetingGroup group &&
+                   GroupName == group.GroupName &&
+                   GroupPart == group.GroupPart;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(GroupName, GroupPart);
+        }
+
         public override string ToString()
         {
             return $"{GroupName} {GroupPart}";
@@ -84,6 +107,17 @@ namespace Domain.ScheduleLib
             Name = name;
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is Teacher teacher &&
+                   Name == teacher.Name;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
+        }
+
         public override string ToString()
         {
             return Name;
@@ -99,6 +133,18 @@ namespace Domain.ScheduleLib
         {
             Day = day;
             TimeSlotIndex = timeSlotIndex;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is MeetingTime time &&
+                   Day == time.Day &&
+                   TimeSlotIndex == time.TimeSlotIndex;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Day, TimeSlotIndex);
         }
 
         public override string ToString()
