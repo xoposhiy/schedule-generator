@@ -16,6 +16,6 @@
 
     public interface IRule
     {
-        double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd);
+        double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd);
     }
 }

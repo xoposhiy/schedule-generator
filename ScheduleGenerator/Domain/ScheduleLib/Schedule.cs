@@ -55,6 +55,18 @@ namespace Domain.ScheduleLib
             Groups = groups;
         }
 
+        public Meeting Copy()
+        {
+            var copy = new Meeting(Discipline, MeetingType, Groups)
+            {
+                Location = Location,
+                Teacher = Teacher,
+                MeetingTime = MeetingTime,
+                WeekType = WeekType,
+            };
+            return copy;
+        }
+
         public override string ToString()
         {
             return $"{Discipline}, {Groups}, {MeetingTime}, {WeekType}, Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";

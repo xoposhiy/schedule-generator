@@ -11,7 +11,7 @@ namespace Domain.Rules
             this.rules = rules;
         }
 
-        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
+        public double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd)
         {
             var totalPenalty = 0d;
             foreach (var rule in rules)

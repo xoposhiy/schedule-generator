@@ -12,7 +12,7 @@ namespace Domain.Rules
             UnitPenalty = unitPenalty;
         }
 
-        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
+        public double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd)
         {
             var badMeetings = GetCollidedMeetings(schedule, meetingToAdd);
             var totalPenalty = UnitPenalty * badMeetings.Count;

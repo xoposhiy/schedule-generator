@@ -15,7 +15,7 @@ namespace Domain.Rules
             this.peClasses = peClasses is null ? new List<MeetingTime>() : peClasses;
         }
 
-        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
+        public double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd)
         {
             var windowDifference = FindWindowDifference(schedule, meetingToAdd);
             if (windowDifference < 0)
