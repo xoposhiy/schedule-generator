@@ -30,7 +30,8 @@ namespace Domain.Rules
         private static int FindClassesInARowDifference(Schedule schedule, Meeting meetingToAdd)
         {
             var todaysMeetings = schedule.Meetings
-                .Where(m => m.WeekType == meetingToAdd.WeekType)
+                //.Where(m => m.WeekType == meetingToAdd.WeekType)
+                .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
                 .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
                 .Where(m => m.Groups.First() == meetingToAdd.Groups.First());
 
