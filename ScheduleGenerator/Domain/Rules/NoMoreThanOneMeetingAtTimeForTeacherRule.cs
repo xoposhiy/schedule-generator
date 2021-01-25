@@ -26,8 +26,11 @@ namespace Domain.Rules
                 if ((frozenMeeting.WeekType == meetingToAdd.WeekType
                     || frozenMeeting.WeekType == WeekType.Any
                     || meetingToAdd.WeekType == WeekType.Any) &&
-                        frozenMeeting.Teacher == meetingToAdd.Teacher &&
-                        frozenMeeting.MeetingTime == meetingToAdd.MeetingTime)
+                        frozenMeeting.Teacher.Equals(meetingToAdd.Teacher) &&
+                        frozenMeeting.MeetingTime.Equals(meetingToAdd.MeetingTime) &&
+                        !frozenMeeting.Discipline.Equals(meetingToAdd.Discipline) &&
+                        frozenMeeting.MeetingType == meetingToAdd.MeetingType &&
+                        frozenMeeting.MeetingType == MeetingType.Lecture)
                 {
                     return new List<Meeting>() { frozenMeeting };
                 }

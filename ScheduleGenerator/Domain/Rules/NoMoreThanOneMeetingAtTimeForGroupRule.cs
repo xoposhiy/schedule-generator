@@ -4,7 +4,7 @@ using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {
-    class NoMoreThanOneMeetingAtTimeForGroupRule
+    public class NoMoreThanOneMeetingAtTimeForGroupRule
     {
         public readonly double UnitPenalty;
 
@@ -23,9 +23,9 @@ namespace Domain.Rules
         public static List<Meeting> GetCollidedMeetings(Schedule schedule, Meeting meetingToAdd)
         {
             var meetingsWithSameGroup = schedule.Meetings
-                .Where(m => m.Groups.First() == meetingToAdd.Groups.First())
+                .Where(m => m.Groups.First().Equals(meetingToAdd.Groups.First()))
                 .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
-                .Where(m => m.MeetingTime == meetingToAdd.MeetingTime)
+                .Where(m => m.MeetingTime.Equals(meetingToAdd.MeetingTime))
                 .ToList();
 
             return meetingsWithSameGroup;

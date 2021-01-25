@@ -21,11 +21,11 @@ namespace Testing.ConversionsTests
         public void Test1()
         {
             var testSchedule = new Schedule(new[] {
-                CreateMeeting("Math 623 Fil 0 3 0 FT-202#0 FT-201#0 KN-201#2"),
-                CreateMeeting("DM 622 Str 0 0 0 FT-202#0 KN-201#0"),
-                CreateMeeting("OOP 526 Eg 0 2 0 FT-202#1 FT-202#0 FT-201#1 FT-201#2"),
-                CreateMeeting("Net 150 Ber 0 1 1 FT-202#0"),
-                CreateMeeting("Net 150 Ber 0 1 0 FT-201#1"),
+                MeetingCreator.CreateMeeting("Math 623 Fil 0 3 0 0 FT-202#0 FT-201#0 KN-201#2"),
+                MeetingCreator.CreateMeeting("DM 622 Str 0 0 0 0 FT-202#0 KN-201#0"),
+                MeetingCreator.CreateMeeting("OOP 526 Eg 0 2 0 0 FT-202#1 FT-202#0 FT-201#1 FT-201#2"),
+                MeetingCreator.CreateMeeting("Net 150 Ber 0 1 1 0 FT-202#0"),
+                MeetingCreator.CreateMeeting("Net 150 Ber 0 1 0 0 FT-201#1"),
             });
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
@@ -36,29 +36,6 @@ namespace Testing.ConversionsTests
             converter.Build(testSchedule);
 
             Assert.Pass();
-        }
-
-        private static Meeting CreateMeeting(string entry)
-        {
-            var parts = entry.Split();
-            var discipline = parts[0];
-            var location = parts[1];
-            var teacher = new Teacher(parts[2]);
-            var dayOfWeek = (DayOfWeek)((int.Parse(parts[3]) + 1) % 7);
-            var slotIndex = int.Parse(parts[4]);
-            var weekType = (WeekType)int.Parse(parts[5]);
-            var groups = new List<MeetingGroup>();
-            foreach (var e in parts.Skip(6))
-            {
-                var namePart = e.Split('#');
-                groups.Add(new MeetingGroup(namePart[0], (GroupPart)int.Parse(namePart[1])));
-            }
-            var meeting = new Meeting(new Discipline(discipline), MeetingType.Seminar, groups.ToArray());
-            meeting.Location = location;
-            meeting.Teacher = teacher;
-            meeting.MeetingTime = new MeetingTime(dayOfWeek, slotIndex);
-            meeting.WeekType = weekType;
-            return meeting;
         }
     }
 }

@@ -4,12 +4,12 @@ using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {
-    class NoWindowBetweenClassesUnlessPE : IRule
+    public class NoWindowBetweenClassesUnlessPE : IRule
     {
         public readonly double UnitPenalty;
         public List<MeetingTime> peClasses;
 
-        public NoWindowBetweenClassesUnlessPE(double unitPenalty = 1500, List<MeetingTime> peClasses = null)
+        public NoWindowBetweenClassesUnlessPE(double unitPenalty = 5, List<MeetingTime> peClasses = null)
         {
             UnitPenalty = unitPenalty;
             this.peClasses = peClasses is null ? new List<MeetingTime>() : peClasses;
@@ -28,18 +28,16 @@ namespace Domain.Rules
 
         public static int FindWindowDifference(Schedule schedule, Meeting meetingToAdd)
         {
-            //var todaysPEClass = peClasses.Where(m => m.Day == day).FirstOrDefault();
             var todaysMeetings = schedule.Meetings
-                //.Where(m => m.WeekType == meetingToAdd.WeekType)
                 .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
                 .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
-                .Where(m => m.Groups.First() == meetingToAdd.Groups.First());
+                .Where(m => m.Groups.First().Equals(meetingToAdd.Groups.First()));
 
             var windowCountInSchedule = FindWindowCount(todaysMeetings);
 
             var todaysMeetingsSet = todaysMeetings.ToHashSet();
             todaysMeetingsSet.Add(meetingToAdd);
-            var windowCountInNewSchedule = FindWindowCount(todaysMeetings);
+            var windowCountInNewSchedule = FindWindowCount(todaysMeetingsSet);
 
             var difference = windowCountInNewSchedule - windowCountInSchedule;
 

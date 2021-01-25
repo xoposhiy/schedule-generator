@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {
-    class LecturerHasPracticeWithSameFlow : IRule
+    public class LecturerHasPracticeWithSameFlow : IRule
     {
         public readonly double UnitPenalty;
 
-        public LecturerHasPracticeWithSameFlow(double unitPenalty = 1500)
+        public LecturerHasPracticeWithSameFlow(double unitPenalty = 50)
         {
             UnitPenalty = unitPenalty;
         }
@@ -17,12 +18,12 @@ namespace Domain.Rules
         {
             var hasPracticeWithSameFlow = CheckTeacherHasPracticeWithSameFlow(schedule, meetingToAdd, learningPlan);
 
-            return hasPracticeWithSameFlow ? UnitPenalty : 0;
+            return hasPracticeWithSameFlow ? 0 : UnitPenalty;
         }
 
         public static bool CheckTeacherHasPracticeWithSameFlow(Schedule schedule, Meeting meetingToAdd, LearningPlan learningPlan)
         {
-            var planItemsWithSameDiscipline = learningPlan.Items.Where(m => m.Discipline == meetingToAdd.Discipline);
+            var planItemsWithSameDiscipline = learningPlan.Items.Where(m => m.Discipline.Equals(meetingToAdd.Discipline)).ToList();
             var planedLectures = planItemsWithSameDiscipline.Where(m => m.MeetingType == MeetingType.Lecture);
             var planedPractices = planItemsWithSameDiscipline
                 .Where(m => m.MeetingType == MeetingType.ComputerLab || m.MeetingType == MeetingType.Seminar);
@@ -30,8 +31,8 @@ namespace Domain.Rules
             if (!planedLectures.Any() || !planedPractices.Any())
                 return true;
 
-            var meetingsWithSameDiscipline = schedule.Meetings.Where(m => m.Discipline == meetingToAdd.Discipline);
-            var meetingsWithSameTeacherAndDiscipline = meetingsWithSameDiscipline.Where(m => m.Teacher == meetingToAdd.Teacher);
+            var meetingsWithSameDiscipline = schedule.Meetings.Where(m => m.Discipline.Equals(meetingToAdd.Discipline));
+            var meetingsWithSameTeacherAndDiscipline = meetingsWithSameDiscipline.Where(m => m.Teacher.Equals(meetingToAdd.Teacher));
 
             var lectures = meetingsWithSameTeacherAndDiscipline
                 .Where(m => m.MeetingType == MeetingType.Lecture)
@@ -42,10 +43,18 @@ namespace Domain.Rules
 
             if (meetingToAdd.MeetingType == MeetingType.Lecture)
             {
+                if (practices.Count == 0)
+                {
+                    return true;
+                }
                 lectures.Add(meetingToAdd);
             }
             else
             {
+                if (lectures.Count == 0)
+                {
+                    return true;
+                }
                 practices.Add(meetingToAdd);
             }
 

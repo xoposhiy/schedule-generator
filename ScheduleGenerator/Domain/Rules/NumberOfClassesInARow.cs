@@ -4,12 +4,12 @@ using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {
-    class NumberOfClassesInARow : IRule
+    public class NumberOfClassesInARow : IRule
     {
         public readonly double UnitPenalty;
         public int MaxClassesInARow { get; set; }
 
-        public NumberOfClassesInARow(double unitPenalty = 1500, int maxClassesInARow = 5)
+        public NumberOfClassesInARow(double unitPenalty = 5, int maxClassesInARow = 5)
         {
             UnitPenalty = unitPenalty;
             MaxClassesInARow = maxClassesInARow;
@@ -26,15 +26,22 @@ namespace Domain.Rules
             return totalPenalty;
         }
 
-        private static int FindClassesInARowDifference(Schedule schedule, Meeting meetingToAdd)
+        private int FindClassesInARowDifference(Schedule schedule, Meeting meetingToAdd)
         {
             var todaysMeetings = schedule.Meetings
-                //.Where(m => m.WeekType == meetingToAdd.WeekType)
                 .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
                 .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
-                .Where(m => m.Groups.First() == meetingToAdd.Groups.First());
+                .Where(m => m.Groups.First().Equals(meetingToAdd.Groups.First()));
+            if (!todaysMeetings.Any())
+            {
+                return 0;
+            }
 
             var maxCountInSchedule = FindMaxClassesInARow(todaysMeetings);
+            if (maxCountInSchedule < MaxClassesInARow)
+            {
+                return 0;
+            }
             var newTodaysMeetings = todaysMeetings.ToHashSet();
             newTodaysMeetings.Add(meetingToAdd);
             var maxCountInNewSchedule = FindMaxClassesInARow(newTodaysMeetings);
