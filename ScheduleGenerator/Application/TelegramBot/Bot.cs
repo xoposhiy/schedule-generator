@@ -18,63 +18,14 @@ namespace Application.TelegramBot
     {
         private static Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
 
-        private static List<string> requisitionSheetHeaders = new List<string>() {
-            "Преподавател", "Предмет",  "Тип занятия", "Количество повторений каждого занятия",
-            "Приоритеты групп, в которых назначать занятия", "Время", "Четность"
-        };
-        private static List<string> requirmentsSheetHeaderComments = new List<string>()
-            {
-                "Имя преподавателя",
-                "Название предмета (например Матанализ)",
-                "Лекция/Семинар/КомпПрактика",
-                "Количество подряд идущих занятий с той же группой",
-                @"через + объединяются группы в один поток. Через запятую те группы, в которые можно назначать. В разных строках можно задавать предпочтения - чем ниже, тем менее предпочтительно.
+        private List<string> requisitionSheetHeaders;
+        private List<string> requirmentsSheetHeaderComments;
 
-Например:
+        private List<string> learningPlanSheetHeaders;
+        private List<string> learningPlanSheetHeaderComments;
 
-ФИИТ-101, ФИИТ-102
-ФИИТ-103
-
-означает, что хочу вести в 101 или 102, если не получится, то 103 тоже подойдет. 104 не предлагать.",
-                @"варианты в строчках, по уменьшению желаемости. Список дней недели, список номеров пар.
-Например:
-пн-чт, 1-3 пара
-пт, 3-4 пара
-
-означает, что желательно пару не в пятницу поставить в диапазон 1-3. Если не получится, то поставить в пятницу 3 или 4.",
-                "четная/нечетная (можно не указывать)"
-            };
-
-        private static List<string> learningPlanSheetHeaders = new List<string>() {
-            "Группы", "Предмет", "Тип занятия", "Деление", "Количество", "Аудитория"
-        };
-        private static List<string> learningPlanSheetHeaderComments = new List<string>() {
-            "Перечислите группы через запятую (,)", "Укажите название дисциплины (например Матанализ)",
-            "Семинар/КомпПрактика/Лекция", "\"в половиках\" или ничего ну указывайте",
-            "Чилсло пар в неделю, если зависит от четности, укажите среднее число занятий",
-            "Номер аудитории, ее качество или оборудовние: 150/большая/проектор/онлайн. Можно комбинировать"
-        };
-
-        private static List<(string pattern, string msg)> requisitionPatternMsgList = new List<(string pattern, string msg)>() {
-            (@".+", "Нужно вписать имя преподавателя"),
-            (@".+", "Нужно вписать назваине дисциплины"),
-            (@"^(Лекция|Семинар|КомпПрактика)$", "Тип занятия может быть только Лекция/Семинар/КомпПрактика"),
-            (@"^\d$", "Количество повторений должно быть числом"),
-            (@"^((?:\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?)(?:(?:\s?\+\s?|,\s?)(\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?))*(\r?\n)?)+$",
-            "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
-            (@"^((((пн|вт|ср|чт|пт|сб|вс)(\s?-\s?(пн|вт|ср|чт|пт|сб|вс))?)((,\s?)((пн|вт|ср|чт|пт|сб|вс)(\s?-\s?(пн|вт|ср|чт|пт|сб|вс))?))*)?((,\s)?(\d(\s?-\s?\d)?)((,\s)(\d(\s?-\s?\d)?))*\sпара)?(\r?\n)?)*$",
-            "Формат не соответствует шаблону, шаблон указан в заголовке столбца")
-        };
-
-        private static List<(string pattern, string msg)> learningPlanPatternMsgList = new List<(string pattern, string msg)>() {
-            (@"^((?:\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?)(?:(?:\s?\+\s?|,\s?)(\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?))*(\r?\n)?)+$",
-            "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
-            (@".+", "Нужно вписать назваине дисциплины"),
-            (@"^(Лекция|Семинар|КомпПрактика)$", "Тип занятия может быть только Лекция/Семинар/КомпПрактика"),
-            (@".*", "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
-            (@"^\d([,\.]?\d)?$", "Среднее количество занятий в неделю должно быть цифрой или десятичной дробью"),
-            (@".*", "Формат не соответствует шаблону, шаблон указан в заголовке столбца")
-        };
+        private List<(string pattern, string msg)> requisitionPatternMsgList;
+        private List<(string pattern, string msg)> learningPlanPatternMsgList;
 
         private SheetTableEvaluator requisitionEvaluator;
         private SheetTableEvaluator learningPlanEvaluator;
@@ -88,7 +39,13 @@ namespace Application.TelegramBot
         private Dictionary<long, ScheduleSession> sessionDict;
         private Dictionary<long, AdditionalSessionState> additionalStateDict;
         private Dictionary<long, GSRepository> repoDict;
-        public TBot(string token, string repoSecret, string firebaseSecret, string dbBasePath)
+        public TBot(string token, string repoSecret, string firebaseSecret, string dbBasePath,
+            List<string> requisitionSheetHeaders,
+            List<string> requirmentsSheetHeaderComments,
+            List<string> learningPlanSheetHeaders,
+            List<string> learningPlanSheetHeaderComments,
+            List<(string pattern, string msg)> requisitionPatternMsgList,
+            List<(string pattern, string msg)> learningPlanPatternMsgList)
         {
             client = new TelegramBotClient(token);
             sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
@@ -102,6 +59,13 @@ namespace Application.TelegramBot
             var readedString = System.IO.File.ReadAllText(repoSecret);
             var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readedString);
             credentialAddressToShare = values["client_email"];
+
+            this.requisitionSheetHeaders = requisitionSheetHeaders;
+            this.requirmentsSheetHeaderComments = requirmentsSheetHeaderComments;
+            this.learningPlanSheetHeaders = learningPlanSheetHeaders;
+            this.learningPlanSheetHeaderComments = learningPlanSheetHeaderComments;
+            this.requisitionPatternMsgList = requisitionPatternMsgList;
+            this.learningPlanPatternMsgList = learningPlanPatternMsgList;
 
             requisitionEvaluator = new SheetTableEvaluator(requisitionPatternMsgList);
             learningPlanEvaluator = new SheetTableEvaluator(learningPlanPatternMsgList);
@@ -457,11 +421,11 @@ namespace Application.TelegramBot
                 Console.WriteLine("REQUISITION EVALUATION");
                 // read data
                 var requisitionData = SheetTableReader.ReadRowsFromSheet(
-                    repo, scheduleSession.InputRequirementsSheet, (1, 0), requisitionSheetHeaders.Count);
+                    repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionSheetHeaders.Count);
                 // clear last errors
                 if (additionalSessionState.requisitionLastErrorCoords != null && additionalSessionState.requisitionLastErrorCoords.Any())
                 {
-                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (1, 0),
+                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (0, 0),
                         additionalSessionState.requisitionLastErrorCoords);
                 }
                 // get list of errors
@@ -472,18 +436,18 @@ namespace Application.TelegramBot
                     // save errors to additional info
                     additionalSessionState.requisitionLastErrorCoords = requisitionErrors.Select(x => x.Item1);
                     // paint errors
-                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.InputRequirementsSheet, (1, 0), requisitionErrors);
+                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionErrors);
                 }
 
                 // LEARNING PLAN EVALUATION
                 Console.WriteLine("LEARNING PLAN EVALUATION");
                 // read data
                 var learningPlanData = SheetTableReader.ReadRowsFromSheet(
-                    repo, scheduleSession.LearningPlanSheet, (1, 0), learningPlanSheetHeaders.Count);
+                    repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanSheetHeaders.Count);
                 // clear last errors
                 if (additionalSessionState.learningPlanLastErrorCoords != null && additionalSessionState.learningPlanLastErrorCoords.Any())
                 {
-                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (1, 0),
+                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (0, 0),
                         additionalSessionState.learningPlanLastErrorCoords);
                 }
                 // get list of errors
@@ -494,7 +458,7 @@ namespace Application.TelegramBot
                     // save errors to additional info
                     additionalSessionState.learningPlanLastErrorCoords = learningPlanErrors.Select(x => x.Item1);
                     // paint errors
-                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.LearningPlanSheet, (1, 0), learningPlanErrors);
+                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanErrors);
                 }
 
 
