@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Domain.Conversions;
+using Infrastructure.FirebaseRepository;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
 using Newtonsoft.Json;
-
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-using Domain.GoogleSheetsRepository;
-using Domain.FirebaseRepository;
-using Domain.Conversions;
-using Domain.SheetPatterns;
-
-
-namespace Bot
+namespace Application.TelegramBot
 {
     public class TBot
     {

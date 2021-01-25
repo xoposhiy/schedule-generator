@@ -1,13 +1,10 @@
-﻿using NUnit.Framework;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
+using NUnit.Framework;
 
-
-using Domain.SheetPatterns;
-using Domain.GoogleSheetsRepository;
-
-namespace SheetPatterns
+namespace Testing.SheetPatternsTest
 {
     class HeaderPatternCreatorTest
     {

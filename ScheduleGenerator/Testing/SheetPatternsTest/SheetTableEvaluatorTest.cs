@@ -1,12 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using Infrastructure.SheetPatterns;
+using NUnit.Framework;
 
-using System;
-using System.Collections.Generic;
-
-using Domain.SheetPatterns;
-
-
-namespace SheetPatternsTest
+namespace Testing.SheetPatternsTest
 {
     class SheetTableEvaluatorTest
     {

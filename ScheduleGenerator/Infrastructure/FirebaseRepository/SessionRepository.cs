@@ -4,7 +4,7 @@ using Firebase.Database.Query;
 using System.Threading.Tasks;
 using System.Text;
 
-namespace Domain.FirebaseRepository
+namespace Infrastructure.FirebaseRepository
 {
     public class ScheduleSession
     {

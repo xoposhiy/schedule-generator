@@ -1,11 +1,10 @@
-using NUnit.Framework;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Domain.GoogleSheetsRepository;
+using System.Linq;
+using Infrastructure.GoogleSheetsRepository;
+using NUnit.Framework;
 
-
-namespace GoogleSheetsRepositoryTests
+namespace Testing.GoogleSheetsRepositoryTests
 {
     public class Tests
     {

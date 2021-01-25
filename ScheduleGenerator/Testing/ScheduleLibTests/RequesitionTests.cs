@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using Domain.ScheduleLib;
 
-namespace ScheduleLibTests
+namespace Testing.ScheduleLibTests
 {
     [TestFixture]
     public class RequesitionTests

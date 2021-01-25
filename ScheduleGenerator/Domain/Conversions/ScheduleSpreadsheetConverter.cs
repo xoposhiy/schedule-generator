@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Domain.GoogleSheetsRepository;
+using Infrastructure.GoogleSheetsRepository;
 using Domain.ScheduleLib;
 using Google.Apis.Sheets.v4.Data;
 

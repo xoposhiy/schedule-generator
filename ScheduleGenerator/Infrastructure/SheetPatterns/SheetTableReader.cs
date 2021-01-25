@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Google.Apis.Sheets.v4.Data;
+using Infrastructure.GoogleSheetsRepository;
 
-using Domain.GoogleSheetsRepository;
-
-namespace Domain.SheetPatterns
+namespace Infrastructure.SheetPatterns
 {
     public class SheetTableReader
     {

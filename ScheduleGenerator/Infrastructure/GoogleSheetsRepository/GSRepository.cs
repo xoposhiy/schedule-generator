@@ -7,7 +7,7 @@ using Google.Apis.Sheets.v4.Data;
 using System.IO;
 using System.Linq;
 
-namespace Domain.GoogleSheetsRepository
+namespace Infrastructure.GoogleSheetsRepository
 {
     public class GSRepository
     {

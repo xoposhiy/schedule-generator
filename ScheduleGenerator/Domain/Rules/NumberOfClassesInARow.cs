@@ -1,7 +1,6 @@
-﻿using System;
-using Domain.ScheduleLib;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {

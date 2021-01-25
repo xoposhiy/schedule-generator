@@ -1,14 +1,11 @@
-﻿using NUnit.Framework;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
+using NUnit.Framework;
 
-using Domain.SheetPatterns;
-using Domain.GoogleSheetsRepository;
-
-
-namespace SheetPatternsTest
+namespace Testing.SheetPatternsTest
 {
     class SheetTableErrorPainterTest
     {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
-using Domain.ScheduleLib;
-using Domain.GoogleSheetsRepository;
-using Domain.SheetPatterns;
 using System.Globalization;
-
+using System.Linq;
+using System.Text.RegularExpressions;
+using Domain.ScheduleLib;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
 
 namespace Domain.Conversions
 {

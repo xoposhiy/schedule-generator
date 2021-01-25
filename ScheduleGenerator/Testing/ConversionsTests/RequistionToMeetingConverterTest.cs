@@ -1,16 +1,10 @@
-﻿using NUnit.Framework;
-
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Linq;
-
-
-using Domain.ScheduleLib;
 using Domain.Conversions;
+using Domain.ScheduleLib;
+using NUnit.Framework;
 
-
-namespace ConversionsTests
+namespace Testing.ConversionsTests
 {
     class RequistionToMeetingConverterTest
     {

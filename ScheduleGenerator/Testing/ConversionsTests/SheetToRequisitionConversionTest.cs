@@ -1,13 +1,9 @@
-﻿using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
+﻿using System;
 using Domain.Conversions;
-using Domain.GoogleSheetsRepository;
-using Domain.ScheduleLib;
+using Infrastructure.GoogleSheetsRepository;
+using NUnit.Framework;
 
-namespace ConversionsTests
+namespace Testing.ConversionsTests
 {
     class SheetToRequisitionConversionTest
     {

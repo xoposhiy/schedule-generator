@@ -1,5 +1,5 @@
 ﻿using System;
-using Bot;
+using Application.TelegramBot;
 
 namespace Application
 {

@@ -1,8 +1,8 @@
-using NUnit.Framework;
 using System;
-using Domain.FirebaseRepository;
+using Infrastructure.FirebaseRepository;
+using NUnit.Framework;
 
-namespace SessionRepositoryTests
+namespace Testing.FirebaseRepositoryTests
 {
     public class Tests
     {
