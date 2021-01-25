@@ -33,6 +33,10 @@ namespace Domain.Rules
                 .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
                 .Where(m => m.Groups.First().Equals(meetingToAdd.Groups.First()));
 
+            if (!todaysMeetings.Any()) {
+                return 0;
+            }
+
             var windowCountInSchedule = FindWindowCount(todaysMeetings);
 
             var todaysMeetingsSet = todaysMeetings.ToHashSet();
