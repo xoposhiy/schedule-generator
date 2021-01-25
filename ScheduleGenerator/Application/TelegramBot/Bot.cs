@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Domain.Conversions;
-using Infrastructure.FirebaseRepository;
-using Infrastructure.GoogleSheetsRepository;
-using Infrastructure.SheetPatterns;
+
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+
+using Domain.Conversions;
+using Domain.Rules;
+using Domain.ScheduleLib;
+using Infrastructure.FirebaseRepository;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
+using Domain.Algorithms;
+
 
 namespace Application.TelegramBot
 {
@@ -546,6 +552,30 @@ namespace Application.TelegramBot
                 var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.ScheduleSheet}\"." +
                     " Начинаю составление расписания. Напишу, когда будет готово";
                 additionalSessionState.CreatingSchedule = true;
+
+
+                // --------------------------------------------- SCHEDULE GENERATION
+                var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
+                    repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
+
+                var evaluator = new MeetingEvaluator(new List<IRule>() {
+                    new LecturerHasPracticeWithSameFlow(),
+                    new NoMoreThanOneMeetingAtTimeForGroupRule(),
+                    new NoMoreThanOneMeetingAtTimeForLocationRule(),
+                    new NoMoreThanOneMeetingAtTimeForTeacherRule(),
+                    new NoWindowBetweenClassesUnlessPE(),
+                    new NumberOfClassesInARow()
+                });
+
+                var requisition = new Requisition(requisitions.ToArray());
+
+                var schedule = new GreedyScheduleGenerator().MakeSchedule(learningPlan, evaluator, requisition);
+
+                var converter = new ScheduleSpreadsheetConverter(repo, scheduleSession.ScheduleSheet);
+                converter.Build(schedule);
+
+
+
                 // Save current session if the schedule is ready
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
             }

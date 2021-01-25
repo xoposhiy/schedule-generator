@@ -45,13 +45,15 @@ namespace Domain.Conversions
             { "нечетная", WeekType.Odd }
         };
 
-        public static Requisition ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
+        public static (List<RequisitionItem>, LearningPlan) ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
             var PlanData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
             var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
-            var RequisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
-            var requisitions = ParseRequisitions(RequisitionData, planItemsAndLocations, allGroups);
-            return new Requisition(requisitions.ToArray());
+            var learningPlanItems = planItemsAndLocations.Select(x => x.Item1).ToArray();
+            var learningPlan = new LearningPlan(learningPlanItems);
+            var RequestionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
+            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
+            return (requisitions, learningPlan);
         }
 
         //private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
