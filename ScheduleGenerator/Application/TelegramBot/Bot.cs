@@ -12,15 +12,79 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Domain.GoogleSheetsRepository;
 using Domain.FirebaseRepository;
 using Domain.Conversions;
+using Domain.SheetPatterns;
 
 
 namespace Bot
 {
     public class TBot
     {
+        private static Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
+
+        private static List<string> requisitionSheetHeaders = new List<string>() {
+            "Преподавател", "Предмет",  "Тип занятия", "Количество повторений каждого занятия",
+            "Приоритеты групп, в которых назначать занятия", "Время", "Четность"
+        };
+        private static List<string> requirmentsSheetHeaderComments = new List<string>()
+            {
+                "Имя преподавателя",
+                "Название предмета (например Матанализ)",
+                "Лекция/Семинар/КомпПрактика",
+                "Количество подряд идущих занятий с той же группой",
+                @"через + объединяются группы в один поток. Через запятую те группы, в которые можно назначать. В разных строках можно задавать предпочтения - чем ниже, тем менее предпочтительно.
+
+Например:
+
+ФИИТ-101, ФИИТ-102
+ФИИТ-103
+
+означает, что хочу вести в 101 или 102, если не получится, то 103 тоже подойдет. 104 не предлагать.",
+                @"варианты в строчках, по уменьшению желаемости. Список дней недели, список номеров пар.
+Например:
+пн-чт, 1-3 пара
+пт, 3-4 пара
+
+означает, что желательно пару не в пятницу поставить в диапазон 1-3. Если не получится, то поставить в пятницу 3 или 4.",
+                "четная/нечетная (можно не указывать)"
+            };
+
+        private static List<string> learningPlanSheetHeaders = new List<string>() {
+            "Группы", "Предмет", "Тип занятия", "Деление", "Количество", "Аудитория"
+        };
+        private static List<string> learningPlanSheetHeaderComments = new List<string>() {
+            "Перечислите группы через запятую (,)", "Укажите название дисциплины (например Матанализ)",
+            "Семинар/КомпПрактика/Лекция", "\"в половиках\" или ничего ну указывайте",
+            "Чилсло пар в неделю, если зависит от четности, укажите среднее число занятий",
+            "Номер аудитории, ее качество или оборудовние: 150/большая/проектор/онлайн. Можно комбинировать"
+        };
+
+        private static List<(string pattern, string msg)> requisitionPatternMsgList = new List<(string pattern, string msg)>() {
+            (@".+", "Нужно вписать имя преподавателя"),
+            (@".+", "Нужно вписать назваине дисциплины"),
+            (@"^(Лекция|Семинар|КомпПрактика)$", "Тип занятия может быть только Лекция/Семинар/КомпПрактика"),
+            (@"^\d$", "Количество повторений должно быть числом"),
+            (@"^((?:\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?)(?:(?:\s?\+\s?|,\s?)(\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?))*(\r?\n)?)+$",
+            "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
+            (@"^((((пн|вт|ср|чт|пт|сб|вс)(\s?-\s?(пн|вт|ср|чт|пт|сб|вс))?)((,\s?)((пн|вт|ср|чт|пт|сб|вс)(\s?-\s?(пн|вт|ср|чт|пт|сб|вс))?))*)?((,\s)?(\d(\s?-\s?\d)?)((,\s)(\d(\s?-\s?\d)?))*\sпара)?(\r?\n)?)*$",
+            "Формат не соответствует шаблону, шаблон указан в заголовке столбца")
+        };
+
+        private static List<(string pattern, string msg)> learningPlanPatternMsgList = new List<(string pattern, string msg)>() {
+            (@"^((?:\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?)(?:(?:\s?\+\s?|,\s?)(\w+\s?-\s?(?:\*|(?:\d+(?:\s?-\s?(\*|\d))?))?))*(\r?\n)?)+$",
+            "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
+            (@".+", "Нужно вписать назваине дисциплины"),
+            (@"^(Лекция|Семинар|КомпПрактика)$", "Тип занятия может быть только Лекция/Семинар/КомпПрактика"),
+            (@".*", "Формат не соответствует шаблону, шаблон указан в заголовке столбца"),
+            (@"^\d([,\.]?\d)?$", "Среднее количество занятий в неделю должно быть цифрой или десятичной дробью"),
+            (@".*", "Формат не соответствует шаблону, шаблон указан в заголовке столбца")
+        };
+
+        private SheetTableEvaluator requisitionEvaluator;
+        private SheetTableEvaluator learningPlanEvaluator;
+
         private TelegramBotClient client;
         private string repoSecret;
-        private Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
+
         //private GSRepository repo;
         private SessionRepository sessionRepository;
         private string credentialAddressToShare;
@@ -41,6 +105,9 @@ namespace Bot
             var readedString = System.IO.File.ReadAllText(repoSecret);
             var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readedString);
             credentialAddressToShare = values["client_email"];
+
+            requisitionEvaluator = new SheetTableEvaluator(requisitionPatternMsgList);
+            learningPlanEvaluator = new SheetTableEvaluator(learningPlanPatternMsgList);
         }
 
         public void Start()
@@ -118,7 +185,7 @@ namespace Bot
                 }
                 else if (!currentAdditionalState.DataIsValid)
                 {
-                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatID, message.Text, currentAdditionalState, repo);
+                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatID, message.Text, currentSession, currentAdditionalState, repo);
                 }
                 else if (string.IsNullOrEmpty(currentSession.ScheduleSheet))
                 {
@@ -286,6 +353,10 @@ namespace Bot
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                 var newSheetName = FindUniqueName(takenNames, "Requestion");
                 repo.CreateNewSheet(newSheetName);
+                repo.SetUpSheetInfo();
+                // Add headers
+                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), requisitionSheetHeaders, requirmentsSheetHeaderComments);
+
                 scheduleSession.InputRequirementsSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
@@ -334,6 +405,10 @@ namespace Bot
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                 var newSheetName = FindUniqueName(takenNames, "LearningPlan");
                 repo.CreateNewSheet(newSheetName);
+                repo.SetUpSheetInfo();
+                // Add headers
+                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), learningPlanSheetHeaders, learningPlanSheetHeaderComments);
+
                 scheduleSession.LearningPlanSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
@@ -352,7 +427,7 @@ namespace Bot
             }
             if (exists)
             {
-                scheduleSession.LearningPlanSheet = message;
+                //scheduleSession.LearningPlanSheet = message; // Delete this!
                 scheduleSession.LastModificationTime = DateTime.Now;
                 var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.LearningPlanSheet}\"." +
                     " Если вы еще не заполнили таблицы данными сделайте это. " +
@@ -371,7 +446,7 @@ namespace Bot
             }
         }
 
-        private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatID, string message,
+        private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatID, string message, ScheduleSession scheduleSession,
                 AdditionalSessionState additionalSessionState, GSRepository repo)
         {
             if (message == "Готово" && !additionalSessionState.TableValidationInProgress)
@@ -379,10 +454,55 @@ namespace Bot
                 var answer = "Сейчас проверю правильность введенных данных. Ожидайте.";
                 await client.SendTextMessageAsync(chatID, answer);
                 // Maybe async method t check and send message with report
-
-                // Validation
-                //var isValid, msg = ...
                 var isValid = true;
+
+                // REQUISITION EVALUATION
+                Console.WriteLine("REQUISITION EVALUATION");
+                // read data
+                var requisitionData = SheetTableReader.ReadRowsFromSheet(
+                    repo, scheduleSession.InputRequirementsSheet, (1, 0), requisitionSheetHeaders.Count);
+                // clear last errors
+                if (additionalSessionState.requisitionLastErrorCoords != null && additionalSessionState.requisitionLastErrorCoords.Any())
+                {
+                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (1, 0),
+                        additionalSessionState.requisitionLastErrorCoords);
+                }
+                // get list of errors
+                var requisitionErrors = requisitionEvaluator.Evaluate(requisitionData, (1, 0));
+                if (requisitionErrors.Any())
+                {
+                    isValid = false;
+                    // save errors to additional info
+                    additionalSessionState.requisitionLastErrorCoords = requisitionErrors.Select(x => x.Item1);
+                    // paint errors
+                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.InputRequirementsSheet, (1, 0), requisitionErrors);
+                }
+
+                // LEARNING PLAN EVALUATION
+                Console.WriteLine("LEARNING PLAN EVALUATION");
+                // read data
+                var learningPlanData = SheetTableReader.ReadRowsFromSheet(
+                    repo, scheduleSession.LearningPlanSheet, (1, 0), learningPlanSheetHeaders.Count);
+                // clear last errors
+                if (additionalSessionState.learningPlanLastErrorCoords != null && additionalSessionState.learningPlanLastErrorCoords.Any())
+                {
+                    SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (1, 0),
+                        additionalSessionState.learningPlanLastErrorCoords);
+                }
+                // get list of errors
+                var learningPlanErrors = learningPlanEvaluator.Evaluate(learningPlanData, (1, 0));
+                if (learningPlanErrors.Any())
+                {
+                    isValid = false;
+                    // save errors to additional info
+                    additionalSessionState.learningPlanLastErrorCoords = learningPlanErrors.Select(x => x.Item1);
+                    // paint errors
+                    SheetTableErrorPainter.PaintErrors(repo, scheduleSession.LearningPlanSheet, (1, 0), learningPlanErrors);
+                }
+
+
+                // Validation end
+
                 if (isValid)
                 {
                     additionalSessionState.DataIsValid = true;
@@ -398,7 +518,25 @@ namespace Bot
                 }
                 else
                 {
+                    var errorMsgParts = new List<string>();
+                    errorMsgParts.Add("Обнаружены ошибки. Выделены таблицах красным цветом.");
+                    errorMsgParts.Add("Подробности в комментраниях ячеек, обратите внимание на формат указанный в заголоках.");
+                    errorMsgParts.Add("Проверьте следующие листы:");
+                    if (requisitionErrors.Count > 0)
+                    {
+                        errorMsgParts.Add(scheduleSession.InputRequirementsSheet);
+                    }
+                    if (learningPlanErrors.Count > 0)
+                    {
+                        errorMsgParts.Add(scheduleSession.LearningPlanSheet);
+                    }
+
+                    var errorMsg = string.Join("\n", errorMsgParts);
+
                     // Error output
+                    var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
+                    await client.SendTextMessageAsync(chatID, errorMsg, replyMarkup: keyboard);
+
                     Console.WriteLine("Schedule error output");
                 }
             }
@@ -500,6 +638,7 @@ namespace Bot
             return replyKeyboardMarkup;
         }
 
+
         public async void StartSolvingAndNotifyWhenDone(long chatID, ScheduleSession session, GSRepository repo)
         {
             var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
@@ -514,6 +653,9 @@ namespace Bot
         public bool TableValidationInProgress;
         public bool DataIsValid;
         public bool CreatingSchedule;
+
+        public IEnumerable<(int, int)> requisitionLastErrorCoords;
+        public IEnumerable<(int, int)> learningPlanLastErrorCoords;
 
         public AdditionalSessionState(long id)
         {

@@ -304,6 +304,9 @@ namespace Domain.GoogleSheetsRepository
         {
             var (top, left) = rangeStart;
             var (bottom, right) = rangeEnd;
+            // new
+            bottom++;
+            right++;
             var rows = new List<RowData>();
             for (int r = top; r < bottom; r++)
             {

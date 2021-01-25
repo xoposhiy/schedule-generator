@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Domain.ScheduleLib;
 using Domain.GoogleSheetsRepository;
+using Domain.SheetPatterns;
 using System.Globalization;
 
 
@@ -47,9 +48,9 @@ namespace Domain.Conversions
 
         public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
-            var PlanData = ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
+            var PlanData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
             var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
-            var RequestionData = ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
+            var RequestionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
             var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
             return requisitions;
         }
@@ -67,23 +68,23 @@ namespace Domain.Conversions
         //    return sheetData;
         //}
 
-        private static List<List<string>> ReadRowsFromSheet(GSRepository repo, string SheetName, (int row, int col) start, int width)
-        {
-            var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
-            var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
-            var rowCountToRead = Math.Min((int)actualRowCount, 300);
-            var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
-            var rowsWithDataCount = testData.Count;
-            var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
-            foreach (var row in sheetData)
-            {
-                for (var i = width - row.Count; i > 0; i++)
-                {
-                    row.Add("");
-                }
-            }
-            return sheetData;
-        }
+        //private static List<List<string>> ReadRowsFromSheet(GSRepository repo, string SheetName, (int row, int col) start, int width)
+        //{
+        //    var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
+        //    var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
+        //    var rowCountToRead = Math.Min((int)actualRowCount, 300);
+        //    var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
+        //    var rowsWithDataCount = testData.Count;
+        //    var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
+        //    foreach (var row in sheetData)
+        //    {
+        //        for (var i = width - row.Count; i > 0; i--)
+        //        {
+        //            row.Add("");
+        //        }
+        //    }
+        //    return sheetData;
+        //}
 
         private static (List<(LearningPlanItem, string)>, HashSet<string>) ParseLearningPlanItems(List<List<string>> sheetData)
         {
