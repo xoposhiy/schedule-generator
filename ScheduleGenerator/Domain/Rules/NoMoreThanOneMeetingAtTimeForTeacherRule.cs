@@ -24,7 +24,9 @@ namespace Domain.Rules
         {
             foreach (var frozenMeeting in schedule.Meetings)
             {
-                if (frozenMeeting.WeekType == meetingToAdd.WeekType &&
+                if ((frozenMeeting.WeekType == meetingToAdd.WeekType
+                    || frozenMeeting.WeekType == WeekType.Any
+                    || meetingToAdd.WeekType == WeekType.Any) &&
                         frozenMeeting.Teacher == meetingToAdd.Teacher &&
                         frozenMeeting.MeetingTime == meetingToAdd.MeetingTime)
                 {
