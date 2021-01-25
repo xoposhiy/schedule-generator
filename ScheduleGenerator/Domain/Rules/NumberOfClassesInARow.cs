@@ -15,7 +15,7 @@ namespace Domain.Rules
             MaxClassesInARow = maxClassesInARow;
         }
 
-        public double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd)
+        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
         {
             var classesInARowDifference = FindClassesInARowDifference(schedule, meetingToAdd);
             if (classesInARowDifference < 0)

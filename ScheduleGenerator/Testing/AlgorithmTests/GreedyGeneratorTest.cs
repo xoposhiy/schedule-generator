@@ -19,12 +19,12 @@ namespace Testing.AlgorithmTests
             var groupsChoices = new GroupsChoice[]
                 {new GroupsChoice(new MeetingGroup[] {new MeetingGroup("A", GroupPart.FullGroup)})};
             var groupRequisition = new GroupRequisition[]{new GroupRequisition(groupsChoices)};
-            var meetingTimeRequisitions = new MeetingTimeRequesition[]
-                {new MeetingTimeRequesition(new MeetingTime[] {new MeetingTime(DayOfWeek.Friday, 5)})};
-            var requisition = new Requisition[]
+            var meetingTimeRequisitions = new MeetingTimeRequisition[]
+                {new MeetingTimeRequisition(new MeetingTime[] {new MeetingTime(DayOfWeek.Friday, 5)})};
+            var requisition = new Requisition(new RequisitionItem[]
             {
-                new Requisition(learningPlanItem, groupRequisition, "", 1, meetingTimeRequisitions, new Teacher("1"), WeekType.Any)
-            };
+                new RequisitionItem(learningPlanItem, groupRequisition, "", 1, meetingTimeRequisitions, new Teacher("1"), WeekType.Any)
+            });
 
             var generator = new GreedyScheduleGenerator();
             var evaluator = new MeetingEvaluator(new IRule[0]);

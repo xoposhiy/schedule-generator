@@ -45,13 +45,13 @@ namespace Domain.Conversions
             { "нечетная", WeekType.Odd }
         };
 
-        public static List<Requisition> ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
+        public static Requisition ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
         {
             var PlanData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
             var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
-            var RequestionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
-            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
-            return requisitions;
+            var RequisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
+            var requisitions = ParseRequisitions(RequisitionData, planItemsAndLocations, allGroups);
+            return new Requisition(requisitions.ToArray());
         }
 
         //private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
@@ -119,37 +119,37 @@ namespace Domain.Conversions
             return (learningPlanItems, allGroups);
         }
 
-        private static List<Requisition> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation, HashSet<string> allGroups)
+        private static List<RequisitionItem> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation, HashSet<string> allGroups)
         {
-            var requisitions = new List<Requisition>();
-            foreach (var requestionRow in sheetData)
+            var requisitions = new List<RequisitionItem>();
+            foreach (var requisitionRow in sheetData)
             {
-                if (requestionRow.Count == 0 || requestionRow.Take(7).All(s => string.IsNullOrEmpty(s)))
+                if (requisitionRow.Count == 0 || requisitionRow.Take(7).All(s => string.IsNullOrEmpty(s)))
                 {
                     continue;
                 }
-                var teacherName = requestionRow[0];
-                var disciplineName = requestionRow[1];
-                var meetingTypeStr = requestionRow[2];
+                var teacherName = requisitionRow[0];
+                var disciplineName = requisitionRow[1];
+                var meetingTypeStr = requisitionRow[2];
                 var meetingType = meetingTypeDict[meetingTypeStr];
-                var repetitionCountRaw = requestionRow[3];
-                var groupPriorities = requestionRow[4];
-                var meetingTimesRaw = requestionRow[5];
-                var weekTypeRaw = requestionRow[6];
+                var repetitionCountRaw = requisitionRow[3];
+                var groupPriorities = requisitionRow[4];
+                var meetingTimesRaw = requisitionRow[5];
+                var weekTypeRaw = requisitionRow[6];
 
                 var teacher = new Teacher(teacherName);
 
                 var groupRequisitions = ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
-                var meetingTimeRequesitions = ParseMeetingTimeRequesitions(meetingTimesRaw);
-                var meetingTimeRequesitionArray = meetingTimeRequesitions.ToArray();
+                var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw);
+                var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                 var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                 var planItemAndLocation = learningPlanItemsLocation
                     .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
                     .Where(lpi => lpi.Item1.MeetingType == meetingType)
                     .FirstOrDefault();
                 var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                var requisition = new Requisition(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequesitionArray, teacher, weekType);
+                var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
                 requisitions.Add(requisition);
             }
 
@@ -163,7 +163,7 @@ namespace Domain.Conversions
                 rawGroupRequisitions = string.Join(", ", allGroups);
             }
             var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
-            var groupRequesitions = new List<GroupRequisition>();
+            var groupRequisitions = new List<GroupRequisition>();
 
             foreach (var priorityLine in groupPriorityLines)
             {
@@ -175,10 +175,10 @@ namespace Domain.Conversions
                     groupChoices.Add(groupChoice);
                 }
 
-                groupRequesitions.Add(new GroupRequisition(groupChoices.ToArray()));
+                groupRequisitions.Add(new GroupRequisition(groupChoices.ToArray()));
             }
 
-            return groupRequesitions;
+            return groupRequisitions;
         }
 
         private static GroupsChoice CreateGroupChoices(string meetingGroupString, HashSet<string> allGroups, bool isLecture)
@@ -247,10 +247,10 @@ namespace Domain.Conversions
             return matchedGroups;
         }
 
-        private static List<MeetingTimeRequesition> ParseMeetingTimeRequesitions(string rawMeetingTime)
+        private static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();
-            var meetingTimeRequesitions = new List<MeetingTimeRequesition>();
+            var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
             if (string.IsNullOrWhiteSpace(rawMeetingTime))
             {
@@ -262,9 +262,9 @@ namespace Domain.Conversions
                         meetingTimes.Add(new MeetingTime(day, index));
                     }
                 }
-                var meetingTimeRequesition = new MeetingTimeRequesition(meetingTimes.ToArray());
-                meetingTimeRequesitions.Add(meetingTimeRequesition);
-                return meetingTimeRequesitions;
+                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
+                meetingTimeRequisitions.Add(meetingTimeRequisition);
+                return meetingTimeRequisitions;
             }
 
             var weekDaysList = new List<DayOfWeek> {
@@ -341,11 +341,11 @@ namespace Domain.Conversions
                     }
                 }
 
-                var meetingTimeRequesition = new MeetingTimeRequesition(meetingTimes.ToArray());
-                meetingTimeRequesitions.Add(meetingTimeRequesition);
+                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
+                meetingTimeRequisitions.Add(meetingTimeRequisition);
             }
 
-            return meetingTimeRequesitions;
+            return meetingTimeRequisitions;
         }
     }
 }

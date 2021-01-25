@@ -4,7 +4,7 @@ using Domain.ScheduleLib;
 
 namespace Domain.Rules
 {
-    public class NoMoreThanOneMeetingAtTimeForGroupRule
+    public class NoMoreThanOneMeetingAtTimeForGroupRule : IRule
     {
         public readonly double UnitPenalty;
 
@@ -13,7 +13,7 @@ namespace Domain.Rules
             UnitPenalty = unitPenalty;
         }
 
-        public double Evaluate(LearningPlan learningPlan, Requisition[] requisition, Schedule schedule, Meeting meetingToAdd)
+        public double Evaluate(LearningPlan learningPlan, Requisition requisition, Schedule schedule, Meeting meetingToAdd)
         {
             var badMeetings = GetCollidedMeetings(schedule, meetingToAdd);
             var totalPenalty = UnitPenalty * badMeetings.Count;

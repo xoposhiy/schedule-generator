@@ -3,30 +3,30 @@ using Domain.ScheduleLib;
 
 namespace Domain.Conversions
 {
-    public static class RequistionToMeetingConverter
+    public static class RequisitionToMeetingConverter
     {
-        public static HashSet<Meeting> ConvertRequistionToMeetingWithoutTime(Requisition requisition)
+        public static HashSet<Meeting> ConvertRequisitionToMeetingWithoutTime(RequisitionItem requisitionItem)
         {
-            var discipline = requisition.PlanItem.Discipline;
-            var meetingType = requisition.PlanItem.MeetingType;
+            var discipline = requisitionItem.PlanItem.Discipline;
+            var meetingType = requisitionItem.PlanItem.MeetingType;
 
             var meetings = new HashSet<Meeting>();
-            for (int i = 0; i < requisition.RepetitionsCount; i++)
+            for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
             {
                 var meeting = new Meeting(discipline, meetingType, null);
-                meeting.Location = requisition.Location;
-                meeting.Teacher = requisition.Teacher;
+                meeting.Location = requisitionItem.Location;
+                meeting.Teacher = requisitionItem.Teacher;
                 // According to meetings per week from learn plan
-                meeting.WeekType = requisition.WeekType;
+                meeting.WeekType = requisitionItem.WeekType;
                 meetings.Add(meeting);
             }
             return meetings;
         }
 
-        public static (HashSet<Meeting>, AdditionalMeetingInfo) ConvertRequistionToMeeting(Requisition requisition)
+        public static (HashSet<Meeting>, AdditionalMeetingInfo) ConvertRequisitionToMeeting(RequisitionItem requisitionItem)
         {
-            var meetings = ConvertRequistionToMeetingWithoutTime(requisition);
-            var additionalInfo = new AdditionalMeetingInfo(requisition);
+            var meetings = ConvertRequisitionToMeetingWithoutTime(requisitionItem);
+            var additionalInfo = new AdditionalMeetingInfo(requisitionItem);
             return (meetings, additionalInfo);
         }
     }
@@ -38,11 +38,11 @@ namespace Domain.Conversions
         //public List<HashSet<DayOfWeek>> possibleDays;
         //public List<HashSet<int>> possibleIndexes;
         public List<HashSet<MeetingTime>> possibleMeetingTimes;
-        public AdditionalMeetingInfo(Requisition requisition)
+        public AdditionalMeetingInfo(RequisitionItem requisitionItem)
         {
             // groups
             possibleGroups = new List<HashSet<HashSet<MeetingGroup>>>();
-            foreach (var groupRequisition in requisition.GroupPriorities)
+            foreach (var groupRequisition in requisitionItem.GroupPriorities)
             {
                 possibleGroups.Add(new HashSet<HashSet<MeetingGroup>>());
                 foreach (var groupChoice in groupRequisition.GroupsChoices)
@@ -53,20 +53,20 @@ namespace Domain.Conversions
             }
 
             // week type (even/odd)
-            if (requisition.WeekType == WeekType.Any)
+            if (requisitionItem.WeekType == WeekType.Any)
             {
                 possibleWeekType = new HashSet<WeekType>() { WeekType.Even, WeekType.Odd };
             }
             else
             {
-                possibleWeekType = new HashSet<WeekType>() { requisition.WeekType };
+                possibleWeekType = new HashSet<WeekType>() { requisitionItem.WeekType };
             }
 
             // week days
             possibleMeetingTimes = new List<HashSet<MeetingTime>>();
-            foreach (var meetingTimeRequestion in requisition.MeetingTimePriorities)
+            foreach (var meetingTimeRequisition in requisitionItem.MeetingTimePriorities)
             {
-                possibleMeetingTimes.Add(new HashSet<MeetingTime>(meetingTimeRequestion.MeetingTimeChoices));
+                possibleMeetingTimes.Add(new HashSet<MeetingTime>(meetingTimeRequisition.MeetingTimeChoices));
             }
         }
     }

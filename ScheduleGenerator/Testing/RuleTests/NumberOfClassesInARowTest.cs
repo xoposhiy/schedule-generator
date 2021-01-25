@@ -15,7 +15,7 @@ namespace Testing.RuleTests
             var rule = new NumberOfClassesInARow();
             var meetingToAdd = MeetingCreator.CreateMeeting("Math 623 Fil 0 4 0 0 FT-202#0");
             var actualPenalty = rule.Evaluate(
-                MeetingCreator.StandartLearningPlan, MeetingCreator.StandartRequestion, MeetingCreator.StandartSchedule, meetingToAdd);
+                MeetingCreator.StandardLearningPlan, MeetingCreator.StandardRequisition, MeetingCreator.StandardSchedule, meetingToAdd);
             Assert.AreEqual(0, actualPenalty);
         }
 
@@ -32,7 +32,7 @@ namespace Testing.RuleTests
             var rule = new NumberOfClassesInARow();
             var meetingToAdd = MeetingCreator.CreateMeeting("Pyth 622 Str 0 5 0 0 FT-202#0");
             var actualPenalty = rule.Evaluate(
-                MeetingCreator.StandartLearningPlan, MeetingCreator.StandartRequestion, schedule, meetingToAdd);
+                MeetingCreator.StandardLearningPlan, MeetingCreator.StandardRequisition, schedule, meetingToAdd);
             Assert.AreEqual(rule.UnitPenalty, actualPenalty);
         }
     }

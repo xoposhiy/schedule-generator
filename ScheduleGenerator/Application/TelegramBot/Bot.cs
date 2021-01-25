@@ -134,11 +134,11 @@ namespace Application.TelegramBot
                 }
                 else if (!currentAdditionalState.AccessRecieved)
                 {
-                    CheckAccessAndAskForRequesitionSheetIfSuccess(chatID, message.Text, currentSession, currentAdditionalState);
+                    CheckAccessAndAskForRequisitionSheetIfSuccess(chatID, message.Text, currentSession, currentAdditionalState);
                 }
                 else if (string.IsNullOrEmpty(currentSession.InputRequirementsSheet))
                 {
-                    HandleRequesitionSheetAndAskForLearningPlanIfSuccess(chatID, message.Text, currentSession, repo);
+                    HandleRequisitionSheetAndAskForLearningPlanIfSuccess(chatID, message.Text, currentSession, repo);
                 }
                 else if (string.IsNullOrEmpty(currentSession.LearningPlanSheet))
                 {
@@ -264,7 +264,7 @@ namespace Application.TelegramBot
             }
         }
 
-        private async void CheckAccessAndAskForRequesitionSheetIfSuccess(long chatID, string message,
+        private async void CheckAccessAndAskForRequisitionSheetIfSuccess(long chatID, string message,
                 ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState)
         {
             if (message == "Готово")
@@ -303,7 +303,7 @@ namespace Application.TelegramBot
             }
         }
 
-        public async void HandleRequesitionSheetAndAskForLearningPlanIfSuccess(long chatID, string message,
+        public async void HandleRequisitionSheetAndAskForLearningPlanIfSuccess(long chatID, string message,
                 ScheduleSession scheduleSession, GSRepository repo)
         {
             var exists = false;
@@ -312,7 +312,7 @@ namespace Application.TelegramBot
             {
                 repo.SetUpSheetInfo();
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
-                var newSheetName = FindUniqueName(takenNames, "Requestion");
+                var newSheetName = FindUniqueName(takenNames, "Requisition");
                 repo.CreateNewSheet(newSheetName);
                 repo.SetUpSheetInfo();
                 // Add headers

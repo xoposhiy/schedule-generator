@@ -9,22 +9,29 @@ namespace Testing
 {
     public class MeetingCreator
     {
-        public static LearningPlanItem StandartLearningPlanItem = new LearningPlanItem(
+        public static LearningPlanItem StandardLearningPlanItem = new LearningPlanItem(
             "FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2);
-        public static Requisition StandartRequestion = new Requisition(
-            StandartLearningPlanItem,
-            new[] { new GroupRequisition(new[] { new GroupsChoice(new[] { new MeetingGroup("FT-202", GroupPart.Part1) }) }) },
-            "514",
-            2,
-            new[] { new MeetingTimeRequesition(new[] { new MeetingTime(DayOfWeek.Tuesday, 2) }) },
-            new Teacher("Eg"),
-            WeekType.Any);
-        public static Schedule StandartSchedule = new Schedule(new[] {
+
+        public static Requisition StandardRequisition = new Requisition(new RequisitionItem[]
+        {
+            new RequisitionItem(
+                StandardLearningPlanItem,
+                new[]
+                {
+                    new GroupRequisition(new[] {new GroupsChoice(new[] {new MeetingGroup("FT-202", GroupPart.Part1)})})
+                },
+                "514",
+                2,
+                new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2)})},
+                new Teacher("Eg"),
+                WeekType.Any)
+        });
+        public static Schedule StandardSchedule = new Schedule(new[] {
                 MeetingCreator.CreateMeeting("Math 623 Fil 0 3 0 0 FT-202#0"),
                 MeetingCreator.CreateMeeting("DM 622 Str 0 0 0 0 FT-201#0"),
                 //MeetingCreator.CreateMeeting("OOP 514 Eg 0 2 0 0 FT-202#1")
             });
-        public static LearningPlan StandartLearningPlan = new LearningPlan(
+        public static LearningPlan StandardLearningPlan = new LearningPlan(
             new[]{
                 new LearningPlanItem("FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2),
                 new LearningPlanItem("FT-202", new Discipline("OOP"), MeetingType.Seminar, GroupSize.HalfGroup, 2)

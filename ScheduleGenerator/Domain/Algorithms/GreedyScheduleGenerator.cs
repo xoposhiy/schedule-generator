@@ -11,10 +11,10 @@ namespace Domain.Algorithms
 {
     public class GreedyScheduleGenerator : IScheduleGenerator
     {
-        public Schedule MakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Requisition[] requisition)
+        public Schedule MakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Requisition requisition)
         {
-            var meetingsToFill = requisition.Select(
-                Conversions.RequistionToMeetingConverter.ConvertRequistionToMeetingWithoutTime).SelectMany(x=>x).ToArray();
+            var meetingsToFill = requisition.Items.Select(
+                Conversions.RequisitionToMeetingConverter.ConvertRequisitionToMeetingWithoutTime).SelectMany(x=>x).ToArray();
             var bestSchedule = new Schedule(new Meeting[0]);
             var bestPenalty = double.PositiveInfinity;
             for (var i = 0; i < 100; ++i)
@@ -31,7 +31,7 @@ namespace Domain.Algorithms
             return bestSchedule;
         }
 
-        private (Schedule, double) TryMakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Meeting[] meetingsToFill, Requisition[] requisition)
+        private (Schedule, double) TryMakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Meeting[] meetingsToFill, Requisition requisition)
         {
             var penalty = 0d;
             List<Meeting> currentMeetings = new List<Meeting>();
@@ -67,9 +67,9 @@ namespace Domain.Algorithms
             return (new Schedule(currentMeetings.ToArray()), penalty);
         }
 
-        private Requisition GetCorrespondingRequisitionItem(Meeting meeting, Requisition[] requisition)
+        private RequisitionItem GetCorrespondingRequisitionItem(Meeting meeting, Requisition requisition)
         {
-            foreach (var requisitionItem in requisition)
+            foreach (var requisitionItem in requisition.Items)
             {
                 if (requisitionItem.Teacher == meeting.Teacher
                     && requisitionItem.PlanItem.Discipline == meeting.Discipline

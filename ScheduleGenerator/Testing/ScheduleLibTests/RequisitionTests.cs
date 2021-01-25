@@ -3,7 +3,7 @@
 namespace Testing.ScheduleLibTests
 {
     [TestFixture]
-    public class RequesitionTests
+    public class RequisitionTests
     {
         [Test]
         public void TestGroupMaskInit()
