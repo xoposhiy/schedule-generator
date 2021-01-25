@@ -32,7 +32,9 @@ namespace Domain.Rules
                     || frozenMeeting.WeekType == WeekType.Any
                     || meetingToAdd.WeekType == WeekType.Any) &&
                         frozenMeeting.Location == meetingToAdd.Location &&
-                        frozenMeeting.MeetingTime == meetingToAdd.MeetingTime)
+                        frozenMeeting.MeetingTime.Equals(meetingToAdd.MeetingTime) &&
+                        !(frozenMeeting.Discipline.Equals(meetingToAdd.Discipline) &&
+                          frozenMeeting.Teacher.Equals(meetingToAdd.Teacher)))
                 {
                     return new List<Meeting>() { frozenMeeting };
                 }
