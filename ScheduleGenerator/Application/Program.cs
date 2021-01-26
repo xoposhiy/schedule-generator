@@ -5,6 +5,7 @@ using Application.TelegramBot;
 using System.IO;
 using System.Xml.Linq;
 using Ninject;
+using Ninject.Extensions.Conventions;
 
 using Domain.Rules;
 using Domain.ScheduleLib;
@@ -97,12 +98,7 @@ namespace Application
 
         private static StandardKernel ConfigureContainer() {
             var container = new StandardKernel();
-            container.Bind<IRule>().To<LecturerHasPracticeWithSameFlow>();
-            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForGroupRule>();
-            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForLocationRule>();
-            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForTeacherRule>();
-            container.Bind<IRule>().To<NoWindowBetweenClassesUnlessPE>();
-            container.Bind<IRule>().To<NumberOfClassesInARow>();
+            container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             container.Bind<MeetingEvaluator>().ToSelf();
 
             return container;
