@@ -4,6 +4,11 @@ using System.Linq;
 using Application.TelegramBot;
 using System.IO;
 using System.Xml.Linq;
+using Ninject;
+using Ninject.Extensions.Conventions;
+
+using Domain.Rules;
+using Domain.ScheduleLib;
 
 
 namespace Application
@@ -61,13 +66,14 @@ namespace Application
 
             var firebaseSecret = Environment.GetEnvironmentVariable(secretFirebaseTokenVar);
 
+            var container = ConfigureContainer();
 
             Console.WriteLine("Starting...");
 
             var bot = new TBot(secretToken, credentialPath, firebaseSecret, basePath,
                 requisitionSheetHeaders, requirmentsSheetHeaderComments,
                 learningPlanSheetHeaders, learningPlanSheetHeaderComments,
-                requisitionPatternMsgList, learningPlanPatternMsgList);
+                requisitionPatternMsgList, learningPlanPatternMsgList, container);
             bot.Start();
             Console.WriteLine("Press Enter to stop the Bot");
             Console.ReadLine();
@@ -88,6 +94,14 @@ namespace Application
                 var errorMessage = header.Element("errorMessage").Attribute("value").Value;
                 patternMsg.Add((pattern, errorMessage));
             }
+        }
+
+        private static StandardKernel ConfigureContainer() {
+            var container = new StandardKernel();
+            container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
+            container.Bind<MeetingEvaluator>().ToSelf();
+
+            return container;
         }
     }
 }

@@ -9,6 +9,8 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using Ninject;
+
 using Domain.Conversions;
 using Domain.Rules;
 using Domain.ScheduleLib;
@@ -22,6 +24,7 @@ namespace Application.TelegramBot
 {
     public class TBot
     {
+        private StandardKernel container;
         private static Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
 
         private List<string> requisitionSheetHeaders;
@@ -51,7 +54,8 @@ namespace Application.TelegramBot
             List<string> learningPlanSheetHeaders,
             List<string> learningPlanSheetHeaderComments,
             List<(string pattern, string msg)> requisitionPatternMsgList,
-            List<(string pattern, string msg)> learningPlanPatternMsgList)
+            List<(string pattern, string msg)> learningPlanPatternMsgList,
+            StandardKernel container)
         {
             client = new TelegramBotClient(token);
             sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
@@ -75,6 +79,8 @@ namespace Application.TelegramBot
 
             requisitionEvaluator = new SheetTableEvaluator(requisitionPatternMsgList);
             learningPlanEvaluator = new SheetTableEvaluator(learningPlanPatternMsgList);
+
+            this.container = container;
         }
 
         public void Start()
@@ -395,7 +401,6 @@ namespace Application.TelegramBot
             }
             if (exists)
             {
-                //scheduleSession.LearningPlanSheet = message; // Delete this!
                 scheduleSession.LastModificationTime = DateTime.Now;
                 var answer = $"Хорошо, лист \"{scheduleSession.LearningPlanSheet}\" найден/создан." +
                     " Если вы еще не заполнили выбранные листы необходимыми данными, сделайте это. " +
@@ -530,6 +535,8 @@ namespace Application.TelegramBot
                 var newSheetName = FindUniqueName(takenNames, "Schedule");
                 sheetName = newSheetName;
                 repo.CreateNewSheet(newSheetName);
+                repo.SetUpSheetInfo();
+
                 scheduleSession.ScheduleSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
@@ -557,18 +564,11 @@ namespace Application.TelegramBot
 
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
-                // --------------------------------------------- SCHEDULE GENERATION
+                // SCHEDULE GENERATION
                 var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
                     repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
 
-                var evaluator = new MeetingEvaluator(new List<IRule>() {
-                    new LecturerHasPracticeWithSameFlow(),
-                    new NoMoreThanOneMeetingAtTimeForGroupRule(),
-                    new NoMoreThanOneMeetingAtTimeForLocationRule(),
-                    new NoMoreThanOneMeetingAtTimeForTeacherRule(),
-                    new NoWindowBetweenClassesUnlessPE(),
-                    new NumberOfClassesInARow()
-                });
+                var evaluator = container.Get<MeetingEvaluator>();
 
                 var requisition = new Requisition(requisitions.ToArray());
 
@@ -581,7 +581,6 @@ namespace Application.TelegramBot
                          " Напишите \"/restart\", если хотите составить еще одно расписание.";
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
-                // Save current session if the schedule is ready
             }
             else
             {
@@ -634,11 +633,11 @@ namespace Application.TelegramBot
         }
 
 
-        public async void StartSolvingAndNotifyWhenDone(long chatID, ScheduleSession session, GSRepository repo)
-        {
-            var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, session.InputRequirementsSheet, session.LearningPlanSheet);
-        }
+        //public async void StartSolvingAndNotifyWhenDone(long chatID, ScheduleSession session, GSRepository repo)
+        //{
+        //    var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
+        //        repo, session.InputRequirementsSheet, session.LearningPlanSheet);
+        //}
     }
 
     public class AdditionalSessionState
