@@ -9,6 +9,8 @@ using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
+using Ninject;
+
 using Domain.Conversions;
 using Domain.Rules;
 using Domain.ScheduleLib;
@@ -22,6 +24,7 @@ namespace Application.TelegramBot
 {
     public class TBot
     {
+        private StandardKernel container;
         private static Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
 
         private List<string> requisitionSheetHeaders;
@@ -51,7 +54,8 @@ namespace Application.TelegramBot
             List<string> learningPlanSheetHeaders,
             List<string> learningPlanSheetHeaderComments,
             List<(string pattern, string msg)> requisitionPatternMsgList,
-            List<(string pattern, string msg)> learningPlanPatternMsgList)
+            List<(string pattern, string msg)> learningPlanPatternMsgList,
+            StandardKernel container)
         {
             client = new TelegramBotClient(token);
             sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
@@ -75,6 +79,8 @@ namespace Application.TelegramBot
 
             requisitionEvaluator = new SheetTableEvaluator(requisitionPatternMsgList);
             learningPlanEvaluator = new SheetTableEvaluator(learningPlanPatternMsgList);
+
+            this.container = container;
         }
 
         public void Start()
@@ -561,14 +567,15 @@ namespace Application.TelegramBot
                 var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
                     repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
 
-                var evaluator = new MeetingEvaluator(new List<IRule>() {
-                    new LecturerHasPracticeWithSameFlow(),
-                    new NoMoreThanOneMeetingAtTimeForGroupRule(),
-                    new NoMoreThanOneMeetingAtTimeForLocationRule(),
-                    new NoMoreThanOneMeetingAtTimeForTeacherRule(),
-                    new NoWindowBetweenClassesUnlessPE(),
-                    new NumberOfClassesInARow()
-                });
+                var evaluator = container.Get<MeetingEvaluator>();
+                //    new MeetingEvaluator(new List<IRule>() {
+                //    new LecturerHasPracticeWithSameFlow(),
+                //    new NoMoreThanOneMeetingAtTimeForGroupRule(),
+                //    new NoMoreThanOneMeetingAtTimeForLocationRule(),
+                //    new NoMoreThanOneMeetingAtTimeForTeacherRule(),
+                //    new NoWindowBetweenClassesUnlessPE(),
+                //    new NumberOfClassesInARow()
+                //});
 
                 var requisition = new Requisition(requisitions.ToArray());
 

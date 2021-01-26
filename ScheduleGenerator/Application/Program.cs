@@ -4,6 +4,10 @@ using System.Linq;
 using Application.TelegramBot;
 using System.IO;
 using System.Xml.Linq;
+using Ninject;
+
+using Domain.Rules;
+using Domain.ScheduleLib;
 
 
 namespace Application
@@ -61,13 +65,14 @@ namespace Application
 
             var firebaseSecret = Environment.GetEnvironmentVariable(secretFirebaseTokenVar);
 
+            var container = ConfigureContainer();
 
             Console.WriteLine("Starting...");
 
             var bot = new TBot(secretToken, credentialPath, firebaseSecret, basePath,
                 requisitionSheetHeaders, requirmentsSheetHeaderComments,
                 learningPlanSheetHeaders, learningPlanSheetHeaderComments,
-                requisitionPatternMsgList, learningPlanPatternMsgList);
+                requisitionPatternMsgList, learningPlanPatternMsgList, container);
             bot.Start();
             Console.WriteLine("Press Enter to stop the Bot");
             Console.ReadLine();
@@ -88,6 +93,19 @@ namespace Application
                 var errorMessage = header.Element("errorMessage").Attribute("value").Value;
                 patternMsg.Add((pattern, errorMessage));
             }
+        }
+
+        private static StandardKernel ConfigureContainer() {
+            var container = new StandardKernel();
+            container.Bind<IRule>().To<LecturerHasPracticeWithSameFlow>();
+            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForGroupRule>();
+            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForLocationRule>();
+            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForTeacherRule>();
+            container.Bind<IRule>().To<NoWindowBetweenClassesUnlessPE>();
+            container.Bind<IRule>().To<NumberOfClassesInARow>();
+            container.Bind<MeetingEvaluator>().ToSelf();
+
+            return container;
         }
     }
 }
