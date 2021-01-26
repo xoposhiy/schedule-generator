@@ -168,7 +168,7 @@ namespace Application.TelegramBot
 
                     // Save current session
                     sessionRepository.Save(chatID, currentSession);
-                    await client.SendTextMessageAsync(chatID, "Кажется, что предыдущая сессия уже заверщиласть составлением расписания.\n" +
+                    await client.SendTextMessageAsync(chatID, "Кажется, предыдущая сессия уже завершиласть составлением расписания.\n" +
                         "Напишите \"Заново\" или /restart, чтобы начать сначала.");
                     currentAdditionalState.CreatingSchedule = false; // it will be also removed
                 }
@@ -225,7 +225,7 @@ namespace Application.TelegramBot
 
         private async void ShowHelp(long chatID)
         {
-            var answer = "Я Бот для составления расписания.\n Чтобы начать сначала введите \"Заново\" или /restart";
+            var answer = "Я — Бот для составления расписания.\n Чтобы начать сначала введите \"Заново\" или /restart";
             await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
@@ -235,7 +235,8 @@ namespace Application.TelegramBot
             additionalStateDict.Remove(chatID);
             repoDict.Remove(chatID);
             sessionRepository.Delete(chatID);
-            var answer = "Начинаем все сначала. Отправьте ссылку на Spreadsheet (url для таблицы в Google Sheets).";
+            var answer = "Начинаем все сначала. Отправьте ссылку на гугл-таблицу с данными" +
+                         " (url для таблицы в Google Sheets).";
             await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
@@ -257,14 +258,14 @@ namespace Application.TelegramBot
             {
                 if (isChatFresh)
                 {
-                    var answer = "Привет. Я бот для создания расписаний. Чтобы начать, отправьте сюда " +
+                    var answer = "Привет. Я — бот для создания расписаний. Чтобы начать, отправьте " +
                         "ссылку на Spreadsheet (url для таблицы в Google Sheets)";
                     await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
                 else
                 {
-                    var answer = "Не понимаю. Сначала скиньте ссылку на Spreadsheet (url для таблицы" +
-                        " в Google Sheets). Просто отправьте суда текстом.";
+                    var answer = "Не понимаю. Сначала пришлите ссылку на Spreadsheet (url для таблицы" +
+                        " в Google Sheets).";
                     await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
             }
@@ -328,7 +329,7 @@ namespace Application.TelegramBot
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
             }
-            // Check what this sheet really exists
+            // Check if this sheet really exists
             else
             {
                 repo.SetUpSheetInfo();
@@ -344,8 +345,8 @@ namespace Application.TelegramBot
             if (exists)
             {
 
-                var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.InputRequirementsSheet}\"." +
-                    $" Теперь укажите имя таблицы с учебным планом";
+                var answer = $"Хорошо, лист \"{scheduleSession.InputRequirementsSheet}\" найден/создан." +
+                    $" Теперь укажите название листа с учебным планом";
                 // keyboard update
                 repo.SetUpSheetInfo();
                 var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
@@ -380,7 +381,7 @@ namespace Application.TelegramBot
                 scheduleSession.LastModificationTime = DateTime.Now;
                 exists = true;
             }
-            // Check what this sheet really exists
+            // Check if this sheet really exists
             else
             {
                 repo.SetUpSheetInfo();
@@ -396,8 +397,8 @@ namespace Application.TelegramBot
             {
                 //scheduleSession.LearningPlanSheet = message; // Delete this!
                 scheduleSession.LastModificationTime = DateTime.Now;
-                var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.LearningPlanSheet}\"." +
-                    " Если вы еще не заполнили таблицы данными сделайте это. " +
+                var answer = $"Хорошо, лист \"{scheduleSession.LearningPlanSheet}\" найден/создан." +
+                    " Если вы еще не заполнили выбранные листы необходимыми данными, сделайте это. " +
                     "Как будете готовы, нажмите на кнопку \"Готово\"";
 
                 // keyboard update
@@ -418,7 +419,7 @@ namespace Application.TelegramBot
         {
             if (message == "Готово" && !additionalSessionState.TableValidationInProgress)
             {
-                var answer = "Сейчас проверю правильность введенных данных. Ожидайте.";
+                var answer = "Проверяю корректность введенных данных. Ожидайте.";
                 await client.SendTextMessageAsync(chatID, answer);
                 // Maybe async method t check and send message with report
                 var isValid = true;
@@ -474,7 +475,7 @@ namespace Application.TelegramBot
                 {
                     additionalSessionState.DataIsValid = true;
                     additionalSessionState.TableValidationInProgress = false;
-                    var answer2 = "Все отлично. Выберите имя таблицы, где вывести расписание";
+                    var answer2 = "Все отлично. Выберите название листа, где будет выведено расписание";
 
                     // keyboard update
                     repo.SetUpSheetInfo();
@@ -487,8 +488,8 @@ namespace Application.TelegramBot
                 {
                     var errorMsgParts = new List<string>();
                     errorMsgParts.Add("Обнаружены ошибки. Выделены таблицах красным цветом.");
-                    errorMsgParts.Add("Подробности в комментраниях ячеек, обратите внимание на формат указанный в заголоках.");
-                    errorMsgParts.Add("Проверьте следующие листы:");
+                    errorMsgParts.Add("Подробности в комменараниях ячеек, обратите внимание на формат указанный в заголоках.");
+                    errorMsgParts.Add("Исправьте данные в следующих листах:");
                     if (requisitionErrors.Count > 0)
                     {
                         errorMsgParts.Add(scheduleSession.InputRequirementsSheet);
@@ -509,7 +510,8 @@ namespace Application.TelegramBot
             }
             else
             {
-                var answer = "Не понял. Нажмите \"Готово\", как закончите вводить данные.";
+                var answer = "Не понял. Вам нужно нажать \"Готово\", как только закончите вводить данные, " +
+                             "чтобы начать составлять расписание.";
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
             }
@@ -549,10 +551,11 @@ namespace Application.TelegramBot
             {
                 scheduleSession.ScheduleSheet = sheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
-                var answer = $"Хорошо, таблица найдена (или создана) \"{scheduleSession.ScheduleSheet}\"." +
+                var answer = $"Хорошо, лист \"{scheduleSession.ScheduleSheet}\" найден/создан." +
                     " Начинаю составление расписания. Напишу, когда будет готово";
                 additionalSessionState.CreatingSchedule = true;
 
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
                 // --------------------------------------------- SCHEDULE GENERATION
                 var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
@@ -574,10 +577,11 @@ namespace Application.TelegramBot
                 var converter = new ScheduleSpreadsheetConverter(repo, scheduleSession.ScheduleSheet);
                 converter.Build(schedule);
 
-
+                answer = $"Расписание готово! Оно находится в листе \"{scheduleSession.ScheduleSheet}\"." +
+                         " Напишите \"/restart\", если хотите составить еще одно расписание.";
+                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
                 // Save current session if the schedule is ready
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
             }
             else
             {
