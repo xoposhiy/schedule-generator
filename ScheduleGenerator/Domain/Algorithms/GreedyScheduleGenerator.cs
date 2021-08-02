@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Domain.Rules;
@@ -13,6 +14,7 @@ namespace Domain.Algorithms
     {
         public Schedule MakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Requisition requisition)
         {
+            var sw = Stopwatch.StartNew();
             var meetingsToFill = requisition.Items.Select(
                 Conversions.RequisitionToMeetingConverter.ConvertRequisitionToMeetingWithoutTime).SelectMany(x=>x).ToArray();
             var bestSchedule = new Schedule(new Meeting[0]);
@@ -28,18 +30,20 @@ namespace Domain.Algorithms
                 }
             }
 
+            Console.WriteLine(sw.Elapsed);
             return bestSchedule;
         }
 
         private (Schedule, double) TryMakeSchedule(LearningPlan learningPlan, MeetingEvaluator evaluator, Meeting[] meetingsToFill, Requisition requisition)
         {
             var penalty = 0d;
-            List<Meeting> currentMeetings = new List<Meeting>();
+            var random = new Random();
+            List<Meeting> currentMeetings = new();
             foreach(var meeting in meetingsToFill)
             {
                 var requisitionItem = GetCorrespondingRequisitionItem(meeting, requisition);
-                var bestPenalty = double.PositiveInfinity;
-                var bestMeeting = default(Meeting);
+                var meetingsByPenalty = new SortedDictionary<double, List<Meeting>>();
+                var schedule = new Schedule(currentMeetings.ToArray());
 
                 foreach (var groupPriority in requisitionItem.GroupPriorities)
                 {
@@ -49,18 +53,19 @@ namespace Domain.Algorithms
                         {
                             foreach (var meetingTimeChoice in meetingTimePriority.MeetingTimeChoices)
                             {
-                                meeting.MeetingTime = meetingTimeChoice;
-                                meeting.Groups = groupsChoice.Groups;
-                                var currentPenalty = evaluator.Evaluate(learningPlan, requisition, new Schedule(currentMeetings.ToArray()), meeting);
-                                if (bestPenalty > currentPenalty)
-                                {
-                                    bestPenalty = currentPenalty;
-                                    bestMeeting = meeting.Copy();
-                                }
+                                var copy = meeting.Copy();
+                                copy.MeetingTime = meetingTimeChoice;
+                                copy.Groups = groupsChoice.Groups;
+                                var currentPenalty = evaluator.Evaluate(learningPlan, requisition, schedule, copy);
+                                if (meetingsByPenalty.ContainsKey(currentPenalty))
+                                    meetingsByPenalty[currentPenalty].Add(copy);
+                                else
+                                    meetingsByPenalty.Add(currentPenalty, new List<Meeting>{copy});
                             }
                         }
                     }
                 }
+                var bestMeeting = meetingsByPenalty.First().Value[random.Next(meetingsByPenalty.Count)];
                 currentMeetings.Add(bestMeeting);
             }
 

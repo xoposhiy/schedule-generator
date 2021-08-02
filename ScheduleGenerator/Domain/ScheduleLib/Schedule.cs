@@ -12,26 +12,8 @@ namespace Domain.ScheduleLib
         }
     }
 
-    public class Discipline
+    public record Discipline(string Name)
     {
-        public string Name;
-
-        public Discipline(string name)
-        {
-            Name = name;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Discipline discipline &&
-                   Name == discipline.Name;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Name);
-        }
-
         public override string ToString()
         {
             return Name;
@@ -107,7 +89,7 @@ namespace Domain.ScheduleLib
         Lecture,
         ComputerLab,
         Seminar,
-        Online
+        Online // TODO лишнее? должно быть понятно из Location
     }
 
     public class Teacher

@@ -126,35 +126,51 @@ namespace Domain.Conversions
             var requisitions = new List<RequisitionItem>();
             foreach (var requisitionRow in sheetData)
             {
-                if (requisitionRow.Count == 0 || requisitionRow.Take(7).All(s => string.IsNullOrEmpty(s)))
+                if (requisitionRow.Count == 0 || requisitionRow.Take(7).All(string.IsNullOrEmpty))
                 {
                     continue;
                 }
-                var teacherName = requisitionRow[0];
-                var disciplineName = requisitionRow[1];
-                var meetingTypeStr = requisitionRow[2];
-                var meetingType = meetingTypeDict[meetingTypeStr];
-                var repetitionCountRaw = requisitionRow[3];
-                var groupPriorities = requisitionRow[4];
-                var meetingTimesRaw = requisitionRow[5];
-                var weekTypeRaw = requisitionRow[6];
 
-                var teacher = new Teacher(teacherName);
+                try
+                {
+                    var teacherName = requisitionRow[0];
+                    var disciplineName = requisitionRow[1];
+                    var meetingTypeStr = requisitionRow[2];
+                    var meetingType = meetingTypeDict[meetingTypeStr];
+                    var repetitionCountRaw = requisitionRow[3];
+                    var groupPriorities = requisitionRow[4];
+                    var meetingTimesRaw = requisitionRow[5];
+                    var weekTypeRaw = requisitionRow[6];
 
-                var groupRequisitions = ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
-                var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw);
-                var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
-                var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
-                var planItemAndLocation = learningPlanItemsLocation
-                    .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
-                    .Where(lpi => lpi.Item1.MeetingType == meetingType)
-                    .FirstOrDefault();
-                var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                    planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
-                requisitions.Add(requisition);
+                    var teacher = new Teacher(teacherName);
+
+                    var groupRequisitions =
+                        ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
+                    var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw);
+                    var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
+                    var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
+                    var planItemAndLocations = learningPlanItemsLocation
+                        .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
+                        .Where(lpi => lpi.Item1.MeetingType == meetingType)
+                        .ToList();
+                    if (planItemAndLocations.Count == 0)
+                        throw new FormatException(
+                            $"Требования содержат пару ({disciplineName}, {meetingType}), которой нет в учебном плане");
+                    if (planItemAndLocations.Count > 1)
+                        throw new FormatException(
+                            $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
+                    var planItemAndLocation = planItemAndLocations[0];
+                    var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
+                    var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                        planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    requisitions.Add(requisition);
+
+                }
+                catch (Exception e)
+                {
+                    throw new FormatException($"Некорректная строка требований: {string.Join(", ", requisitionRow)}", e);
+                }
             }
-
             return requisitions;
         }
 

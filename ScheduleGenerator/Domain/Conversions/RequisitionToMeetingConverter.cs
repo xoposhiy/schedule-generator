@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Domain.ScheduleLib;
 
 namespace Domain.Conversions
@@ -14,12 +15,14 @@ namespace Domain.Conversions
             for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
             {
                 var meeting = new Meeting(discipline, meetingType, null);
-                meeting.Location = requisitionItem.Location;
+                meeting.Location = requisitionItem.Location; // TODO  нетъ
                 meeting.Teacher = requisitionItem.Teacher;
                 // According to meetings per week from learn plan
                 meeting.WeekType = requisitionItem.WeekType;
                 meetings.Add(meeting);
             }
+
+            Console.WriteLine(string.Join(" ", meetings));
             return meetings;
         }
 
