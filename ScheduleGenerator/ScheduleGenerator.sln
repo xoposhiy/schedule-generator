@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing", "Testing\Testing.csproj", "{FA2B0331-2221-4DCD-81D3-61D1491E2D71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{A3E3643C-B1B0-44D7-B548-CC82F6AC0200}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScheduleTgBot", "ScheduleTgBot\ScheduleTgBot.csproj", "{A3E3643C-B1B0-44D7-B548-CC82F6AC0200}"
 	ProjectSection(ProjectDependencies) = postProject
 		{FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2} = {FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2}
 	EndProjectSection
