@@ -159,11 +159,22 @@ namespace Domain.Conversions
                     // if (planItemAndLocations.Count > 1)
                     //     throw new FormatException(
                     //         $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
-                    var planItemAndLocation = planItemAndLocations[0];
-                    var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                    var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                        planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
-                    requisitions.Add(requisition);
+                    
+                    
+                    foreach (var planItemAndLocation in planItemAndLocations)
+                    {
+                        var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
+                        var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                            planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                        requisitions.Add(requisition);
+                    }
+                    
+                    
+                    // var planItemAndLocation = planItemAndLocations[0];
+                    // var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
+                    // var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                    //     planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    // requisitions.Add(requisition);
 
                 }
                 catch (Exception e)
@@ -211,14 +222,16 @@ namespace Domain.Conversions
                     foreach (var matchedGroup in possibleGroups)
                     {
                         var currGroupPart = DetermineGroupPart(matchedGroup);
-                        var meetingGroup = new MeetingGroup(matchedGroup, currGroupPart);
-                        meetingGroups.Add(meetingGroup);
+                        var parentGroup = GetParentGroup(matchedGroup);
+                        meetingGroups.Add(new MeetingGroup(parentGroup, currGroupPart));
                     }
-                    continue;
                 }
-
-                var groupPart = DetermineGroupPart(singleMeetingGroup);
-                meetingGroups.Add(new MeetingGroup(singleMeetingGroup, groupPart));
+                else
+                {
+                    var groupPart = DetermineGroupPart(singleMeetingGroup);
+                    var parentGroup = GetParentGroup(singleMeetingGroup);
+                    meetingGroups.Add(new MeetingGroup(parentGroup, groupPart));
+                }
             }
 
             return new GroupsChoice(meetingGroups.ToArray());
@@ -237,6 +250,13 @@ namespace Domain.Conversions
             }
 
             return groupPart;
+        }
+
+        private static string GetParentGroup(string group)
+        {
+            var groupPartRegex = new Regex(@"(\D)*-(\d)*");
+            var partMatch = groupPartRegex.Match(group);
+            return partMatch.Groups[0].Value;
         }
 
         private static HashSet<string> FindAllMatchingGroups(string group, HashSet<string> groups, bool isLecture)

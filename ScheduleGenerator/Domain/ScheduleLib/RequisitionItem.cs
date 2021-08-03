@@ -30,33 +30,9 @@
         }
     }
 
-    public class GroupRequisition
-    {
-        public GroupsChoice[] GroupsChoices;
+    public record GroupRequisition(GroupsChoice[] GroupsChoices);
 
-        public GroupRequisition(GroupsChoice[] groupsChoices)
-        {
-            GroupsChoices = groupsChoices;
-        }
-    }
+    public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
 
-    public class MeetingTimeRequisition
-    {
-        public MeetingTime[] MeetingTimeChoices;
-
-        public MeetingTimeRequisition(MeetingTime[] meetingTimeChoices)
-        {
-            MeetingTimeChoices = meetingTimeChoices;
-        }
-    }
-
-    public class GroupsChoice
-    {
-        public MeetingGroup[] Groups;
-
-        public GroupsChoice(MeetingGroup[] groups)
-        {
-            Groups = groups;
-        }
-    }
+    public record GroupsChoice(MeetingGroup[] Groups);
 }
