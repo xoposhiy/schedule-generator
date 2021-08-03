@@ -23,6 +23,11 @@
             Teacher = teacher;
             WeekType = weekType;
         }
+        
+        public override string ToString()
+        {
+            return $"{PlanItem}, {Teacher}";//, {}, {}, {}";
+        }
     }
 
     public class GroupRequisition

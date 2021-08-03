@@ -1,20 +1,11 @@
 ﻿namespace Domain.ScheduleLib
 {
-    public class LearningPlanItem
+    public record LearningPlanItem(string Group, Discipline Discipline,
+        MeetingType MeetingType, GroupSize GroupSize, double MeetingsPerWeek)
     {
-        public LearningPlanItem(string group, Discipline discipline, MeetingType meetingType, GroupSize groupSize, double meetingsPerWeek)
+        public override string ToString()
         {
-            Group = group;
-            Discipline = discipline;
-            MeetingType = meetingType;
-            GroupSize = groupSize;
-            MeetingsPerWeek = meetingsPerWeek;
+            return $"{Group}, {Discipline}, {MeetingType}, {GroupSize}, {MeetingsPerWeek}";
         }
-
-        public string Group;
-        public Discipline Discipline;
-        public MeetingType MeetingType;
-        public GroupSize GroupSize;
-        public double MeetingsPerWeek;
     }
 }

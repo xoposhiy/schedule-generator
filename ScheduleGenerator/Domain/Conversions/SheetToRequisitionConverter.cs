@@ -156,9 +156,9 @@ namespace Domain.Conversions
                     if (planItemAndLocations.Count == 0)
                         throw new FormatException(
                             $"Требования содержат пару ({disciplineName}, {meetingType}), которой нет в учебном плане");
-                    if (planItemAndLocations.Count > 1)
-                        throw new FormatException(
-                            $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
+                    // if (planItemAndLocations.Count > 1)
+                    //     throw new FormatException(
+                    //         $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
                     var planItemAndLocation = planItemAndLocations[0];
                     var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
                     var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),

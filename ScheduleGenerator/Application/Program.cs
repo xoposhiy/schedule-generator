@@ -12,11 +12,11 @@ using Domain.Rules;
 
 namespace Application
 {
-    class Program1
+    class Program
     {
         private static string defaultConfigPath = Path.Combine("..","..", "..", "App.config");
     
-        static void Main1(string[] args)
+        static void Main(string[] args)
         {
             var configPath = defaultConfigPath;
             if (args.Length > 0) {

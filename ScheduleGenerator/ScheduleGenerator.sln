@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScheduleCLI", "ScheduleCLI\ScheduleCLI.csproj", "{47D653AB-78FD-4574-AA8C-EA180BF46D95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFECF8DC-F8A4-400C-BCB8-721ECEA78BD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D653AB-78FD-4574-AA8C-EA180BF46D95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D653AB-78FD-4574-AA8C-EA180BF46D95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D653AB-78FD-4574-AA8C-EA180BF46D95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D653AB-78FD-4574-AA8C-EA180BF46D95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

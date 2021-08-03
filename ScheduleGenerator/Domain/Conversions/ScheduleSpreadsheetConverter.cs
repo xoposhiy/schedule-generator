@@ -135,7 +135,7 @@ namespace Domain.Conversions
 
             foreach (var group in meeting.Groups)
             {
-                var data = $"{meeting.Discipline}, {meeting.Location}, {meeting.Teacher?.Name}";
+                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}";
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
                 var rowsInMeeting = 1;
