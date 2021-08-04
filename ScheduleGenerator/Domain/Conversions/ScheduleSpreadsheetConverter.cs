@@ -41,7 +41,6 @@ namespace Domain.Conversions
             BuildSchedulePattern(groupNames);
 
             FillScheduleData(meetingSet, groupNames);
-
         }
 
         private void PrepareSheet() {
@@ -121,7 +120,7 @@ namespace Domain.Conversions
         private void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict, SheetModifier modifier)
         {
             var horizOffset = 2;
-            var vertOffset = 3;
+            var vertOffset = 1;
 
             var weekDayToIntDict = new Dictionary<DayOfWeek, int>() {
                 { DayOfWeek.Monday, 0 },
@@ -135,7 +134,8 @@ namespace Domain.Conversions
 
             foreach (var group in meeting.Groups)
             {
-                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}";
+                // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
+                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingType}, {meeting.MeetingTime}";
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
                 var rowsInMeeting = 1;
@@ -158,15 +158,17 @@ namespace Domain.Conversions
                 {
                     columnsInMeeting = 2;
                 }
-
-                Console.WriteLine($"rowNumOff: {rowNumOff}");
-                Console.WriteLine($"C: {colNum} R:{rowNum} C: {colNum + columnsInMeeting - 1} R: {rowNum + rowsInMeeting - 1}");
+                // Console.WriteLine($"{meeting}");
+                // Console.WriteLine($"rowNumOff: {rowNumOff}");
+                // Console.WriteLine($"C: {colNum} R:{rowNum} C: {colNum + columnsInMeeting - 1} R: {rowNum + rowsInMeeting - 1}");
 
                 modifier
                     .WriteRange((rowNum, colNum), new List<List<string>>() { new List<string>() { data } })
                     .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1), new Color() { Green = 1 });
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
                 {
+                    // Console.WriteLine($"{(rowNum, colNum)}");
+                    // Console.WriteLine($"{(rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1)}");
                     modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
                 }
             }

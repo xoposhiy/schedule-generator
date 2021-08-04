@@ -30,7 +30,6 @@ namespace Domain.Conversions
             { "чт", DayOfWeek.Thursday },
             { "пт", DayOfWeek.Friday },
             { "сб", DayOfWeek.Saturday },
-            { "вс", DayOfWeek.Sunday },
         };
 
         private static Dictionary<int, GroupPart> groupPartDict = new Dictionary<int, GroupPart>() {
@@ -161,20 +160,20 @@ namespace Domain.Conversions
                     //         $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
                     
                     
-                    foreach (var planItemAndLocation in planItemAndLocations)
-                    {
-                        var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                        var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                            planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
-                        requisitions.Add(requisition);
-                    }
+                    // foreach (var planItemAndLocation in planItemAndLocations)
+                    // {
+                    //     var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
+                    //     var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                    //         planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    //     requisitions.Add(requisition);
+                    // }
                     
                     
-                    // var planItemAndLocation = planItemAndLocations[0];
-                    // var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                    // var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                    //     planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
-                    // requisitions.Add(requisition);
+                    var planItemAndLocation = planItemAndLocations[0];
+                    var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
+                    var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
+                        planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    requisitions.Add(requisition);
 
                 }
                 catch (Exception e)
@@ -309,7 +308,7 @@ namespace Domain.Conversions
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
                 DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
             };
-            var pattern = @"(?:(?:((?:пн|вт|ср|чт|пт|сб|вс)\s?-\s?(?:пн|вт|ср|чт|пт|сб|вс))|(пн|вт|ср|чт|пт|сб|вс)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
+            var pattern = @"(?:(?:((?:пн|вт|ср|чт|пт|сб)\s?-\s?(?:пн|вт|ср|чт|пт|сб))|(пн|вт|ср|чт|пт|сб)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
             var compiledPattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 

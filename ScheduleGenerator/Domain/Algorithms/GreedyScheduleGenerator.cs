@@ -30,7 +30,8 @@ namespace Domain.Algorithms
                 }
             }
 
-            Console.WriteLine(sw.Elapsed);
+            Console.WriteLine($"Algo time: {sw.Elapsed}");
+            Console.WriteLine($"Penalty: {bestPenalty}");
             return bestSchedule;
         }
 
@@ -65,7 +66,10 @@ namespace Domain.Algorithms
                         }
                     }
                 }
-                var bestMeeting = meetingsByPenalty.First().Value[random.Next(meetingsByPenalty.Count)];
+
+                var bestMeetings = meetingsByPenalty.First().Value;
+                var bestMeeting = bestMeetings[random.Next(bestMeetings.Count)];
+                penalty += meetingsByPenalty.First().Key;
                 currentMeetings.Add(bestMeeting);
             }
 

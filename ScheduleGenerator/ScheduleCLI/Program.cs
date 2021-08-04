@@ -63,6 +63,7 @@ namespace ScheduleCLI
             var container = new StandardKernel();
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             container.Bind<MeetingEvaluator>().ToSelf();
+            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForGroupRule>();
 
             return container;
         }
