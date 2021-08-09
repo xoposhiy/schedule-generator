@@ -12,18 +12,18 @@ namespace Domain.Conversions
     public static class SheetToRequisitionConverter
     {
         private const int MaxIndex = 5;
-        private static Dictionary<string, MeetingType> meetingTypeDict = new Dictionary<string, MeetingType>() {
+        private static Dictionary<string, MeetingType> meetingTypeDict = new() {
             { "Лекция", MeetingType.Lecture },
             { "КомпПрактика", MeetingType.ComputerLab },
             { "Семинар", MeetingType.Seminar },
             { "Онлайн", MeetingType.Online }
         };
 
-        private static Dictionary<string, GroupSize> groupSizeDict = new Dictionary<string, GroupSize>() {
+        private static Dictionary<string, GroupSize> groupSizeDict = new() {
             { "в половинках", GroupSize.HalfGroup }
         };
 
-        private static Dictionary<string, DayOfWeek> weekDaysDict = new Dictionary<string, DayOfWeek>() {
+        private static Dictionary<string, DayOfWeek> weekDaysDict = new() {
             { "пн", DayOfWeek.Monday },
             { "вт", DayOfWeek.Tuesday },
             { "ср", DayOfWeek.Wednesday },
@@ -32,13 +32,13 @@ namespace Domain.Conversions
             { "сб", DayOfWeek.Saturday },
         };
 
-        private static Dictionary<int, GroupPart> groupPartDict = new Dictionary<int, GroupPart>() {
+        private static Dictionary<int, GroupPart> groupPartDict = new() {
             { 1, GroupPart.Part1 },
             { 2, GroupPart.Part2 },
             { 3, GroupPart.Part3 }
         };
 
-        private static Dictionary<string, WeekType> weekTypeDict = new Dictionary<string, WeekType>() {
+        private static Dictionary<string, WeekType> weekTypeDict = new() {
             { "любая", WeekType.Any },
             { "четная", WeekType.Even },
             { "нечетная", WeekType.Odd }
@@ -109,12 +109,15 @@ namespace Domain.Conversions
                 var meetingType = meetingTypeDict[meetingTypeRow];
                 var groupSize = groupSizeDict.ContainsKey(groupSizeRow) ? groupSizeDict[groupSizeRow] : GroupSize.FullGroup;
                 var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
-                foreach (var groupName in groups)
-                {
-                    // Need to add locaton to Learning Plan Item through constructor
-                    var leargningPlanItem = new LearningPlanItem(groupName, discipline, meetingType, groupSize, meetingCountPerWeek);
+                // foreach (var groupName in groups)
+                // {
+                //     // Need to add locaton to Learning Plan Item through constructor
+                //     var leargningPlanItem = new LearningPlanItem(groupName, discipline, meetingType, groupSize, meetingCountPerWeek);
+                //     learningPlanItems.Add((leargningPlanItem, locationRow));
+                // }
+                
+                    var leargningPlanItem = new LearningPlanItem(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek);
                     learningPlanItems.Add((leargningPlanItem, locationRow));
-                }
             }
 
             return (learningPlanItems, allGroups);
@@ -181,7 +184,7 @@ namespace Domain.Conversions
                     throw new FormatException($"Некорректная строка требований: {string.Join(", ", requisitionRow)}", e);
                 }
             }
-            return requisitions;
+            return requisitions; 
         }
 
         private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions, HashSet<string> allGroups, bool isLecture)
@@ -294,7 +297,7 @@ namespace Domain.Conversions
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in weekDaysDict.Values)
                 {
-                    for (var index = 0; index < MaxIndex + 1; index++)
+                    for (var index = 1; index < MaxIndex + 1; index++)
                     {
                         meetingTimes.Add(new MeetingTime(day, index));
                     }
@@ -366,7 +369,7 @@ namespace Domain.Conversions
 
                 if (currIndexes.Count == 0)
                 {
-                    currIndexes.AddRange(new[] { 0, 1, 2, 3, 4, 5 });
+                    currIndexes.AddRange(new[] { 1, 2, 3, 4, 5,6 });
                 }
 
                 var meetingTimes = new List<MeetingTime>();

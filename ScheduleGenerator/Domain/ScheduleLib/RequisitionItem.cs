@@ -1,4 +1,7 @@
-﻿namespace Domain.ScheduleLib
+﻿using System;
+using System.Linq;
+
+namespace Domain.ScheduleLib
 {
     public class RequisitionItem
     {
@@ -26,13 +29,31 @@
         
         public override string ToString()
         {
-            return $"{PlanItem}, {Teacher}";//, {}, {}, {}";
+            return $"{string.Join(" ", GroupPriorities.ToList())}, {Teacher}";//, {}, {}, {}";
+        }
+
+        public RequisitionItem Copy()
+        {
+            return new(PlanItem, GroupPriorities, Location, RepetitionsCount,
+                MeetingTimePriorities, Teacher, WeekType);
         }
     }
 
-    public record GroupRequisition(GroupsChoice[] GroupsChoices);
+    public record GroupRequisition(GroupsChoice[] GroupsChoices)
+    {
+        public override string ToString()
+        {
+            return String.Join("; ", GroupsChoices.ToList());
+        }
+    }
 
     public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
 
-    public record GroupsChoice(MeetingGroup[] Groups);
+    public record GroupsChoice(MeetingGroup[] Groups)
+    {
+        public override string ToString()
+        {
+            return String.Join(" ", Groups.ToList());
+        }
+    }
 }

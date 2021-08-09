@@ -64,6 +64,7 @@ namespace ScheduleCLI
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             container.Bind<MeetingEvaluator>().ToSelf();
             container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForGroupRule>();
+            // container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForTeacherRule>();
 
             return container;
         }
