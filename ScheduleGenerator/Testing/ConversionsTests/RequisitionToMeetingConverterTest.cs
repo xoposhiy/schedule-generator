@@ -15,12 +15,11 @@ namespace Testing.ConversionsTests
             var requisition = new RequisitionItem(
                 learningPlanItem,
                 new[] { new GroupRequisition(new[] { new GroupsChoice(new[] { new MeetingGroup("FT-202", GroupPart.FullGroup) }) }) },
-                "150",
                 2,
                 new[] { new MeetingTimeRequisition(new[] { new MeetingTime(DayOfWeek.Tuesday, 2) }) },
                 new Teacher("Pavel Egorov"),
-                WeekType.Any);
-            var meetings = RequisitionToMeetingConverter.ConvertRequisitionToMeetingWithoutTime(requisition);
+                WeekType.All);
+            var meetings = RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting(requisition);
             Assert.AreEqual(2, meetings.Count);
             var actualMeeting = meetings.First();
             Assert.AreEqual("OOP", actualMeeting.Discipline.Name);

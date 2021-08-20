@@ -29,7 +29,7 @@ namespace Domain.Rules
         public static int FindWindowDifference(Schedule schedule, Meeting meetingToAdd)
         {
             var todaysMeetings = schedule.Meetings
-                .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
+                .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.All || meetingToAdd.WeekType == WeekType.All)
                 .Where(m => m.MeetingTime.Day == meetingToAdd.MeetingTime.Day)
                 .Where(m => m.Groups.First().Equals(meetingToAdd.Groups.First()));
 

@@ -565,7 +565,7 @@ namespace Application.TelegramBot
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
                 // SCHEDULE GENERATION
-                var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
+                var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
                     repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
 
                 var evaluator = container.Get<MeetingEvaluator>();

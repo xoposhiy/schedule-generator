@@ -23,13 +23,12 @@ namespace Domain.Rules
         
         public static List<Meeting> GetCollidedMeetings(Schedule schedule, Meeting meetingToAdd)
         {
+            var meetingToAddGroupsNames = meetingToAdd.Groups.Select(e => e.GroupName).ToHashSet();
             var meetingsWithSameGroup = schedule.Meetings
-                .Where(m => m.Groups.Select(e=>e.GroupName).Intersect(meetingToAdd.Groups.Select(e=>e.GroupName).ToHashSet()).ToList().Count != 0)
-                .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.Any || meetingToAdd.WeekType == WeekType.Any)
+                .Where(m => m.Groups.Select(e=>e.GroupName).Intersect(meetingToAddGroupsNames).ToList().Count != 0)
+                .Where(m => m.WeekType == meetingToAdd.WeekType || m.WeekType == WeekType.All || meetingToAdd.WeekType == WeekType.All)
                 .Where(m => m.MeetingTime.Equals(meetingToAdd.MeetingTime))
                 .ToList();
-            if (meetingsWithSameGroup.Count != 0)
-                Console.WriteLine(meetingsWithSameGroup.Count);
             return meetingsWithSameGroup;
         }
     }

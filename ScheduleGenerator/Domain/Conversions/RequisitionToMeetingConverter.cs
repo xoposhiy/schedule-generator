@@ -6,29 +6,68 @@ namespace Domain.Conversions
 {
     public static class RequisitionToMeetingConverter
     {
-        public static HashSet<Meeting> ConvertRequisitionToMeetingWithoutTime(RequisitionItem requisitionItem)
+        // public static HashSet<Meeting> ConvertRequisitionToBasicMeeting(RequisitionItem requisitionItem)
+        // {
+        //     var discipline = requisitionItem.PlanItem.Discipline;
+        //     var meetingType = requisitionItem.PlanItem.MeetingType;
+        //
+        //     var meetings = new HashSet<Meeting>();
+        //     for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
+        //     {
+        //         var meeting = new Meeting(discipline, meetingType, null);
+        //         // meeting.Location = "TODO"; // TODO use requisitionItem.PlanItem.RoomSpecs;
+        //         meeting.Teacher = requisitionItem.Teacher;
+        //         // According to meetings per week from learn plan
+        //         meeting.WeekType = requisitionItem.WeekType;
+        //         meetings.Add(meeting);
+        //     }
+        //
+        //     Console.WriteLine(string.Join(" ", meetings));
+        //     return meetings;
+        // }
+        
+        public static List<Meeting> ConvertRequisitionToBasicMeeting(RequisitionItem requisitionItem)
         {
             var discipline = requisitionItem.PlanItem.Discipline;
             var meetingType = requisitionItem.PlanItem.MeetingType;
+            var meetingTeacher = requisitionItem.Teacher;
 
-            var meetings = new HashSet<Meeting>();
-            for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
+            var meetings = new List<Meeting>();
+
+            if (requisitionItem.PlanItem.MeetingsPerWeek % 1 == 0)
             {
-                var meeting = new Meeting(discipline, meetingType, null);
-                meeting.Location = requisitionItem.Location; // TODO  нетъ
-                meeting.Teacher = requisitionItem.Teacher;
-                // According to meetings per week from learn plan
-                meeting.WeekType = requisitionItem.WeekType;
-                meetings.Add(meeting);
+                var meetingCount = requisitionItem.RepetitionsCount * requisitionItem.PlanItem.MeetingsPerWeek;
+                for (int i = 0; i < meetingCount; i++)
+                {
+                    // meeting.Location = "TODO"; // TODO use requisitionItem.PlanItem.RoomSpecs;
+                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, requisitionItem.WeekType,
+                        requisitionItem, null));
+                }
             }
-
+            else
+            {
+                var meetingCount = requisitionItem.RepetitionsCount * (int)requisitionItem.PlanItem.MeetingsPerWeek;
+                for (int i = 0; i < meetingCount; i++)
+                {
+                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, WeekType.All,
+                        requisitionItem, null));
+                }
+                var weekType = requisitionItem.WeekType != WeekType.All 
+                    ? requisitionItem.WeekType 
+                    : WeekType.OddOrEven;
+                for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
+                {
+                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, weekType,
+                        requisitionItem, null));
+                }
+            }
             Console.WriteLine(string.Join(" ", meetings));
             return meetings;
         }
 
-        public static (HashSet<Meeting>, AdditionalMeetingInfo) ConvertRequisitionToMeeting(RequisitionItem requisitionItem)
+        public static (List<Meeting>, AdditionalMeetingInfo) ConvertRequisitionToMeeting(RequisitionItem requisitionItem)
         {
-            var meetings = ConvertRequisitionToMeetingWithoutTime(requisitionItem);
+            var meetings = ConvertRequisitionToBasicMeeting(requisitionItem);
             var additionalInfo = new AdditionalMeetingInfo(requisitionItem);
             return (meetings, additionalInfo);
         }
@@ -56,7 +95,7 @@ namespace Domain.Conversions
             }
 
             // week type (even/odd)
-            if (requisitionItem.WeekType == WeekType.Any)
+            if (requisitionItem.WeekType == WeekType.All)
             {
                 possibleWeekType = new HashSet<WeekType>() { WeekType.Even, WeekType.Odd };
             }

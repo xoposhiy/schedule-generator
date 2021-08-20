@@ -43,7 +43,7 @@ namespace Domain.Conversions
                 Console.WriteLine(data);
             }
 
-            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}, Было: {schedule.Meetings.Length}");
+            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}, Было: {schedule.Meetings.Count}");
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
             PrepareSheet();
@@ -153,7 +153,7 @@ namespace Domain.Conversions
             foreach (var group in meeting.Groups)
             {
                 // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
-                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingType}, {group}, {(int)meeting.MeetingTime.Day}, {meeting.MeetingTime.TimeSlotIndex}";
+                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}, {meeting.MeetingType}, {group}, {(int)meeting.MeetingTime.Day}, {meeting.MeetingTime.TimeSlotIndex}";
                 // Console.WriteLine(data);
                 var key = $"{group.GroupName}, {(int) meeting.MeetingTime.Day}, {meeting.MeetingTime.TimeSlotIndex}";
                 if (!debugDict.TryAdd(key, data))
@@ -168,14 +168,14 @@ namespace Domain.Conversions
                 {
                     rowNum++;
                 }
-                if (meeting.WeekType == WeekType.Any)
+                if (meeting.WeekType == WeekType.All)
                 {
                     rowsInMeeting = 2;
                 }
 
                 var colNum = groupIndexDict[group.GroupName] * 2 + horizOffset;
                 var columnsInMeeting = 1;
-                if (group.GroupPart == GroupPart.Part2 || group.GroupPart == GroupPart.Part3)
+                if (group.GroupPart == GroupPart.Part2)
                 {
                     colNum++;
                 }
@@ -193,7 +193,7 @@ namespace Domain.Conversions
                 modifier
                     .WriteRange((rowNum, colNum), new List<List<string>>() { new List<string>() { data } })
                     .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1), new Color() { Green = 1 });
-                if (/*rowsInMeeting == 2 ||*/ columnsInMeeting == 2)
+                if (rowsInMeeting == 2 || columnsInMeeting == 2)
                 {
                     // Console.WriteLine($"{(rowNum, colNum)}");
                     // Console.WriteLine($"{(rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1)}");

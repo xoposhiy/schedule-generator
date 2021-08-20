@@ -20,11 +20,10 @@ namespace Testing
                 {
                     new GroupRequisition(new[] {new GroupsChoice(new[] {new MeetingGroup("FT-202", GroupPart.Part1)})})
                 },
-                "514",
                 2,
                 new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2)})},
                 new Teacher("Eg"),
-                WeekType.Any)
+                WeekType.All)
         });
         public static Schedule StandardSchedule = new Schedule(new[] {
                 MeetingCreator.CreateMeeting("Math 623 Fil 0 3 0 0 FT-202#0"),

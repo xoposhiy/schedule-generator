@@ -23,7 +23,7 @@ namespace Testing.AlgorithmTests
                 {new MeetingTimeRequisition(new MeetingTime[] {new MeetingTime(DayOfWeek.Friday, 5)})};
             var requisition = new Requisition(new RequisitionItem[]
             {
-                new RequisitionItem(learningPlanItem, groupRequisition, "", 1, meetingTimeRequisitions, new Teacher("1"), WeekType.Any)
+                new RequisitionItem(learningPlanItem, groupRequisition, 1, meetingTimeRequisitions, new Teacher("1"), WeekType.All)
             });
 
             var generator = new GreedyScheduleGenerator();
@@ -39,7 +39,7 @@ namespace Testing.AlgorithmTests
                 MeetingTime = new MeetingTime(DayOfWeek.Friday, 5),
                 Teacher = new Teacher("1"),
                 Location = "",
-                WeekType = WeekType.Any,
+                WeekType = WeekType.All,
             };
             Assert.AreEqual(expectedMeeting.MeetingTime, actualMeeting.MeetingTime);
             Assert.AreEqual(expectedMeeting.Discipline, actualMeeting.Discipline);

@@ -7,20 +7,18 @@ namespace Domain.ScheduleLib
     {
         public LearningPlanItem PlanItem;
         public GroupRequisition[] GroupPriorities;
-
-        //TODO: Нужно более строго смоделировать, что это либо комп-класс, либо класс с проектором, либо конкретный номер аудитории.
-        public string Location;
+        
         public int RepetitionsCount;
 
         public MeetingTimeRequisition[] MeetingTimePriorities;
         public Teacher Teacher;
         public WeekType WeekType;
 
-        public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, string location, int repetitionsCount, MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType)
+        public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
+            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
-            Location = location;
             RepetitionsCount = repetitionsCount;
             MeetingTimePriorities = meetingTimePriorities;
             Teacher = teacher;
@@ -34,7 +32,7 @@ namespace Domain.ScheduleLib
 
         public RequisitionItem Copy()
         {
-            return new(PlanItem, GroupPriorities, Location, RepetitionsCount,
+            return new(PlanItem, GroupPriorities, RepetitionsCount,
                 MeetingTimePriorities, Teacher, WeekType);
         }
     }
@@ -49,7 +47,7 @@ namespace Domain.ScheduleLib
 
     public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
 
-    public record GroupsChoice(MeetingGroup[] Groups)
+    public sealed record GroupsChoice(MeetingGroup[] Groups)
     {
         public override string ToString()
         {

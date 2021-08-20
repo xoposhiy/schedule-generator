@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
 using Domain.Rules;
 using Domain.ScheduleLib;
+using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;
@@ -15,7 +19,7 @@ namespace ScheduleCLI
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
 
             var credentialPath = "C:\\Users\\t.belov\\Desktop\\Git repos" +
@@ -41,9 +45,10 @@ namespace ScheduleCLI
             var inputRequirementsSheetName = "Входные требования";
             var learningPlanSheetName = "Учебный план";
             var scheduleSheetName = "Расписание";
+            var classroomsSheetName = "Аудитории";
             
-            var (requisitions, learningPlan) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, inputRequirementsSheetName, learningPlanSheetName);
+            var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
+                repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
             foreach (var requisitionItem in requisitions)
             {
                 Console.WriteLine(requisitionItem.ToString());
@@ -52,10 +57,42 @@ namespace ScheduleCLI
 
             var requisition = new Requisition(requisitions.ToArray());
 
-            var schedule = new GreedyScheduleGenerator().MakeSchedule(learningPlan, evaluator, requisition);
+            // var schedule = new GreedyScheduleGenerator().MakeSchedule(learningPlan, evaluator, requisition);
+                
+            // var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
+            // converter.Build(schedule);
 
+            var schedule = new Schedule(requisition, classrooms);
+            var s = Stopwatch.StartNew();
+            while (true)
+            {
+                var f = schedule.GetMeetingsToAdd();
+                var g = f.ToList();
+                Console.WriteLine(g.Count);
+                Console.WriteLine(schedule.NotUsedMeetings.Count);
+                Console.WriteLine(schedule.Meetings.Count);
+                Console.WriteLine();
+                if (g.Count == 0)
+                    break;
+                foreach (var meeting in g.First())
+                {
+                    // if (meeting.MeetingType != MeetingType.Seminar)
+                        schedule.AddMeeting(meeting);
+                }
+            }
+            Console.WriteLine(s.Elapsed);
+            
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(schedule);
+            
+            
+            // var estimator = new BasicEstimator();
+            // var solver = new GreedySolver(estimator, requisition, classrooms, new Random());
+            // var solutions = solver.GetSolution(new TimeSpan(0 ,1, 5)).ToList();
+            //
+            // var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
+            // converter.Build(solutions.Last().Schedule);
+
         }
         
 

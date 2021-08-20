@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
@@ -12,18 +13,29 @@ namespace Domain.Conversions
     public static class SheetToRequisitionConverter
     {
         private const int MaxIndex = 5;
-        private static Dictionary<string, MeetingType> meetingTypeDict = new() {
-            { "Лекция", MeetingType.Lecture },
-            { "КомпПрактика", MeetingType.ComputerLab },
-            { "Семинар", MeetingType.Seminar },
-            { "Онлайн", MeetingType.Online }
-        };
+        
+        private static MeetingType GetMeetingType(string rowMeetingType)
+        {
+            return rowMeetingType switch
+            {
+                "Лекция" => MeetingType.Lecture,
+                "КомпПрактика" => MeetingType.ComputerLab,
+                "Семинар" => MeetingType.Seminar,
+                "Онлайн" => MeetingType.Online,
+                _ => throw new FormatException($"Некорректный тип занятия: {rowMeetingType}")
+            };
+        }
 
-        private static Dictionary<string, GroupSize> groupSizeDict = new() {
-            { "в половинках", GroupSize.HalfGroup }
-        };
+        private static GroupSize GetGroupSize(string rowGroupSize)
+        {
+            return rowGroupSize switch
+            {
+                "в половинках" => GroupSize.HalfGroup,
+                _ => GroupSize.FullGroup
+            };
+        }
 
-        private static Dictionary<string, DayOfWeek> weekDaysDict = new() {
+        private static readonly Dictionary<string, DayOfWeek> weekDaysDict = new() {
             { "пн", DayOfWeek.Monday },
             { "вт", DayOfWeek.Tuesday },
             { "ср", DayOfWeek.Wednesday },
@@ -32,27 +44,65 @@ namespace Domain.Conversions
             { "сб", DayOfWeek.Saturday },
         };
 
-        private static Dictionary<int, GroupPart> groupPartDict = new() {
-            { 1, GroupPart.Part1 },
-            { 2, GroupPart.Part2 },
-            { 3, GroupPart.Part3 }
-        };
-
-        private static Dictionary<string, WeekType> weekTypeDict = new() {
-            { "любая", WeekType.Any },
-            { "четная", WeekType.Even },
-            { "нечетная", WeekType.Odd }
-        };
-
-        public static (List<RequisitionItem>, LearningPlan) ConvertToRequisitions(GSRepository repo, string requisitionSheetName, string learningPlanSheetName)
+        private static DayOfWeek GetDayOfWeek(string rowDayOfWeek)
         {
-            var PlanData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 6);
-            var (planItemsAndLocations, allGroups) = ParseLearningPlanItems(PlanData);
-            var learningPlanItems = planItemsAndLocations.Select(x => x.Item1).ToArray();
+            return rowDayOfWeek switch
+            {
+                "пн" => DayOfWeek.Monday,
+                "вт" => DayOfWeek.Tuesday,
+                "ср" => DayOfWeek.Wednesday,
+                "чт" => DayOfWeek.Thursday,
+                "пт" => DayOfWeek.Friday,
+                "сб" => DayOfWeek.Saturday,
+                _ => throw new FormatException($"Некорректный день недели: {rowDayOfWeek}")
+            };
+        }
+
+        private static GroupPart GetGroupPart(int rowGroupPart)
+        {
+            return rowGroupPart switch
+            {
+                1 => GroupPart.Part1,
+                2 => GroupPart.Part2,
+                _ => throw new FormatException($"Некорректная часть группы: {rowGroupPart}")
+            };
+        }
+        
+        private static WeekType GetWeekType(string rowWeekType)
+        {
+            return rowWeekType switch
+            {
+                "любая" => WeekType.OddOrEven,
+                "четная" => WeekType.Even,
+                "нечетная" => WeekType.Odd,
+                _ => throw new FormatException($"Некорректная четность недели: {rowWeekType}")
+            };
+        }
+        
+        private static RoomSpec GetRoomSpec(string rowRoomSpec)
+        {
+            return rowRoomSpec switch
+            {
+                "компьютеры" => RoomSpec.Computer,
+                "проектор" => RoomSpec.Projector,
+                "большая" => RoomSpec.Big,
+                "на группу" => RoomSpec.ForGroup,
+                _ => throw new FormatException($"Некорректный тип аудитории: {rowRoomSpec}")
+            };
+        }
+
+        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(GSRepository repo,
+            string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
+        {
+            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 8);
+            var learningPlanItems= ParseLearningPlanItems(planData).ToArray();
             var learningPlan = new LearningPlan(learningPlanItems);
-            var RequestionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
-            var requisitions = ParseRequisitions(RequestionData, planItemsAndLocations, allGroups);
-            return (requisitions, learningPlan);
+            var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
+            var requisitions = ParseRequisitions(requisitionData, learningPlan);
+            var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, (1, 0), 4);
+            var classrooms = ParseClassrooms(classroomsData)
+                .ToDictionary(e => e.Item1, e => e.Item2);
+            return (requisitions, learningPlan, classrooms);
         }
 
         //private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
@@ -86,44 +136,59 @@ namespace Domain.Conversions
         //    return sheetData;
         //}
 
-        private static (List<(LearningPlanItem, string)>, HashSet<string>) ParseLearningPlanItems(List<List<string>> sheetData)
+        private static IEnumerable<LearningPlanItem> ParseLearningPlanItems(List<List<string>> sheetData)
         {
-            var learningPlanItems = new List<(LearningPlanItem, string)>();
-            var allGroups = new HashSet<string>();
-            foreach (var row in sheetData)
-            {
-                var groupsRow = row[0];
-                var disciplineRow = row[1];
-                var meetingTypeRow = row[2];
-                var groupSizeRow = row[3];
-                var meetingCountPerWeekRow = row[4];
-                // Use it with LearningPlanItem
-                var locationRow = row[5];
-
-                var groups = groupsRow.Split(',').Select(s => s.Trim()).ToList();
-                foreach (var group in groups)
-                {
-                    allGroups.Add(group);
-                }
-                var discipline = new Discipline(disciplineRow);
-                var meetingType = meetingTypeDict[meetingTypeRow];
-                var groupSize = groupSizeDict.ContainsKey(groupSizeRow) ? groupSizeDict[groupSizeRow] : GroupSize.FullGroup;
-                var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
-                // foreach (var groupName in groups)
-                // {
-                //     // Need to add locaton to Learning Plan Item through constructor
-                //     var leargningPlanItem = new LearningPlanItem(groupName, discipline, meetingType, groupSize, meetingCountPerWeek);
-                //     learningPlanItems.Add((leargningPlanItem, locationRow));
-                // }
-                
-                    var leargningPlanItem = new LearningPlanItem(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek);
-                    learningPlanItems.Add((leargningPlanItem, locationRow));
-            }
-
-            return (learningPlanItems, allGroups);
+            return sheetData.Select(ParseLearningPlanItem);
         }
 
-        private static List<RequisitionItem> ParseRequisitions(List<List<string>> sheetData, List<(LearningPlanItem, string)> learningPlanItemsLocation, HashSet<string> allGroups)
+        private static LearningPlanItem ParseLearningPlanItem(List<string> row)
+        {
+            var groupsRow = row[0];
+            var disciplineRow = row[1];
+            var meetingTypeRow = row[2];
+            var groupSizeRow = row[3];
+            var meetingCountPerWeekRow = row[4].Replace(',', '.');
+            // Use it with LearningPlanItem
+            var locationRow = ParseLocationSpec(row[5]);
+            MeetingType? connectAfter = string.IsNullOrWhiteSpace(row[6]) ? null : GetMeetingType(row[6]);
+            MeetingType? sameTeacherWith = string.IsNullOrWhiteSpace(row[7]) ? null : GetMeetingType(row[7]);
+            var discipline = new Discipline(disciplineRow);
+            
+            var meetingType = GetMeetingType(meetingTypeRow);
+            var groupSize = GetGroupSize(groupSizeRow);
+            var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
+            return new LearningPlanItem(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek, locationRow, connectAfter,
+                    sameTeacherWith);
+        }
+
+        private static RoomSpec[] ParseLocationSpec(string rowLocationSpec)
+        {
+            return string.IsNullOrWhiteSpace(rowLocationSpec) 
+                ? new[] {RoomSpec.Any} 
+                : rowLocationSpec.Split(',')
+                    .Select(mgs => mgs.Trim())
+                    .Select(GetRoomSpec).ToArray();
+        }
+
+        private static IEnumerable<(string, List<RoomSpec>)> ParseClassrooms(List<List<string>> sheetData)
+        {
+            return sheetData.Select(ParseClassroom);
+        }
+
+        private static (string, List<RoomSpec>) ParseClassroom(List<string> row)
+        {
+            var number =row[0];
+            var specs = new List<RoomSpec>();
+            if (!string.IsNullOrWhiteSpace(row[1]))
+                specs.Add(RoomSpec.Computer);
+            if (!string.IsNullOrWhiteSpace(row[2]))
+                specs.Add(RoomSpec.Projector);
+            if (!string.IsNullOrWhiteSpace(row[3]))
+                specs.Add(GetRoomSpec(row[3]));
+            return (number, specs);
+        }
+
+        private static List<RequisitionItem> ParseRequisitions(List<List<string>> sheetData, LearningPlan learningPlan)
         {
             var requisitions = new List<RequisitionItem>();
             foreach (var requisitionRow in sheetData)
@@ -138,7 +203,7 @@ namespace Domain.Conversions
                     var teacherName = requisitionRow[0];
                     var disciplineName = requisitionRow[1];
                     var meetingTypeStr = requisitionRow[2];
-                    var meetingType = meetingTypeDict[meetingTypeStr];
+                    var meetingType = GetMeetingType(meetingTypeStr);
                     var repetitionCountRaw = requisitionRow[3];
                     var groupPriorities = requisitionRow[4];
                     var meetingTimesRaw = requisitionRow[5];
@@ -147,35 +212,20 @@ namespace Domain.Conversions
                     var teacher = new Teacher(teacherName);
 
                     var groupRequisitions =
-                        ParseGroupRequisitions(groupPriorities, allGroups, meetingType == MeetingType.Lecture);
+                        ParseGroupRequisitions(groupPriorities);
+                    var groupSets = groupRequisitions
+                        .SelectMany(s => s.GroupsChoices
+                            .SelectMany(c => c.Groups))
+                        .Select(g => g.GetGroupSet()).ToHashSet();
+                    if (groupSets.Count != 1)
+                        throw new FormatException($"Некорректное описание приоритета групп: {groupPriorities}");
+                    var groupSet = groupSets.Single();
                     var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw);
                     var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                     var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
-                    var planItemAndLocations = learningPlanItemsLocation
-                        .Where(lpi => lpi.Item1.Discipline.Name == disciplineName)
-                        .Where(lpi => lpi.Item1.MeetingType == meetingType)
-                        .ToList();
-                    if (planItemAndLocations.Count == 0)
-                        throw new FormatException(
-                            $"Требования содержат пару ({disciplineName}, {meetingType}), которой нет в учебном плане");
-                    // if (planItemAndLocations.Count > 1)
-                    //     throw new FormatException(
-                    //         $"Учебный план почему-то содержит несколько пар ({disciplineName}, {meetingType})");
-                    
-                    
-                    // foreach (var planItemAndLocation in planItemAndLocations)
-                    // {
-                    //     var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                    //     var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                    //         planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
-                    //     requisitions.Add(requisition);
-                    // }
-                    
-                    
-                    var planItemAndLocation = planItemAndLocations[0];
-                    var weekType = weekTypeRaw.Length == 0 ? WeekType.Any : weekTypeDict[weekTypeRaw];
-                    var requisition = new RequisitionItem(planItemAndLocation.Item1, groupRequisitions.ToArray(),
-                        planItemAndLocation.Item2, repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
+                    var weekType = ParseWeekType(weekTypeRaw);
+                    var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
                     requisitions.Add(requisition);
 
                 }
@@ -187,12 +237,32 @@ namespace Domain.Conversions
             return requisitions; 
         }
 
-        private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions, HashSet<string> allGroups, bool isLecture)
+        private static LearningPlanItem GetPlanItem(LearningPlan learningPlan, string disciplineName, MeetingType meetingType,
+            string groupSet)
         {
-            if (string.IsNullOrWhiteSpace(rawGroupRequisitions))
-            {
-                rawGroupRequisitions = string.Join(", ", allGroups);
-            }
+            var planItems = learningPlan.Items
+                .Where(lpi => lpi.Discipline.Name == disciplineName)
+                .Where(lpi => lpi.MeetingType == meetingType)
+                .Where(lpi => lpi.GroupSet == groupSet)
+                .ToList();
+            if (planItems.Count == 0)
+                throw new FormatException(
+                    $"Требования содержат пару ({disciplineName}, {meetingType}), которой нет в учебном плане");
+            if (planItems.Count > 1)
+                throw new FormatException(
+                    $"В учебном плане более одной подходящей пары ({disciplineName}, {meetingType})");
+
+            var planItemAndLocation = planItems.Single();
+            return planItemAndLocation;
+        }
+
+        private static WeekType ParseWeekType(string? weekTypeRaw)
+        {
+            return weekTypeRaw.Length == 0 ? WeekType.All : GetWeekType(weekTypeRaw);
+        }
+
+        private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions)
+        {
             var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
             var groupRequisitions = new List<GroupRequisition>();
 
@@ -202,7 +272,7 @@ namespace Domain.Conversions
                 var meetingGroupsStrings = priorityLine.Split(',').Select(mgs => mgs.Trim());
                 foreach (var meetingGroupsString in meetingGroupsStrings)
                 {
-                    var groupChoice = CreateGroupChoices(meetingGroupsString, allGroups, isLecture);
+                    var groupChoice = CreateGroupChoices(meetingGroupsString);
                     groupChoices.Add(groupChoice);
                 }
 
@@ -212,28 +282,15 @@ namespace Domain.Conversions
             return groupRequisitions;
         }
 
-        private static GroupsChoice CreateGroupChoices(string meetingGroupString, HashSet<string> allGroups, bool isLecture)
+        private static GroupsChoice CreateGroupChoices(string meetingGroupString)
         {
             var meetingGroups = new List<MeetingGroup>();
-            var MeetingGroupStringSplited = meetingGroupString.Split("+").Select(x => x.Trim());
-            foreach (var singleMeetingGroup in MeetingGroupStringSplited)
+            var meetingGroupStringSplited = meetingGroupString.Split("+").Select(x => x.Trim());
+            foreach (var singleMeetingGroup in meetingGroupStringSplited)
             {
-                if (singleMeetingGroup.Contains("*"))
-                {
-                    var possibleGroups = FindAllMatchingGroups(singleMeetingGroup, allGroups, isLecture);
-                    foreach (var matchedGroup in possibleGroups)
-                    {
-                        var currGroupPart = DetermineGroupPart(matchedGroup);
-                        var parentGroup = GetParentGroup(matchedGroup);
-                        meetingGroups.Add(new MeetingGroup(parentGroup, currGroupPart));
-                    }
-                }
-                else
-                {
-                    var groupPart = DetermineGroupPart(singleMeetingGroup);
-                    var parentGroup = GetParentGroup(singleMeetingGroup);
-                    meetingGroups.Add(new MeetingGroup(parentGroup, groupPart));
-                }
+                var groupPart = DetermineGroupPart(singleMeetingGroup);
+                var parentGroup = GetParentGroup(singleMeetingGroup);
+                meetingGroups.Add(new MeetingGroup(parentGroup, groupPart));
             }
 
             return new GroupsChoice(meetingGroups.ToArray());
@@ -248,7 +305,7 @@ namespace Domain.Conversions
             {
                 var groupPartString = partMatch.Groups[1].Value;
                 var groupPartNum = int.Parse(groupPartString);
-                groupPart = groupPartDict[groupPartNum];
+                groupPart = GetGroupPart(groupPartNum);
             }
 
             return groupPart;
@@ -287,6 +344,7 @@ namespace Domain.Conversions
             return matchedGroups;
         }
 
+        // TODO fix bug! "пн 3 пара"
         private static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();
@@ -341,7 +399,7 @@ namespace Domain.Conversions
                 }
                 foreach (Capture dayStr in days)
                 {
-                    currWeekDays.Add(weekDaysDict[dayStr.Value]);
+                    currWeekDays.Add(GetDayOfWeek(dayStr.Value));
                 }
 
                 var currIndexes = new List<int>();
