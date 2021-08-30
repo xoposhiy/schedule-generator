@@ -17,7 +17,6 @@
         ForGroup,
         Computer,
         Projector,
-        Any
         //TODO
     }
 }

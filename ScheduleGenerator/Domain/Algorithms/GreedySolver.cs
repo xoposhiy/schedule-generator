@@ -35,28 +35,28 @@ namespace Domain.Algorithms
                         .Select(meetings => (meetings, score: EstimateResult(currentSchedule, meetings)))
                         .OrderByDescending(ms => ms.score)
                         .ToList();
+                    Console.WriteLine($"Number of possible meetings positions: {meetingsToAdd.Count}");
+                    Console.WriteLine($"Number of not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
+                    Console.WriteLine($"Number of placed meetings: {currentSchedule.Meetings.Count}");
+                    Console.WriteLine();
                     if (meetingsToAdd.Count == 0)
                         break;
                     var bestMeeting = meetingsToAdd.First();
-                    currentScore = bestMeeting.score;
-                    foreach (var meeting in bestMeeting.meetings)
-                    {
-                        currentSchedule.AddMeeting(meeting);
-                    }
+                    currentSchedule.AddMeeting(bestMeeting.Item1);
                 }
+                Console.WriteLine();
+                Console.WriteLine(sw.Elapsed);
+                Console.WriteLine();
                 yield return new Solution(currentSchedule, currentScore);
                 yield break;
             }
         }
 
-        private double EstimateResult(Schedule schedule, List<Meeting> meetings)
+        private double EstimateResult(Schedule schedule, Meeting meeting)
         {
-            //return estimator.Estimate(scheduler.CurrentSolution.Schedule, meeting);
-            foreach (var meeting in meetings)
-                schedule.AddMeeting(meeting);
+            schedule.AddMeeting(meeting);
             var score = estimator.Estimate(schedule);
-            foreach (var meeting in meetings)
-                schedule.RemoveMeeting(meeting);
+            schedule.RemoveMeeting(meeting);
             return score;
         }
     }

@@ -6,26 +6,6 @@ namespace Domain.Conversions
 {
     public static class RequisitionToMeetingConverter
     {
-        // public static HashSet<Meeting> ConvertRequisitionToBasicMeeting(RequisitionItem requisitionItem)
-        // {
-        //     var discipline = requisitionItem.PlanItem.Discipline;
-        //     var meetingType = requisitionItem.PlanItem.MeetingType;
-        //
-        //     var meetings = new HashSet<Meeting>();
-        //     for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
-        //     {
-        //         var meeting = new Meeting(discipline, meetingType, null);
-        //         // meeting.Location = "TODO"; // TODO use requisitionItem.PlanItem.RoomSpecs;
-        //         meeting.Teacher = requisitionItem.Teacher;
-        //         // According to meetings per week from learn plan
-        //         meeting.WeekType = requisitionItem.WeekType;
-        //         meetings.Add(meeting);
-        //     }
-        //
-        //     Console.WriteLine(string.Join(" ", meetings));
-        //     return meetings;
-        // }
-        
         public static List<Meeting> ConvertRequisitionToBasicMeeting(RequisitionItem requisitionItem)
         {
             var discipline = requisitionItem.PlanItem.Discipline;
@@ -61,7 +41,7 @@ namespace Domain.Conversions
                         requisitionItem, null));
                 }
             }
-            Console.WriteLine(string.Join(" ", meetings));
+            // Console.WriteLine(string.Join(" ", meetings));
             return meetings;
         }
 

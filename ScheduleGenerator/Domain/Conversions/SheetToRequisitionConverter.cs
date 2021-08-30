@@ -164,7 +164,7 @@ namespace Domain.Conversions
         private static RoomSpec[] ParseLocationSpec(string rowLocationSpec)
         {
             return string.IsNullOrWhiteSpace(rowLocationSpec) 
-                ? new[] {RoomSpec.Any} 
+                ? Array.Empty<RoomSpec>()
                 : rowLocationSpec.Split(',')
                     .Select(mgs => mgs.Trim())
                     .Select(GetRoomSpec).ToArray();
@@ -177,7 +177,7 @@ namespace Domain.Conversions
 
         private static (string, List<RoomSpec>) ParseClassroom(List<string> row)
         {
-            var number =row[0];
+            var number = row[0];
             var specs = new List<RoomSpec>();
             if (!string.IsNullOrWhiteSpace(row[1]))
                 specs.Add(RoomSpec.Computer);
@@ -343,8 +343,7 @@ namespace Domain.Conversions
 
             return matchedGroups;
         }
-
-        // TODO fix bug! "пн 3 пара"
+        
         private static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();

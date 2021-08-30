@@ -38,6 +38,23 @@ namespace Domain.Algorithms
                 dict.Add(key1, new Dictionary<TKey2, TValue> {{key2, value}});
         }
         
+        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, SortedSet<TValue>>> dict, TKey1 key1, TKey2 key2, TValue value)
+        {
+            if (dict.ContainsKey(key1))
+            {
+                if (dict[key1].ContainsKey(key2))
+                {
+                    dict[key1][key2].Add(value);
+                }
+                else
+                {
+                    dict[key1].Add(key2, new SortedSet<TValue>{value});
+                }
+            }
+            else
+                dict.Add(key1, new Dictionary<TKey2, SortedSet<TValue>> {{key2, new SortedSet<TValue>{value}}});
+        }
+        
         public static void SafeAdd<TKey1, TKey2, TKey3, TValue>(this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, TValue>>> dict,
             TKey1 key1, TKey2 key2, TKey3 key3, TValue value)
         {
@@ -47,7 +64,7 @@ namespace Domain.Algorithms
                 {
                     if (dict[key1][key2].ContainsKey(key3))
                     {
-                        throw new FormatException("Atata!");
+                        throw new FormatException($"Dictionary already contains key3: {key3}");
                     }
                     dict[key1][key2].Add(key3, value);
                 }
@@ -100,23 +117,23 @@ namespace Domain.Algorithms
                 {
                     if (dict[key1][key2].ContainsKey(key3))
                     {
-                        if (dict[key1][key2][key3] <= 0)
+                        if (dict[key1][key2][key3] == 0)
                             return;
                         dict[key1][key2][key3]--;
                     }
                     else
                     {
-                        throw new FormatException("Atata1!");
+                        throw new FormatException($"Dictionary does not contains key3: {key3}");
                     }
                 }
                 else
                 {
-                    throw new FormatException("Atata2!");
+                    throw new FormatException($"Dictionary does not contains key2: {key2}");
                 }
             }
             else
             {
-                throw new FormatException("Atata3!");
+                throw new FormatException($"Dictionary does not contains key1: {key1}");
             }
         }
     }

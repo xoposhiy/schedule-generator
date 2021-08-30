@@ -3,30 +3,17 @@ using System.Linq;
 using Domain.Conversions;
 using Domain.ScheduleLib;
 
-namespace Domain.Algorithms
+namespace Domain.Estimators
 {
-    public class CombinedEstimator : IEstimator
-    {
-        private readonly IEstimator[] childEstimators;
-
-        public CombinedEstimator(params IEstimator[] childEstimators)
-        {
-            this.childEstimators = childEstimators;
-        }
-        
-        public double Estimate(Schedule schedule, Meeting meetingToAdd)
-        {
-            return childEstimators.Sum(e => e.Estimate(schedule, meetingToAdd));
-        }
-
-        public double Estimate(Schedule schedule)
-        {
-            return childEstimators.Sum(e => e.Estimate(schedule));
-        }
-    }
-
     public class BasicEstimator : IEstimator
     {
+        public BasicEstimator()
+        {
+            Weight = 100;
+        }
+
+        public double Weight { get; }
+
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
             throw new NotImplementedException();
@@ -35,11 +22,13 @@ namespace Domain.Algorithms
         public double Estimate(Schedule schedule)
         {
             var requisition = schedule.Requisition;
-            var meetings = schedule.Meetings;
+            var meetings = schedule.Meetings; 
             var meetingsByTime = schedule.GroupMeetingsByTime;
             // Насколько много свободы у неоставленных пар. Проверять у всех непоставленных 
             // Добавить веса, вес этой вещи мниимальный
-            return 0;
+            // var degreeOfFreedom = schedule.GetMeetingsToAdd().Count();
+            var score = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting]);
+            return -score;
         }
     }
 }
