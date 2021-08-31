@@ -18,6 +18,11 @@ namespace Testing.ConversionsTests
             var repo = new GSRepository(ApplicationName, credentialPath, url);
 
             var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(repo, "Requisition", "Plan");
+            
+            //TODO update expected counts
+            Assert.AreEqual(10, requisitions.Item1.Count);
+            Assert.AreEqual(10, requisitions.Item2.Items.Length);
+            Assert.AreEqual(10, requisitions.Item3.Count);
         }
     }
 }

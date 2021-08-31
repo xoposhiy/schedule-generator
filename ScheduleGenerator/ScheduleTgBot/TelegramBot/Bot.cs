@@ -565,19 +565,21 @@ namespace Application.TelegramBot
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 
                 // SCHEDULE GENERATION
-                var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                    repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
+                // var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
+                //     repo, scheduleSession.InputRequirementsSheet, scheduleSession.LearningPlanSheet);
+                //
+                // var evaluator = container.Get<MeetingEvaluator>();
+                //
+                // var requisition = new Requisition(requisitions.ToArray());
+                //
+                // var schedule = new GreedyScheduleGenerator().MakeSchedule(learningPlan, evaluator, requisition);
+                //
+                // var converter = new ScheduleSpreadsheetConverter(repo, scheduleSession.ScheduleSheet);
+                // converter.Build(schedule);
+                
+                // TODO починить тг-бота
 
-                var evaluator = container.Get<MeetingEvaluator>();
-
-                var requisition = new Requisition(requisitions.ToArray());
-
-                var schedule = new GreedyScheduleGenerator().MakeSchedule(learningPlan, evaluator, requisition);
-
-                var converter = new ScheduleSpreadsheetConverter(repo, scheduleSession.ScheduleSheet);
-                converter.Build(schedule);
-
-                answer = $"Расписание готово! Оно находится в листе \"{scheduleSession.ScheduleSheet}\"." +
+                answer = $"Расписание готово (НЕТ)! Оно находится в листе (НЕТ) \"{scheduleSession.ScheduleSheet}\"." +
                          " Напишите \"/restart\", если хотите составить еще одно расписание.";
                 await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
 

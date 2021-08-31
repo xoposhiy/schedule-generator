@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
+using Google.Apis.Auth.OAuth2;
 
 namespace Domain.ScheduleLib
 {
@@ -28,10 +29,10 @@ namespace Domain.ScheduleLib
             SpecsByRoom = roomsWithSpecs;
             FillClassroomsBySpec(roomsWithSpecs);
             FillRoomPool(roomsWithSpecs.Keys);
-            FillMeetingFreedomDegree(NotUsedMeetings.ToList());
             NotUsedMeetings = requisition.Items
                 .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
                 .ToList();
+            FillMeetingFreedomDegree(NotUsedMeetings.ToList());
         }
 
         private void FillMeetingFreedomDegree(List<Meeting> meetings)
@@ -134,6 +135,8 @@ namespace Domain.ScheduleLib
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
         }
 
+        // TODO Не возвращать митинг с зависимостью, если для зависимости нет места.
+        // TODO Оставлять окно между онлайн и оффлайн парами
         private (bool, bool, Meeting) GetMeetingToAdd(Meeting meetingCopy, MeetingTime meetingTimeChoice, 
             bool thisConditionMeetingFound, bool meetingFound)
         {
@@ -247,6 +250,7 @@ namespace Domain.ScheduleLib
 
         public void AddMeeting(Meeting meetingToAdd)
         {
+            // TODO ставить зависимый митинг если он есть 
             Meetings.Add(meetingToAdd);
             
             var meetingTime = meetingToAdd.MeetingTime!;
@@ -289,6 +293,7 @@ namespace Domain.ScheduleLib
 
         public void RemoveMeeting(Meeting meetingToRemove)
         {
+            // TODO удалять зависимый митинг если он есть 
             Meetings.Remove(meetingToRemove);
             
             var meetingTime = meetingToRemove.MeetingTime!;

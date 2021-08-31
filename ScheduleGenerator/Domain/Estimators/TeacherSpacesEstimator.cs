@@ -26,6 +26,7 @@ namespace Domain.Estimators
             {
                 foreach (var teacher in schedule.TeacherMeetingsTimesByDay[day].Keys)
                 {
+                    //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
                     var previousTimeslot = schedule.TeacherMeetingsTimesByDay[day][teacher].FirstOrDefault();
                     foreach (var timeslot in schedule.TeacherMeetingsTimesByDay[day][teacher].Skip(1))
                     {

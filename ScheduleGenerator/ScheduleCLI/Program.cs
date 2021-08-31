@@ -46,12 +46,16 @@ namespace ScheduleCLI
 
             var requisition = new Requisition(requisitions.ToArray());
             
-            var basic = new BasicEstimator();
-            var groupsSpacesEstimator = new GroupSpacesEstimator();
+            
+            // TODO все Estimtors: score -> penalty
+            // TODO все Estimtors: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
+
+            var basic = new FreedomDegreeEstimator();
+            var groupsSpacesEstimator = new StudentsSpacesEstimator();
             var teacherSpacesEstimator = new TeacherSpacesEstimator();
             var meetingsPerDayEstimator = new MeetingsPerDayEstimator();
             var teacherUsedDaysEstimator = new TeacherUsedDaysEstimator();
-            var estimator = new CombinedEstimator(groupsSpacesEstimator,
+            var estimator = new CombinedEstimator(basic,groupsSpacesEstimator,
                 meetingsPerDayEstimator,teacherSpacesEstimator, teacherUsedDaysEstimator);
             var solver = new GreedySolver(estimator, requisition, classrooms, new Random());
             var solutions = solver.GetSolution(new TimeSpan(0 ,1, 5)).ToList();

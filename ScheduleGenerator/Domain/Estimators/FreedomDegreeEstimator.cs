@@ -5,9 +5,9 @@ using Domain.ScheduleLib;
 
 namespace Domain.Estimators
 {
-    public class BasicEstimator : IEstimator
+    public class FreedomDegreeEstimator : IEstimator
     {
-        public BasicEstimator()
+        public FreedomDegreeEstimator()
         {
             Weight = 100;
         }

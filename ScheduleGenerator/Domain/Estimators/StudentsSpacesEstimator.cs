@@ -5,9 +5,9 @@ using Domain.ScheduleLib;
 
 namespace Domain.Estimators
 {
-    public class GroupSpacesEstimator : IEstimator
+    public class StudentsSpacesEstimator : IEstimator
     {
-        public GroupSpacesEstimator()
+        public StudentsSpacesEstimator()
         {
             Weight = 1;
         }
@@ -21,6 +21,7 @@ namespace Domain.Estimators
 
         public double Estimate(Schedule schedule)
         {
+            //TODO придумать как учитывать пары, которые идут не весь семестр.
             var score = 0;
             foreach (var day in schedule.GroupsMeetingsTimesByDay.Keys)
             {
@@ -28,6 +29,7 @@ namespace Domain.Estimators
                 {
                     foreach (var groupPart in schedule.GroupsMeetingsTimesByDay[day][groupName].Keys)
                     {
+                        //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
                         var previousTimeslot = schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].FirstOrDefault();
                         foreach (var timeslot in schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].Skip(1))
                         {

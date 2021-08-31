@@ -20,7 +20,7 @@ namespace Domain.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            var score = 0;
+            var penalty = 0;
             const int maxMeetingsPerDay = 3;
             foreach (var day in schedule.GroupsMeetingsTimesByDay.Keys)
             {
@@ -28,11 +28,15 @@ namespace Domain.Estimators
                 {
                     foreach (var groupPart in schedule.GroupsMeetingsTimesByDay[day][groupName].Keys)
                     {
-                        score += schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].Count - maxMeetingsPerDay;
+                        //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
+                        //TODO 0 пар в день и от 2 до 4 пар в день -> penalty = 0.
+                        var currentDif = schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].Count -
+                                         maxMeetingsPerDay;
+                        penalty += currentDif;
                     }
                 }
             }
-            return -score;
+            return -penalty; // TODO поделить на количество половинок групп и количество дней и 2 (количество четностей недель)
         }
     }
 }
