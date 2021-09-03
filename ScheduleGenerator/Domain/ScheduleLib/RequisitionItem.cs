@@ -5,14 +5,14 @@ namespace Domain.ScheduleLib
 {
     public class RequisitionItem
     {
-        public LearningPlanItem PlanItem;
-        public GroupRequisition[] GroupPriorities;
+        public readonly LearningPlanItem PlanItem;
+        public readonly GroupRequisition[] GroupPriorities;
         
-        public int RepetitionsCount;
+        public readonly int RepetitionsCount;
 
-        public MeetingTimeRequisition[] MeetingTimePriorities;
-        public Teacher Teacher;
-        public WeekType WeekType;
+        public readonly MeetingTimeRequisition[] MeetingTimePriorities;
+        public readonly Teacher Teacher;
+        public readonly WeekType WeekType;
 
         public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
             MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType)

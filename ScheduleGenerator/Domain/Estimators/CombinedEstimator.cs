@@ -5,6 +5,7 @@ using Domain.ScheduleLib;
 namespace Domain.Estimators
 {
     public class CombinedEstimator : IEstimator
+    
     {
         private readonly IEstimator[] childEstimators;
         

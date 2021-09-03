@@ -50,7 +50,7 @@ namespace Testing.SheetPatternsTest
 
             HeaderPatternCreator.SetUpHeaders(repo, sheetName, (5, 1), headers, comments);
 
-            var actualHeaders = repo.ReadCellRange(sheetName, (5, 1), (5, 8))[0];
+            var actualHeaders = repo.ReadCellRange(sheetName, (5, 1), (5, 8))![0]!;
 
             Assert.AreEqual(headers.Count, actualHeaders.Count);
             for (int i = 0; i < headers.Count; i++)

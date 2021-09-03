@@ -15,31 +15,31 @@ namespace Infrastructure.GoogleSheetsRepository
         public SheetsService Service { get; private set; }
         public string[] Scopes { get; private set; }
         public string ApplicationName { get; private set; }
-        public string CurrentSheetId { get; private set; }
-        public SheetInfo CurrentSheetInfo { get; private set; }
-        public GSRepository(string applicationName, string pathToCredentials, string tableURL)
+        public string? CurrentSheetId { get; private set; }
+        public SheetInfo? CurrentSheetInfo { get; private set; }
+        public GSRepository(string applicationName, string pathToCredentials, string tableUrl)
         {
-            Scopes = new string[] { SheetsService.Scope.Spreadsheets };
+            Scopes = new[] { SheetsService.Scope.Spreadsheets };
             ApplicationName = applicationName;
-            SetUpCredential(pathToCredentials);
-            SetUpDefaultService();
+            Credentials = LoadCredential(pathToCredentials);
+            Service = CreateDefaultService();
             CurrentSheetId = null;
             CurrentSheetInfo = null;
-            ChangeTable(tableURL);
+            ChangeTable(tableUrl);
         }
 
-        private void SetUpCredential(string pathToCredentials)
+        private GoogleCredential LoadCredential(string pathToCredentials)
         {
             using (var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read))
             {
-                Credentials = GoogleCredential.FromStream(stream)
+                return GoogleCredential.FromStream(stream)
                     .CreateScoped(Scopes);
             }
         }
 
-        private void SetUpDefaultService()
+        private SheetsService CreateDefaultService()
         {
-            Service = new SheetsService(new BaseClientService.Initializer()
+            return new SheetsService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = Credentials,
                 ApplicationName = ApplicationName
@@ -75,10 +75,10 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public string ReadCell(string sheetName, ValueTuple<int, int> cellCoords)
         {
-            return ReadOneCellAsObject(sheetName, cellCoords)?.ToString();
+            return ReadOneCellAsObject(sheetName, cellCoords)?.ToString() ?? "";
         }
 
-        public List<List<string>> ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public List<List<string?>?>? ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
             var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
@@ -93,7 +93,7 @@ namespace Infrastructure.GoogleSheetsRepository
             return values;
         }
 
-        private object ReadOneCellAsObject(string sheetName, ValueTuple<int, int> rangeStart)
+        private object? ReadOneCellAsObject(string sheetName, ValueTuple<int, int> rangeStart)
         {
             var (top, leftIndex) = rangeStart;
             leftIndex++;
@@ -105,9 +105,9 @@ namespace Infrastructure.GoogleSheetsRepository
             return value;
         }
 
-        public List<List<string>> ReadCellRangeUsingStringRangeFormat(string sheetName, string range)
+        public List<List<string?>?>? ReadCellRangeUsingStringRangeFormat(string sheetName, string range)
         {
-            var fullRange = string.Format("{0}!{1}", sheetName, range);
+            var fullRange = $"{sheetName}!{range}";
             var request = Service.Spreadsheets.Values.Get(CurrentSheetId, fullRange);
             var response = request.Execute();
             var values = response.Values;
@@ -133,12 +133,12 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier ModifySpreadSheet(string sheetName)
         {
-            var sheetId = CurrentSheetInfo.Sheets[sheetName];
+            var sheetId = CurrentSheetInfo!.Sheets[sheetName];
             if (sheetId is null)
             {
                 throw new ArgumentException($"No sheets with name {sheetName}");
             }
-            return new SheetModifier(Service, CurrentSheetId, (int)sheetId);
+            return new SheetModifier(Service, CurrentSheetId!, (int)sheetId);
         }
 
         public void ClearCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
@@ -347,7 +347,7 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string comment)
+        public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string? comment)
         {
             var (top, leftIndex) = rangeStart;
             requests.Add(new Request()

@@ -17,7 +17,11 @@ namespace Testing.ConversionsTests
             var url = "https://docs.google.com/spreadsheets/d/1-CFNA5rFSKmrs5jdJm5xg2b1cQDbCJ8LA1FRrdBBRyg/edit#gid=1607674973";
             var repo = new GSRepository(ApplicationName, credentialPath, url);
 
-            var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(repo, "Requisition", "Plan");
+            var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
+                repo, 
+                "Requisition", 
+                "Plan", 
+                "");
             
             //TODO update expected counts
             Assert.AreEqual(10, requisitions.Item1.Count);

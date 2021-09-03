@@ -19,7 +19,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AlgorithmTests" />
+    <Compile Remove="AlgorithmTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="AlgorithmTests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="AlgorithmTests\**" />
   </ItemGroup>
 
 </Project>

@@ -23,14 +23,18 @@ namespace Domain.Algorithms
     public static class DictionaryExtensions
     {
         public static void SafeAdd<TKey, TValue>(this Dictionary<TKey, List<TValue>> dict, TKey key, TValue value)
+            where TKey : notnull
         {
             if (dict.ContainsKey(key))
                 dict[key].Add(value);
             else
                 dict.Add(key, new List<TValue> {value});
         }
-        
-        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, TValue>> dict, TKey1 key1, TKey2 key2, TValue value)
+
+        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, TValue>> dict,
+            TKey1 key1, TKey2 key2, TValue value)
+            where TKey1 : notnull 
+            where TKey2 : notnull
         {
             if (dict.ContainsKey(key1))
                 dict[key1].Add(key2, value);
@@ -39,6 +43,8 @@ namespace Domain.Algorithms
         }
         
         public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, SortedSet<TValue>>> dict, TKey1 key1, TKey2 key2, TValue value)
+            where TKey1 : notnull 
+            where TKey2 : notnull
         {
             if (dict.ContainsKey(key1))
             {
@@ -57,6 +63,9 @@ namespace Domain.Algorithms
         
         public static void SafeAdd<TKey1, TKey2, TKey3, TValue>(this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, TValue>>> dict,
             TKey1 key1, TKey2 key2, TKey3 key3, TValue value)
+            where TKey1 : notnull 
+            where TKey2 : notnull
+            where TKey3 : notnull
         {
             if (dict.ContainsKey(key1))
             {
@@ -82,6 +91,9 @@ namespace Domain.Algorithms
         
         public static void SafeIncrement<TKey1, TKey2, TKey3>(this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, int>>> dict,
             TKey1 key1, TKey2 key2, TKey3 key3)
+            where TKey1 : notnull 
+            where TKey2 : notnull
+            where TKey3 : notnull
         {
             if (dict.ContainsKey(key1))
             {
@@ -110,6 +122,9 @@ namespace Domain.Algorithms
         
         public static void SafeDecrement<TKey1, TKey2, TKey3>(this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, int>>> dict,
             TKey1 key1, TKey2 key2, TKey3 key3)
+            where TKey1 : notnull 
+            where TKey2 : notnull
+            where TKey3 : notnull
         {
             if (dict.ContainsKey(key1))
             {

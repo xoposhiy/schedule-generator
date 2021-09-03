@@ -11,46 +11,41 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 using Ninject;
 
-using Domain.Conversions;
-using Domain.Rules;
-using Domain.ScheduleLib;
 using Infrastructure.FirebaseRepository;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
-using Domain.Algorithms;
-
 
 namespace Application.TelegramBot
 {
-    public class TBot
+    public class TgBot
     {
         private StandardKernel container;
-        private static Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
+        private static readonly Regex LinkRegex = new Regex("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
 
-        private List<string> requisitionSheetHeaders;
-        private List<string> requirmentsSheetHeaderComments;
+        private readonly List<string> requisitionSheetHeaders;
+        private readonly List<string> requirementsSheetHeaderComments;
 
-        private List<string> learningPlanSheetHeaders;
-        private List<string> learningPlanSheetHeaderComments;
+        private readonly List<string> learningPlanSheetHeaders;
+        private readonly List<string> learningPlanSheetHeaderComments;
 
         private List<(string pattern, string msg)> requisitionPatternMsgList;
         private List<(string pattern, string msg)> learningPlanPatternMsgList;
 
-        private SheetTableEvaluator requisitionEvaluator;
-        private SheetTableEvaluator learningPlanEvaluator;
+        private readonly SheetTableEvaluator requisitionEvaluator;
+        private readonly SheetTableEvaluator learningPlanEvaluator;
 
-        private TelegramBotClient client;
-        private string repoSecret;
+        private readonly TelegramBotClient client;
+        private readonly string repoSecret;
 
         //private GSRepository repo;
-        private SessionRepository sessionRepository;
-        private string credentialAddressToShare;
-        private Dictionary<long, ScheduleSession> sessionDict;
-        private Dictionary<long, AdditionalSessionState> additionalStateDict;
-        private Dictionary<long, GSRepository> repoDict;
-        public TBot(string token, string repoSecret, string firebaseSecret, string dbBasePath,
+        private readonly SessionRepository sessionRepository;
+        private readonly string credentialAddressToShare;
+        private readonly Dictionary<long, ScheduleSession> sessionDict;
+        private readonly Dictionary<long, AdditionalSessionState> additionalStateDict;
+        private readonly Dictionary<long, GSRepository> repoDict;
+        public TgBot(string token, string repoSecret, string firebaseSecret, string dbBasePath,
             List<string> requisitionSheetHeaders,
-            List<string> requirmentsSheetHeaderComments,
+            List<string> requirementsSheetHeaderComments,
             List<string> learningPlanSheetHeaders,
             List<string> learningPlanSheetHeaderComments,
             List<(string pattern, string msg)> requisitionPatternMsgList,
@@ -63,15 +58,15 @@ namespace Application.TelegramBot
             additionalStateDict = new Dictionary<long, AdditionalSessionState>();
             repoDict = new Dictionary<long, GSRepository>();
             this.repoSecret = repoSecret;
-            client.OnMessage += BotOnMessageReceived;
-            client.OnMessageEdited += BotOnMessageReceived;
+            client.OnMessage += BotOnMessageReceived!;
+            client.OnMessageEdited += BotOnMessageReceived!;
 
             var readedString = System.IO.File.ReadAllText(repoSecret);
             var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readedString);
             credentialAddressToShare = values["client_email"];
 
             this.requisitionSheetHeaders = requisitionSheetHeaders;
-            this.requirmentsSheetHeaderComments = requirmentsSheetHeaderComments;
+            this.requirementsSheetHeaderComments = requirementsSheetHeaderComments;
             this.learningPlanSheetHeaders = learningPlanSheetHeaders;
             this.learningPlanSheetHeaderComments = learningPlanSheetHeaderComments;
             this.requisitionPatternMsgList = requisitionPatternMsgList;
@@ -101,80 +96,80 @@ namespace Application.TelegramBot
         private async void BotOnMessageReceived(object sender, MessageEventArgs messageEventArgs)
         {
             var message = messageEventArgs.Message;
-            var chatID = message.Chat.Id;
+            var chatId = message.Chat.Id;
             var isNew = false;
-            if (!sessionDict.ContainsKey(chatID))
+            if (!sessionDict.ContainsKey(chatId))
             {
-                isNew = GetScheduleSessionByChatId(chatID, out var scheduleSession);
-                sessionDict[chatID] = scheduleSession;
+                isNew = GetScheduleSessionByChatId(chatId, out var scheduleSession);
+                sessionDict[chatId] = scheduleSession;
             }
 
-            var currentSession = sessionDict[chatID];
+            var currentSession = sessionDict[chatId];
 
-            if (!additionalStateDict.ContainsKey(chatID))
+            if (!additionalStateDict.ContainsKey(chatId))
             {
-                isNew = GetAdditionalSessionStateByChatId(chatID, currentSession, out var additionalSessionState);
-                additionalStateDict[chatID] = additionalSessionState;
+                isNew = GetAdditionalSessionStateByChatId(chatId, currentSession, out var additionalSessionState);
+                additionalStateDict[chatId] = additionalSessionState;
             }
-            var currentAdditionalState = additionalStateDict[chatID];
+            var currentAdditionalState = additionalStateDict[chatId];
 
-            GSRepository repo = null;
-            if (!string.IsNullOrEmpty(currentSession.SpreadsheetUrl) && currentAdditionalState.AccessRecieved)
+            GSRepository? repo = null;
+            if (!string.IsNullOrEmpty(currentSession.SpreadsheetUrl) && currentAdditionalState.AccessReceived)
             {
-                if (!repoDict.ContainsKey(chatID))
+                if (!repoDict.ContainsKey(chatId))
                 {
-                    repoDict[chatID] = new GSRepository("ScheduleGenerator", repoSecret, currentSession.SpreadsheetUrl);
-                    repoDict[chatID].SetUpSheetInfo();
+                    repoDict[chatId] = new GSRepository("ScheduleGenerator", repoSecret, currentSession.SpreadsheetUrl);
+                    repoDict[chatId].SetUpSheetInfo();
                 }
 
-                repo = repoDict[chatID];
+                repo = repoDict[chatId];
             }
 
-            if (message?.Type == MessageType.Text)
+            if (message.Type == MessageType.Text)
             {
                 if (message.Text == "/help" || message.Text == "Помощь")
                 {
-                    ShowHelp(chatID);
+                    ShowHelp(chatId);
                 }
                 else if (message.Text == "/restart" || message.Text == "Заново")
                 {
-                    RestartSessionFor(chatID);
+                    RestartSessionFor(chatId);
                 }
                 else if (string.IsNullOrEmpty(currentSession.SpreadsheetUrl))
                 {
-                    HandleSheetUrlAnswerAndAskForAccessIfSuccess(chatID, message.Text, currentSession, isNew);
+                    HandleSheetUrlAnswerAndAskForAccessIfSuccess(chatId, message.Text, currentSession, isNew);
                 }
-                else if (!currentAdditionalState.AccessRecieved)
+                else if (!currentAdditionalState.AccessReceived)
                 {
-                    CheckAccessAndAskForRequisitionSheetIfSuccess(chatID, message.Text, currentSession, currentAdditionalState);
+                    CheckAccessAndAskForRequisitionSheetIfSuccess(chatId, message.Text, currentSession, currentAdditionalState);
                 }
                 else if (string.IsNullOrEmpty(currentSession.InputRequirementsSheet))
                 {
-                    HandleRequisitionSheetAndAskForLearningPlanIfSuccess(chatID, message.Text, currentSession, repo);
+                    HandleRequisitionSheetAndAskForLearningPlanIfSuccess(chatId, message.Text, currentSession, repo);
                 }
                 else if (string.IsNullOrEmpty(currentSession.LearningPlanSheet))
                 {
-                    HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(chatID, message.Text, currentSession, repo);
+                    HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(chatId, message.Text, currentSession, repo);
                 }
                 else if (!currentAdditionalState.DataIsValid)
                 {
-                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatID, message.Text, currentSession, currentAdditionalState, repo);
+                    HandleDataValidationAndAskForOutputSheetIfSuccess(chatId, message.Text, currentSession, currentAdditionalState, repo);
                 }
                 else if (string.IsNullOrEmpty(currentSession.ScheduleSheet))
                 {
-                    HandleScheduleSheetAndCreateSchedule(chatID, message.Text, currentSession, currentAdditionalState, repo);
+                    HandleScheduleSheetAndCreateSchedule(chatId, message.Text, currentSession, currentAdditionalState, repo);
                 }
                 else
                 {
                     if (currentAdditionalState.CreatingSchedule)
                     {
                         var answer = "Составляю расписание. Ожидайте.";
-                        await client.SendTextMessageAsync(chatID, answer);
+                        await client.SendTextMessageAsync(chatId, answer);
                     }
 
                     // Save current session
-                    sessionRepository.Save(chatID, currentSession);
-                    await client.SendTextMessageAsync(chatID, "Кажется, предыдущая сессия уже завершиласть составлением расписания.\n" +
+                    sessionRepository.Save(chatId, currentSession);
+                    await client.SendTextMessageAsync(chatId, "Кажется, предыдущая сессия уже завершиласть составлением расписания.\n" +
                         "Напишите \"Заново\" или /restart, чтобы начать сначала.");
                     currentAdditionalState.CreatingSchedule = false; // it will be also removed
                 }
@@ -210,13 +205,13 @@ namespace Application.TelegramBot
             {
                 try
                 {
-                    additionalSessionState.AccessRecieved = true;
+                    additionalSessionState.AccessReceived = true;
                     isFirstTime = false;
                 }
                 catch
                 {
                     //await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова");
-                    additionalSessionState.AccessRecieved = false;
+                    additionalSessionState.AccessReceived = false;
                 }
                 if (!string.IsNullOrEmpty(currentScheduleSession.ScheduleSheet))
                 {
@@ -297,11 +292,11 @@ namespace Application.TelegramBot
                 // If access accuired
                 var answer = "Доступ получен. " +
                     "На каком листе таблицы будут пожелания по расписанию от преподавателей?";
-                additionalSessionState.AccessRecieved = true;
+                additionalSessionState.AccessReceived = true;
                 // Buttons apiare
 
                 repo.SetUpSheetInfo();
-                var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
+                var sheetNames = repo.CurrentSheetInfo!.Sheets.Keys.ToList();
                 sheetNames.Add("Создать");
                 var keyboard = CreateKeyboard(sheetNames, 6);
 
@@ -329,7 +324,7 @@ namespace Application.TelegramBot
                 repo.CreateNewSheet(newSheetName);
                 repo.SetUpSheetInfo();
                 // Add headers
-                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), requisitionSheetHeaders, requirmentsSheetHeaderComments);
+                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), requisitionSheetHeaders, requirementsSheetHeaderComments);
 
                 scheduleSession.InputRequirementsSheet = newSheetName;
                 scheduleSession.LastModificationTime = DateTime.Now;
@@ -435,10 +430,10 @@ namespace Application.TelegramBot
                 var requisitionData = SheetTableReader.ReadRowsFromSheet(
                     repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionSheetHeaders.Count);
                 // clear last errors
-                if (additionalSessionState.requisitionLastErrorCoords != null && additionalSessionState.requisitionLastErrorCoords.Any())
+                if (additionalSessionState.RequisitionLastErrorCoords != null && additionalSessionState.RequisitionLastErrorCoords.Any())
                 {
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (0, 0),
-                        additionalSessionState.requisitionLastErrorCoords);
+                        additionalSessionState.RequisitionLastErrorCoords);
                 }
                 // get list of errors
                 var requisitionErrors = requisitionEvaluator.Evaluate(requisitionData, (1, 0));
@@ -446,7 +441,7 @@ namespace Application.TelegramBot
                 {
                     isValid = false;
                     // save errors to additional info
-                    additionalSessionState.requisitionLastErrorCoords = requisitionErrors.Select(x => x.Item1);
+                    additionalSessionState.RequisitionLastErrorCoords = requisitionErrors.Select(x => x.Item1).ToList();
                     // paint errors
                     SheetTableErrorPainter.PaintErrors(repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionErrors);
                 }
@@ -457,10 +452,10 @@ namespace Application.TelegramBot
                 var learningPlanData = SheetTableReader.ReadRowsFromSheet(
                     repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanSheetHeaders.Count);
                 // clear last errors
-                if (additionalSessionState.learningPlanLastErrorCoords != null && additionalSessionState.learningPlanLastErrorCoords.Any())
+                if (additionalSessionState.LearningPlanLastErrorCoords != null && additionalSessionState.LearningPlanLastErrorCoords.Any())
                 {
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (0, 0),
-                        additionalSessionState.learningPlanLastErrorCoords);
+                        additionalSessionState.LearningPlanLastErrorCoords);
                 }
                 // get list of errors
                 var learningPlanErrors = learningPlanEvaluator.Evaluate(learningPlanData, (1, 0));
@@ -468,7 +463,7 @@ namespace Application.TelegramBot
                 {
                     isValid = false;
                     // save errors to additional info
-                    additionalSessionState.learningPlanLastErrorCoords = learningPlanErrors.Select(x => x.Item1);
+                    additionalSessionState.LearningPlanLastErrorCoords = learningPlanErrors.Select(x => x.Item1).ToList();
                     // paint errors
                     SheetTableErrorPainter.PaintErrors(repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanErrors);
                 }
@@ -645,17 +640,19 @@ namespace Application.TelegramBot
     public class AdditionalSessionState
     {
         public long ID { get; }
-        public bool AccessRecieved;
+        public bool AccessReceived;
         public bool TableValidationInProgress;
         public bool DataIsValid;
         public bool CreatingSchedule;
 
-        public IEnumerable<(int, int)> requisitionLastErrorCoords;
-        public IEnumerable<(int, int)> learningPlanLastErrorCoords;
+        public IList<(int, int)> RequisitionLastErrorCoords;
+        public IList<(int, int)> LearningPlanLastErrorCoords;
 
         public AdditionalSessionState(long id)
         {
             ID = id;
+            RequisitionLastErrorCoords = new List<(int, int)>();
+            LearningPlanLastErrorCoords = new List<(int, int)>();
         }
     }
 }

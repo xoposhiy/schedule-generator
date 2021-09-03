@@ -3,7 +3,6 @@ using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
 using Domain.Estimators;
-using Domain.Rules;
 using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
@@ -19,15 +18,13 @@ namespace ScheduleCLI
             var credentialPath = "C:\\Users\\t.belov\\Desktop\\Git repos" +
                                  "\\schedule-generator\\ScheduleGenerator\\Credentials\\client_secrets.json";
             
-            var container = ConfigureContainer();
+            //var container = ConfigureContainer();
 
             Console.WriteLine("Starting...");
             
             var link =
                 "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
             var inputRequirementsSheetId = 861045221;
-            var learningPlanSheetId = 493250469;
-            var scheduleSheetId = 0;
             var inputRequirementsSheetUrl = link + inputRequirementsSheetId;
             var repo = new GSRepository("test", credentialPath, inputRequirementsSheetUrl);
             repo.SetUpSheetInfo();
@@ -42,7 +39,7 @@ namespace ScheduleCLI
             // {
             //     Console.WriteLine(requisitionItem.ToString());
             // }
-            var evaluator = container.Get<MeetingEvaluator>();
+            //var evaluator = container.Get<MeetingEvaluator>();
 
             var requisition = new Requisition(requisitions.ToArray());
             
@@ -69,10 +66,6 @@ namespace ScheduleCLI
         private static StandardKernel ConfigureContainer() {
             var container = new StandardKernel();
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
-            container.Bind<MeetingEvaluator>().ToSelf();
-            container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForGroupRule>();
-            // container.Bind<IRule>().To<NoMoreThanOneMeetingAtTimeForTeacherRule>();
-
             return container;
         }
     }

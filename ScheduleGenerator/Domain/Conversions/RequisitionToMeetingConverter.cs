@@ -19,7 +19,6 @@ namespace Domain.Conversions
                 var meetingCount = requisitionItem.RepetitionsCount * requisitionItem.PlanItem.MeetingsPerWeek;
                 for (int i = 0; i < meetingCount; i++)
                 {
-                    // meeting.Location = "TODO"; // TODO use requisitionItem.PlanItem.RoomSpecs;
                     meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, requisitionItem.WeekType,
                         requisitionItem, null));
                 }
@@ -43,13 +42,6 @@ namespace Domain.Conversions
             }
             // Console.WriteLine(string.Join(" ", meetings));
             return meetings;
-        }
-
-        public static (List<Meeting>, AdditionalMeetingInfo) ConvertRequisitionToMeeting(RequisitionItem requisitionItem)
-        {
-            var meetings = ConvertRequisitionToBasicMeeting(requisitionItem);
-            var additionalInfo = new AdditionalMeetingInfo(requisitionItem);
-            return (meetings, additionalInfo);
         }
     }
 

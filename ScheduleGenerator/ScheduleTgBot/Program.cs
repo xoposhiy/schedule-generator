@@ -7,37 +7,34 @@ using System.Xml.Linq;
 using Ninject;
 using Ninject.Extensions.Conventions;
 
-using Domain.Rules;
-
-
 namespace Application
 {
-    class Program
+    static class Program
     {
-        private static string defaultConfigPath = Path.Combine("..","..", "..", "App.config");
+        private static readonly string DefaultConfigPath = Path.Combine("..","..", "..", "App.config");
     
         static void Main(string[] args)
         {
-            var configPath = defaultConfigPath;
+            var configPath = DefaultConfigPath;
             if (args.Length > 0) {
                 configPath = args[0];
             }
     
             var doc = XDocument.Load(configPath);
-            var configElement = doc.Element("configuration");
-            var googleSheetConf = configElement.Element("googleSheetsApi");
-            var credentialsEnvVar = googleSheetConf.Element("credentialsEnvVar").Attribute("val").Value;
-            var credentialsFileName = googleSheetConf.Element("credentialsFileName").Attribute("val").Value;
+            var configElement = doc.Element("configuration")!;
+            var googleSheetConf = configElement.Element("googleSheetsApi")!;
+            var credentialsEnvVar = googleSheetConf.Element("credentialsEnvVar")!.Attribute("val")!.Value;
+            var credentialsFileName = googleSheetConf.Element("credentialsFileName")!.Attribute("val")!.Value;
             var secretTokenEnvVar = configElement
-                .Element("telegramApi")
-                .Element("secretTokenEnvVar")
-                .Attribute("val").Value;
-            var firebaseApiConf = configElement.Element("firebaseApi");
-            var secretFirebaseTokenVar = firebaseApiConf.Element("secretTokenVar").Attribute("val").Value;
-            var basePath = firebaseApiConf.Element("basePath").Attribute("val").Value;
+                .Element("telegramApi")!
+                .Element("secretTokenEnvVar")!
+                .Attribute("val")!.Value;
+            var firebaseApiConf = configElement.Element("firebaseApi")!;
+            var secretFirebaseTokenVar = firebaseApiConf.Element("secretTokenVar")!.Attribute("val")!.Value;
+            var basePath = firebaseApiConf.Element("basePath")!.Attribute("val")!.Value;
     
             var requisitionSheetHeaders = new List<string>();
-            var requirmentsSheetHeaderComments = new List<string>();
+            var requirementsSheetHeaderComments = new List<string>();
     
             var learningPlanSheetHeaders = new List<string>();
             var learningPlanSheetHeaderComments = new List<string>();
@@ -46,31 +43,31 @@ namespace Application
             var learningPlanPatternMsgList = new List<(string pattern, string msg)>();
     
             var requisitionSheetSettings = configElement
-                .Element("sheetSettings")
-                .Elements("sheet").Where(e => e.Attribute("name").Value == "Requisitions").First();
+                .Element("sheetSettings")!
+                .Elements("sheet").First(e => e.Attribute("name")!.Value == "Requisitions");
             FillHeaderConfiguration(requisitionSheetSettings, requisitionSheetHeaders,
-                requirmentsSheetHeaderComments, requisitionPatternMsgList);
+                requirementsSheetHeaderComments, requisitionPatternMsgList);
     
             var learningPlanSheetSettings = configElement
-                .Element("sheetSettings")
-                .Elements("sheet").Where(e => e.Attribute("name").Value == "LearningPlan").First();
+                .Element("sheetSettings")!
+                .Elements("sheet").First(e => e.Attribute("name")!.Value == "LearningPlan");
             FillHeaderConfiguration(learningPlanSheetSettings, learningPlanSheetHeaders,
                 learningPlanSheetHeaderComments, learningPlanPatternMsgList);
     
             
-            var credentialDirPath = Environment.GetEnvironmentVariable(credentialsEnvVar);
+            var credentialDirPath = Environment.GetEnvironmentVariable(credentialsEnvVar)!;
             var credentialPath = Path.Combine(credentialDirPath, credentialsFileName);
     
-            var secretToken = Environment.GetEnvironmentVariable(secretTokenEnvVar);
+            var secretToken = Environment.GetEnvironmentVariable(secretTokenEnvVar)!;
     
-            var firebaseSecret = Environment.GetEnvironmentVariable(secretFirebaseTokenVar);
+            var firebaseSecret = Environment.GetEnvironmentVariable(secretFirebaseTokenVar)!;
     
             var container = ConfigureContainer();
     
             Console.WriteLine("Starting...");
     
-            var bot = new TBot(secretToken, credentialPath, firebaseSecret, basePath,
-                requisitionSheetHeaders, requirmentsSheetHeaderComments,
+            var bot = new TgBot(secretToken, credentialPath, firebaseSecret, basePath,
+                requisitionSheetHeaders, requirementsSheetHeaderComments,
                 learningPlanSheetHeaders, learningPlanSheetHeaderComments,
                 requisitionPatternMsgList, learningPlanPatternMsgList, container);
             bot.Start();
@@ -85,12 +82,12 @@ namespace Application
         {
             foreach (var header in baseElement.Elements("header"))
             {
-                var name = header.Attribute("name").Value;
+                var name = header.Attribute("name")!.Value;
                 headers.Add(name);
-                var description = header.Element("description").Value;
+                var description = header.Element("description")!.Value;
                 comments.Add(description);
-                var pattern = header.Element("pattern").Attribute("value").Value;
-                var errorMessage = header.Element("errorMessage").Attribute("value").Value;
+                var pattern = header.Element("pattern")!.Attribute("value")!.Value;
+                var errorMessage = header.Element("errorMessage")!.Attribute("value")!.Value;
                 patternMsg.Add((pattern, errorMessage));
             }
         }
@@ -98,8 +95,6 @@ namespace Application
         private static StandardKernel ConfigureContainer() {
             var container = new StandardKernel();
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
-            container.Bind<MeetingEvaluator>().ToSelf();
-    
             return container;
         }
     }

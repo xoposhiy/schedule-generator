@@ -8,20 +8,32 @@ using Google.Apis.Auth.OAuth2;
 
 namespace Domain.ScheduleLib
 {
-    public class Schedule
+    public interface IReadonlySchedule
+    {
+        IReadOnlyList<Meeting> GetMeetings();
+    }
+    
+    public class Schedule : IReadonlySchedule
     {
         public readonly Requisition Requisition;
-        public List<Meeting> Meetings = new();
-        public List<Meeting> NotUsedMeetings = new();
-        public Dictionary<string, List<RoomSpec>> SpecsByRoom;
-        public Dictionary<RoomSpec, List<string>> RoomsBySpec = new ();
-        public Dictionary<string, Dictionary<GroupPart, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
-        public Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>> GroupLearningPlanItemsCount = new();
-        public Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
-        public Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
-        public Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>> GroupsMeetingsTimesByDay = new();
-        public Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
-        public Dictionary<Meeting, int> MeetingFreedomDegree = new();
+        public readonly List<Meeting> Meetings = new();
+        public readonly List<Meeting> NotUsedMeetings = new();
+        public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
+        public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new ();
+        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
+        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>> GroupLearningPlanItemsCount = new();
+        public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
+        public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
+        public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>> GroupsMeetingsTimesByDay = new();
+        public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
+        public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
+
+        public Schedule(Meeting[] meetings)
+        {
+            Requisition = new Requisition(Array.Empty<RequisitionItem>());
+            SpecsByRoom = new Dictionary<string, List<RoomSpec>>();
+            Meetings = meetings.ToList();
+        }
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> roomsWithSpecs)
         {
@@ -79,7 +91,6 @@ namespace Domain.ScheduleLib
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
-            //TODO предложить все возможные варианты следующего митинга, который нужно вставить в расписание, с учетом всех жестких ограничений
             foreach (var meeting in NotUsedMeetings.ToList())
             {
                 var requisitionItem = meeting.RequisitionItem;
@@ -148,7 +159,7 @@ namespace Domain.ScheduleLib
                 var m = Meetings
                     .FirstOrDefault(m => m.RequisitionItem.PlanItem.Discipline == discipline
                                          && m.RequisitionItem.PlanItem.MeetingType == connectAfter
-                                         && m.GroupsEquals(meetingCopy.Groups)
+                                         && m.GroupsEquals(meetingCopy.Groups!)
                                          && (sameTeacherWith == null ||
                                              meetingCopy.Teacher == m.Teacher)
                                          && m.MeetingTime!.TimeSlotIndex < 6
@@ -328,6 +339,11 @@ namespace Domain.ScheduleLib
                     GroupsMeetingsTimesByDay[meetingTime.Day][groupName][groupPart].Remove(meetingTime.TimeSlotIndex);
                 }
             }
+        }
+
+        public IReadOnlyList<Meeting> GetMeetings()
+        {
+            return Meetings;
         }
     }
 }

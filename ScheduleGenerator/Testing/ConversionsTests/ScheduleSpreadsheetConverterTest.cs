@@ -20,6 +20,7 @@ namespace Testing.ConversionsTests
         [Test]
         public void Test1()
         {
+            
             var testSchedule = new Schedule(new[] {
                 MeetingCreator.CreateMeeting("Math 623 Fil 0 3 0 0 FT-202#0 FT-201#0 KN-201#2"),
                 MeetingCreator.CreateMeeting("DM 622 Str 0 0 0 0 FT-202#0 KN-201#0"),
@@ -31,7 +32,7 @@ namespace Testing.ConversionsTests
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=0";
             var repo = new GSRepository(ApplicationName, credentialPath, url);
-            var converter = new ScheduleSpreadsheetConverter(repo, repo.CurrentSheetInfo.Sheets.Keys.First());
+            var converter = new ScheduleSpreadsheetConverter(repo, repo.CurrentSheetInfo!.Sheets.Keys.First());
 
             converter.Build(testSchedule);
 

@@ -24,7 +24,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             var repo = new GSRepository(ApplicationName, credentialPath, url);
 
             repo.ChangeTable(url);
-            var readed = repo.ReadCell(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 1));
+            var readed = repo.ReadCell(repo.CurrentSheetInfo!.Sheets.Keys.First(), (1, 1));
 
             var dataToWrite = new List<List<string>>()
             {
@@ -36,12 +36,12 @@ namespace Testing.GoogleSheetsRepositoryTests
                 .WriteRange((1, 2), dataToWrite)
                 .Execute();
 
-            var valRange = repo.ReadCellRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 4));
+            var valRange = repo.ReadCellRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 4))!;
             for (int r = 0; r < valRange.Count; r++)
             {
-                for (int c = 0; c < valRange[r].Count; c++)
+                for (int c = 0; c < valRange[r]!.Count; c++)
                 {
-                    Assert.AreEqual(dataToWrite[r][c], valRange[r][c]);
+                    Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
                 }
             }
         }
@@ -62,16 +62,16 @@ namespace Testing.GoogleSheetsRepositoryTests
                 new List<string>() { "21", "22"},
                 new List<string>() { "31", "32"},
             };
-            repo1.ModifySpreadSheet(repo1.CurrentSheetInfo.Sheets.Keys.First())
+            repo1.ModifySpreadSheet(repo1.CurrentSheetInfo!.Sheets.Keys.First())
                 .WriteRange((1, 2), dataToWrite)
                 .Execute();
 
-            var valRange = repo2.ReadCellRange(repo2.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 4));
+            var valRange = repo2.ReadCellRange(repo2.CurrentSheetInfo!.Sheets.Keys.First(), (1, 2), (3, 4))!;
             for (int r = 0; r < valRange.Count; r++)
             {
-                for (int c = 0; c < valRange[r].Count; c++)
+                for (int c = 0; c < valRange[r]!.Count; c++)
                 {
-                    Assert.AreEqual(dataToWrite[r][c], valRange[r][c]);
+                    Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
                 }
             }
         }

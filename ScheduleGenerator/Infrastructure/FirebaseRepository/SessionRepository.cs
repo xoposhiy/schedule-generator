@@ -42,6 +42,7 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         ScheduleSession Get(long telegramChatId);
         void Save(long telegramChatId, ScheduleSession session);
         void Delete(long telegramChatId);
+        
     }
 
     public class SessionRepository : IDBRepository

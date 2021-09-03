@@ -27,22 +27,18 @@ namespace Domain.ScheduleLib
             RequisitionItem = requisitionItem;
         }
 
-        private Meeting()
-        {
-        }
-
         public Meeting BasicCopy()
         {
-            var copy = new Meeting
-            {                
-                RequisitionItem = RequisitionItem,
-                Discipline = Discipline,
-                MeetingType = MeetingType,
-                Teacher = Teacher,
-                WeekType = WeekType,
+            return new Meeting(
+                Discipline,
+                MeetingType, 
+                Teacher,
+                WeekType,
+                RequisitionItem)
+            {
                 BaseMeeting = this
             };
-            return copy;
+            
         }
 
         public override string ToString()
@@ -53,7 +49,7 @@ namespace Domain.ScheduleLib
         
         public bool GroupsEquals(MeetingGroup[] meetingGroups)
         {
-            var f = Groups.ToHashSet();
+            var f = Groups!.ToHashSet();
             var g = meetingGroups.ToHashSet();
             return f.SetEquals(g);
         }
@@ -81,7 +77,8 @@ namespace Domain.ScheduleLib
         Lecture,
         ComputerLab,
         Seminar,
-        Online // TODO лишнее? должно быть понятно из Location
+        Online 
+        // TODO Online нужно указывать у RequisitionItem, а не у LearningPlanItem: в онлайн могут уходить отдельные преподаватели по курсу, а не все сразу. Нужно перенести туда.  
     }
     
     

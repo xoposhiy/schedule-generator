@@ -258,7 +258,7 @@ namespace Domain.Conversions
 
         private static WeekType ParseWeekType(string? weekTypeRaw)
         {
-            return weekTypeRaw.Length == 0 ? WeekType.All : GetWeekType(weekTypeRaw);
+            return string.IsNullOrEmpty(weekTypeRaw) ? WeekType.All : GetWeekType(weekTypeRaw);
         }
 
         private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions)

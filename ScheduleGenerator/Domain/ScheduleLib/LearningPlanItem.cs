@@ -1,6 +1,5 @@
 ﻿namespace Domain.ScheduleLib
 {
-    //TODO чтение из таблицы
     public record LearningPlanItem(string GroupSet, Discipline Discipline,
         MeetingType MeetingType, GroupSize GroupSize, double MeetingsPerWeek, RoomSpec[] RoomSpecs,
         MeetingType? ConnectAfter, MeetingType? SameTeacherWith)
@@ -17,6 +16,5 @@
         ForGroup,
         Computer,
         Projector,
-        //TODO
     }
 }

@@ -15,7 +15,7 @@ namespace Testing.FirebaseRepositoryTests
         public void Test1()
         {
             var basePath = "https://schedule-generator-5f50e.firebaseio.com/";
-            var authSecret = Environment.GetEnvironmentVariable("FirebaseSecret");
+            var authSecret = Environment.GetEnvironmentVariable("FirebaseSecret")!;
 
             var repo = new SessionRepository(basePath, authSecret);
 
