@@ -261,7 +261,7 @@ namespace Domain.Conversions
             return string.IsNullOrEmpty(weekTypeRaw) ? WeekType.All : GetWeekType(weekTypeRaw);
         }
 
-        private static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions)
+        public static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions)
         {
             var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
             var groupRequisitions = new List<GroupRequisition>();
@@ -343,8 +343,8 @@ namespace Domain.Conversions
 
             return matchedGroups;
         }
-        
-        private static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
+
+        public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
             var weekDaysStrList = weekDaysDict.Keys.ToList();
             var meetingTimeRequisitions = new List<MeetingTimeRequisition>();

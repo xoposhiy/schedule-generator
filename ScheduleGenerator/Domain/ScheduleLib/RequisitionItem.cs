@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Domain.Conversions;
 
 namespace Domain.ScheduleLib
 {
@@ -14,8 +15,18 @@ namespace Domain.ScheduleLib
         public readonly Teacher Teacher;
         public readonly WeekType WeekType;
 
+        public RequisitionItem(LearningPlanItem planItem, string groupPriorities,
+            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All)
+            : this(planItem,
+                SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(), 
+                repetitionsCount,
+                SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities).ToArray(),
+                teacher, weekType)
+        {
+        }
+        
         public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
-            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType)
+            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
