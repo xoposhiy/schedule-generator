@@ -15,8 +15,7 @@ namespace ScheduleCLI
         static void Main(string[] args)
         {
 
-            var credentialPath = "C:\\Users\\t.belov\\Desktop\\Git repos" +
-                                 "\\schedule-generator\\ScheduleGenerator\\Credentials\\client_secrets.json";
+            var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             
             //var container = ConfigureContainer();
 
@@ -52,7 +51,7 @@ namespace ScheduleCLI
             var teacherSpacesEstimator = new TeacherSpacesEstimator();
             var meetingsPerDayEstimator = new MeetingsPerDayEstimator();
             var teacherUsedDaysEstimator = new TeacherUsedDaysEstimator();
-            var estimator = new CombinedEstimator(basic,groupsSpacesEstimator,
+            var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator,teacherSpacesEstimator, teacherUsedDaysEstimator);
             var solver = new GreedySolver(estimator, requisition, classrooms, new Random());
             var solutions = solver.GetSolution(new TimeSpan(0 ,1, 5)).ToList();

@@ -5,6 +5,7 @@ using Domain.ScheduleLib;
 
 namespace Domain.Estimators
 {
+    //TODO: fix estimator
     public class FreedomDegreeEstimator : IEstimator
     {
         public FreedomDegreeEstimator()
