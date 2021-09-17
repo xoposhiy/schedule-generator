@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Domain.Algorithms;
+using Domain.Estimators;
 using Domain.ScheduleLib;
 using NUnit.Framework;
 
@@ -26,6 +30,24 @@ namespace Testing.ScheduleLibTests
             
             var requisitionItem = new RequisitionItem(planItem, new[] {groupRequisition}, 1,
                 new[] {meetingTimeRequisition}, teacher, WeekType.All);
+
+            var estimator = new MeetingsPerDayEstimator();
+            var requisition = new Requisition(new[] {requisitionItem});
+            var classRooms = new Dictionary<string, List<RoomSpec>>
+            {
+                ["Hell"] = new List<RoomSpec>(roomSpecs)
+            };
+
+
+            var greedySolver = new GreedySolver(estimator, requisition, classRooms, new Random(666));
+
+            var solutions = greedySolver.GetSolution(TimeSpan.FromMinutes(2));
+
+            foreach (var solution in solutions)
+            {
+                Assert.AreEqual(solution.Schedule.Meetings.Count, 1);
+                Console.Error.WriteLine(solution.Schedule.Meetings.First());
+            }
             
             Assert.Pass();
         }
