@@ -9,12 +9,14 @@ namespace Testing.ScheduleLibTests
         {
             ["632"] = new List<RoomSpec> {RoomSpec.Big, RoomSpec.Projector},
             ["605"] = new List<RoomSpec> {RoomSpec.ForGroup},
+            ["514"] = new List<RoomSpec> {RoomSpec.Computer, RoomSpec.ForGroup},
         };
 
 
         public static MeetingGroup Group1 = new MeetingGroup("ФИИТ-101", GroupPart.FullGroup);
         public static MeetingGroup Group1_1 = new MeetingGroup("ФИИТ-101-1", GroupPart.Part1);
         public static MeetingGroup Group1_2 = new MeetingGroup("ФИИТ-101-2", GroupPart.Part2);
+        public static MeetingGroup Group2 = new MeetingGroup("ФИИТ-102", GroupPart.FullGroup);
 
         public static Discipline OOP = new Discipline("ООП");
         public static Discipline Calculus = new Discipline("МатАн");
@@ -33,5 +35,6 @@ namespace Testing.ScheduleLibTests
             }, null, null);
 
         public static Teacher OopTeacher = new Teacher("Петряшов");
+        public static Teacher CalculusTeacher = new Teacher("Филатова");
     }
 }
