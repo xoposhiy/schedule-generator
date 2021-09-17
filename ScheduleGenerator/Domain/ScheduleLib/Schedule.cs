@@ -82,10 +82,10 @@ namespace Domain.ScheduleLib
             foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
             {
                 if (day == DayOfWeek.Sunday) continue;
-                var roomsByTimeslot = new Dictionary<int, HashSet<string>>();
+                var roomsByTimeSlot = new Dictionary<int, HashSet<string>>();
                 for (var i = 1; i < 7; i++) 
-                    roomsByTimeslot.Add(i, rooms.ToHashSet());
-                FreeRoomsByDay.Add(day, roomsByTimeslot);
+                    roomsByTimeSlot.Add(i, rooms.ToHashSet());
+                FreeRoomsByDay.Add(day, roomsByTimeSlot);
             }
         }
 
