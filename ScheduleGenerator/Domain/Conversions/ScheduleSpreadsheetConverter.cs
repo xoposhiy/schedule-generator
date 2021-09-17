@@ -42,7 +42,7 @@ namespace Domain.Conversions
             //     Console.WriteLine(data);
             // }
 
-            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}, Было: {schedule.GetMeetings().Count}");
+            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}, Было: {schedule.GetMeetings().ToList().Count}");
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
             PrepareSheet();

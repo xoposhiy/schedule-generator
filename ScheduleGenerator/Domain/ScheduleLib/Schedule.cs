@@ -10,14 +10,14 @@ namespace Domain.ScheduleLib
 {
     public interface IReadonlySchedule
     {
-        IReadOnlyList<Meeting> GetMeetings();
+        IEnumerable<Meeting> GetMeetings();
     }
     
     public class Schedule : IReadonlySchedule
     {
         public readonly Requisition Requisition;
-        public readonly List<Meeting> Meetings = new();
-        public readonly List<Meeting> NotUsedMeetings = new();
+        public readonly HashSet<Meeting> Meetings = new();
+        public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new ();
         public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
@@ -32,7 +32,7 @@ namespace Domain.ScheduleLib
         {
             Requisition = new Requisition(Array.Empty<RequisitionItem>());
             SpecsByRoom = new Dictionary<string, List<RoomSpec>>();
-            Meetings = meetings.ToList();
+            Meetings = meetings.ToHashSet();
         }
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> roomsWithSpecs)
@@ -43,7 +43,7 @@ namespace Domain.ScheduleLib
             FillRoomPool(roomsWithSpecs.Keys);
             NotUsedMeetings = requisition.Items
                 .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
-                .ToList();
+                .ToHashSet();
             FillMeetingFreedomDegree(NotUsedMeetings.ToList());
         }
 
@@ -341,7 +341,7 @@ namespace Domain.ScheduleLib
             }
         }
 
-        public IReadOnlyList<Meeting> GetMeetings()
+        public IEnumerable<Meeting> GetMeetings()
         {
             return Meetings;
         }
