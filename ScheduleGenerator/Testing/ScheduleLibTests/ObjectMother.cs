@@ -24,7 +24,7 @@ namespace Testing.ScheduleLibTests
             GroupSize.FullGroup, 1.5, new[] {RoomSpec.Big}, null, null);
 
         public static LearningPlanItem OopSeminar = new LearningPlanItem("ФИИТ-101-1", OOP, MeetingType.Seminar,
-            GroupSize.HalfGroup, 1, System.Array.Empty<RoomSpec>(), MeetingType.Seminar, null);
+            GroupSize.HalfGroup, 1, System.Array.Empty<RoomSpec>(), MeetingType.ComputerLab, null);
 
         public static LearningPlanItem OopLab = new LearningPlanItem("ФИИТ-101-1", OOP, MeetingType.ComputerLab,
             GroupSize.HalfGroup, 1, new[]
