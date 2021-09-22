@@ -179,42 +179,27 @@ namespace Domain.ScheduleLib
                 if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1][day].TryGetValue(previousTimeSlot, out var value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2][day].TryGetValue(previousTimeSlot, out value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1][day].TryGetValue(nextTimeSlot, out value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2][day].TryGetValue(nextTimeSlot, out value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, GroupPart.Part1, day, previousTimeSlot)) return true;
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, GroupPart.Part2, day, previousTimeSlot)) return true;
+                    
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, GroupPart.Part1, day, nextTimeSlot)) return true;
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, GroupPart.Part2, day, nextTimeSlot)) return true;
                 }
                 else
                 {
-                    if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
-                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][groupPart][day].TryGetValue(previousTimeSlot, out var value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
-                    if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
-                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
-                        && GroupMeetingsByTime[groupName][groupPart][day].TryGetValue(nextTimeSlot, out value))
-                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                            return true;
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, groupPart, day, previousTimeSlot)) return true;
+                    if (CheckNeighbourMeeting(meetingCopy, groupName, groupPart, day, nextTimeSlot)) return true;
                 }
             }
             return false;
+        }
+
+        private bool CheckNeighbourMeeting(Meeting meeting, string groupName, GroupPart part, DayOfWeek day, int timeSlot)
+        {
+            if (!GroupMeetingsByTime[groupName].ContainsKey(part) ||
+                !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
+                !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
+            return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
         }
 
         private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
