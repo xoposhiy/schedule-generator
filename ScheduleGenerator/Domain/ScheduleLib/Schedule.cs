@@ -41,7 +41,7 @@ namespace Domain.ScheduleLib
             SpecsByRoom = roomsWithSpecs;
             FillClassroomsBySpec(roomsWithSpecs);
             FillRoomPool(roomsWithSpecs.Keys);
-            NotUsedMeetings = requisition.Items
+            var a = requisition.Items
                 .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
                 .ToHashSet();
             FillMeetingFreedomDegree(NotUsedMeetings.ToList());
@@ -101,7 +101,7 @@ namespace Domain.ScheduleLib
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-                var connectAfter = meeting.RequisitionItem.PlanItem.ConnectAfter;
+                var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
 
                 foreach (var groupsChoice in possibleGroupsChoices)
                 {
@@ -118,8 +118,9 @@ namespace Domain.ScheduleLib
                         meetingCopy.MeetingTime = meetingTimeChoice;
                         meetingCopy.Location = room;
 
-                        if (connectAfter != null && meetingTimeChoice.TimeSlotIndex == 1)
-                            continue;
+                        // if (requiredAdjacentMeetingType != null && meetingTimeChoice.TimeSlotIndex == 1)
+                        //     continue;
+                        
                         (thisConditionMeetingFound, meetingFound, meetingToAdd) = GetMeetingToAdd(meetingCopy,
                             meetingTimeChoice, thisConditionMeetingFound, meetingFound);
 
@@ -133,7 +134,7 @@ namespace Domain.ScheduleLib
                     }
                 }
 
-                if (!meetingFound && meeting.RequisitionItem.PlanItem.ConnectAfter == null)
+                if (!meetingFound && meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType == null)
                     throw new FormatException($"Нет свободных мест для пары {meeting}");
             }
         }
@@ -151,36 +152,35 @@ namespace Domain.ScheduleLib
         private (bool, bool, Meeting) GetMeetingToAdd(Meeting meetingCopy, MeetingTime meetingTimeChoice, 
             bool thisConditionMeetingFound, bool meetingFound)
         {
-            var connectAfter = meetingCopy.RequisitionItem.PlanItem.ConnectAfter;
-            if (connectAfter != null)
+            var requiredAdjacentMeetingType = meetingCopy.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
+            if (requiredAdjacentMeetingType != null)
             {
                 var discipline = meetingCopy.RequisitionItem.PlanItem.Discipline;
                 var sameTeacherWith = meetingCopy.RequisitionItem.PlanItem.SameTeacherWith;
-                var m = Meetings
-                    .FirstOrDefault(m => m.RequisitionItem.PlanItem.Discipline == discipline
-                                         && m.RequisitionItem.PlanItem.MeetingType == connectAfter
-                                         && m.GroupsEquals(meetingCopy.Groups!)
-                                         && (sameTeacherWith == null ||
-                                             meetingCopy.Teacher == m.Teacher)
-                                         && m.MeetingTime!.TimeSlotIndex < 6
-                                         && meetingTimeChoice.Day == m.MeetingTime.Day
-                                         && meetingTimeChoice.TimeSlotIndex ==
-                                         m.MeetingTime.TimeSlotIndex + 1);
-                if (m != null)
-                {
-                    thisConditionMeetingFound = true;
-                    meetingFound = true;
-                    meetingCopy.LinkedMeeting = m;
-                    // m.LinkedMeeting = meetingCopy;
-                }
-                else
-                {
-                    if (connectAfter == meetingCopy.MeetingType)
-                    {
-                        thisConditionMeetingFound = true;
-                        meetingFound = true;
-                    }
-                }
+                // var m = Meetings
+                //     .FirstOrDefault(m => m.RequisitionItem.PlanItem.Discipline == discipline
+                //                          && m.RequisitionItem.PlanItem.MeetingType == requiredAdjacentMeetingType
+                //                          && m.GroupsEquals(meetingCopy.Groups!)
+                //                          && (sameTeacherWith == null ||
+                //                              meetingCopy.Teacher == m.Teacher)
+                //                          && meetingTimeChoice.Day == m.MeetingTime.Day
+                //                          && meetingTimeChoice.TimeSlotIndex ==
+                //                          m.MeetingTime.TimeSlotIndex + 1);
+                // if (m != null)
+                // {
+                //     thisConditionMeetingFound = true;
+                //     meetingFound = true;
+                //     meetingCopy.RequiredAdjacentMeeting = m;
+                //     // m.LinkedMeeting = meetingCopy;
+                // }
+                // else
+                // {
+                //     if (requiredAdjacentMeetingType == meetingCopy.MeetingType)
+                //     {
+                //         thisConditionMeetingFound = true;
+                //         meetingFound = true;
+                //     }
+                // }
             }
             else
             {

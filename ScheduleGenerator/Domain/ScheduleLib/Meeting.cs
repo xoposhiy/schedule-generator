@@ -14,7 +14,7 @@ namespace Domain.ScheduleLib
         public string? Location;
         public MeetingTime? MeetingTime;
         public Meeting? BaseMeeting;
-        public Meeting? LinkedMeeting;
+        public Meeting? RequiredAdjacentMeeting;
 
         public Meeting(Discipline discipline, MeetingType meetingType, Teacher teacher, WeekType weekType,
             RequisitionItem requisitionItem, MeetingGroup[]? groups = null)
