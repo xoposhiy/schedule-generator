@@ -8,6 +8,7 @@ namespace Domain.ScheduleLib
     {
         public readonly LearningPlanItem PlanItem;
         public readonly GroupRequisition[] GroupPriorities;
+        public readonly bool IsOnline;
         
         public readonly int RepetitionsCount;
 
@@ -26,7 +27,7 @@ namespace Domain.ScheduleLib
         }
         
         public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
-            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All)
+            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All, bool isOnline = false)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
@@ -34,6 +35,7 @@ namespace Domain.ScheduleLib
             MeetingTimePriorities = meetingTimePriorities;
             Teacher = teacher;
             WeekType = weekType;
+            IsOnline = isOnline;
         }
         
         public override string ToString()

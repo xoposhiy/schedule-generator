@@ -79,7 +79,8 @@ namespace Domain.ScheduleLib
         ComputerLab,
         Seminar,
         Online 
-        // TODO Online нужно указывать у RequisitionItem, а не у LearningPlanItem: в онлайн могут уходить отдельные преподаватели по курсу, а не все сразу. Нужно перенести туда.  
+        // TODO Online нужно указывать у RequisitionItem, а не у LearningPlanItem:
+        // в онлайн могут уходить отдельные преподаватели по курсу, а не все сразу. Нужно перенести туда.  
     }
     
     

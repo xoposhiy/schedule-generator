@@ -26,6 +26,7 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
         public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>> GroupsMeetingsTimesByDay = new();
         public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
+        public readonly Dictionary<DayOfWeek, Dictionary<int, Meeting>> MeetingsByTimeSlot = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public Schedule(Meeting[] meetings)
@@ -139,17 +140,10 @@ namespace Domain.ScheduleLib
                             meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
                             linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
                         }
-                        // if (requiredAdjacentMeetingType != null && meetingTimeChoice.TimeSlotIndex == 1)
-                        //     continue;
-                        // TODO Не возвращать митинг с зависимостью, если для зависимости нет места.
                         // TODO Оставлять окно между онлайн и оффлайн парами
-                        // meetingFound = true;
                         yield return meetingCopy;
                     }
                 }
-
-                // if (!meetingFound && meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType == null)
-                    // throw new FormatException($"Нет свободных мест для пары {meeting}");
             }
         }
 
@@ -171,11 +165,32 @@ namespace Domain.ScheduleLib
         {
             return IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
                    || IsOverfillMeetingToGroup(meetingCopy, groupsChoice)
-                   || IsCollisionMeetingToTeacher(meetingCopy, meetingTimeChoice);
+                   || IsCollisionMeetingToTeacher(meetingCopy, meetingTimeChoice)
+                   || OnlineOfflineDelta(meetingTimeChoice, meetingCopy);
+        }
+
+        private bool OnlineOfflineDelta(MeetingTime meetingTimeChoice, Meeting meetingCopy)
+        {
+            var day = meetingTimeChoice.Day;
+            var previousTimeSlot = meetingTimeChoice.TimeSlotIndex - 1;
+            var nextTimeSlot = meetingTimeChoice.TimeSlotIndex + 1;
+            if (MeetingsByTimeSlot.ContainsKey(day))
+            {
+                if (MeetingsByTimeSlot[day].TryGetValue(previousTimeSlot, out var value))
+                    if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                        return true;
+                if (MeetingsByTimeSlot[day].TryGetValue(nextTimeSlot, out value))
+                    if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                        return true;
+            }
+
+            return false;
         }
 
         private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
         {
+            if (roomRequirement.Contains(RoomSpec.Online))
+                return "Онлайн";
             var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
             foreach (var rs in roomRequirement) 
                 possibleRooms.IntersectWith(RoomsBySpec[rs]);
@@ -274,6 +289,7 @@ namespace Domain.ScheduleLib
 
                 TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
 
+                MeetingsByTimeSlot.SafeAdd(meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
             }
         }
@@ -321,7 +337,8 @@ namespace Domain.ScheduleLib
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
 
                 TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
-
+                
+                MeetingsByTimeSlot[meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
             }
         }

@@ -193,7 +193,7 @@ namespace Domain.Conversions
             var requisitions = new List<RequisitionItem>();
             foreach (var requisitionRow in sheetData)
             {
-                if (requisitionRow.Count == 0 || requisitionRow.Take(7).All(string.IsNullOrEmpty))
+                if (requisitionRow.Count == 0 || requisitionRow.Take(8).All(string.IsNullOrEmpty))
                 {
                     continue;
                 }
@@ -208,6 +208,7 @@ namespace Domain.Conversions
                     var groupPriorities = requisitionRow[4];
                     var meetingTimesRaw = requisitionRow[5];
                     var weekTypeRaw = requisitionRow[6];
+                    var isOnline = requisitionRow[7].Trim().Contains("online");
 
                     var teacher = new Teacher(teacherName);
 
@@ -224,8 +225,11 @@ namespace Domain.Conversions
                     var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                     var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                     var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
+                    if (isOnline)
+                        planItem = planItem with {RoomSpecs = new[] {RoomSpec.Online}};
                     var weekType = ParseWeekType(weekTypeRaw);
-                    var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount, meetingTimeRequisitionArray, teacher, weekType);
+                    var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount,
+                        meetingTimeRequisitionArray, teacher, weekType, isOnline);
                     requisitions.Add(requisition);
 
                 }

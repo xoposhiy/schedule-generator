@@ -16,5 +16,6 @@
         ForGroup,
         Computer,
         Projector,
+        Online
     }
 }
