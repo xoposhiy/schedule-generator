@@ -115,7 +115,6 @@ namespace Domain.ScheduleLib
             foreach (var meeting in NotUsedMeetings.ToList())
             {
                 var requisitionItem = meeting.RequisitionItem;
-                // var meetingFound = false;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
                     .SelectMany(p => p.GroupsChoices)
                     .ToHashSet();
