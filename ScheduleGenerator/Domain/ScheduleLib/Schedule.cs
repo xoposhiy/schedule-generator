@@ -142,7 +142,6 @@ namespace Domain.ScheduleLib
                             meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
                             linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
                         }
-                        // TODO Оставлять окно между онлайн и оффлайн парами
                         yield return meetingCopy;
                     }
                 }
