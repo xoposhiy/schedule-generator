@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using Domain.Algorithms;
-using Domain.Estimators;
 using Domain.ScheduleLib;
 using NUnit.Framework;
 using static Testing.ScheduleLibTests.ObjectMother;
@@ -22,9 +20,19 @@ namespace Testing.ScheduleLibTests
             });
 
             var schedule = new Schedule(requisition, ClassRooms);
-            var meetingsToAdd = schedule.GetMeetingsToAdd();
-
-            //TODO: check everything is working
+            var meetingToAdd = schedule.GetMeetingsToAdd().First();
+            
+            schedule.AddMeeting(meetingToAdd);
+            Console.WriteLine(meetingToAdd);
+            
+            Assert.AreEqual(0, schedule.NotUsedMeetings.Count);
+            Assert.AreEqual(2, schedule.Meetings.Count);
+            var first = schedule.Meetings.First();
+            var second = schedule.Meetings.Last();
+            Assert.AreNotEqual(first, second);
+            Assert.AreEqual(first.MeetingTime!.Day, second.MeetingTime!.Day);
+            var timeDelta = first.MeetingTime.TimeSlotIndex - second.MeetingTime.TimeSlotIndex;
+            Assert.Less(Math.Abs(timeDelta), 2);
         }
 
         [Test]
