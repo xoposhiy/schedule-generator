@@ -112,20 +112,18 @@ namespace Domain.ScheduleLib
             foreach (var meeting in NotUsedMeetings.ToList())
             {
                 var requisitionItem = meeting.RequisitionItem;
-                var meetingFound = false;
+                // var meetingFound = false;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
                     .SelectMany(p => p.GroupsChoices)
                     .ToHashSet();
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-                var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
 
                 foreach (var groupsChoice in possibleGroupsChoices)
                 {
                     foreach (var meetingTimeChoice in possibleTimeChoices)
                     {
-                        var thisConditionMeetingFound = false;
                         var meetingCopy = SetMeetingInstance(meeting, groupsChoice, meetingTimeChoice);
                         if (meetingCopy == null) continue;
                         if (meetingCopy.RequiredAdjacentMeeting != null)
@@ -145,7 +143,7 @@ namespace Domain.ScheduleLib
                         //     continue;
                         // TODO Не возвращать митинг с зависимостью, если для зависимости нет места.
                         // TODO Оставлять окно между онлайн и оффлайн парами
-                        meetingFound = true;
+                        // meetingFound = true;
                         yield return meetingCopy;
                     }
                 }
@@ -155,7 +153,7 @@ namespace Domain.ScheduleLib
             }
         }
 
-        private Meeting? SetMeetingInstance(Meeting meeting, GroupsChoice groupsChoice, MeetingTime? meetingTimeChoice)
+        private Meeting? SetMeetingInstance(Meeting meeting, GroupsChoice groupsChoice, MeetingTime meetingTimeChoice)
         {
             var room = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
                 meeting.RequisitionItem.PlanItem.RoomSpecs);
@@ -169,7 +167,7 @@ namespace Domain.ScheduleLib
             return meetingCopy;
         }
 
-        private bool IsAnyCollision(GroupsChoice? groupsChoice, MeetingTime? meetingTimeChoice, Meeting? meetingCopy)
+        private bool IsAnyCollision(GroupsChoice groupsChoice, MeetingTime meetingTimeChoice, Meeting meetingCopy)
         {
             return IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
                    || IsOverfillMeetingToGroup(meetingCopy, groupsChoice)
