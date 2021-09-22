@@ -54,15 +54,14 @@ namespace Domain.ScheduleLib
             {
                 var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
                 if (requiredAdjacentMeetingType == null) continue;
-                var pressF = notUsedMeetings.FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
+                var linkedMeeting = notUsedMeetings.FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
                                                             && e.Teacher.Equals(meeting.Teacher)
                                                             && e.MeetingType.Equals(requiredAdjacentMeetingType)
                                                             && !ReferenceEquals(e, meeting));
-                if (pressF == null)
+                if (linkedMeeting == null)
                     throw new FormatException("BIBA");
-                notUsedMeetings.Remove(pressF);
-                meeting.RequiredAdjacentMeeting = pressF;
-                pressF.RequiredAdjacentMeeting = meeting;
+                meeting.RequiredAdjacentMeeting = linkedMeeting;
+                linkedMeeting.RequiredAdjacentMeeting = meeting;
             }
         }
 
@@ -126,32 +125,21 @@ namespace Domain.ScheduleLib
                 {
                     foreach (var meetingTimeChoice in possibleTimeChoices)
                     {
-                        string? room = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
-                            meeting.RequisitionItem.PlanItem.RoomSpecs);
-
-                        if (room == null) continue;
                         var thisConditionMeetingFound = false;
-                        var meetingCopy = meeting.BasicCopy();
-                        meetingCopy.Groups = groupsChoice.Groups;
-                        meetingCopy.MeetingTime = meetingTimeChoice;
-                        meetingCopy.Location = room;
-                        if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy))
-                            continue;
+                        var meetingCopy = SetMeetingInstance(meeting, groupsChoice, meetingTimeChoice);
+                        if (meetingCopy == null) continue;
                         if (meetingCopy.RequiredAdjacentMeeting != null)
                         {
                             if (meetingTimeChoice.TimeSlotIndex < 2)
                                 continue;
-                            var fCopy = meetingCopy.RequiredAdjacentMeeting.BasicCopy();
-                            fCopy.Groups = meetingCopy.Groups;
-                            fCopy.MeetingTime = new MeetingTime(meetingTimeChoice.Day,
+                            var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
                                 meetingTimeChoice.TimeSlotIndex - 1);
-                            string? fRoom = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
-                                fCopy.RequisitionItem.PlanItem.RoomSpecs);
-                            if (fRoom == null) continue;
-                            fCopy.Location = fRoom;
-                            if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy)) continue;
-                            meetingCopy.RequiredAdjacentMeeting = fCopy;
-                            fCopy.RequiredAdjacentMeeting = meetingCopy;
+                            var linkedMeeting = SetMeetingInstance(meetingCopy.RequiredAdjacentMeeting, groupsChoice,
+                                linkedMeetingTimeChoice);
+                            
+                            if (linkedMeeting == null) continue;
+                            meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
+                            linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
                         }
                         // if (requiredAdjacentMeetingType != null && meetingTimeChoice.TimeSlotIndex == 1)
                         //     continue;
@@ -162,9 +150,23 @@ namespace Domain.ScheduleLib
                     }
                 }
 
-                if (!meetingFound && meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType == null)
-                    throw new FormatException($"Нет свободных мест для пары {meeting}");
+                // if (!meetingFound && meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType == null)
+                    // throw new FormatException($"Нет свободных мест для пары {meeting}");
             }
+        }
+
+        private Meeting? SetMeetingInstance(Meeting meeting, GroupsChoice groupsChoice, MeetingTime? meetingTimeChoice)
+        {
+            var room = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
+                meeting.RequisitionItem.PlanItem.RoomSpecs);
+            if (room == null) return null;
+            var meetingCopy = meeting.BasicCopy();
+            meetingCopy.Groups = groupsChoice.Groups;
+            meetingCopy.MeetingTime = meetingTimeChoice;
+            meetingCopy.Location = room;
+            if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy))
+                return null;
+            return meetingCopy;
         }
 
         private bool IsAnyCollision(GroupsChoice? groupsChoice, MeetingTime? meetingTimeChoice, Meeting? meetingCopy)
