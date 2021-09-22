@@ -208,7 +208,7 @@ namespace Domain.Conversions
                     var groupPriorities = requisitionRow[4];
                     var meetingTimesRaw = requisitionRow[5];
                     var weekTypeRaw = requisitionRow[6];
-                    var isOnline = requisitionRow[7].Trim().Contains("online");
+                    var isOnline = requisitionRow[7].Trim().Contains("онлайн");
 
                     var teacher = new Teacher(teacherName);
 

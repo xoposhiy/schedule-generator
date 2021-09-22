@@ -70,8 +70,11 @@ namespace Domain.ScheduleLib
             foreach (var meeting in meetings)
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
+                foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs
+                    .Where(rs => rs != RoomSpec.Online))
+                {
                     possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
+                }
 
                 var requisitionItem = meeting.RequisitionItem;
                 var groupsChoicesCount = requisitionItem.GroupPriorities
@@ -363,7 +366,8 @@ namespace Domain.ScheduleLib
             
                 var meetingTime = meetingToRemove.MeetingTime!;
                 TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
-                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
+                if (meetingToRemove.Location != "Онлайн")
+                    FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
             
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
 
