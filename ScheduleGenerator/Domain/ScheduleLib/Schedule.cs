@@ -20,13 +20,12 @@ namespace Domain.ScheduleLib
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new ();
-        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
+        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<DayOfWeek,Dictionary<int, Meeting>>>> GroupMeetingsByTime = new();
         public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>> GroupLearningPlanItemsCount = new();
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
         public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>> GroupsMeetingsTimesByDay = new();
         public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
-        public readonly Dictionary<DayOfWeek, Dictionary<int, Meeting>> MeetingsByTimeSlot = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public Schedule(Meeting[] meetings)
@@ -166,24 +165,54 @@ namespace Domain.ScheduleLib
             return IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
                    || IsOverfillMeetingToGroup(meetingCopy, groupsChoice)
                    || IsCollisionMeetingToTeacher(meetingCopy, meetingTimeChoice)
-                   || OnlineOfflineDelta(meetingTimeChoice, meetingCopy);
+                   || OnlineOfflineDelta(groupsChoice, meetingTimeChoice, meetingCopy);
         }
 
-        private bool OnlineOfflineDelta(MeetingTime meetingTimeChoice, Meeting meetingCopy)
+        private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTimeChoice, Meeting meetingCopy)
         {
             var day = meetingTimeChoice.Day;
             var previousTimeSlot = meetingTimeChoice.TimeSlotIndex - 1;
             var nextTimeSlot = meetingTimeChoice.TimeSlotIndex + 1;
-            if (MeetingsByTimeSlot.ContainsKey(day))
+            foreach (var (groupName, groupPart) in groupsChoice.Groups)
             {
-                if (MeetingsByTimeSlot[day].TryGetValue(previousTimeSlot, out var value))
-                    if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                        return true;
-                if (MeetingsByTimeSlot[day].TryGetValue(nextTimeSlot, out value))
-                    if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
-                        return true;
+                if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
+                if (groupPart == GroupPart.FullGroup)
+                {
+                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1][day].TryGetValue(previousTimeSlot, out var value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2][day].TryGetValue(previousTimeSlot, out value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1][day].TryGetValue(nextTimeSlot, out value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2][day].TryGetValue(nextTimeSlot, out value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                }
+                else
+                {
+                    if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
+                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][groupPart][day].TryGetValue(previousTimeSlot, out var value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                    if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
+                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
+                        && GroupMeetingsByTime[groupName][groupPart][day].TryGetValue(nextTimeSlot, out value))
+                        if (value.RequisitionItem.IsOnline != meetingCopy.RequisitionItem.IsOnline)
+                            return true;
+                }
             }
-
             return false;
         }
 
@@ -249,16 +278,19 @@ namespace Domain.ScheduleLib
                 if (groupPart == GroupPart.FullGroup)
                 {
                     if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(meetingTimeChoice))
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(meetingTimeChoice.Day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part1][meetingTimeChoice.Day].ContainsKey(meetingTimeChoice.TimeSlotIndex))
                         return true;
                     if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(meetingTimeChoice))
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(meetingTimeChoice.Day)
+                        && GroupMeetingsByTime[groupName][GroupPart.Part2][meetingTimeChoice.Day].ContainsKey(meetingTimeChoice.TimeSlotIndex))
                         return true;
                 }
                 else
                 {
                     if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
-                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(meetingTimeChoice))
+                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(meetingTimeChoice.Day)
+                        && GroupMeetingsByTime[groupName][groupPart][meetingTimeChoice.Day].ContainsKey(meetingTimeChoice.TimeSlotIndex))
                         return true;
                 }
             }
@@ -288,8 +320,7 @@ namespace Domain.ScheduleLib
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
                 TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
-
-                MeetingsByTimeSlot.SafeAdd(meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);
+                
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
             }
         }
@@ -301,8 +332,8 @@ namespace Domain.ScheduleLib
                 var planItem = meetingToAdd.RequisitionItem.PlanItem;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part1, meetingTime, meetingToAdd);
-                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part2, meetingTime, meetingToAdd);
+                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part1, meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);
+                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part2, meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);
                     GroupLearningPlanItemsCount.SafeIncrement(groupName, GroupPart.Part1, planItem);
                     GroupLearningPlanItemsCount.SafeIncrement(groupName, GroupPart.Part2, planItem);
                     if (!GroupsMeetingsTimesByDay.ContainsKey(meetingTime.Day))
@@ -312,7 +343,7 @@ namespace Domain.ScheduleLib
                 }
                 else
                 {
-                    GroupMeetingsByTime.SafeAdd(groupName, groupPart, meetingTime, meetingToAdd);
+                    GroupMeetingsByTime.SafeAdd(groupName, groupPart, meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);
                     GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
                     if (!GroupsMeetingsTimesByDay.ContainsKey(meetingTime.Day))
                         GroupsMeetingsTimesByDay.Add(meetingTime.Day, new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
@@ -338,7 +369,6 @@ namespace Domain.ScheduleLib
 
                 TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
                 
-                MeetingsByTimeSlot[meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
             }
         }
@@ -350,8 +380,8 @@ namespace Domain.ScheduleLib
                 var planItem = meetingToRemove.RequisitionItem.PlanItem;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    GroupMeetingsByTime[groupName][GroupPart.Part1].Remove(meetingTime);
-                    GroupMeetingsByTime[groupName][GroupPart.Part2].Remove(meetingTime);
+                    GroupMeetingsByTime[groupName][GroupPart.Part1][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
+                    GroupMeetingsByTime[groupName][GroupPart.Part2][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
                     GroupLearningPlanItemsCount.SafeDecrement(groupName, GroupPart.Part1, planItem);
                     GroupLearningPlanItemsCount.SafeDecrement(groupName, GroupPart.Part2, planItem);
                     GroupsMeetingsTimesByDay[meetingTime.Day][groupName][GroupPart.Part1].Remove(meetingTime.TimeSlotIndex);
@@ -359,7 +389,7 @@ namespace Domain.ScheduleLib
                 }
                 else
                 {
-                    GroupMeetingsByTime[groupName][groupPart].Remove(meetingTime);
+                    GroupMeetingsByTime[groupName][groupPart][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
                     GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
                     GroupsMeetingsTimesByDay[meetingTime.Day][groupName][groupPart].Remove(meetingTime.TimeSlotIndex);
                 }
