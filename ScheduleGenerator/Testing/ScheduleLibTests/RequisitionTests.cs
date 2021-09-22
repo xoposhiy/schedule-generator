@@ -23,9 +23,31 @@ namespace Testing.ScheduleLibTests
 
             var schedule = new Schedule(requisition, ClassRooms);
             var meetingsToAdd = schedule.GetMeetingsToAdd();
-            
+
             //TODO: check everything is working
-            
+        }
+
+        [Test]
+        public void TestSingleSolution()
+        {
+            var requisition = new Requisition(new[]
+            {
+                new RequisitionItem(CalculusLecture, "ФИИТ-101 + ФИИТ-102", "пн, 1-3 пара\nпт, 4-6 пара",
+                    CalculusTeacher)
+            });
+
+            var schedule = new Schedule(requisition, ClassRooms);
+
+            var meetingsToAdd = schedule.GetMeetingsToAdd();
+
+            var expectedGroups = new[] {Group1, Group2};
+
+            foreach (var meeting in meetingsToAdd)
+            {
+                Console.Error.WriteLine(meeting);
+                Assert.AreEqual("632", meeting.Location);
+                Assert.AreEqual(expectedGroups, meeting.Groups);
+            }
         }
     }
 }
