@@ -252,19 +252,20 @@ namespace Domain.ScheduleLib
             return false;
         }
 
-
-        public void AddMeeting(Meeting meetingToAdd)
+        private List<Meeting> GetLinkedMeetings(Meeting meeting)
         {
-            // TODO ставить зависимый митинг если он есть 
-            var f = new List<Meeting> {meetingToAdd};
-            if (meetingToAdd.RequiredAdjacentMeeting != null)
-                f.Add(meetingToAdd.RequiredAdjacentMeeting);
-            AddMeetings(f);
+            var meetings = new List<Meeting> {meeting};
+            if (meeting.RequiredAdjacentMeeting != null)
+                meetings.Add(meeting.RequiredAdjacentMeeting);
+            return meetings;
         }
 
-        private void AddMeetings(List<Meeting> meetingsToAdd)
+
+        public void AddMeeting(Meeting meeting)
         {
-            foreach (var meetingToAdd in meetingsToAdd)
+            var meetings = GetLinkedMeetings(meeting);
+
+            foreach (var meetingToAdd in meetings)
             {
                 Meetings.Add(meetingToAdd);
 
@@ -307,18 +308,11 @@ namespace Domain.ScheduleLib
         }
 
 
-        public void RemoveMeeting(Meeting meetingToRemove)
+        public void RemoveMeeting(Meeting meeting)
         {
-            // TODO удалять зависимый митинг если он есть
-            var f = new List<Meeting> {meetingToRemove};
-            if (meetingToRemove.RequiredAdjacentMeeting != null)
-                f.Add(meetingToRemove.RequiredAdjacentMeeting);
-            RemoveMeetings(f);
-        }
+            var meetings = GetLinkedMeetings(meeting);
 
-        private void RemoveMeetings(List<Meeting> meetingsToRemove)
-        {
-            foreach (var meetingToRemove in meetingsToRemove)
+            foreach (var meetingToRemove in meetings)
             {
                 Meetings.Remove(meetingToRemove);
             
