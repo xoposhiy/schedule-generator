@@ -41,13 +41,32 @@ namespace Domain.ScheduleLib
             SpecsByRoom = roomsWithSpecs;
             FillClassroomsBySpec(roomsWithSpecs);
             FillRoomPool(roomsWithSpecs.Keys);
-            var a = requisition.Items
+            NotUsedMeetings = requisition.Items
                 .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
                 .ToHashSet();
-            FillMeetingFreedomDegree(NotUsedMeetings.ToList());
+            LinkBasicMeetings(NotUsedMeetings);
+            FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
-        private void FillMeetingFreedomDegree(List<Meeting> meetings)
+        private void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
+        {
+            foreach (var meeting in notUsedMeetings.ToList())
+            {
+                var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
+                if (requiredAdjacentMeetingType == null) continue;
+                var pressF = notUsedMeetings.FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
+                                                            && e.Teacher.Equals(meeting.Teacher)
+                                                            && e.MeetingType.Equals(requiredAdjacentMeetingType)
+                                                            && !ReferenceEquals(e, meeting));
+                if (pressF == null)
+                    throw new FormatException("BIBA");
+                notUsedMeetings.Remove(pressF);
+                meeting.RequiredAdjacentMeeting = pressF;
+                pressF.RequiredAdjacentMeeting = meeting;
+            }
+        }
+
+        private void FillMeetingFreedomDegree(IEnumerable<Meeting> meetings)
         {
             foreach (var meeting in meetings)
             {
@@ -112,25 +131,34 @@ namespace Domain.ScheduleLib
 
                         if (room == null) continue;
                         var thisConditionMeetingFound = false;
-                        Meeting meetingToAdd;
                         var meetingCopy = meeting.BasicCopy();
                         meetingCopy.Groups = groupsChoice.Groups;
                         meetingCopy.MeetingTime = meetingTimeChoice;
                         meetingCopy.Location = room;
-
+                        if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy))
+                            continue;
+                        if (meetingCopy.RequiredAdjacentMeeting != null)
+                        {
+                            if (meetingTimeChoice.TimeSlotIndex < 2)
+                                continue;
+                            var fCopy = meetingCopy.RequiredAdjacentMeeting.BasicCopy();
+                            fCopy.Groups = meetingCopy.Groups;
+                            fCopy.MeetingTime = new MeetingTime(meetingTimeChoice.Day,
+                                meetingTimeChoice.TimeSlotIndex - 1);
+                            string? fRoom = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
+                                fCopy.RequisitionItem.PlanItem.RoomSpecs);
+                            if (fRoom == null) continue;
+                            fCopy.Location = fRoom;
+                            if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy)) continue;
+                            meetingCopy.RequiredAdjacentMeeting = fCopy;
+                            fCopy.RequiredAdjacentMeeting = meetingCopy;
+                        }
                         // if (requiredAdjacentMeetingType != null && meetingTimeChoice.TimeSlotIndex == 1)
                         //     continue;
-                        
-                        (thisConditionMeetingFound, meetingFound, meetingToAdd) = GetMeetingToAdd(meetingCopy,
-                            meetingTimeChoice, thisConditionMeetingFound, meetingFound);
-
-                        if (!thisConditionMeetingFound
-                            || IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
-                            || IsOverfillMeetingToGroup(meetingToAdd, groupsChoice)
-                            || IsCollisionMeetingToTeacher(meetingToAdd, meetingTimeChoice))
-                            continue;
-                        yield return meetingToAdd;
-
+                        // TODO Не возвращать митинг с зависимостью, если для зависимости нет места.
+                        // TODO Оставлять окно между онлайн и оффлайн парами
+                        meetingFound = true;
+                        yield return meetingCopy;
                     }
                 }
 
@@ -139,55 +167,19 @@ namespace Domain.ScheduleLib
             }
         }
 
+        private bool IsAnyCollision(GroupsChoice? groupsChoice, MeetingTime? meetingTimeChoice, Meeting? meetingCopy)
+        {
+            return IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
+                   || IsOverfillMeetingToGroup(meetingCopy, groupsChoice)
+                   || IsCollisionMeetingToTeacher(meetingCopy, meetingTimeChoice);
+        }
+
         private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
         {
             var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
             foreach (var rs in roomRequirement) 
                 possibleRooms.IntersectWith(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
-        }
-
-        // TODO Не возвращать митинг с зависимостью, если для зависимости нет места.
-        // TODO Оставлять окно между онлайн и оффлайн парами
-        private (bool, bool, Meeting) GetMeetingToAdd(Meeting meetingCopy, MeetingTime meetingTimeChoice, 
-            bool thisConditionMeetingFound, bool meetingFound)
-        {
-            var requiredAdjacentMeetingType = meetingCopy.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
-            if (requiredAdjacentMeetingType != null)
-            {
-                var discipline = meetingCopy.RequisitionItem.PlanItem.Discipline;
-                var sameTeacherWith = meetingCopy.RequisitionItem.PlanItem.SameTeacherWith;
-                // var m = Meetings
-                //     .FirstOrDefault(m => m.RequisitionItem.PlanItem.Discipline == discipline
-                //                          && m.RequisitionItem.PlanItem.MeetingType == requiredAdjacentMeetingType
-                //                          && m.GroupsEquals(meetingCopy.Groups!)
-                //                          && (sameTeacherWith == null ||
-                //                              meetingCopy.Teacher == m.Teacher)
-                //                          && meetingTimeChoice.Day == m.MeetingTime.Day
-                //                          && meetingTimeChoice.TimeSlotIndex ==
-                //                          m.MeetingTime.TimeSlotIndex + 1);
-                // if (m != null)
-                // {
-                //     thisConditionMeetingFound = true;
-                //     meetingFound = true;
-                //     meetingCopy.RequiredAdjacentMeeting = m;
-                //     // m.LinkedMeeting = meetingCopy;
-                // }
-                // else
-                // {
-                //     if (requiredAdjacentMeetingType == meetingCopy.MeetingType)
-                //     {
-                //         thisConditionMeetingFound = true;
-                //         meetingFound = true;
-                //     }
-                // }
-            }
-            else
-            {
-                thisConditionMeetingFound = true;
-                meetingFound = true;
-            }
-            return (thisConditionMeetingFound, meetingFound, meetingCopy);
         }
 
         private bool IsCollisionMeetingToTeacher(Meeting meetingToAdd, MeetingTime meetingTimeChoice)
@@ -262,16 +254,27 @@ namespace Domain.ScheduleLib
         public void AddMeeting(Meeting meetingToAdd)
         {
             // TODO ставить зависимый митинг если он есть 
-            Meetings.Add(meetingToAdd);
-            
-            var meetingTime = meetingToAdd.MeetingTime!;
-            TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
-            FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Remove(meetingToAdd.Location!);
-            AddMeetingToGroup(meetingToAdd, meetingTime);
-            
-            TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
+            var f = new List<Meeting> {meetingToAdd};
+            if (meetingToAdd.RequiredAdjacentMeeting != null)
+                f.Add(meetingToAdd.RequiredAdjacentMeeting);
+            AddMeetings(f);
+        }
 
-            NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+        private void AddMeetings(List<Meeting> meetingsToAdd)
+        {
+            foreach (var meetingToAdd in meetingsToAdd)
+            {
+                Meetings.Add(meetingToAdd);
+
+                var meetingTime = meetingToAdd.MeetingTime!;
+                TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
+                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Remove(meetingToAdd.Location!);
+                AddMeetingToGroup(meetingToAdd, meetingTime);
+
+                TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
+
+                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+            }
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
@@ -304,20 +307,31 @@ namespace Domain.ScheduleLib
 
         public void RemoveMeeting(Meeting meetingToRemove)
         {
-            // TODO удалять зависимый митинг если он есть 
-            Meetings.Remove(meetingToRemove);
-            
-            var meetingTime = meetingToRemove.MeetingTime!;
-            TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
-            FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
-            
-            RemoveMeetingFromGroup(meetingToRemove, meetingTime);
-
-            TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
-
-            NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
+            // TODO удалять зависимый митинг если он есть
+            var f = new List<Meeting> {meetingToRemove};
+            if (meetingToRemove.RequiredAdjacentMeeting != null)
+                f.Add(meetingToRemove.RequiredAdjacentMeeting);
+            RemoveMeetings(f);
         }
 
+        private void RemoveMeetings(List<Meeting> meetingsToRemove)
+        {
+            foreach (var meetingToRemove in meetingsToRemove)
+            {
+                Meetings.Remove(meetingToRemove);
+            
+                var meetingTime = meetingToRemove.MeetingTime!;
+                TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
+                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
+            
+                RemoveMeetingFromGroup(meetingToRemove, meetingTime);
+
+                TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
+
+                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
+            }
+        }
+        
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
         {
             foreach (var (groupName, groupPart) in meetingToRemove.Groups!)

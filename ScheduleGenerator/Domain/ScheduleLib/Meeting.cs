@@ -36,7 +36,8 @@ namespace Domain.ScheduleLib
                 WeekType,
                 RequisitionItem)
             {
-                BaseMeeting = this
+                BaseMeeting = this,
+                RequiredAdjacentMeeting = this.RequiredAdjacentMeeting
             };
             
         }
