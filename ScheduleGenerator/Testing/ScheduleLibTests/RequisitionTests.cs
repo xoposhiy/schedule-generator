@@ -57,5 +57,77 @@ namespace Testing.ScheduleLibTests
                 Assert.AreEqual(expectedGroups, meeting.Groups);
             }
         }
+        
+        [Test]
+        public void TestPairedRequisitionWhenImpossible()
+        {
+            var requisition = new Requisition(new[]
+            {
+                new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
+                    OopTeacher),
+                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
+                OopTeacher)
+            });
+
+            var schedule = new Schedule(requisition, ClassRooms);
+
+            schedule.AddMeeting(schedule.GetMeetingsToAdd().First(m=>m.Teacher==OopTeacher));
+            foreach (var meeting in schedule.Meetings)
+            {
+                Console.Error.WriteLine(meeting);
+            }
+            Assert.True(!schedule.GetMeetingsToAdd().Any());
+            Assert.True(schedule.Meetings.Count()<2, "Вторую пару некуда ставить, а она поставилась(");
+
+            
+
+            var meetingsToAdd = schedule.GetMeetingsToAdd();
+            
+            /*var counter = 0;
+            
+            foreach (var meeting in meetingsToAdd.Where(m=>m.Teacher==OopTeacher))
+            {
+                counter++;
+                Console.Error.WriteLine(meeting);
+                Assert.AreEqual(DayOfWeek.Wednesday, meeting.MeetingTime.Day, "Получается ставить подряд только в среду");
+            }
+            Assert.True(counter > 0);*/
+        }
+        
+        /*[Test]
+        public void TestPairedRequisitionWhenImpossible()
+        {
+            var requisition = new Requisition(new[]
+            {
+                new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
+                    OopTeacher),
+                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
+                    OopTeacher)
+            });
+
+            var schedule = new Schedule(requisition, ClassRooms);
+
+            schedule.AddMeeting(schedule.GetMeetingsToAdd().First(m=>m.Teacher==OopTeacher));
+            foreach (var meeting in schedule.Meetings)
+            {
+                Console.Error.WriteLine(meeting);
+            }
+            Assert.True(!schedule.GetMeetingsToAdd().Any());
+            Assert.True(schedule.Meetings.Count()<2, "Вторую пару некуда ставить, а она поставилась(");
+
+            
+
+            var meetingsToAdd = schedule.GetMeetingsToAdd();
+            
+            /*var counter = 0;
+            
+            foreach (var meeting in meetingsToAdd.Where(m=>m.Teacher==OopTeacher))
+            {
+                counter++;
+                Console.Error.WriteLine(meeting);
+                Assert.AreEqual(DayOfWeek.Wednesday, meeting.MeetingTime.Day, "Получается ставить подряд только в среду");
+            }
+            Assert.True(counter > 0);#1#
+        }*/
     }
 }
