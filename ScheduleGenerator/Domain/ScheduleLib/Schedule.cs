@@ -180,42 +180,32 @@ namespace Domain.ScheduleLib
                    || !DoesMeetingTimeSatisfy(meeting, meetingTime);
         }
 
-        private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTimeChoice, Meeting meetingCopy)
+        private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
-            var day = meetingTimeChoice.Day;
-            // TODO: prev next to loop
-            var previousTimeSlot = meetingTimeChoice.TimeSlotIndex - 1;
-            var nextTimeSlot = meetingTimeChoice.TimeSlotIndex + 1;
-            foreach (var (groupName, groupPart) in groupsChoice.Groups)
+            for (var dt = -1; dt < 2; dt+=2)
             {
-                if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
-                if (groupPart == GroupPart.FullGroup)
+                var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
+                foreach (var (groupName, groupPart) in groupsChoice.Groups)
                 {
-                    if (DoesNeighboursRequireTeleportation(meetingCopy, groupName, GroupPart.Part1, day,
-                        previousTimeSlot, nextTimeSlot)) return true;
-                    if (DoesNeighboursRequireTeleportation(meetingCopy, groupName, GroupPart.Part2, day,
-                        previousTimeSlot, nextTimeSlot)) return true;
-                }
-                else
-                {
-                    if (DoesNeighboursRequireTeleportation(meetingCopy, groupName, groupPart, day, previousTimeSlot,
-                        nextTimeSlot)) return true;
+                    if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
+                    if (groupPart == GroupPart.FullGroup)
+                    {
+                        if (CheckNeighbourMeeting(meeting, groupName, GroupPart.Part1, time)) return true;
+                        if (CheckNeighbourMeeting(meeting, groupName, GroupPart.Part2, time)) return true;
+                    }
+                    else
+                    {
+                        if (CheckNeighbourMeeting(meeting, groupName, groupPart, time)) return true;
+                    }
                 }
             }
-
+            
             return false;
         }
 
-        private bool DoesNeighboursRequireTeleportation(Meeting meetingCopy, string groupName, GroupPart groupPart,
-            DayOfWeek day, int previousTimeSlot, int nextTimeSlot)
+        private bool CheckNeighbourMeeting(Meeting meeting, string groupName, GroupPart part, MeetingTime meetingTime)
         {
-            return CheckNeighbourMeeting(meetingCopy, groupName, groupPart, day, previousTimeSlot) ||
-                   CheckNeighbourMeeting(meetingCopy, groupName, groupPart, day, nextTimeSlot);
-        }
-
-        private bool CheckNeighbourMeeting(Meeting meeting, string groupName, GroupPart part, DayOfWeek day,
-            int timeSlot)
-        {
+            var (day, timeSlot) = meetingTime;
             if (!GroupMeetingsByTime[groupName].ContainsKey(part) ||
                 !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
                 !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
@@ -254,34 +244,29 @@ namespace Domain.ScheduleLib
         private bool IsOverfillMeetingToGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)
         {
             var planItem = meetingToAdd.RequisitionItem.PlanItem;
-            // TODO: DRY
             foreach (var (groupName, groupPart) in groupsChoice.Groups)
             {
                 if (!GroupLearningPlanItemsCount.ContainsKey(groupName)) continue;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    if (GroupLearningPlanItemsCount[groupName].ContainsKey(GroupPart.Part1)
-                        && GroupLearningPlanItemsCount[groupName][GroupPart.Part1].ContainsKey(planItem)
-                        && GroupLearningPlanItemsCount[groupName][GroupPart.Part1][planItem] ==
-                        (int) Math.Ceiling(planItem.MeetingsPerWeek))
-                        return true;
-                    if (GroupLearningPlanItemsCount[groupName].ContainsKey(GroupPart.Part2)
-                        && GroupLearningPlanItemsCount[groupName][GroupPart.Part2].ContainsKey(planItem)
-                        && GroupLearningPlanItemsCount[groupName][GroupPart.Part2][planItem] ==
-                        (int) Math.Ceiling(planItem.MeetingsPerWeek))
-                        return true;
+                    if (CheckOverfillMeeting(groupName, planItem, GroupPart.Part1)) return true;
+                    if (CheckOverfillMeeting(groupName, planItem, GroupPart.Part2)) return true;
                 }
                 else
                 {
-                    if (GroupLearningPlanItemsCount[groupName].ContainsKey(groupPart)
-                        && GroupLearningPlanItemsCount[groupName][groupPart].ContainsKey(planItem)
-                        && GroupLearningPlanItemsCount[groupName][groupPart][planItem] ==
-                        (int) Math.Ceiling(planItem.MeetingsPerWeek))
-                        return true;
+                    if (CheckOverfillMeeting(groupName, planItem, groupPart)) return true;
                 }
             }
 
             return false;
+        }
+
+        private bool CheckOverfillMeeting(string groupName, LearningPlanItem planItem, GroupPart groupPart)
+        {
+            return GroupLearningPlanItemsCount[groupName].ContainsKey(groupPart)
+                   && GroupLearningPlanItemsCount[groupName][groupPart].ContainsKey(planItem)
+                   && GroupLearningPlanItemsCount[groupName][groupPart][planItem] ==
+                   (int) Math.Ceiling(planItem.MeetingsPerWeek);
         }
 
         private bool IsCollisionMeetingToGroup(GroupsChoice groupsChoice,
