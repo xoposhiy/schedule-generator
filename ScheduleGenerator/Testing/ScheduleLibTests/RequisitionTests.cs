@@ -15,8 +15,8 @@ namespace Testing.ScheduleLibTests
         {
             var requisition = new Requisition(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher),
-                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher)
+                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1),
+                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1)
             });
 
             var schedule = new Schedule(requisition, ClassRooms);
@@ -64,9 +64,9 @@ namespace Testing.ScheduleLibTests
             var requisition = new Requisition(new[]
             {
                 new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
-                    OopTeacher),
+                    OopTeacher1),
                 new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
-                OopTeacher)
+                OopTeacher1)
             });
 
             var schedule = new Schedule(requisition, ClassRooms);
@@ -80,9 +80,9 @@ namespace Testing.ScheduleLibTests
             var requisition = new Requisition(new[]
             {
                 new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
-                    OopTeacher),
+                    OopTeacher1),
                 new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
-                    OopTeacher)
+                    OopTeacher1)
             });
 
             var schedule = new Schedule(requisition, ClassRooms);
@@ -94,12 +94,33 @@ namespace Testing.ScheduleLibTests
                 Console.Error.WriteLine(meeting);
             }
 
-            Assert.True(!schedule.GetMeetingsToAdd().Any());
-            Assert.True(schedule.Meetings.Count == 2);
+            Assert.False(schedule.GetMeetingsToAdd().Any());
+            Assert.AreEqual(2, schedule.Meetings.Count);
             Assert.True(schedule.Meetings.All(m => m.MeetingTime.Day == DayOfWeek.Wednesday));
+            
             var timeDelta = schedule.Meetings.First().MeetingTime.TimeSlotIndex -
                             schedule.Meetings.Last().MeetingTime.TimeSlotIndex;
             Assert.AreEqual(Math.Abs(timeDelta), 1);
+        }
+        
+        [Test]
+        public void TestOnlineLocation()
+        {
+            var requisition = new Requisition(new[]
+            {
+                new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара",
+                    CalculusTeacher, 1, WeekType.All, true),
+                new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 1-6 пара",
+                    CalculusTeacher, 1, WeekType.All, false),
+            });
+
+            var schedule = new Schedule(requisition, ClassRooms);
+            foreach (var meeting in schedule.GetMeetingsToAdd())
+            {
+                Console.Error.WriteLine(meeting);
+            }
+            Assert.True(schedule.GetMeetingsToAdd().Any(m=>m.Location!="632"));
+            //TODO: check that some meetings are located specifically in online
         }
     }
 }

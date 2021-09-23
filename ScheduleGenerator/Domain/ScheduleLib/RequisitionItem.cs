@@ -17,12 +17,12 @@ namespace Domain.ScheduleLib
         public readonly WeekType WeekType;
 
         public RequisitionItem(LearningPlanItem planItem, string groupPriorities,
-            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All)
+            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All, bool isOnline = false)
             : this(planItem,
                 SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(), 
                 repetitionsCount,
                 SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities).ToArray(),
-                teacher, weekType)
+                teacher, weekType, isOnline)
         {
         }
         
@@ -37,6 +37,8 @@ namespace Domain.ScheduleLib
             WeekType = weekType;
             IsOnline = isOnline;
         }
+        
+        
         
         public override string ToString()
         {

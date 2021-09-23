@@ -24,6 +24,9 @@ namespace Testing.ScheduleLibTests
 
         public static readonly LearningPlanItem CalculusLecture = new LearningPlanItem("ФИИТ-1", Calculus, MeetingType.Lecture,
             GroupSize.FullGroup, 1.5, new[] {RoomSpec.Big}, null, null);
+        
+        public static readonly LearningPlanItem CalculusSeminar = new LearningPlanItem("ФИИТ-1", Calculus, MeetingType.Seminar,
+            GroupSize.FullGroup, 1, new[] {RoomSpec.Big}, null, null);
 
         public static readonly LearningPlanItem OopSeminar = new LearningPlanItem("ФИИТ-101-1", OOP, MeetingType.Seminar,
             GroupSize.HalfGroup, 1, System.Array.Empty<RoomSpec>(), MeetingType.ComputerLab, null);
@@ -32,9 +35,10 @@ namespace Testing.ScheduleLibTests
             GroupSize.HalfGroup, 1, new[]
             {
                 RoomSpec.Computer,
-            }, null, null);
+            }, null, MeetingType.Seminar);
 
-        public static readonly Teacher OopTeacher = new Teacher("Петряшов");
+        public static readonly Teacher OopTeacher1 = new Teacher("Петряшов");
+        public static readonly Teacher OopTeacher2 = new Teacher("Романюк");
         public static readonly Teacher CalculusTeacher = new Teacher("Филатова");
     }
 }
