@@ -32,7 +32,7 @@ namespace Testing.ScheduleLibTests
             Assert.AreNotEqual(first, second);
             Assert.AreEqual(first.MeetingTime!.Day, second.MeetingTime!.Day);
             var timeDelta = first.MeetingTime.TimeSlotIndex - second.MeetingTime.TimeSlotIndex;
-            Assert.Less(Math.Abs(timeDelta), 2);
+            Assert.AreEqual(Math.Abs(timeDelta), 1);
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace Testing.ScheduleLibTests
         }
         
         [Test]
-        public void TestPairedRequisitionWhenImpossible()
+        public void TestPairedRequisitionWhenOnlyOneDayPossible()
         {
             var requisition = new Requisition(new[]
             {
@@ -70,32 +70,12 @@ namespace Testing.ScheduleLibTests
             });
 
             var schedule = new Schedule(requisition, ClassRooms);
-
-            schedule.AddMeeting(schedule.GetMeetingsToAdd().First(m=>m.Teacher==OopTeacher));
-            foreach (var meeting in schedule.Meetings)
-            {
-                Console.Error.WriteLine(meeting);
-            }
-            Assert.True(!schedule.GetMeetingsToAdd().Any());
-            Assert.True(schedule.Meetings.Count()<2, "Вторую пару некуда ставить, а она поставилась(");
-
             
-
-            var meetingsToAdd = schedule.GetMeetingsToAdd();
-            
-            /*var counter = 0;
-            
-            foreach (var meeting in meetingsToAdd.Where(m=>m.Teacher==OopTeacher))
-            {
-                counter++;
-                Console.Error.WriteLine(meeting);
-                Assert.AreEqual(DayOfWeek.Wednesday, meeting.MeetingTime.Day, "Получается ставить подряд только в среду");
-            }
-            Assert.True(counter > 0);*/
+            Assert.True(schedule.GetMeetingsToAdd().All(m=>m.MeetingTime.Day == DayOfWeek.Wednesday), "сдвоенная пара влазит только в среду");
         }
-        
-        /*[Test]
-        public void TestPairedRequisitionWhenImpossible()
+
+        [Test]
+        public void TestPairedRequisitionIsAdjacent()
         {
             var requisition = new Requisition(new[]
             {
@@ -107,27 +87,19 @@ namespace Testing.ScheduleLibTests
 
             var schedule = new Schedule(requisition, ClassRooms);
 
-            schedule.AddMeeting(schedule.GetMeetingsToAdd().First(m=>m.Teacher==OopTeacher));
+            schedule.AddMeeting(schedule.GetMeetingsToAdd()
+                .First(m => m.MeetingTime == new MeetingTime(DayOfWeek.Wednesday, 3)));
             foreach (var meeting in schedule.Meetings)
             {
                 Console.Error.WriteLine(meeting);
             }
+
             Assert.True(!schedule.GetMeetingsToAdd().Any());
-            Assert.True(schedule.Meetings.Count()<2, "Вторую пару некуда ставить, а она поставилась(");
-
-            
-
-            var meetingsToAdd = schedule.GetMeetingsToAdd();
-            
-            /*var counter = 0;
-            
-            foreach (var meeting in meetingsToAdd.Where(m=>m.Teacher==OopTeacher))
-            {
-                counter++;
-                Console.Error.WriteLine(meeting);
-                Assert.AreEqual(DayOfWeek.Wednesday, meeting.MeetingTime.Day, "Получается ставить подряд только в среду");
-            }
-            Assert.True(counter > 0);#1#
-        }*/
+            Assert.True(schedule.Meetings.Count == 2);
+            Assert.True(schedule.Meetings.All(m => m.MeetingTime.Day == DayOfWeek.Wednesday));
+            var timeDelta = schedule.Meetings.First().MeetingTime.TimeSlotIndex -
+                            schedule.Meetings.Last().MeetingTime.TimeSlotIndex;
+            Assert.AreEqual(Math.Abs(timeDelta), 1);
+        }
     }
 }
