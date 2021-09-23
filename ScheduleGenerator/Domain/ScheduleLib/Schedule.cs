@@ -182,7 +182,7 @@ namespace Domain.ScheduleLib
 
         private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
-            for (var dt = -1; dt < 2; dt+=2)
+            for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
                 foreach (var (groupName, groupPart) in groupsChoice.Groups)
@@ -199,7 +199,7 @@ namespace Domain.ScheduleLib
                     }
                 }
             }
-            
+
             return false;
         }
 
@@ -269,37 +269,32 @@ namespace Domain.ScheduleLib
                    (int) Math.Ceiling(planItem.MeetingsPerWeek);
         }
 
-        private bool IsCollisionMeetingToGroup(GroupsChoice groupsChoice,
-            MeetingTime meetingTimeChoice)
+        private bool IsCollisionMeetingToGroup(GroupsChoice groupsChoice, MeetingTime meetingTime)
         {
-            // TODO: DRY
             foreach (var (groupName, groupPart) in groupsChoice.Groups)
             {
                 if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part1)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1].ContainsKey(meetingTimeChoice.Day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part1][meetingTimeChoice.Day]
-                            .ContainsKey(meetingTimeChoice.TimeSlotIndex))
-                        return true;
-                    if (GroupMeetingsByTime[groupName].ContainsKey(GroupPart.Part2)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2].ContainsKey(meetingTimeChoice.Day)
-                        && GroupMeetingsByTime[groupName][GroupPart.Part2][meetingTimeChoice.Day]
-                            .ContainsKey(meetingTimeChoice.TimeSlotIndex))
-                        return true;
+                    if (CheckCollisionMeeting(meetingTime, groupName, GroupPart.Part1)) return true;
+                    if (CheckCollisionMeeting(meetingTime, groupName, GroupPart.Part2)) return true;
                 }
                 else
                 {
-                    if (GroupMeetingsByTime[groupName].ContainsKey(groupPart)
-                        && GroupMeetingsByTime[groupName][groupPart].ContainsKey(meetingTimeChoice.Day)
-                        && GroupMeetingsByTime[groupName][groupPart][meetingTimeChoice.Day]
-                            .ContainsKey(meetingTimeChoice.TimeSlotIndex))
-                        return true;
+                    if (CheckCollisionMeeting(meetingTime, groupName, groupPart)) return true;
                 }
             }
 
             return false;
+        }
+
+        private bool CheckCollisionMeeting(MeetingTime meetingTime, string groupName, GroupPart groupPart)
+        {
+            var (day, timeSlotIndex) = meetingTime;
+            return GroupMeetingsByTime[groupName].ContainsKey(groupPart)
+                   && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
+                   && GroupMeetingsByTime[groupName][groupPart][day]
+                       .ContainsKey(timeSlotIndex);
         }
 
         private List<Meeting> GetLinkedMeetings(Meeting meeting)
