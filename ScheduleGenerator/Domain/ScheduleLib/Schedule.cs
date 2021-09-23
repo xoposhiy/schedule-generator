@@ -20,19 +20,11 @@ namespace Domain.ScheduleLib
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
-
-        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>>
-            GroupMeetingsByTime = new();
-
-        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>>
-            GroupLearningPlanItemsCount = new();
-
+        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>> GroupMeetingsByTime = new();
+        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>> GroupLearningPlanItemsCount = new();
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
-
-        public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>>
-            GroupsMeetingsTimesByDay = new();
-
+        public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>> GroupsMeetingsTimesByDay = new();
         public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
@@ -180,6 +172,35 @@ namespace Domain.ScheduleLib
                    || !DoesMeetingTimeSatisfy(meeting, meetingTime);
         }
 
+        private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
+        {
+            if (roomRequirement.Contains(RoomSpec.Online))
+                return "Онлайн";
+            var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
+            foreach (var rs in roomRequirement)
+                possibleRooms.IntersectWith(RoomsBySpec[rs]);
+            return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
+        }
+
+        private bool IsCollisionMeetingToTeacher(Meeting meetingToAdd, MeetingTime meetingTimeChoice)
+        {
+            var teacher = meetingToAdd.Teacher;
+            if (TeacherMeetingsByTime.ContainsKey(teacher) &&
+                TeacherMeetingsByTime[teacher].ContainsKey(meetingTimeChoice))
+            {
+                // Console.WriteLine($"Коллизия у препода {teacher} во время {meetingTimeChoice}, встреча {m}");
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool DoesMeetingTimeSatisfy(Meeting meeting, MeetingTime meetingTime)
+        {
+            return meeting.RequisitionItem.MeetingTimePriorities
+                .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
+        }
+
         private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             for (var dt = -1; dt < 2; dt += 2)
@@ -210,35 +231,6 @@ namespace Domain.ScheduleLib
                 !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
                 !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
             return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
-        }
-
-        private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
-        {
-            if (roomRequirement.Contains(RoomSpec.Online))
-                return "Онлайн";
-            var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
-            foreach (var rs in roomRequirement)
-                possibleRooms.IntersectWith(RoomsBySpec[rs]);
-            return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
-        }
-
-        private bool IsCollisionMeetingToTeacher(Meeting meetingToAdd, MeetingTime meetingTimeChoice)
-        {
-            var teacher = meetingToAdd.Teacher;
-            if (TeacherMeetingsByTime.ContainsKey(teacher) &&
-                TeacherMeetingsByTime[teacher].ContainsKey(meetingTimeChoice))
-            {
-                // Console.WriteLine($"Коллизия у препода {teacher} во время {meetingTimeChoice}, встреча {m}");
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool DoesMeetingTimeSatisfy(Meeting meeting, MeetingTime meetingTime)
-        {
-            return meeting.RequisitionItem.MeetingTimePriorities
-                .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
         private bool IsOverfillMeetingToGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)
