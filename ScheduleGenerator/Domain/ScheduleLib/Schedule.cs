@@ -54,11 +54,11 @@ namespace Domain.ScheduleLib
             {
                 var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
                 if (requiredAdjacentMeetingType == null) continue;
-                var linkedMeeting = notUsedMeetings.FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
-                                                                        && e.Teacher.Equals(meeting.Teacher)
-                                                                        && e.MeetingType.Equals(
-                                                                            requiredAdjacentMeetingType)
-                                                                        && !ReferenceEquals(e, meeting));
+                var linkedMeeting = notUsedMeetings
+                    .FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
+                                         && e.Teacher.Equals(meeting.Teacher)
+                                         && e.MeetingType.Equals(requiredAdjacentMeetingType)
+                                         && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
                     throw new FormatException("BIBA");
                 meeting.RequiredAdjacentMeeting = linkedMeeting;
@@ -317,41 +317,6 @@ namespace Domain.ScheduleLib
             }
         }
 
-        private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
-        {
-            foreach (var (groupName, groupPart) in meetingToAdd.Groups!)
-            {
-                var planItem = meetingToAdd.RequisitionItem.PlanItem;
-                if (groupPart == GroupPart.FullGroup)
-                {
-                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part1, meetingTime.Day, meetingTime.TimeSlotIndex,
-                        meetingToAdd);
-                    GroupMeetingsByTime.SafeAdd(groupName, GroupPart.Part2, meetingTime.Day, meetingTime.TimeSlotIndex,
-                        meetingToAdd);
-                    GroupLearningPlanItemsCount.SafeIncrement(groupName, GroupPart.Part1, planItem);
-                    GroupLearningPlanItemsCount.SafeIncrement(groupName, GroupPart.Part2, planItem);
-                    if (!GroupsMeetingsTimesByDay.ContainsKey(meetingTime.Day))
-                        GroupsMeetingsTimesByDay.Add(meetingTime.Day,
-                            new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
-                    GroupsMeetingsTimesByDay[meetingTime.Day]
-                        .SafeAdd(groupName, GroupPart.Part1, meetingTime.TimeSlotIndex);
-                    GroupsMeetingsTimesByDay[meetingTime.Day]
-                        .SafeAdd(groupName, GroupPart.Part2, meetingTime.TimeSlotIndex);
-                }
-                else
-                {
-                    GroupMeetingsByTime.SafeAdd(groupName, groupPart, meetingTime.Day, meetingTime.TimeSlotIndex,
-                        meetingToAdd);
-                    GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
-                    if (!GroupsMeetingsTimesByDay.ContainsKey(meetingTime.Day))
-                        GroupsMeetingsTimesByDay.Add(meetingTime.Day,
-                            new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
-                    GroupsMeetingsTimesByDay[meetingTime.Day].SafeAdd(groupName, groupPart, meetingTime.TimeSlotIndex);
-                }
-            }
-        }
-
-
         public void RemoveMeeting(Meeting meeting)
         {
             var meetings = GetLinkedMeetings(meeting);
@@ -372,6 +337,35 @@ namespace Domain.ScheduleLib
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
             }
         }
+        
+        private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
+        {
+            foreach (var (groupName, groupPart) in meetingToAdd.Groups!)
+            {
+                var planItem = meetingToAdd.RequisitionItem.PlanItem;
+                if (groupPart == GroupPart.FullGroup)
+                {
+                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, GroupPart.Part1, planItem);
+                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, GroupPart.Part2, planItem);
+                }
+                else
+                {
+                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, groupPart, planItem);
+                }
+            }
+        }
+
+        private void SafeAddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime, string groupName,
+            GroupPart groupPart, LearningPlanItem planItem)
+        {
+            var (day, timeSlotIndex) = meetingTime;
+            GroupMeetingsByTime.SafeAdd(groupName, groupPart, day, timeSlotIndex, meetingToAdd);
+            GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
+            if (!GroupsMeetingsTimesByDay.ContainsKey(day))
+                GroupsMeetingsTimesByDay.Add(day,
+                    new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
+            GroupsMeetingsTimesByDay[day].SafeAdd(groupName, groupPart, timeSlotIndex);
+        }
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
         {
@@ -380,22 +374,23 @@ namespace Domain.ScheduleLib
                 var planItem = meetingToRemove.RequisitionItem.PlanItem;
                 if (groupPart == GroupPart.FullGroup)
                 {
-                    GroupMeetingsByTime[groupName][GroupPart.Part1][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
-                    GroupMeetingsByTime[groupName][GroupPart.Part2][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
-                    GroupLearningPlanItemsCount.SafeDecrement(groupName, GroupPart.Part1, planItem);
-                    GroupLearningPlanItemsCount.SafeDecrement(groupName, GroupPart.Part2, planItem);
-                    GroupsMeetingsTimesByDay[meetingTime.Day][groupName][GroupPart.Part1]
-                        .Remove(meetingTime.TimeSlotIndex);
-                    GroupsMeetingsTimesByDay[meetingTime.Day][groupName][GroupPart.Part2]
-                        .Remove(meetingTime.TimeSlotIndex);
+                    SafeRemoveMeetingFromGroup(meetingTime, groupName, GroupPart.Part1, planItem);
+                    SafeRemoveMeetingFromGroup(meetingTime, groupName, GroupPart.Part2, planItem);
                 }
                 else
                 {
-                    GroupMeetingsByTime[groupName][groupPart][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
-                    GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
-                    GroupsMeetingsTimesByDay[meetingTime.Day][groupName][groupPart].Remove(meetingTime.TimeSlotIndex);
+                    SafeRemoveMeetingFromGroup(meetingTime, groupName, groupPart, planItem);
                 }
             }
+        }
+
+        private void SafeRemoveMeetingFromGroup(MeetingTime meetingTime, string groupName, GroupPart groupPart,
+            LearningPlanItem planItem)
+        {
+            var (day, timeSlotIndex) = meetingTime;
+            GroupMeetingsByTime[groupName][groupPart][day].Remove(timeSlotIndex);
+            GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
+            GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
         }
 
         public IEnumerable<Meeting> GetMeetings()
