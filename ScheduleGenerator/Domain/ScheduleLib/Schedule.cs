@@ -171,17 +171,19 @@ namespace Domain.ScheduleLib
             return meetingCopy;
         }
 
-        private bool IsAnyCollision(GroupsChoice groupsChoice, MeetingTime meetingTimeChoice, Meeting meetingCopy)
+        private bool IsAnyCollision(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
-            return IsCollisionMeetingToGroup(groupsChoice, meetingTimeChoice)
-                   || IsOverfillMeetingToGroup(meetingCopy, groupsChoice)
-                   || IsCollisionMeetingToTeacher(meetingCopy, meetingTimeChoice)
-                   || OnlineOfflineDelta(groupsChoice, meetingTimeChoice, meetingCopy);
+            return IsCollisionMeetingToGroup(groupsChoice, meetingTime)
+                   || IsOverfillMeetingToGroup(meeting, groupsChoice)
+                   || IsCollisionMeetingToTeacher(meeting, meetingTime)
+                   || OnlineOfflineDelta(groupsChoice, meetingTime, meeting)
+                   || !DoesMeetingTimeSatisfy(meeting, meetingTime);
         }
 
         private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTimeChoice, Meeting meetingCopy)
         {
             var day = meetingTimeChoice.Day;
+            // TODO: prev next to loop
             var previousTimeSlot = meetingTimeChoice.TimeSlotIndex - 1;
             var nextTimeSlot = meetingTimeChoice.TimeSlotIndex + 1;
             foreach (var (groupName, groupPart) in groupsChoice.Groups)
@@ -241,6 +243,12 @@ namespace Domain.ScheduleLib
             }
 
             return false;
+        }
+
+        private bool DoesMeetingTimeSatisfy(Meeting meeting, MeetingTime meetingTime)
+        {
+            return meeting.RequisitionItem.MeetingTimePriorities
+                .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
         private bool IsOverfillMeetingToGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)
