@@ -23,7 +23,7 @@ namespace Domain.Estimators
         public double Estimate(Schedule schedule)
         {
             var requisition = schedule.Requisition;
-            var meetings = schedule.Meetings; 
+            var meetings = schedule.Meetings;
             var meetingsByTime = schedule.GroupMeetingsByTime;
             // Насколько много свободы у неоставленных пар. Проверять у всех непоставленных 
             // Добавить веса, вес этой вещи мниимальный

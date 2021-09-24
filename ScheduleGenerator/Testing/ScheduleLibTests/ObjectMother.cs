@@ -20,7 +20,10 @@ namespace Testing.ScheduleLibTests
 
         public static readonly Discipline OOP = new Discipline("ООП");
         public static readonly Discipline Calculus = new Discipline("МатАн");
-        public static readonly Discipline Unix = new Discipline("Unix");
+        public static readonly Discipline Os = new Discipline("ОС");
+
+        public static readonly LearningPlanItem OsLecture = new LearningPlanItem("ФИИТ-1", Os, MeetingType.Lecture,
+            GroupSize.FullGroup, 1, new[] {RoomSpec.Big}, null, null);
 
         public static readonly LearningPlanItem CalculusLecture = new LearningPlanItem("ФИИТ-1", Calculus, MeetingType.Lecture,
             GroupSize.FullGroup, 1.5, new[] {RoomSpec.Big}, null, null);
@@ -40,5 +43,6 @@ namespace Testing.ScheduleLibTests
         public static readonly Teacher OopTeacher1 = new Teacher("Петряшов");
         public static readonly Teacher OopTeacher2 = new Teacher("Романюк");
         public static readonly Teacher CalculusTeacher = new Teacher("Филатова");
+        public static readonly Teacher OsTeacher = new Teacher("Копейцев");
     }
 }

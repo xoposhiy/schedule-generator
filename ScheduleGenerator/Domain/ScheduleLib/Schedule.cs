@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
-using Google.Apis.Auth.OAuth2;
 
 namespace Domain.ScheduleLib
 {
@@ -48,6 +46,89 @@ namespace Domain.ScheduleLib
             FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
+        public IEnumerable<Meeting> GetMeetings()
+        {
+            return Meetings;
+        }
+
+        public void AddMeeting(Meeting meeting)
+        {
+            var meetings = GetLinkedMeetings(meeting);
+
+            foreach (var meetingToAdd in meetings)
+            {
+                Meetings.Add(meetingToAdd);
+
+                var meetingTime = meetingToAdd.MeetingTime!;
+                TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
+                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Remove(meetingToAdd.Location!);
+                AddMeetingToGroup(meetingToAdd, meetingTime);
+
+                TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
+
+                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+            }
+        }
+
+        public void RemoveMeeting(Meeting meeting)
+        {
+            var meetings = GetLinkedMeetings(meeting);
+
+            foreach (var meetingToRemove in meetings)
+            {
+                Meetings.Remove(meetingToRemove);
+
+                var meetingTime = meetingToRemove.MeetingTime!;
+                TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
+                if (meetingToRemove.Location != "Онлайн")
+                    FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
+
+                RemoveMeetingFromGroup(meetingToRemove, meetingTime);
+
+                TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
+
+                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
+            }
+        }
+
+        public IEnumerable<Meeting> GetMeetingsToAdd()
+        {
+            foreach (var meeting in NotUsedMeetings.ToList())
+            {
+                var requisitionItem = meeting.RequisitionItem;
+                var possibleGroupsChoices = requisitionItem.GroupPriorities
+                    .SelectMany(p => p.GroupsChoices)
+                    .ToHashSet();
+                var possibleTimeChoices = requisitionItem.MeetingTimePriorities
+                    .SelectMany(p => p.MeetingTimeChoices)
+                    .ToHashSet();
+
+                foreach (var groupsChoice in possibleGroupsChoices)
+                {
+                    foreach (var meetingTimeChoice in possibleTimeChoices)
+                    {
+                        var meetingCopy = SetMeetingInstance(meeting, groupsChoice, meetingTimeChoice);
+                        if (meetingCopy == null) continue;
+                        if (meetingCopy.RequiredAdjacentMeeting != null)
+                        {
+                            if (meetingTimeChoice.TimeSlotIndex < 2)
+                                continue;
+                            var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
+                                meetingTimeChoice.TimeSlotIndex - 1);
+                            var linkedMeeting = SetMeetingInstance(meetingCopy.RequiredAdjacentMeeting, groupsChoice,
+                                linkedMeetingTimeChoice);
+
+                            if (linkedMeeting == null) continue;
+                            meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
+                            linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
+                        }
+
+                        yield return meetingCopy;
+                    }
+                }
+            }
+        }
+
         private void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
         {
             foreach (var meeting in notUsedMeetings.ToList())
@@ -60,7 +141,7 @@ namespace Domain.ScheduleLib
                                          && e.MeetingType.Equals(requiredAdjacentMeetingType)
                                          && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
-                    throw new FormatException("BIBA");
+                    throw new FormatException(meeting.ToString());
                 meeting.RequiredAdjacentMeeting = linkedMeeting;
                 linkedMeeting.RequiredAdjacentMeeting = meeting;
             }
@@ -108,44 +189,6 @@ namespace Domain.ScheduleLib
                 for (var i = 1; i < 7; i++)
                     roomsByTimeSlot.Add(i, rooms.ToHashSet());
                 FreeRoomsByDay.Add(day, roomsByTimeSlot);
-            }
-        }
-
-        public IEnumerable<Meeting> GetMeetingsToAdd()
-        {
-            foreach (var meeting in NotUsedMeetings.ToList())
-            {
-                var requisitionItem = meeting.RequisitionItem;
-                var possibleGroupsChoices = requisitionItem.GroupPriorities
-                    .SelectMany(p => p.GroupsChoices)
-                    .ToHashSet();
-                var possibleTimeChoices = requisitionItem.MeetingTimePriorities
-                    .SelectMany(p => p.MeetingTimeChoices)
-                    .ToHashSet();
-
-                foreach (var groupsChoice in possibleGroupsChoices)
-                {
-                    foreach (var meetingTimeChoice in possibleTimeChoices)
-                    {
-                        var meetingCopy = SetMeetingInstance(meeting, groupsChoice, meetingTimeChoice);
-                        if (meetingCopy == null) continue;
-                        if (meetingCopy.RequiredAdjacentMeeting != null)
-                        {
-                            if (meetingTimeChoice.TimeSlotIndex < 2)
-                                continue;
-                            var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                                meetingTimeChoice.TimeSlotIndex - 1);
-                            var linkedMeeting = SetMeetingInstance(meetingCopy.RequiredAdjacentMeeting, groupsChoice,
-                                linkedMeetingTimeChoice);
-
-                            if (linkedMeeting == null) continue;
-                            meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
-                            linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
-                        }
-
-                        yield return meetingCopy;
-                    }
-                }
             }
         }
 
@@ -298,46 +341,6 @@ namespace Domain.ScheduleLib
         }
 
 
-        public void AddMeeting(Meeting meeting)
-        {
-            var meetings = GetLinkedMeetings(meeting);
-
-            foreach (var meetingToAdd in meetings)
-            {
-                Meetings.Add(meetingToAdd);
-
-                var meetingTime = meetingToAdd.MeetingTime!;
-                TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
-                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Remove(meetingToAdd.Location!);
-                AddMeetingToGroup(meetingToAdd, meetingTime);
-
-                TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
-
-                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
-            }
-        }
-
-        public void RemoveMeeting(Meeting meeting)
-        {
-            var meetings = GetLinkedMeetings(meeting);
-
-            foreach (var meetingToRemove in meetings)
-            {
-                Meetings.Remove(meetingToRemove);
-
-                var meetingTime = meetingToRemove.MeetingTime!;
-                TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
-                if (meetingToRemove.Location != "Онлайн")
-                    FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
-
-                RemoveMeetingFromGroup(meetingToRemove, meetingTime);
-
-                TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
-
-                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
-            }
-        }
-        
         private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
         {
             foreach (var (groupName, groupPart) in meetingToAdd.Groups!)
@@ -391,11 +394,6 @@ namespace Domain.ScheduleLib
             GroupMeetingsByTime[groupName][groupPart][day].Remove(timeSlotIndex);
             GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
             GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
-        }
-
-        public IEnumerable<Meeting> GetMeetings()
-        {
-            return Meetings;
         }
     }
 }
