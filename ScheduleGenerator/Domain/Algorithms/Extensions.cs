@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using Domain.ScheduleLib;
 
 namespace Domain.Algorithms
 {
     public static class ArrayExtensions
     {
-        public static T[] Shuffled<T>(this T[] arr)
+        public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
-            var rnd = new Random();
-            var n = arr.Length;
-            var shuffledArr = new T[n];
-            for (var i = 0; i < n; ++i)
+            foreach (var group in groups)
             {
-                var j = rnd.Next(i + 1);
-                shuffledArr[i] = shuffledArr[j];
-                shuffledArr[j] = arr[i];
+                if (group.GroupPart == GroupPart.FullGroup)
+                {
+                    yield return group with{GroupPart = GroupPart.Part1};
+                    yield return group with{GroupPart = GroupPart.Part2};
+                }
+                else
+                {
+                    yield return group;
+                }
             }
-
-            return shuffledArr;
         }
     }
 

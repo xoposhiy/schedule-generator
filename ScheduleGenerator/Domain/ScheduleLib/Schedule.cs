@@ -97,8 +97,7 @@ namespace Domain.ScheduleLib
             {
                 var requisitionItem = meeting.RequisitionItem;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
-                    .SelectMany(p => p.GroupsChoices)
-                    .ToHashSet();
+                    .SelectMany(p => p.GroupsChoices);
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
@@ -206,19 +205,17 @@ namespace Domain.ScheduleLib
             meetingCopy.Groups = groupsChoice.Groups;
             meetingCopy.MeetingTime = meetingTimeChoice;
             meetingCopy.Location = room;
-            if (IsAnyCollision(groupsChoice, meetingTimeChoice, meetingCopy))
-                return null;
-            return meetingCopy;
+            return !IsMeetingValid(groupsChoice, meetingTimeChoice, meetingCopy) ? null : meetingCopy;
         }
 
-        //TODO переименовать лучше
-        private bool IsAnyCollision(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
+        //TODO сгруппировать методы в цикл
+        private bool IsMeetingValid(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
-            return IsCollisionMeetingToGroup(groupsChoice, meetingTime)
+            return !(IsCollisionMeetingToGroup(groupsChoice, meetingTime)
                    || IsOverfillMeetingToGroup(meeting, groupsChoice)
                    || IsCollisionMeetingToTeacher(meeting, meetingTime)
-                   || OnlineOfflineDelta(groupsChoice, meetingTime, meeting)
-                   || !DoesMeetingTimeSatisfy(meeting, meetingTime);
+                   || IsNoGapBetweenOnlineOffline(groupsChoice, meetingTime, meeting)
+                   || !DoesTimeSatisfyMeeting(meeting, meetingTime));
         }
 
         private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
@@ -242,7 +239,7 @@ namespace Domain.ScheduleLib
             return false;
         }
 
-        private bool DoesMeetingTimeSatisfy(Meeting meeting, MeetingTime meetingTime)
+        private bool DoesTimeSatisfyMeeting(Meeting meeting, MeetingTime meetingTime)
         {
             return meeting.RequisitionItem.MeetingTimePriorities
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
@@ -256,26 +253,16 @@ namespace Domain.ScheduleLib
                 !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
             return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
         }
-
-        //TODO Переименовать
-        private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
+        
+        private bool IsNoGapBetweenOnlineOffline(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                //TODO отрефакторить в groupsChoice.GetGroupParts().Any тут и ниже
-                foreach (var (groupName, groupPart) in groupsChoice.Groups)
+                foreach (var (groupName, groupPart) in groupsChoice.GetGroupParts())
                 {
                     if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
-                    if (groupPart == GroupPart.FullGroup)
-                    {
-                        if (CheckNeighbourMeeting(meeting, groupName, GroupPart.Part1, time)) return true;
-                        if (CheckNeighbourMeeting(meeting, groupName, GroupPart.Part2, time)) return true;
-                    }
-                    else
-                    {
-                        if (CheckNeighbourMeeting(meeting, groupName, groupPart, time)) return true;
-                    }
+                    if (CheckNeighbourMeeting(meeting, groupName, groupPart, time)) return true;
                 }
             }
 
@@ -285,18 +272,10 @@ namespace Domain.ScheduleLib
         private bool IsOverfillMeetingToGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)
         {
             var planItem = meetingToAdd.RequisitionItem.PlanItem;
-            foreach (var (groupName, groupPart) in groupsChoice.Groups)
+            foreach (var (groupName, groupPart) in groupsChoice.GetGroupParts())
             {
                 if (!GroupLearningPlanItemsCount.ContainsKey(groupName)) continue;
-                if (groupPart == GroupPart.FullGroup)
-                {
-                    if (CheckOverfillMeeting(groupName, planItem, GroupPart.Part1)) return true;
-                    if (CheckOverfillMeeting(groupName, planItem, GroupPart.Part2)) return true;
-                }
-                else
-                {
-                    if (CheckOverfillMeeting(groupName, planItem, groupPart)) return true;
-                }
+                if (CheckOverfillMeeting(groupName, planItem, groupPart)) return true;
             }
 
             return false;
@@ -312,18 +291,10 @@ namespace Domain.ScheduleLib
 
         private bool IsCollisionMeetingToGroup(GroupsChoice groupsChoice, MeetingTime meetingTime)
         {
-            foreach (var (groupName, groupPart) in groupsChoice.Groups)
+            foreach (var (groupName, groupPart) in groupsChoice.GetGroupParts())
             {
                 if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
-                if (groupPart == GroupPart.FullGroup)
-                {
-                    if (CheckCollisionMeeting(meetingTime, groupName, GroupPart.Part1)) return true;
-                    if (CheckCollisionMeeting(meetingTime, groupName, GroupPart.Part2)) return true;
-                }
-                else
-                {
-                    if (CheckCollisionMeeting(meetingTime, groupName, groupPart)) return true;
-                }
+                if (CheckCollisionMeeting(meetingTime, groupName, groupPart)) return true;
             }
 
             return false;
@@ -349,18 +320,10 @@ namespace Domain.ScheduleLib
 
         private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
         {
-            foreach (var (groupName, groupPart) in meetingToAdd.Groups!)
+            foreach (var (groupName, groupPart) in meetingToAdd.Groups!.GetGroupParts())
             {
                 var planItem = meetingToAdd.RequisitionItem.PlanItem;
-                if (groupPart == GroupPart.FullGroup)
-                {
-                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, GroupPart.Part1, planItem);
-                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, GroupPart.Part2, planItem);
-                }
-                else
-                {
-                    SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, groupPart, planItem);
-                }
+                SafeAddMeetingToGroup(meetingToAdd, meetingTime, groupName, groupPart, planItem);
             }
         }
 
@@ -378,18 +341,10 @@ namespace Domain.ScheduleLib
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
         {
-            foreach (var (groupName, groupPart) in meetingToRemove.Groups!)
+            foreach (var (groupName, groupPart) in meetingToRemove.Groups!.GetGroupParts())
             {
                 var planItem = meetingToRemove.RequisitionItem.PlanItem;
-                if (groupPart == GroupPart.FullGroup)
-                {
-                    SafeRemoveMeetingFromGroup(meetingTime, groupName, GroupPart.Part1, planItem);
-                    SafeRemoveMeetingFromGroup(meetingTime, groupName, GroupPart.Part2, planItem);
-                }
-                else
-                {
-                    SafeRemoveMeetingFromGroup(meetingTime, groupName, groupPart, planItem);
-                }
+                SafeRemoveMeetingFromGroup(meetingTime, groupName, groupPart, planItem);
             }
         }
 

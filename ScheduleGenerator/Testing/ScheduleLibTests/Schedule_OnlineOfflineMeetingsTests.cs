@@ -25,7 +25,9 @@ namespace Testing.ScheduleLibTests
                 Console.Error.WriteLine(meeting);
             }
 
-            var lecturePossibleLocations = schedule.GetMeetingsToAdd().Where(m => m.MeetingType == MeetingType.Lecture).Select(m => m.Location);
+            var lecturePossibleLocations = schedule.GetMeetingsToAdd()
+                .Where(m => m.MeetingType == MeetingType.Lecture)
+                .Select(m => m.Location);
             Assert.That(lecturePossibleLocations, Has.All.EqualTo(Meeting.OnlineLocationName));
         }
         //TODO: Проверить, что между онлайн парами и оффлайн достаточно перерыва
