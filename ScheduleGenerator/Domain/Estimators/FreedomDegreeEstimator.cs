@@ -22,14 +22,11 @@ namespace Domain.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            var requisition = schedule.Requisition;
-            var meetings = schedule.Meetings;
-            var meetingsByTime = schedule.GroupMeetingsByTime;
             // Насколько много свободы у неоставленных пар. Проверять у всех непоставленных 
             // Добавить веса, вес этой вещи мниимальный
             // var degreeOfFreedom = schedule.GetMeetingsToAdd().Count();
-            var score = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting]);
-            return -score;
+            var penalty = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting.BaseMeeting]);
+            return -penalty;
         }
     }
 }
