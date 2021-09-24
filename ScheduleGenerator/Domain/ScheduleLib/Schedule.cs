@@ -248,11 +248,22 @@ namespace Domain.ScheduleLib
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
+        private bool CheckNeighbourMeeting(Meeting meeting, string groupName, GroupPart part, MeetingTime meetingTime)
+        {
+            var (day, timeSlot) = meetingTime;
+            if (!GroupMeetingsByTime[groupName].ContainsKey(part) ||
+                !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
+                !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
+            return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
+        }
+
+        //TODO Переименовать
         private bool OnlineOfflineDelta(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
+                //TODO отрефакторить в groupsChoice.GetGroupParts().Any тут и ниже
                 foreach (var (groupName, groupPart) in groupsChoice.Groups)
                 {
                     if (!GroupMeetingsByTime.ContainsKey(groupName)) continue;
@@ -269,15 +280,6 @@ namespace Domain.ScheduleLib
             }
 
             return false;
-        }
-
-        private bool CheckNeighbourMeeting(Meeting meeting, string groupName, GroupPart part, MeetingTime meetingTime)
-        {
-            var (day, timeSlot) = meetingTime;
-            if (!GroupMeetingsByTime[groupName].ContainsKey(part) ||
-                !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
-                !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
-            return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
         }
 
         private bool IsOverfillMeetingToGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)

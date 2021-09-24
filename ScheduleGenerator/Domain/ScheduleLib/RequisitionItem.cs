@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Domain.Conversions;
 
 namespace Domain.ScheduleLib
@@ -64,6 +66,8 @@ namespace Domain.ScheduleLib
 
     public sealed record GroupsChoice(MeetingGroup[] Groups)
     {
+        //TODO доделать
+        public IEnumerable<MeetingGroup> GetGroupParts() => throw new NotImplementedException();
         public override string ToString()
         {
             return String.Join(" ", Groups.ToList());
