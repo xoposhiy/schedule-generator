@@ -21,7 +21,6 @@ namespace Domain.Conversions
                 "Лекция" => MeetingType.Lecture,
                 "КомпПрактика" => MeetingType.ComputerLab,
                 "Семинар" => MeetingType.Seminar,
-                "Онлайн" => MeetingType.Online,
                 _ => throw new FormatException($"Некорректный тип занятия: {rowMeetingType}")
             };
         }
@@ -225,8 +224,6 @@ namespace Domain.Conversions
                     var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                     var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                     var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
-                    if (isOnline)
-                        planItem = planItem with {RoomSpecs = new[] {RoomSpec.Online}};
                     var weekType = ParseWeekType(weekTypeRaw);
                     var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount,
                         meetingTimeRequisitionArray, teacher, weekType, isOnline);

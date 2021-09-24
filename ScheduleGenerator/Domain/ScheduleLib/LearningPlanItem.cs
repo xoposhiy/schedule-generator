@@ -15,7 +15,6 @@
         Big,
         ForGroup,
         Computer,
-        Projector,
-        Online
+        Projector
     }
 }

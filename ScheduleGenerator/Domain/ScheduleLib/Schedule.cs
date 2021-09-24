@@ -107,7 +107,7 @@ namespace Domain.ScheduleLib
                 {
                     foreach (var meetingTimeChoice in possibleTimeChoices)
                     {
-                        var meetingCopy = SetMeetingInstance(meeting, groupsChoice, meetingTimeChoice);
+                        var meetingCopy = TryCreateFilledMeeting(meeting, groupsChoice, meetingTimeChoice);
                         if (meetingCopy == null) continue;
                         if (meetingCopy.RequiredAdjacentMeeting != null)
                         {
@@ -115,7 +115,7 @@ namespace Domain.ScheduleLib
                                 continue;
                             var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
                                 meetingTimeChoice.TimeSlotIndex - 1);
-                            var linkedMeeting = SetMeetingInstance(meetingCopy.RequiredAdjacentMeeting, groupsChoice,
+                            var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting, groupsChoice,
                                 linkedMeetingTimeChoice);
 
                             if (linkedMeeting == null) continue;
@@ -152,10 +152,12 @@ namespace Domain.ScheduleLib
             foreach (var meeting in meetings)
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs
-                    .Where(rs => rs != RoomSpec.Online))
+                if (!meeting.RequisitionItem.IsOnline)
                 {
-                    possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
+                    foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
+                    {
+                        possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
+                    }
                 }
 
                 var requisitionItem = meeting.RequisitionItem;
@@ -192,12 +194,15 @@ namespace Domain.ScheduleLib
             }
         }
 
-        private Meeting? SetMeetingInstance(Meeting meeting, GroupsChoice groupsChoice, MeetingTime meetingTimeChoice)
+        private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTimeChoice)
         {
-            var room = TryGetRoomFromPool(meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex,
-                meeting.RequisitionItem.PlanItem.RoomSpecs);
+            var room = baseMeeting.RequisitionItem.IsOnline 
+                ? Meeting.OnlineLocationName 
+                : TryGetRoomFromPool(
+                    meetingTimeChoice.Day, meetingTimeChoice.TimeSlotIndex, 
+                    baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
             if (room == null) return null;
-            var meetingCopy = meeting.BasicCopy();
+            var meetingCopy = baseMeeting.BasicCopy();
             meetingCopy.Groups = groupsChoice.Groups;
             meetingCopy.MeetingTime = meetingTimeChoice;
             meetingCopy.Location = room;
@@ -206,6 +211,7 @@ namespace Domain.ScheduleLib
             return meetingCopy;
         }
 
+        //TODO переименовать лучше
         private bool IsAnyCollision(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             return IsCollisionMeetingToGroup(groupsChoice, meetingTime)
@@ -217,8 +223,6 @@ namespace Domain.ScheduleLib
 
         private string? TryGetRoomFromPool(DayOfWeek day, int timeSlotIndex, RoomSpec[] roomRequirement)
         {
-            if (roomRequirement.Contains(RoomSpec.Online))
-                return "Онлайн";
             var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
             foreach (var rs in roomRequirement)
                 possibleRooms.IntersectWith(RoomsBySpec[rs]);

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Domain.ScheduleLib;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace Testing.ScheduleLibTests
 {
@@ -25,7 +24,9 @@ namespace Testing.ScheduleLibTests
             {
                 Console.Error.WriteLine(meeting);
             }
-            Assert.That(schedule.GetMeetingsToAdd().Select(m => m.Location), Has.All.EqualTo("Онлайн"));
+
+            var lecturePossibleLocations = schedule.GetMeetingsToAdd().Where(m => m.MeetingType == MeetingType.Lecture).Select(m => m.Location);
+            Assert.That(lecturePossibleLocations, Has.All.EqualTo(Meeting.OnlineLocationName));
         }
         //TODO: Проверить, что между онлайн парами и оффлайн достаточно перерыва
     }

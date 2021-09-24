@@ -10,7 +10,7 @@ namespace Testing
     {
         public static LearningPlanItem StandardLearningPlanItem = new LearningPlanItem(
             "FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2,
-            new RoomSpec[0], null, null);
+            Array.Empty<RoomSpec>(), null, null);
 
         public static Requisition StandardRequisition = new Requisition(new RequisitionItem[]
         {

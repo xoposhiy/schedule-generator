@@ -10,7 +10,7 @@ namespace Domain.Estimators
         private readonly IEstimator[] childEstimators;
         
         public double Weight { get; }
-
+        
         public CombinedEstimator(params IEstimator[] childEstimators)
         {
             Weight = 1;

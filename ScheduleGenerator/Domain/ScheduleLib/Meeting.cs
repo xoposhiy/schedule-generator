@@ -5,6 +5,7 @@ namespace Domain.ScheduleLib
 {
     public class Meeting
     {
+        public const string OnlineLocationName = "Онлайн";
         public RequisitionItem RequisitionItem;
         public Discipline Discipline;
         public MeetingType MeetingType;
@@ -78,9 +79,6 @@ namespace Domain.ScheduleLib
         Lecture,
         ComputerLab,
         Seminar,
-        Online 
-        // TODO Online нужно указывать у RequisitionItem, а не у LearningPlanItem:
-        // в онлайн могут уходить отдельные преподаватели по курсу, а не все сразу. Нужно перенести туда.  
     }
     
     
