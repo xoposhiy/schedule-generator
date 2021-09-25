@@ -18,12 +18,8 @@ namespace Domain.ScheduleLib
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
-
         public readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>> GroupMeetingsByTime = new();
-
-        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>>
-            GroupLearningPlanItemsCount = new(); // TODO: Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>>
-
+        public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
 
@@ -281,7 +277,7 @@ namespace Domain.ScheduleLib
             var planItem = meetingToAdd.RequisitionItem.PlanItem;
             foreach (var group in groupsChoice.GetGroupParts())
             {
-                if (!GroupLearningPlanItemsCount.ContainsKey(group.GroupName)) continue;
+                if (!GroupLearningPlanItemsCount.ContainsKey(group)) continue;
                 if (CheckOverfillMeeting(group, planItem)) return true;
             }
 
@@ -290,11 +286,8 @@ namespace Domain.ScheduleLib
 
         private bool CheckOverfillMeeting(MeetingGroup group, LearningPlanItem planItem)
         {
-            var (groupName, groupPart) = group;
-            // TODO: GroupLearningPlanItemsCount = Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>>
-            return GroupLearningPlanItemsCount[groupName].ContainsKey(groupPart)
-                   && GroupLearningPlanItemsCount[groupName][groupPart].ContainsKey(planItem)
-                   && GroupLearningPlanItemsCount[groupName][groupPart][planItem] ==
+            return GroupLearningPlanItemsCount[group].ContainsKey(planItem)
+                   && GroupLearningPlanItemsCount[group][planItem] ==
                    (int) Math.Ceiling(planItem.MeetingsPerWeek);
         }
 
@@ -339,7 +332,7 @@ namespace Domain.ScheduleLib
             var (groupName, groupPart) = meetingGroup;
             var (day, timeSlotIndex) = meetingTime;
             GroupMeetingsByTime.SafeAdd(meetingGroup, meetingTime, meetingToAdd);
-            GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
+            GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem);
             if (!GroupsMeetingsTimesByDay.ContainsKey(day))
                 GroupsMeetingsTimesByDay.Add(day,
                     new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
@@ -360,7 +353,7 @@ namespace Domain.ScheduleLib
             var (groupName, groupPart) = group;
             var (day, timeSlotIndex) = meetingTime;
             GroupMeetingsByTime[group].Remove(meetingTime);
-            GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
+            GroupLearningPlanItemsCount.SafeDecrement(group, planItem);
             GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
         }
     }

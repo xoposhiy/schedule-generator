@@ -113,37 +113,30 @@ namespace Domain.Algorithms
             dict[key1][key2][key3].Add(key4, value);
         }
 
-        public static void SafeIncrement<TKey1, TKey2, TKey3>(
-            this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, int>>> dict,
-            TKey1 key1, TKey2 key2, TKey3 key3)
+        public static void SafeIncrement<TKey1, TKey2>(
+            this Dictionary<TKey1, Dictionary<TKey2, int>> dict,
+            TKey1 key1, TKey2 key2)
             where TKey1 : notnull
             where TKey2 : notnull
-            where TKey3 : notnull
         {
             if (!dict.ContainsKey(key1))
             {
-                dict[key1] = new Dictionary<TKey2, Dictionary<TKey3, int>>();
+                dict[key1] = new Dictionary<TKey2, int>();
             }
 
             if (!dict[key1].ContainsKey(key2))
             {
-                dict[key1][key2] = new Dictionary<TKey3, int>();
+                dict[key1][key2] = 0;
             }
 
-            if (!dict[key1][key2].ContainsKey(key3))
-            {
-                dict[key1][key2][key3] = 0;
-            }
-
-            dict[key1][key2][key3]++;
+            dict[key1][key2]++;
         }
 
-        public static void SafeDecrement<TKey1, TKey2, TKey3>(
-            this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, int>>> dict,
-            TKey1 key1, TKey2 key2, TKey3 key3)
+        public static void SafeDecrement<TKey1, TKey2>(
+            this Dictionary<TKey1, Dictionary<TKey2, int>> dict,
+            TKey1 key1, TKey2 key2)
             where TKey1 : notnull
             where TKey2 : notnull
-            where TKey3 : notnull
         {
             if (!dict.ContainsKey(key1))
             {
@@ -155,14 +148,9 @@ namespace Domain.Algorithms
                 throw new FormatException($"Dictionary does not contains key2: {key2}");
             }
 
-            if (!dict[key1][key2].ContainsKey(key3))
-            {
-                throw new FormatException($"Dictionary does not contains key3: {key3}");
-            }
-
-            if (dict[key1][key2][key3] == 0)
+            if (dict[key1][key2] == 0)
                 return;
-            dict[key1][key2][key3]--;
+            dict[key1][key2]--;
         }
     }
 }
