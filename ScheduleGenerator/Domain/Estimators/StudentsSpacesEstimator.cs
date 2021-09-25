@@ -7,13 +7,6 @@ namespace Domain.Estimators
 {
     public class StudentsSpacesEstimator : IEstimator
     {
-        public StudentsSpacesEstimator()
-        {
-            Weight = 1;
-        }
-
-        public double Weight { get; }
-
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
             throw new NotImplementedException();
@@ -22,7 +15,7 @@ namespace Domain.Estimators
         public double Estimate(Schedule schedule)
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр. Например, учитывать аналогично четным-нечетным неделям (см ниже).
-            var score = 0;
+            var penalty = 0;
             foreach (var day in schedule.GroupsMeetingsTimesByDay.Keys)
             {
                 foreach (var groupName in schedule.GroupsMeetingsTimesByDay[day].Keys)
@@ -33,13 +26,13 @@ namespace Domain.Estimators
                         var previousTimeslot = schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].FirstOrDefault();
                         foreach (var timeslot in schedule.GroupsMeetingsTimesByDay[day][groupName][groupPart].Skip(1))
                         {
-                            score += timeslot - previousTimeslot - 1;
+                            penalty += timeslot - previousTimeslot - 1;
                             // previousTimeslot = timeslot;
                         }
                     }
                 }
             }
-            return -score;
+            return -penalty;
         }
     }
 }

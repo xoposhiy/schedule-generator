@@ -6,13 +6,6 @@ namespace Domain.Estimators
 {
     public class MeetingsPerDayEstimator : IEstimator
     {
-        public MeetingsPerDayEstimator()
-        {
-            Weight = 1;
-        }
-
-        public double Weight { get; }
-
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
             throw new NotImplementedException();

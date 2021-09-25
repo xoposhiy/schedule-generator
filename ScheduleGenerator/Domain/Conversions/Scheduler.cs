@@ -8,7 +8,6 @@ namespace Domain.Conversions
 
     public interface IEstimator
     {
-        double Weight { get; }
         double Estimate(Schedule schedule, Meeting meetingToAdd);
         double Estimate(Schedule schedule);
     }

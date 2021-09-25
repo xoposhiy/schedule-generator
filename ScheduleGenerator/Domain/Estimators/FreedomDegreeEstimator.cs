@@ -5,16 +5,8 @@ using Domain.ScheduleLib;
 
 namespace Domain.Estimators
 {
-    //TODO: fix estimator
     public class FreedomDegreeEstimator : IEstimator
     {
-        public FreedomDegreeEstimator()
-        {
-            Weight = 100;
-        }
-
-        public double Weight { get; }
-
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
             throw new NotImplementedException();
