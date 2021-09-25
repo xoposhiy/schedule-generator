@@ -19,9 +19,9 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
 
-        public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>>
+        public readonly Dictionary<MeetingGroup, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>
             GroupMeetingsByTime =
-                new(); // TODO: Dictionary<MeetingGroup, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>>
+                new(); // TODO: Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>>>>
 
         public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>>
             GroupLearningPlanItemsCount = new(); // TODO: Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>>
@@ -30,7 +30,8 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
 
         public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>>
-            GroupsMeetingsTimesByDay = new();
+            GroupsMeetingsTimesByDay =
+                new(); // TODO: Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>>
 
         public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
@@ -260,10 +261,9 @@ namespace Domain.ScheduleLib
         {
             var (groupName, part) = group;
             var (day, timeSlot) = meetingTime;
-            // TODO: GroupMeetingByTime = Dictionary<MeetingGroup, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>>
-            if (!GroupMeetingsByTime[groupName].ContainsKey(part) ||
-                !GroupMeetingsByTime[groupName][part].ContainsKey(day) ||
-                !GroupMeetingsByTime[groupName][part][day].TryGetValue(timeSlot, out var value)) return false;
+            // TODO: GroupMeetingByTime = Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>>>>
+            if (!GroupMeetingsByTime[group].ContainsKey(day) ||
+                !GroupMeetingsByTime[group][day].TryGetValue(timeSlot, out var value)) return false;
             return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
         }
 
@@ -274,7 +274,7 @@ namespace Domain.ScheduleLib
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
                 foreach (var group in groupsChoice.GetGroupParts())
                 {
-                    if (!GroupMeetingsByTime.ContainsKey(group.GroupName)) continue;
+                    if (!GroupMeetingsByTime.ContainsKey(group)) continue;
                     if (CheckNeighbourMeeting(meeting, group, time)) return true;
                 }
             }
@@ -308,7 +308,7 @@ namespace Domain.ScheduleLib
         {
             foreach (var group in groupsChoice.GetGroupParts())
             {
-                if (!GroupMeetingsByTime.ContainsKey(group.GroupName)) continue;
+                if (!GroupMeetingsByTime.ContainsKey(group)) continue;
                 if (CheckCollisionMeeting(meetingTime, group)) return true;
             }
 
@@ -319,10 +319,8 @@ namespace Domain.ScheduleLib
         {
             var (groupName, groupPart) = group;
             var (day, timeSlotIndex) = meetingTime;
-            return GroupMeetingsByTime[groupName].ContainsKey(groupPart)
-                   && GroupMeetingsByTime[groupName][groupPart].ContainsKey(day)
-                   && GroupMeetingsByTime[groupName][groupPart][day]
-                       .ContainsKey(timeSlotIndex);
+            return GroupMeetingsByTime[group].ContainsKey(day)
+                   && GroupMeetingsByTime[group][day].ContainsKey(timeSlotIndex);
         }
 
         private List<Meeting> GetLinkedMeetings(Meeting meeting)
@@ -348,7 +346,7 @@ namespace Domain.ScheduleLib
         {
             var (groupName, groupPart) = meetingGroup;
             var (day, timeSlotIndex) = meetingTime;
-            GroupMeetingsByTime.SafeAdd(groupName, groupPart, day, timeSlotIndex, meetingToAdd);
+            GroupMeetingsByTime.SafeAdd(meetingGroup, day, timeSlotIndex, meetingToAdd);
             GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
             if (!GroupsMeetingsTimesByDay.ContainsKey(day))
                 GroupsMeetingsTimesByDay.Add(day,
@@ -358,18 +356,18 @@ namespace Domain.ScheduleLib
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
         {
-            foreach (var (groupName, groupPart) in meetingToRemove.Groups!.GetGroupParts())
+            foreach (var group in meetingToRemove.Groups!.GetGroupParts())
             {
                 var planItem = meetingToRemove.RequisitionItem.PlanItem;
-                SafeRemoveMeetingFromGroup(meetingTime, groupName, groupPart, planItem);
+                SafeRemoveMeetingFromGroup(meetingTime, group, planItem);
             }
         }
 
-        private void SafeRemoveMeetingFromGroup(MeetingTime meetingTime, string groupName, GroupPart groupPart,
-            LearningPlanItem planItem)
+        private void SafeRemoveMeetingFromGroup(MeetingTime meetingTime, MeetingGroup group, LearningPlanItem planItem)
         {
+            var (groupName, groupPart) = group;
             var (day, timeSlotIndex) = meetingTime;
-            GroupMeetingsByTime[groupName][groupPart][day].Remove(timeSlotIndex);
+            GroupMeetingsByTime[group][day].Remove(timeSlotIndex);
             GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
             GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
         }

@@ -62,6 +62,28 @@ namespace Domain.Algorithms
 
             dict[key1][key2].Add(value);
         }
+        
+        public static void SafeAdd<TKey1, TKey2, TKey3, TValue>(
+            this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, TValue>>> dict,
+            TKey1 key1, TKey2 key2, TKey3 key3, TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+            where TKey3 : notnull
+        {
+            if (!dict.ContainsKey(key1))
+            {
+                dict[key1] = new Dictionary<TKey2, Dictionary<TKey3, TValue>>();
+            }
+
+            if (!dict[key1].ContainsKey(key2))
+            {
+                dict[key1][key2] = new Dictionary<TKey3, TValue>();
+            }
+
+            if (dict[key1][key2].ContainsKey(key3))
+                throw new FormatException($"Dictionary already contains key3: {key3}");
+            dict[key1][key2].Add(key3, value);
+        }
 
         public static void SafeAdd<TKey1, TKey2, TKey3, TKey4, TValue>(
             this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, Dictionary<TKey4, TValue>>>> dict,
@@ -87,7 +109,7 @@ namespace Domain.Algorithms
             }
 
             if (dict[key1][key2][key3].ContainsKey(key4))
-                throw new FormatException($"Dictionary already contains key3: {key4}");
+                throw new FormatException($"Dictionary already contains key4: {key4}");
             dict[key1][key2][key3].Add(key4, value);
         }
 
