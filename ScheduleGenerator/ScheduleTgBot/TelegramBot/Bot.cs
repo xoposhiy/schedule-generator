@@ -527,7 +527,7 @@ namespace Application.TelegramBot
             {
                 repo.SetUpSheetInfo();
                 var takenNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
-                var newSheetName = FindUniqueName(takenNames, "Schedule");
+                var newSheetName = FindUniqueName(takenNames);
                 sheetName = newSheetName;
                 repo.CreateNewSheet(newSheetName);
                 repo.SetUpSheetInfo();

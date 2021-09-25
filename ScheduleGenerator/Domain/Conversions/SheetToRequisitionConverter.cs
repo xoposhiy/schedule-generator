@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
@@ -392,7 +391,7 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = weekDaysStrList.IndexOf(rangeParts[0]);
                     var posEnd = weekDaysStrList.IndexOf(rangeParts[1]);
-                    for (int i = posStart; i < posEnd + 1; i++)
+                    for (var i = posStart; i < posEnd + 1; i++)
                     {
                         currWeekDays.Add(weekDaysList[i]);
                     }
@@ -408,7 +407,7 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = int.Parse(rangeParts[0]);
                     var posEnd = int.Parse(rangeParts[1]);
-                    for (int i = posStart; i < posEnd + 1; i++)
+                    for (var i = posStart; i < posEnd + 1; i++)
                     {
                         currIndexes.Add(i);
                     }

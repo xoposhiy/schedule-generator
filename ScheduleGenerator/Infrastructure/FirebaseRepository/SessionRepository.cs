@@ -2,7 +2,6 @@
 using Firebase.Database;
 using Firebase.Database.Query;
 using System.Threading.Tasks;
-using System.Text;
 
 namespace Infrastructure.FirebaseRepository
 {

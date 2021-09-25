@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Domain.ScheduleLib;
 
 namespace Domain.Conversions
@@ -17,29 +16,29 @@ namespace Domain.Conversions
             if (requisitionItem.PlanItem.MeetingsPerWeek % 1 == 0)
             {
                 var meetingCount = requisitionItem.RepetitionsCount * requisitionItem.PlanItem.MeetingsPerWeek;
-                for (int i = 0; i < meetingCount; i++)
+                for (var i = 0; i < meetingCount; i++)
                 {
                     meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, requisitionItem.WeekType,
-                        requisitionItem, null));
+                        requisitionItem));
                 }
             }
             else
             {
-                var meetingCount = requisitionItem.RepetitionsCount * (int)requisitionItem.PlanItem.MeetingsPerWeek;
-                for (int i = 0; i < meetingCount; i++)
+                var meetingCount = requisitionItem.RepetitionsCount * (int) requisitionItem.PlanItem.MeetingsPerWeek;
+                for (var i = 0; i < meetingCount; i++)
                 {
-                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, WeekType.All,
-                        requisitionItem, null));
+                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, WeekType.All, requisitionItem));
                 }
-                var weekType = requisitionItem.WeekType != WeekType.All 
-                    ? requisitionItem.WeekType 
+
+                var weekType = requisitionItem.WeekType != WeekType.All
+                    ? requisitionItem.WeekType
                     : WeekType.OddOrEven;
-                for (int i = 0; i < requisitionItem.RepetitionsCount; i++)
+                for (var i = 0; i < requisitionItem.RepetitionsCount; i++)
                 {
-                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, weekType,
-                        requisitionItem, null));
+                    meetings.Add(new Meeting(discipline, meetingType, meetingTeacher, weekType, requisitionItem));
                 }
             }
+
             // Console.WriteLine(string.Join(" ", meetings));
             return meetings;
         }
@@ -48,10 +47,13 @@ namespace Domain.Conversions
     public class AdditionalMeetingInfo
     {
         public List<HashSet<HashSet<MeetingGroup>>> possibleGroups;
+
         public HashSet<WeekType> possibleWeekType;
+
         //public List<HashSet<DayOfWeek>> possibleDays;
         //public List<HashSet<int>> possibleIndexes;
         public List<HashSet<MeetingTime>> possibleMeetingTimes;
+
         public AdditionalMeetingInfo(RequisitionItem requisitionItem)
         {
             // groups
@@ -69,11 +71,11 @@ namespace Domain.Conversions
             // week type (even/odd)
             if (requisitionItem.WeekType == WeekType.All)
             {
-                possibleWeekType = new HashSet<WeekType>() { WeekType.Even, WeekType.Odd };
+                possibleWeekType = new HashSet<WeekType>() {WeekType.Even, WeekType.Odd};
             }
             else
             {
-                possibleWeekType = new HashSet<WeekType>() { requisitionItem.WeekType };
+                possibleWeekType = new HashSet<WeekType>() {requisitionItem.WeekType};
             }
 
             // week days

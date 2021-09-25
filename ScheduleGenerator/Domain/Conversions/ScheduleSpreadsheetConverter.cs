@@ -75,7 +75,7 @@ namespace Domain.Conversions
             var modifier = repository
                     .ModifySpreadSheet(sheetName);
             var currentStart = TimeBarRowOffset;
-            for (int i = 0; i < weekDayCount; i++)
+            for (var i = 0; i < weekDayCount; i++)
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset), new List<List<string>>() { new () { weekDays[i] } })
@@ -84,7 +84,7 @@ namespace Domain.Conversions
                 currentStart += 12;
             }
             currentStart = TimeBarRowOffset;
-            for (int i = 0; i < weekDayCount * startIndexesCount; i++)
+            for (var i = 0; i < weekDayCount * startIndexesCount; i++)
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset + 1), new List<List<string>> { new() { classStarts[i % 6] } })
@@ -100,7 +100,7 @@ namespace Domain.Conversions
             var modifier = repository
                     .ModifySpreadSheet(sheetName);
             var currentStart = HeadersColumnOffset;
-            for (int i = 0; i < groups.Count; i++)
+            for (var i = 0; i < groups.Count; i++)
             {
                 modifier
                     .WriteRange((HeadersRowOffset, currentStart), new List<List<string>> {new() {groups[i]}})

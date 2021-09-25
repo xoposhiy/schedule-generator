@@ -22,8 +22,7 @@ namespace Testing
                 },
                 2,
                 new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2)})},
-                new Teacher("Eg"),
-                WeekType.All)
+                new Teacher("Eg"))
         });
 
         // Math 623 Fil 0 3 0 0 FT-202#0 FT-201#0 KN-201#2

@@ -222,7 +222,6 @@ namespace Domain.ScheduleLib
 
         private string? TryGetRoomFromPool(MeetingTime meetingTime, RoomSpec[] roomRequirement)
         {
-            // TODO: FreeRoomsByDay = Dictionary<MeetingTime, Hashset<string>>
             var (day, timeSlotIndex) = meetingTime;
 
             var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();

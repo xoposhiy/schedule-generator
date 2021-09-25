@@ -16,7 +16,7 @@ namespace Testing.ScheduleLibTests
                 new RequisitionItem(ObjectMother.CalculusLecture, "ФИИТ-101", "пн 1-6 пара",
                     ObjectMother.CalculusTeacher, 1, WeekType.All, true),
                 new RequisitionItem(ObjectMother.CalculusSeminar, "ФИИТ-101", "пн 1-6 пара",
-                    ObjectMother.CalculusTeacher, 1, WeekType.All, false),
+                    ObjectMother.CalculusTeacher),
             });
 
             var schedule = new Schedule(requisition, ObjectMother.ClassRooms);
