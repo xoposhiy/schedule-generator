@@ -24,8 +24,7 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
 
         public readonly Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>
-            GroupsMeetingsTimesByDay =
-                new(); // TODO: Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>>
+            GroupsMeetingsTimesByDay = new();
 
         public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
@@ -296,16 +295,10 @@ namespace Domain.ScheduleLib
             foreach (var group in groupsChoice.GetGroupParts())
             {
                 if (!GroupMeetingsByTime.ContainsKey(group)) continue;
-                if (CheckCollisionMeeting(meetingTime, group)) return true;
+                if (GroupMeetingsByTime[group].ContainsKey(meetingTime)) return true;
             }
 
             return false;
-        }
-
-        private bool CheckCollisionMeeting(MeetingTime meetingTime, MeetingGroup group)
-        {
-            // TODO: remove
-            return GroupMeetingsByTime[group].ContainsKey(meetingTime);
         }
 
         private List<Meeting> GetLinkedMeetings(Meeting meeting)
@@ -332,10 +325,7 @@ namespace Domain.ScheduleLib
             var (day, timeSlotIndex) = meetingTime;
             GroupMeetingsByTime.SafeAdd(meetingGroup, meetingTime, meetingToAdd);
             GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem);
-            if (!GroupsMeetingsTimesByDay.ContainsKey(day))
-                GroupsMeetingsTimesByDay.Add(day,
-                    new Dictionary<MeetingGroup, SortedSet<int>>());
-            GroupsMeetingsTimesByDay[day].SafeAdd(meetingGroup, timeSlotIndex);
+            GroupsMeetingsTimesByDay.SafeAdd(day, meetingGroup, timeSlotIndex);
         }
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
