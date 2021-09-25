@@ -23,7 +23,7 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
 
-        public readonly Dictionary<DayOfWeek, Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>>
+        public readonly Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>
             GroupsMeetingsTimesByDay =
                 new(); // TODO: Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>>
 
@@ -329,14 +329,13 @@ namespace Domain.ScheduleLib
         private void SafeAddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime, MeetingGroup meetingGroup,
             LearningPlanItem planItem)
         {
-            var (groupName, groupPart) = meetingGroup;
             var (day, timeSlotIndex) = meetingTime;
             GroupMeetingsByTime.SafeAdd(meetingGroup, meetingTime, meetingToAdd);
             GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem);
             if (!GroupsMeetingsTimesByDay.ContainsKey(day))
                 GroupsMeetingsTimesByDay.Add(day,
-                    new Dictionary<string, Dictionary<GroupPart, SortedSet<int>>>());
-            GroupsMeetingsTimesByDay[day].SafeAdd(groupName, groupPart, timeSlotIndex);
+                    new Dictionary<MeetingGroup, SortedSet<int>>());
+            GroupsMeetingsTimesByDay[day].SafeAdd(meetingGroup, timeSlotIndex);
         }
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
@@ -350,11 +349,10 @@ namespace Domain.ScheduleLib
 
         private void SafeRemoveMeetingFromGroup(MeetingTime meetingTime, MeetingGroup group, LearningPlanItem planItem)
         {
-            var (groupName, groupPart) = group;
             var (day, timeSlotIndex) = meetingTime;
             GroupMeetingsByTime[group].Remove(meetingTime);
             GroupLearningPlanItemsCount.SafeDecrement(group, planItem);
-            GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
+            GroupsMeetingsTimesByDay[day][group].Remove(timeSlotIndex);
         }
     }
 }
