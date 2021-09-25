@@ -19,9 +19,7 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
 
-        public readonly Dictionary<MeetingGroup, Dictionary<DayOfWeek, Dictionary<int, Meeting>>>
-            GroupMeetingsByTime =
-                new(); // TODO: Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>>>>
+        public readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>> GroupMeetingsByTime = new();
 
         public readonly Dictionary<string, Dictionary<GroupPart, Dictionary<LearningPlanItem, int>>>
             GroupLearningPlanItemsCount = new(); // TODO: Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>>
@@ -259,11 +257,7 @@ namespace Domain.ScheduleLib
 
         private bool CheckNeighbourMeeting(Meeting meeting, MeetingGroup group, MeetingTime meetingTime)
         {
-            var (groupName, part) = group;
-            var (day, timeSlot) = meetingTime;
-            // TODO: GroupMeetingByTime = Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>>>>
-            if (!GroupMeetingsByTime[group].ContainsKey(day) ||
-                !GroupMeetingsByTime[group][day].TryGetValue(timeSlot, out var value)) return false;
+            if (!GroupMeetingsByTime[group].TryGetValue(meetingTime, out var value)) return false;
             return value.RequisitionItem.IsOnline != meeting.RequisitionItem.IsOnline;
         }
 
@@ -317,10 +311,8 @@ namespace Domain.ScheduleLib
 
         private bool CheckCollisionMeeting(MeetingTime meetingTime, MeetingGroup group)
         {
-            var (groupName, groupPart) = group;
-            var (day, timeSlotIndex) = meetingTime;
-            return GroupMeetingsByTime[group].ContainsKey(day)
-                   && GroupMeetingsByTime[group][day].ContainsKey(timeSlotIndex);
+            // TODO: remove
+            return GroupMeetingsByTime[group].ContainsKey(meetingTime);
         }
 
         private List<Meeting> GetLinkedMeetings(Meeting meeting)
@@ -346,7 +338,7 @@ namespace Domain.ScheduleLib
         {
             var (groupName, groupPart) = meetingGroup;
             var (day, timeSlotIndex) = meetingTime;
-            GroupMeetingsByTime.SafeAdd(meetingGroup, day, timeSlotIndex, meetingToAdd);
+            GroupMeetingsByTime.SafeAdd(meetingGroup, meetingTime, meetingToAdd);
             GroupLearningPlanItemsCount.SafeIncrement(groupName, groupPart, planItem);
             if (!GroupsMeetingsTimesByDay.ContainsKey(day))
                 GroupsMeetingsTimesByDay.Add(day,
@@ -367,7 +359,7 @@ namespace Domain.ScheduleLib
         {
             var (groupName, groupPart) = group;
             var (day, timeSlotIndex) = meetingTime;
-            GroupMeetingsByTime[group][day].Remove(timeSlotIndex);
+            GroupMeetingsByTime[group].Remove(meetingTime);
             GroupLearningPlanItemsCount.SafeDecrement(groupName, groupPart, planItem);
             GroupsMeetingsTimesByDay[day][groupName][groupPart].Remove(timeSlotIndex);
         }
