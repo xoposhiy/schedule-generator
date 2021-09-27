@@ -17,7 +17,7 @@ namespace Domain.Estimators
             // Насколько много свободы у неоставленных пар. Проверять у всех непоставленных 
             // Добавить веса, вес этой вещи мниимальный
             // var degreeOfFreedom = schedule.GetMeetingsToAdd().Count();
-            var penalty = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting.BaseMeeting]);
+            var penalty = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting.BaseMeeting!]);
             return -penalty;
         }
     }
