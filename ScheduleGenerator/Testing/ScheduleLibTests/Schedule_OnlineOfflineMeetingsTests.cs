@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Domain.ScheduleLib;
 using NUnit.Framework;
+using static Testing.ScheduleLibTests.ObjectMother;
 
 namespace Testing.ScheduleLibTests
 {
@@ -11,15 +12,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestOnlineLocation()
         {
-            var requisition = new Requisition(new[]
-            {
-                new RequisitionItem(ObjectMother.CalculusLecture, "ФИИТ-101", "пн 1-6 пара",
-                    ObjectMother.CalculusTeacher, 1, isOnline: true),
-                new RequisitionItem(ObjectMother.CalculusSeminar, "ФИИТ-101", "пн 1-6 пара",
-                    ObjectMother.CalculusTeacher),
-            });
-
-            var schedule = new Schedule(requisition, ObjectMother.ClassRooms);
+            var schedule = new Schedule(CalculusRequisition, ClassRooms);
             foreach (var meeting in schedule.GetMeetingsToAdd())
             {
                 Console.Error.WriteLine(meeting);
@@ -34,14 +27,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestOnlineOfflineGap()
         {
-            var requisition = new Requisition(new[]
-            {
-                new RequisitionItem(ObjectMother.CalculusLecture, "ФИИТ-101", "пн 1-2 пара",
-                    ObjectMother.CalculusTeacher, 1, isOnline: true),
-                new RequisitionItem(ObjectMother.CalculusSeminar, "ФИИТ-101", "пн 1-6 пара",
-                    ObjectMother.CalculusTeacher),
-            });
-            var schedule = new Schedule(requisition, ObjectMother.ClassRooms);
+            var schedule = new Schedule(CalculusRequisition, ClassRooms);
 
             var lecture = schedule
                 .GetMeetingsToAdd()

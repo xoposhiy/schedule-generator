@@ -45,7 +45,8 @@ namespace Domain.ScheduleLib
 
         public override string ToString()
         {
-            return $"{Discipline}, {Groups}, {MeetingTime}, {WeekType}," +
+            var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
+            return $"{Discipline}, [{groupsString}], {MeetingTime}, {WeekType}," +
                    $" Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
         
