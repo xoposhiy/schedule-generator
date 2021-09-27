@@ -6,7 +6,7 @@ namespace Infrastructure.SheetPatterns
 {
     public class HeaderPatternCreator
     {
-        public static void SetUpHeaders(GSRepository repo, string sheetName,
+        public static void SetUpHeaders(GsRepository repo, string sheetName,
                 (int row, int col) start, List<string> headers, List<string> comments)
         {
             var modifier = repo

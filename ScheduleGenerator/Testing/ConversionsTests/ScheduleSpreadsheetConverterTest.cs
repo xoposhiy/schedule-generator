@@ -30,7 +30,7 @@ namespace Testing.ConversionsTests
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=0";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
             var converter = new ScheduleSpreadsheetConverter(repo, repo.CurrentSheetInfo!.Sheets.Keys.First());
 
             converter.Build(testSchedule);

@@ -15,7 +15,7 @@ namespace Testing.ConversionsTests
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1-CFNA5rFSKmrs5jdJm5xg2b1cQDbCJ8LA1FRrdBBRyg/edit#gid=1607674973";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo, 

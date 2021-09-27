@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Infrastructure.GoogleSheetsRepository
 {
-    public class GSRepository
+    public class GsRepository
     {
         public GoogleCredential Credentials { get; private set; }
         public SheetsService Service { get; private set; }
@@ -17,7 +17,7 @@ namespace Infrastructure.GoogleSheetsRepository
         public string ApplicationName { get; private set; }
         public string? CurrentSheetId { get; private set; }
         public SheetInfo? CurrentSheetInfo { get; private set; }
-        public GSRepository(string applicationName, string pathToCredentials, string tableUrl)
+        public GsRepository(string applicationName, string pathToCredentials, string tableUrl)
         {
             Scopes = new[] { SheetsService.Scope.Spreadsheets };
             ApplicationName = applicationName;
@@ -152,43 +152,47 @@ namespace Infrastructure.GoogleSheetsRepository
             var left = ConvertIndexToTableColumnFormat(leftIndex);
             var right = ConvertIndexToTableColumnFormat(rightIndex);
             var range = $"{left}{top}:{right}{bottom}";
-            String fullRange = String.Format("{0}!{1}", sheetName, range);
+            string fullRange = $"{sheetName}!{range}";
             var requestBody = new ClearValuesRequest();
             var deleteRequest = Service.Spreadsheets.Values.Clear(requestBody, CurrentSheetId, fullRange);
-            var deleteResponse = deleteRequest.Execute();
+            deleteRequest.Execute(); // DeleteResponse
         }
 
         public void CreateNewSheet(string title)
         {
-            var requests = new List<Request>();
-            requests.Add(new Request()
+            var requests = new List<Request>
             {
-                AddSheet = new AddSheetRequest
+                new Request
                 {
-                    Properties = new SheetProperties
+                    AddSheet = new AddSheetRequest
                     {
-                        Title = title,
-                        TabColor = new Color()
+                        Properties = new SheetProperties
                         {
-                            Red = 1
+                            Title = title,
+                            TabColor = new Color
+                            {
+                                Red = 1
+                            }
                         }
                     }
                 }
-            });
-            var requestBody = new BatchUpdateSpreadsheetRequest();
-            requestBody.Requests = requests;
+            };
+            var requestBody = new BatchUpdateSpreadsheetRequest
+            {
+                Requests = requests
+            };
             var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
-            var response = request.Execute();
+            request.Execute(); // Response
         }
     }
 
     public class SheetModifier
     {
 
-        private List<Request> requests;
-        private SheetsService service;
-        private int sheetId;
-        private string spreadSheetId;
+        private readonly List<Request> requests;
+        private readonly SheetsService service;
+        private readonly int sheetId;
+        private readonly string spreadSheetId;
         public SheetModifier(SheetsService service, string spreadSheetId, int sheetId)
         {
 
@@ -490,10 +494,12 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public void Execute()
         {
-            var requestBody = new BatchUpdateSpreadsheetRequest();
-            requestBody.Requests = requests;
+            var requestBody = new BatchUpdateSpreadsheetRequest
+            {
+                Requests = requests
+            };
             var request = service.Spreadsheets.BatchUpdate(requestBody, spreadSheetId);
-            var response = request.Execute();
+            request.Execute(); // Response
         }
     }
 
@@ -502,10 +508,10 @@ namespace Infrastructure.GoogleSheetsRepository
         public readonly string Id;
         public readonly string Url;
         public readonly Dictionary<string, int?> Sheets;
-        public readonly Spreadsheet spreadsheet;
+        public readonly Spreadsheet Spreadsheet;
         public SheetInfo(Spreadsheet spreadsheet)
         {
-            this.spreadsheet = spreadsheet;
+            Spreadsheet = spreadsheet;
             Id = spreadsheet.SpreadsheetId;
             Url = spreadsheet.SpreadsheetUrl;
             Sheets = spreadsheet.Sheets

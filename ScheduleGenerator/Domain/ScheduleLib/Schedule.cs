@@ -134,7 +134,7 @@ namespace Domain.ScheduleLib
 
         private void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
         {
-            foreach (var meeting in notUsedMeetings.ToList())
+            foreach (var meeting in notUsedMeetings)
             {
                 var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
                 if (requiredAdjacentMeetingType == null) continue;

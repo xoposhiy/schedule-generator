@@ -9,14 +9,14 @@ namespace Domain.Conversions
 {
     public class ScheduleSpreadsheetConverter
     {
-        private readonly GSRepository repository;
+        private readonly GsRepository repository;
         private readonly string sheetName;
         private const int TimeBarRowOffset = 4;
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 2;
 
-        public ScheduleSpreadsheetConverter(GSRepository repo, string sheetName)
+        public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
         {
             repository = repo;
             this.sheetName = sheetName;

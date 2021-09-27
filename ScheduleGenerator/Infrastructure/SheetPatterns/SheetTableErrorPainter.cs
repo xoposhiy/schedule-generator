@@ -6,7 +6,7 @@ namespace Infrastructure.SheetPatterns
 {
     public class SheetTableErrorPainter
     {
-        public static void PaintErrors(GSRepository repo, string sheetName,
+        public static void PaintErrors(GsRepository repo, string sheetName,
                 (int row, int col) offset, List<((int row, int col) coords, string msg)> errors)
         {
             var modifier = repo.ModifySpreadSheet(sheetName);
@@ -20,7 +20,7 @@ namespace Infrastructure.SheetPatterns
             modifier.Execute();
         }
 
-        public static void ClearErrorPaint(GSRepository repo, string sheetName, (int row, int col) offset, IEnumerable<(int row, int col)> coords)
+        public static void ClearErrorPaint(GsRepository repo, string sheetName, (int row, int col) offset, IEnumerable<(int row, int col)> coords)
         {
             var modifier = repo.ModifySpreadSheet(sheetName);
             foreach (var coord in coords)

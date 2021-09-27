@@ -33,7 +33,7 @@ namespace Domain.Conversions
             };
         }
 
-        private static readonly Dictionary<string, DayOfWeek> weekDaysDict = new() {
+        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new() {
             { "пн", DayOfWeek.Monday },
             { "вт", DayOfWeek.Tuesday },
             { "ср", DayOfWeek.Wednesday },
@@ -89,7 +89,7 @@ namespace Domain.Conversions
             };
         }
 
-        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(GSRepository repo,
+        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
             var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 8);
@@ -346,13 +346,13 @@ namespace Domain.Conversions
 
         public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
-            var weekDaysStrList = weekDaysDict.Keys.ToList();
+            var weekDaysStrList = WeekDaysDict.Keys.ToList();
             var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
             if (string.IsNullOrWhiteSpace(rawMeetingTime))
             {
                 var meetingTimes = new List<MeetingTime>();
-                foreach (var day in weekDaysDict.Values)
+                foreach (var day in WeekDaysDict.Values)
                 {
                     for (var index = 1; index < MaxIndex + 1; index++)
                     {
@@ -421,7 +421,7 @@ namespace Domain.Conversions
 
                 if (currWeekDays.Count == 0)
                 {
-                    currWeekDays = weekDaysDict.Values.ToList();
+                    currWeekDays = WeekDaysDict.Values.ToList();
                 }
 
                 if (currIndexes.Count == 0)

@@ -18,7 +18,7 @@ namespace Testing.SheetPatternsTest
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             var headers = new List<string>() {
                 "Преподавател", "Предмет",  "Тип занятия", "Количество повторений каждого занятия",

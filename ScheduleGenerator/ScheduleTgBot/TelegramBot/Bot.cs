@@ -42,7 +42,7 @@ namespace Application.TelegramBot
         private readonly string credentialAddressToShare;
         private readonly Dictionary<long, ScheduleSession> sessionDict;
         private readonly Dictionary<long, AdditionalSessionState> additionalStateDict;
-        private readonly Dictionary<long, GSRepository> repoDict;
+        private readonly Dictionary<long, GsRepository> repoDict;
         public TgBot(string token, string repoSecret, string firebaseSecret, string dbBasePath,
             List<string> requisitionSheetHeaders,
             List<string> requirementsSheetHeaderComments,
@@ -56,7 +56,7 @@ namespace Application.TelegramBot
             sessionRepository = new SessionRepository(dbBasePath, firebaseSecret);
             sessionDict = new Dictionary<long, ScheduleSession>();
             additionalStateDict = new Dictionary<long, AdditionalSessionState>();
-            repoDict = new Dictionary<long, GSRepository>();
+            repoDict = new Dictionary<long, GsRepository>();
             this.repoSecret = repoSecret;
             client.OnMessage += BotOnMessageReceived!;
             client.OnMessageEdited += BotOnMessageReceived!;
@@ -113,12 +113,12 @@ namespace Application.TelegramBot
             }
             var currentAdditionalState = additionalStateDict[chatId];
 
-            GSRepository? repo = null;
+            GsRepository? repo = null;
             if (!string.IsNullOrEmpty(currentSession.SpreadsheetUrl) && currentAdditionalState.AccessReceived)
             {
                 if (!repoDict.ContainsKey(chatId))
                 {
-                    repoDict[chatId] = new GSRepository("ScheduleGenerator", repoSecret, currentSession.SpreadsheetUrl);
+                    repoDict[chatId] = new GsRepository("ScheduleGenerator", repoSecret, currentSession.SpreadsheetUrl);
                     repoDict[chatId].SetUpSheetInfo();
                 }
 
@@ -278,11 +278,11 @@ namespace Application.TelegramBot
             if (message == "Готово")
             {
 
-                GSRepository repo;
+                GsRepository repo;
                 // Access check
                 try
                 {
-                    repo = new GSRepository("PsA32710i", repoSecret, scheduleSession.SpreadsheetUrl);
+                    repo = new GsRepository("PsA32710i", repoSecret, scheduleSession.SpreadsheetUrl);
                 }
                 catch
                 {
@@ -312,7 +312,7 @@ namespace Application.TelegramBot
         }
 
         public async void HandleRequisitionSheetAndAskForLearningPlanIfSuccess(long chatID, string message,
-                ScheduleSession scheduleSession, GSRepository repo)
+                ScheduleSession scheduleSession, GsRepository repo)
         {
             var exists = false;
             // If specified "Create", create 
@@ -364,7 +364,7 @@ namespace Application.TelegramBot
         }
 
         public async void HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(long chatID, string message,
-                ScheduleSession scheduleSession, GSRepository repo)
+                ScheduleSession scheduleSession, GsRepository repo)
         {
             var exists = false;
             // If specified "Create", create 
@@ -415,7 +415,7 @@ namespace Application.TelegramBot
         }
 
         private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatID, string message, ScheduleSession scheduleSession,
-                AdditionalSessionState additionalSessionState, GSRepository repo)
+                AdditionalSessionState additionalSessionState, GsRepository repo)
         {
             if (message == "Готово" && !additionalSessionState.TableValidationInProgress)
             {
@@ -518,7 +518,7 @@ namespace Application.TelegramBot
         }
 
         public async void HandleScheduleSheetAndCreateSchedule(long chatID, string message,
-                ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState, GSRepository repo)
+                ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState, GsRepository repo)
         {
             var exists = false;
             var sheetName = message;

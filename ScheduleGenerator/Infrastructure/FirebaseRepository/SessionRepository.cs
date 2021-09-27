@@ -18,15 +18,14 @@ namespace Infrastructure.FirebaseRepository
 
         public override string ToString()
         {
-            return string.Format(@"Id: {0}
-SpreadsheetUrl: {1}
-InputRequirementsSheet: {2}
-LearningPlanSheet: {3}
-ScheduleSheet: {4}
-LastModificationTime: {5}
-LastModificationInitiator: {6}
-DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet, ScheduleSheet,
-    LastModificationTime, LastModificationInitiator, DialogState);
+            return $@"Id: {Id}
+SpreadsheetUrl: {SpreadsheetUrl}
+InputRequirementsSheet: {InputRequirementsSheet}
+LearningPlanSheet: {LearningPlanSheet}
+ScheduleSheet: {ScheduleSheet}
+LastModificationTime: {LastModificationTime}
+LastModificationInitiator: {LastModificationInitiator}
+DialogState: {DialogState}";
         }
     }
 
@@ -36,7 +35,7 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         WaitSpreadsheetChangeConfirmation,
     }
 
-    public interface IDBRepository
+    public interface IDbRepository
     {
         ScheduleSession Get(long telegramChatId);
         void Save(long telegramChatId, ScheduleSession session);
@@ -44,10 +43,10 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         
     }
 
-    public class SessionRepository : IDBRepository
+    public class SessionRepository : IDbRepository
     {
-        private string sessionsKey = "scheduleSessions";
-        private FirebaseClient dbClient;
+        private const string SessionsKey = "scheduleSessions";
+        private readonly FirebaseClient dbClient;
         public SessionRepository(string basePath, string authSecret)
         {
             dbClient = new FirebaseClient(
@@ -61,7 +60,7 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         public ScheduleSession Get(long telegramChatId)
         {
             var sessionTask = dbClient
-                .Child(sessionsKey)
+                .Child(SessionsKey)
                 .Child(telegramChatId.ToString())
                 .OnceSingleAsync<ScheduleSession>();
             sessionTask.Wait();
@@ -73,18 +72,18 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         {
             Console.WriteLine("<Saving>");
             var savingTask = dbClient
-              .Child(sessionsKey)
+              .Child(SessionsKey)
               .Child(telegramChatId.ToString())
               .PutAsync(session);
             Console.WriteLine("Waiting Task ...");
             savingTask.Wait();
-            Console.WriteLine("Saved on {0}/{1}", sessionsKey, telegramChatId);
+            Console.WriteLine("Saved on {0}/{1}", SessionsKey, telegramChatId);
         }
 
         public async void SaveAsync(long telegramChatId, ScheduleSession session)
         {
             await dbClient
-              .Child(sessionsKey)
+              .Child(SessionsKey)
               .Child(telegramChatId.ToString())
               .PutAsync(session);
         }
@@ -92,7 +91,7 @@ DialogState: {7}", Id, SpreadsheetUrl, InputRequirementsSheet, LearningPlanSheet
         public async void Delete(long telegramChatId)
         {
             await dbClient
-              .Child(sessionsKey)
+              .Child(SessionsKey)
               .Child(telegramChatId.ToString())
               .DeleteAsync();
         }

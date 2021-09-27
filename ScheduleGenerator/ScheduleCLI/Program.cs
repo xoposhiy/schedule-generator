@@ -24,7 +24,7 @@ namespace ScheduleCLI
                 "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
             var inputRequirementsSheetId = 861045221;
             var inputRequirementsSheetUrl = link + inputRequirementsSheetId;
-            var repo = new GSRepository("test", credentialPath, inputRequirementsSheetUrl);
+            var repo = new GsRepository("test", credentialPath, inputRequirementsSheetUrl);
             repo.SetUpSheetInfo();
             var inputRequirementsSheetName = "Входные требования";
             var learningPlanSheetName = "Учебный план";
@@ -40,9 +40,7 @@ namespace ScheduleCLI
             //var evaluator = container.Get<MeetingEvaluator>();
 
             var requisition = new Requisition(requisitions.ToArray());
-
-
-            // TODO все Estimtors: score -> penalty
+            
             // TODO все Estimtors: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
 
             var basic = (new FreedomDegreeEstimator(), 100);
@@ -52,7 +50,7 @@ namespace ScheduleCLI
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
             var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
-            var solver = new GreedySolver(estimator, requisition, classrooms, new Random());
+            var solver = new GreedySolver(estimator, requisition, classrooms, new Random(42));
             var solutions = solver.GetSolution(new TimeSpan(0, 1, 5)).ToList();
 
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);

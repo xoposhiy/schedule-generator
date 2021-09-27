@@ -19,7 +19,7 @@ namespace Testing.SheetPatternsTest
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
 
 
             var errors = new List<((int, int), string)>() {
@@ -35,7 +35,7 @@ namespace Testing.SheetPatternsTest
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             var errors = new List<((int, int), string)>() {
                 ((0, 0), "error msg1"), ((1, 1), "error msg2"), ((4, 2), "error msg3")

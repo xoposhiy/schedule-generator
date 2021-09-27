@@ -22,8 +22,8 @@ namespace Domain.Estimators
                     dayCount += schedule.TeacherMeetingsTimesByDay[day][teacher].Count == 0 ? 0 : 1;
                 }
             }
-            var score = dayCount - maxTeacherDays;
-            return score < 0 ? 0 : -score;
+            var penalty = dayCount - maxTeacherDays;
+            return penalty < 0 ? 0 : -penalty;
         }
     }
 }

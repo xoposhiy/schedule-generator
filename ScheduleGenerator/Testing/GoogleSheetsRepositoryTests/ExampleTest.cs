@@ -21,7 +21,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             var credentialDirPath = Environment.GetEnvironmentVariable("GoogleApiCredentials");
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1ncJ77JJJapPJpTeDpvWIsmuavStz5aXwQLs7fc89Rgo/edit#gid=0";
-            var repo = new GSRepository(ApplicationName, credentialPath, url);
+            var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             repo.ChangeTable(url);
             var readed = repo.ReadCell(repo.CurrentSheetInfo!.Sheets.Keys.First(), (1, 1));
@@ -53,8 +53,8 @@ namespace Testing.GoogleSheetsRepositoryTests
             var credentialDirPath = Environment.GetEnvironmentVariable("GoogleApiCredentials");
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var url = "https://docs.google.com/spreadsheets/d/1ncJ77JJJapPJpTeDpvWIsmuavStz5aXwQLs7fc89Rgo/edit#gid=0";
-            var repo1 = new GSRepository(ApplicationName, credentialPath, url);
-            var repo2 = new GSRepository(ApplicationName, credentialPath, url);
+            var repo1 = new GsRepository(ApplicationName, credentialPath, url);
+            var repo2 = new GsRepository(ApplicationName, credentialPath, url);
 
             var dataToWrite = new List<List<string>>()
             {
