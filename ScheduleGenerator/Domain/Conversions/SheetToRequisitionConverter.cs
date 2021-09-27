@@ -318,6 +318,7 @@ namespace Domain.Conversions
             return partMatch.Groups[0].Value;
         }
 
+        // ReSharper disable once UnusedMember.Local
         private static HashSet<string> FindAllMatchingGroups(string group, HashSet<string> groups, bool isLecture)
         {
             var regexedString = group.Replace(" ", "").Replace("-", @"\s?-\s?").Replace("*", @"(?:\d+)");

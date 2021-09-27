@@ -12,7 +12,7 @@ namespace ScheduleCLI
 {
     static class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
 
@@ -58,6 +58,7 @@ namespace ScheduleCLI
         }
 
 
+        // ReSharper disable once UnusedMember.Local
         private static StandardKernel ConfigureContainer()
         {
             var container = new StandardKernel();
