@@ -14,6 +14,9 @@ using Ninject;
 using Infrastructure.FirebaseRepository;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
+// ReSharper disable NotAccessedField.Local
+#pragma warning disable 8602
+#pragma warning disable 8604
 
 namespace Application.TelegramBot
 {
@@ -61,8 +64,8 @@ namespace Application.TelegramBot
             client.OnMessage += BotOnMessageReceived!;
             client.OnMessageEdited += BotOnMessageReceived!;
 
-            var readedString = System.IO.File.ReadAllText(repoSecret);
-            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readedString);
+            var readString = System.IO.File.ReadAllText(repoSecret);
+            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(readString);
             credentialAddressToShare = values["client_email"];
 
             this.requisitionSheetHeaders = requisitionSheetHeaders;
@@ -127,11 +130,11 @@ namespace Application.TelegramBot
 
             if (message.Type == MessageType.Text)
             {
-                if (message.Text == "/help" || message.Text == "Помощь")
+                if (message.Text is "/help" or "Помощь")
                 {
                     ShowHelp(chatId);
                 }
-                else if (message.Text == "/restart" || message.Text == "Заново")
+                else if (message.Text is "/restart" or "Заново")
                 {
                     RestartSessionFor(chatId);
                 }
@@ -176,31 +179,31 @@ namespace Application.TelegramBot
             }
         }
 
-        private bool GetScheduleSessionByChatId(long chatID, out ScheduleSession scheduleSession)
+        private bool GetScheduleSessionByChatId(long chatId, out ScheduleSession scheduleSession)
         {
             var justCreated = false;
             // Ask Firebase
             //   if found check access to spreadsheet and set what access already recieved
-            scheduleSession = sessionRepository.Get(chatID);
-            if (scheduleSession == null)
-            {
-                // If not found in db
-                scheduleSession = new ScheduleSession();
-                scheduleSession.Id = chatID;
-                scheduleSession.LastModificationInitiator = "TelegramBot";
-                scheduleSession.LastModificationTime = DateTime.Now;
-                scheduleSession.DialogState = DialogState.Initial;
-                justCreated = true;
-            }
+            scheduleSession = sessionRepository.Get(chatId);
+            // if (scheduleSession == null)
+            // {
+            //     // If not found in db
+            //     scheduleSession = new ScheduleSession();
+            //     scheduleSession.Id = chatId;
+            //     scheduleSession.LastModificationInitiator = "TelegramBot";
+            //     scheduleSession.LastModificationTime = DateTime.Now;
+            //     scheduleSession.DialogState = DialogState.Initial;
+            //     justCreated = true;
+            // }
 
             return justCreated;
         }
 
-        private bool GetAdditionalSessionStateByChatId(long chatID, ScheduleSession currentScheduleSession,
+        private bool GetAdditionalSessionStateByChatId(long chatId, ScheduleSession currentScheduleSession,
                 out AdditionalSessionState additionalSessionState)
         {
             var isFirstTime = true;
-            additionalSessionState = new AdditionalSessionState(chatID);
+            additionalSessionState = new AdditionalSessionState(chatId);
             if (!string.IsNullOrEmpty(currentScheduleSession.InputRequirementsSheet))
             {
                 try
@@ -224,24 +227,24 @@ namespace Application.TelegramBot
 
 
 
-        private async void ShowHelp(long chatID)
+        private async void ShowHelp(long chatId)
         {
             var answer = "Я — Бот для составления расписания.\n Чтобы начать сначала введите \"Заново\" или /restart";
-            await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+            await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
-        private async void RestartSessionFor(long chatID)
+        private async void RestartSessionFor(long chatId)
         {
-            sessionDict.Remove(chatID);
-            additionalStateDict.Remove(chatID);
-            repoDict.Remove(chatID);
-            sessionRepository.Delete(chatID);
+            sessionDict.Remove(chatId);
+            additionalStateDict.Remove(chatId);
+            repoDict.Remove(chatId);
+            sessionRepository.Delete(chatId);
             var answer = "Начинаем все сначала. Отправьте ссылку на гугл-таблицу с данными" +
                          " (url для таблицы в Google Sheets).";
-            await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+            await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
         }
 
-        private async void HandleSheetUrlAnswerAndAskForAccessIfSuccess(long chatID, string message,
+        private async void HandleSheetUrlAnswerAndAskForAccessIfSuccess(long chatId, string message,
                 ScheduleSession scheduleSession, bool isChatFresh)
         {
             if (LinkRegex.IsMatch(message))
@@ -253,7 +256,7 @@ namespace Application.TelegramBot
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
 
                 answer += $"Вот мой адрес: {credentialAddressToShare}";
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
             else
             {
@@ -261,18 +264,18 @@ namespace Application.TelegramBot
                 {
                     var answer = "Привет. Я — бот для создания расписаний. Чтобы начать, отправьте " +
                         "ссылку на Spreadsheet (url для таблицы в Google Sheets)";
-                    await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+                    await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
                 else
                 {
                     var answer = "Не понимаю. Сначала пришлите ссылку на Spreadsheet (url для таблицы" +
                         " в Google Sheets).";
-                    await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+                    await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
                 }
             }
         }
 
-        private async void CheckAccessAndAskForRequisitionSheetIfSuccess(long chatID, string message,
+        private async void CheckAccessAndAskForRequisitionSheetIfSuccess(long chatId, string message,
                 ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState)
         {
             if (message == "Готово")
@@ -286,7 +289,7 @@ namespace Application.TelegramBot
                 }
                 catch
                 {
-                    await client.SendTextMessageAsync(chatID, "Доступ не выдан. Попробуйте снова.");
+                    await client.SendTextMessageAsync(chatId, "Доступ не выдан. Попробуйте снова.");
                     return;
                 }
                 // If access accuired
@@ -300,18 +303,18 @@ namespace Application.TelegramBot
                 sheetNames.Add("Создать");
                 var keyboard = CreateKeyboard(sheetNames, 6);
 
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
             else
             {
                 var answer = "Дайте мне доступ на редактирование. Добавьте мой адрес в редакторы вашей таблицы.\n" +
                     $"Вот мой адрес: {credentialAddressToShare}";
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
         }
 
-        public async void HandleRequisitionSheetAndAskForLearningPlanIfSuccess(long chatID, string message,
+        public async void HandleRequisitionSheetAndAskForLearningPlanIfSuccess(long chatId, string message,
                 ScheduleSession scheduleSession, GsRepository repo)
         {
             var exists = false;
@@ -354,16 +357,16 @@ namespace Application.TelegramBot
                 sheetNames.Add("Создать");
                 var keyboard = CreateKeyboard(sheetNames, 6);
 
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
             else
             {
                 var answer = "Не нашел такой таблицы. Попробуйте снова.";
-                await client.SendTextMessageAsync(chatID, answer);
+                await client.SendTextMessageAsync(chatId, answer);
             }
         }
 
-        public async void HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(long chatID, string message,
+        public async void HandleLearningPlanSheetAndAskForRoomSheetIfSuccess(long chatId, string message,
                 ScheduleSession scheduleSession, GsRepository repo)
         {
             var exists = false;
@@ -403,24 +406,24 @@ namespace Application.TelegramBot
 
                 // keyboard update
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
             else
             {
                 var answer = "Не нашел такой таблицы. Попробуйте снова";
 
                 // keyboard update
-                await client.SendTextMessageAsync(chatID, answer);
+                await client.SendTextMessageAsync(chatId, answer);
             }
         }
 
-        private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatID, string message, ScheduleSession scheduleSession,
+        private async void HandleDataValidationAndAskForOutputSheetIfSuccess(long chatId, string message, ScheduleSession scheduleSession,
                 AdditionalSessionState additionalSessionState, GsRepository repo)
         {
             if (message == "Готово" && !additionalSessionState.TableValidationInProgress)
             {
                 var answer = "Проверяю корректность введенных данных. Ожидайте.";
-                await client.SendTextMessageAsync(chatID, answer);
+                await client.SendTextMessageAsync(chatId, answer);
                 // Maybe async method t check and send message with report
                 var isValid = true;
 
@@ -430,6 +433,7 @@ namespace Application.TelegramBot
                 var requisitionData = SheetTableReader.ReadRowsFromSheet(
                     repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionSheetHeaders.Count);
                 // clear last errors
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (additionalSessionState.RequisitionLastErrorCoords != null && additionalSessionState.RequisitionLastErrorCoords.Any())
                 {
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (0, 0),
@@ -452,6 +456,7 @@ namespace Application.TelegramBot
                 var learningPlanData = SheetTableReader.ReadRowsFromSheet(
                     repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanSheetHeaders.Count);
                 // clear last errors
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (additionalSessionState.LearningPlanLastErrorCoords != null && additionalSessionState.LearningPlanLastErrorCoords.Any())
                 {
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (0, 0),
@@ -482,7 +487,7 @@ namespace Application.TelegramBot
                     var sheetNames = repo.CurrentSheetInfo.Sheets.Keys.ToList();
                     sheetNames.Add("Создать");
                     var keyboard = CreateKeyboard(sheetNames, 6);
-                    await client.SendTextMessageAsync(chatID, answer2, replyMarkup: keyboard);
+                    await client.SendTextMessageAsync(chatId, answer2, replyMarkup: keyboard);
                 }
                 else
                 {
@@ -503,7 +508,7 @@ namespace Application.TelegramBot
 
                     // Error output
                     var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
-                    await client.SendTextMessageAsync(chatID, errorMsg, replyMarkup: keyboard);
+                    await client.SendTextMessageAsync(chatId, errorMsg, replyMarkup: keyboard);
 
                     Console.WriteLine("Schedule error output");
                 }
@@ -513,11 +518,11 @@ namespace Application.TelegramBot
                 var answer = "Не понял. Вам нужно нажать \"Готово\", как только закончите вводить данные, " +
                              "чтобы начать составлять расписание.";
                 var keyboard = CreateKeyboard(new List<string> { "Готово" }, 1);
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: keyboard);
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: keyboard);
             }
         }
 
-        public async void HandleScheduleSheetAndCreateSchedule(long chatID, string message,
+        public async void HandleScheduleSheetAndCreateSchedule(long chatId, string message,
                 ScheduleSession scheduleSession, AdditionalSessionState additionalSessionState, GsRepository repo)
         {
             var exists = false;
@@ -557,7 +562,7 @@ namespace Application.TelegramBot
                     " Начинаю составление расписания. Напишу, когда будет готово";
                 additionalSessionState.CreatingSchedule = true;
 
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
 
                 // SCHEDULE GENERATION
                 // var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
@@ -576,14 +581,14 @@ namespace Application.TelegramBot
 
                 answer = $"Расписание готово (НЕТ)! Оно находится в листе (НЕТ) \"{scheduleSession.ScheduleSheet}\"." +
                          " Напишите \"/restart\", если хотите составить еще одно расписание.";
-                await client.SendTextMessageAsync(chatID, answer, replyMarkup: new ReplyKeyboardRemove());
+                await client.SendTextMessageAsync(chatId, answer, replyMarkup: new ReplyKeyboardRemove());
 
             }
             else
             {
                 var answer = "Не нашел такой таблицы. Попробуйте снова.";
                 // keyboard update
-                await client.SendTextMessageAsync(chatID, answer);
+                await client.SendTextMessageAsync(chatId, answer);
             }
         }
 
@@ -596,15 +601,15 @@ namespace Application.TelegramBot
             return desiredName;
         }
 
-        private static ReplyKeyboardMarkup CreateKeyboard(IEnumerable<string> buttonNames, int maxButtonCountPerRow = 4)
+        private static ReplyKeyboardMarkup CreateKeyboard(List<string> buttonNames, int maxButtonCountPerRow = 4)
         {
-            var rowCount = buttonNames.Count() / maxButtonCountPerRow;
-            if (buttonNames.Count() % maxButtonCountPerRow != 0)
+            var rowCount = buttonNames.Count / maxButtonCountPerRow;
+            if (buttonNames.Count % maxButtonCountPerRow != 0)
             {
                 rowCount++;
             }
             var buttons = new KeyboardButton[rowCount][];
-            var currentRow = new KeyboardButton[Math.Min(buttonNames.Count(), maxButtonCountPerRow)];
+            var currentRow = new KeyboardButton[Math.Min(buttonNames.Count, maxButtonCountPerRow)];
             var currCount = 0;
             var currRow = 0;
             foreach (var buttonName in buttonNames)
@@ -614,7 +619,7 @@ namespace Application.TelegramBot
                 {
                     buttons[currRow] = currentRow;
                     currRow++;
-                    currentRow = new KeyboardButton[Math.Min(buttonNames.Count() - maxButtonCountPerRow * currRow, maxButtonCountPerRow)]; ;
+                    currentRow = new KeyboardButton[Math.Min(buttonNames.Count - maxButtonCountPerRow * currRow, maxButtonCountPerRow)];
                     currentRow[0] = new KeyboardButton(buttonName);
                     continue;
                 }
@@ -639,7 +644,7 @@ namespace Application.TelegramBot
 
     public class AdditionalSessionState
     {
-        public long ID { get; }
+        public long Id { get; }
         public bool AccessReceived;
         public bool TableValidationInProgress;
         public bool DataIsValid;
@@ -650,7 +655,7 @@ namespace Application.TelegramBot
 
         public AdditionalSessionState(long id)
         {
-            ID = id;
+            Id = id;
             RequisitionLastErrorCoords = new List<(int, int)>();
             LearningPlanLastErrorCoords = new List<(int, int)>();
         }

@@ -12,7 +12,7 @@ namespace Testing
             "FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2,
             Array.Empty<RoomSpec>(), null, null);
 
-        public static Requisition StandardRequisition = new Requisition(new RequisitionItem[]
+        public static Requisition StandardRequisition = new Requisition(new[]
         {
             new RequisitionItem(
                 StandardLearningPlanItem,

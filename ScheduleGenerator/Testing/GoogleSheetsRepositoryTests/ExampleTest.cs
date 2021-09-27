@@ -24,7 +24,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             repo.ChangeTable(url);
-            var readed = repo.ReadCell(repo.CurrentSheetInfo!.Sheets.Keys.First(), (1, 1));
+            repo.ReadCell(repo.CurrentSheetInfo!.Sheets.Keys.First(), (1, 1)); // var read =
 
             var dataToWrite = new List<List<string>>()
             {

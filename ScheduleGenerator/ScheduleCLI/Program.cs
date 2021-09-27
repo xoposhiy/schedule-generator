@@ -31,7 +31,7 @@ namespace ScheduleCLI
             var scheduleSheetName = "Расписание";
             var classroomsSheetName = "Аудитории";
 
-            var (requisitions, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
+            var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
             // foreach (var requisitionItem in requisitions)
             // {

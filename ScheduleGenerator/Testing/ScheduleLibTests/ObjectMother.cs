@@ -14,11 +14,11 @@ namespace Testing.ScheduleLibTests
 
 
         public static readonly MeetingGroup Group1 = new MeetingGroup("ФИИТ-101", GroupPart.FullGroup);
-        public static readonly MeetingGroup Group1_1 = new MeetingGroup("ФИИТ-101-1", GroupPart.Part1);
-        public static readonly MeetingGroup Group1_2 = new MeetingGroup("ФИИТ-101-2", GroupPart.Part2);
+        public static readonly MeetingGroup Group11 = new MeetingGroup("ФИИТ-101-1", GroupPart.Part1);
+        public static readonly MeetingGroup Group12 = new MeetingGroup("ФИИТ-101-2", GroupPart.Part2);
         public static readonly MeetingGroup Group2 = new MeetingGroup("ФИИТ-102", GroupPart.FullGroup);
 
-        public static readonly Discipline OOP = new Discipline("ООП");
+        public static readonly Discipline Oop = new Discipline("ООП");
         public static readonly Discipline Calculus = new Discipline("МатАн");
         public static readonly Discipline Os = new Discipline("ОС");
 
@@ -31,10 +31,10 @@ namespace Testing.ScheduleLibTests
         public static readonly LearningPlanItem CalculusSeminar = new LearningPlanItem("ФИИТ-1", Calculus, MeetingType.Seminar,
             GroupSize.FullGroup, 1, new[] {RoomSpec.Big}, null, null);
 
-        public static readonly LearningPlanItem OopSeminar = new LearningPlanItem("ФИИТ-101-1", OOP, MeetingType.Seminar,
+        public static readonly LearningPlanItem OopSeminar = new LearningPlanItem("ФИИТ-101-1", Oop, MeetingType.Seminar,
             GroupSize.HalfGroup, 1, System.Array.Empty<RoomSpec>(), MeetingType.ComputerLab, null);
 
-        public static readonly LearningPlanItem OopLab = new LearningPlanItem("ФИИТ-101-1", OOP, MeetingType.ComputerLab,
+        public static readonly LearningPlanItem OopLab = new LearningPlanItem("ФИИТ-101-1", Oop, MeetingType.ComputerLab,
             GroupSize.HalfGroup, 1, new[]
             {
                 RoomSpec.Computer,
