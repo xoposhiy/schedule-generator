@@ -26,7 +26,7 @@ namespace Domain.ScheduleLib
         public readonly Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>
             GroupsMeetingsTimesByDay = new();
 
-        public readonly Dictionary<DayOfWeek, Dictionary<int, HashSet<string>>> FreeRoomsByDay = new();
+        public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public Schedule(Meeting[] meetings)
@@ -64,7 +64,7 @@ namespace Domain.ScheduleLib
 
                 var meetingTime = meetingToAdd.MeetingTime!;
                 TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
-                FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Remove(meetingToAdd.Location!);
+                FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
                 TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
@@ -84,7 +84,7 @@ namespace Domain.ScheduleLib
                 var meetingTime = meetingToRemove.MeetingTime!;
                 TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
                 if (meetingToRemove.Location != "Онлайн")
-                    FreeRoomsByDay[meetingTime.Day][meetingTime.TimeSlotIndex].Add(meetingToRemove.Location!);
+                    FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
 
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
 
@@ -190,10 +190,11 @@ namespace Domain.ScheduleLib
             foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
             {
                 if (day == DayOfWeek.Sunday) continue;
-                var roomsByTimeSlot = new Dictionary<int, HashSet<string>>();
                 for (var i = 1; i < 7; i++)
-                    roomsByTimeSlot.Add(i, rooms.ToHashSet());
-                FreeRoomsByDay.Add(day, roomsByTimeSlot);
+                {
+                    var time = new MeetingTime(day, i);
+                    FreeRoomsByDay.Add(time, rooms.ToHashSet());
+                }
             }
         }
 
@@ -222,9 +223,7 @@ namespace Domain.ScheduleLib
 
         private string? TryGetRoomFromPool(MeetingTime meetingTime, RoomSpec[] roomRequirement)
         {
-            var (day, timeSlotIndex) = meetingTime;
-
-            var possibleRooms = FreeRoomsByDay[day][timeSlotIndex].ToHashSet();
+            var possibleRooms = FreeRoomsByDay[meetingTime].ToHashSet();
             foreach (var rs in roomRequirement)
                 possibleRooms.IntersectWith(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
