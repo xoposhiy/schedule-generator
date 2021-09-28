@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FirebaseDatabase.net" Version="4.0.5" />
-    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2175" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="FirebaseDatabase.net" Version="4.0.5"/>
+        <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2175"/>
+    </ItemGroup>
 
 </Project>

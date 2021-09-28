@@ -1,4 +1,5 @@
 # GoogleSheetsRepository
+
 GoogleSheetsRepository - репозиторий для работы с Google Sheets
 
 ## Настройка переменных среды
@@ -12,7 +13,8 @@ GoogleSheetsRepository - репозиторий для работы с Google Sh
 
 Вы можете создать учетные данные самостоятельно или запросить их у владельца репозитория, если вы связаны с проектом.
 
-Когда вы получите файл client_secrets.json, поместите его в папку по вашему выбору и создайте переменную среды с путем к этой папке.
+Когда вы получите файл client_secrets.json, поместите его в папку по вашему выбору и создайте переменную среды с путем к
+этой папке.
 
 Как установить переменные среды?
 
@@ -24,12 +26,13 @@ GoogleSheetsRepository - репозиторий для работы с Google Sh
 1. Выберите переменные среды.
 1. Нажмите «Создать» в первой половине окна.
 
-(Настройки -> Система -> О системе -> Информация о системе -> Расширенные настройки системы -> Переменные среды -> Создать)
+(Настройки -> Система -> О системе -> Информация о системе -> Расширенные настройки системы -> Переменные среды ->
+Создать)
 
 Создайте переменную с именем GoogleApiCredentials со значением, равным пути к папке с учетными данными.
 
-
 Как создать учетные данные?
+
 1. Перейдите по ссылке [console.developers.google.com](https://console.developers.google.com/).
 1. Если у вас нет подходящего проекта создайте его нажав "CREATE A PROJECT". Придумайте имя проекта и нажмите "CREATE"
 1. Нажмите "ENABLE APIS AND SERVICES"
@@ -40,15 +43,15 @@ GoogleSheetsRepository - репозиторий для работы с Google Sh
 1. Выберите Web server (в Where will you be calling the API from?)
 1. Выберите "Application data" в пункте выбора типа данных (в What data will you be accessing?)
 1. Выберите "No, I'm not using them" (в Are you planning to use this API with App Engine or Compute Engine?)
-1. Нажмите на "Which credentials do I need?" 
+1. Нажмите на "Which credentials do I need?"
 1. Напишите имя аккаунта сервиса
 1. Выберите роль (Role) Project -> Owner
 1. Выберите тип ключа JSON
 1. Нажмите "Continue"
 1. Учетные данные должны начать загружаться на ваш компьютер
 
-
 ## Usage
+
 ```csharp
 
 var ApplicationName = "MyApp";

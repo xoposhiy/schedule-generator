@@ -1,21 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Application</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Application</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="ninject.extensions.conventions" Version="3.3.0" />
-    <PackageReference Include="Telegram.Bot" Version="15.7.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Ninject" Version="3.3.4"/>
+        <PackageReference Include="ninject.extensions.conventions" Version="3.3.0"/>
+        <PackageReference Include="Telegram.Bot" Version="15.7.1"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Domain\Domain.csproj"/>
+        <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
+    </ItemGroup>
 
 </Project>

@@ -30,7 +30,7 @@ namespace Domain.ScheduleLib
 
         public Meeting BasicCopy()
         {
-            return new(
+            return new Meeting(
                 Discipline,
                 MeetingType,
                 Teacher,
@@ -98,7 +98,7 @@ namespace Domain.ScheduleLib
         }
     }
 
-    public record MeetingTime (DayOfWeek Day, int TimeSlotIndex)
+    public record MeetingTime(DayOfWeek Day, int TimeSlotIndex)
     {
         public override string ToString()
         {

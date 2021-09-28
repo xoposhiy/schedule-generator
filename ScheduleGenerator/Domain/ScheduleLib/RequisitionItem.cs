@@ -50,7 +50,7 @@ namespace Domain.ScheduleLib
 
         public RequisitionItem Copy()
         {
-            return new(PlanItem, GroupPriorities, RepetitionsCount,
+            return new RequisitionItem(PlanItem, GroupPriorities, RepetitionsCount,
                 MeetingTimePriorities, Teacher, WeekType);
         }
     }

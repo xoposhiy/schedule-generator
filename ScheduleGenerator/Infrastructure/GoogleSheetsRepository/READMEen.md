@@ -1,4 +1,5 @@
 # GoogleSheetsRepository
+
 GoogleSheetsRepository is a repository for work with Google Sheets
 
 ## Setting up environment variables
@@ -12,7 +13,8 @@ Credentials is a file called "client_secrets.json"
 
 You can create Credentials yourself or request them from the repository owner if you are related with the project.
 
-When you get the client_secrets.json file, put it in a folder of your choice and create an environment variable with the path to that folder.
+When you get the client_secrets.json file, put it in a folder of your choice and create an environment variable with the
+path to that folder.
 
 How to set environment variables?
 
@@ -28,8 +30,8 @@ How to set environment variables?
 
 Create a variable named GoogleApiCredentials with value equal to path to the folder with Credentials.
 
-
 ## Usage
+
 ```csharp
 
 var ApplicationName = "MyApp";

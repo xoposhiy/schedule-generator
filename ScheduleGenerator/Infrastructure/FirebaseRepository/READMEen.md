@@ -1,4 +1,5 @@
 # FireBaseRepository
+
 FireBaseRepository is a repository for work with Realtime Database
 
 ## Setting up environment variables
@@ -10,10 +11,8 @@ This environment variable must contain the firebase project secret.
 
 You must be related to the project and have access to the project information.
 
-Go to [firebase.google.com](https://firebase.google.com/) and open project related to this database. Firebase Realtime Database should be schedule-generator-5f50e.
-Go Settings -> Project settings -> Service accounts -> Database secrets
-
-
+Go to [firebase.google.com](https://firebase.google.com/) and open project related to this database. Firebase Realtime
+Database should be schedule-generator-5f50e. Go Settings -> Project settings -> Service accounts -> Database secrets
 
 When you get the Secret, create an environment variable named FirebaseSecret with value equal to Secret string.
 
@@ -29,8 +28,8 @@ How to set environment variables?
 
 (Settings -> System -> About -> System info -> Advanced system settings -> Environment Variables -> New)
 
-
 ## Usage
+
 ```csharp
 
 var basePath = "https://schedule-generator...";

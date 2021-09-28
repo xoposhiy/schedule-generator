@@ -1,33 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
 
-    <IsPackable>false</IsPackable>
+        <IsPackable>false</IsPackable>
 
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NUnit" Version="3.12.0"/>
+        <PackageReference Include="NUnit3TestAdapter" Version="3.16.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Domain\Domain.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="AlgorithmTests\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="AlgorithmTests\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Remove="AlgorithmTests\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="AlgorithmTests\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="AlgorithmTests\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="AlgorithmTests\**"/>
+    </ItemGroup>
 
 </Project>
