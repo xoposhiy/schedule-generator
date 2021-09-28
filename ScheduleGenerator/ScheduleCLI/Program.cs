@@ -41,22 +41,17 @@ namespace ScheduleCLI
 
             var requisition = new Requisition(requisitions.ToArray());
 
-            // TODO все Estimtors: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
+            // TODO все Estimators: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
+            // TODO вынести подготовительные шаги в отдельные методы (и пофиксить дублирование в тестах)
 
-            var basic = (new FreedomDegreeEstimator(), 100);
-            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
-            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
-            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
-            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
-            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
+            var estimator = CombinedEstimator.GetDefaultCombinedEstimator();
+            
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(solutions.Last().Schedule);
         }
-
 
         // ReSharper disable once UnusedMember.Local
         private static StandardKernel ConfigureContainer()

@@ -24,5 +24,17 @@ namespace Domain.Estimators
         {
             return childEstimators.Sum(e => e.Item1.Estimate(schedule) * e.Item2);
         }
+        
+        public static CombinedEstimator GetDefaultCombinedEstimator()
+        {
+            var basic = (new FreedomDegreeEstimator(), 100);
+            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
+            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
+            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
+            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
+            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
+            return estimator;
+        }
     }
 }
