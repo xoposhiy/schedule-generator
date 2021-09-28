@@ -24,8 +24,8 @@ namespace Application
             var credentialsEnvVar = googleSheetConf.Element("credentialsEnvVar")!.Attribute("val")!.Value;
             var credentialsFileName = googleSheetConf.Element("credentialsFileName")!.Attribute("val")!.Value;
             var secretTokenEnvVar = configElement
-                .Element("telegramApi")!
-                .Element("secretTokenEnvVar")!
+                        .Element("telegramApi")!
+                    .Element("secretTokenEnvVar")!
                 .Attribute("val")!.Value;
             var firebaseApiConf = configElement.Element("firebaseApi")!;
             var secretFirebaseTokenVar = firebaseApiConf.Element("secretTokenVar")!.Attribute("val")!.Value;
@@ -41,13 +41,13 @@ namespace Application
             var learningPlanPatternMsgList = new List<(string pattern, string msg)>();
 
             var requisitionSheetSettings = configElement
-                .Element("sheetSettings")!
+                    .Element("sheetSettings")!
                 .Elements("sheet").First(e => e.Attribute("name")!.Value == "Requisitions");
             FillHeaderConfiguration(requisitionSheetSettings, requisitionSheetHeaders,
                 requirementsSheetHeaderComments, requisitionPatternMsgList);
 
             var learningPlanSheetSettings = configElement
-                .Element("sheetSettings")!
+                    .Element("sheetSettings")!
                 .Elements("sheet").First(e => e.Attribute("name")!.Value == "LearningPlan");
             FillHeaderConfiguration(learningPlanSheetSettings, learningPlanSheetHeaders,
                 learningPlanSheetHeaderComments, learningPlanPatternMsgList);

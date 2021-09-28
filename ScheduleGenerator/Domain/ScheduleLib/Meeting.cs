@@ -30,7 +30,7 @@ namespace Domain.ScheduleLib
 
         public Meeting BasicCopy()
         {
-            return new Meeting(
+            return new(
                 Discipline,
                 MeetingType,
                 Teacher,
