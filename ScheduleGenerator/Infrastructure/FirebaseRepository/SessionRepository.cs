@@ -32,7 +32,7 @@ DialogState: {DialogState}";
     public enum DialogState
     {
         Initial,
-        WaitSpreadsheetChangeConfirmation,
+        WaitSpreadsheetChangeConfirmation
     }
 
     public interface IDbRepository
@@ -40,21 +40,21 @@ DialogState: {DialogState}";
         ScheduleSession Get(long telegramChatId);
         void Save(long telegramChatId, ScheduleSession session);
         void Delete(long telegramChatId);
-        
     }
 
     public class SessionRepository : IDbRepository
     {
         private const string SessionsKey = "scheduleSessions";
         private readonly FirebaseClient dbClient;
+
         public SessionRepository(string basePath, string authSecret)
         {
             dbClient = new FirebaseClient(
-              basePath,
-              new FirebaseOptions
-              {
-                  AuthTokenAsyncFactory = () => Task.FromResult(authSecret)
-              });
+                basePath,
+                new FirebaseOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(authSecret)
+                });
         }
 
         public ScheduleSession Get(long telegramChatId)
@@ -72,9 +72,9 @@ DialogState: {DialogState}";
         {
             Console.WriteLine("<Saving>");
             var savingTask = dbClient
-              .Child(SessionsKey)
-              .Child(telegramChatId.ToString())
-              .PutAsync(session);
+                .Child(SessionsKey)
+                .Child(telegramChatId.ToString())
+                .PutAsync(session);
             Console.WriteLine("Waiting Task ...");
             savingTask.Wait();
             Console.WriteLine("Saved on {0}/{1}", SessionsKey, telegramChatId);
@@ -83,17 +83,17 @@ DialogState: {DialogState}";
         public async void SaveAsync(long telegramChatId, ScheduleSession session)
         {
             await dbClient
-              .Child(SessionsKey)
-              .Child(telegramChatId.ToString())
-              .PutAsync(session);
+                .Child(SessionsKey)
+                .Child(telegramChatId.ToString())
+                .PutAsync(session);
         }
 
         public async void Delete(long telegramChatId)
         {
             await dbClient
-              .Child(SessionsKey)
-              .Child(telegramChatId.ToString())
-              .DeleteAsync();
+                .Child(SessionsKey)
+                .Child(telegramChatId.ToString())
+                .DeleteAsync();
         }
     }
 }

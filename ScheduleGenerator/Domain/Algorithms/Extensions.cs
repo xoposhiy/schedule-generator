@@ -9,17 +9,15 @@ namespace Domain.Algorithms
         public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
             foreach (var group in groups)
-            {
-                if (group.GroupPart == GroupPart.FullGroup)
+                if (@group.GroupPart == GroupPart.FullGroup)
                 {
-                    yield return group with{GroupPart = GroupPart.Part1};
-                    yield return group with{GroupPart = GroupPart.Part2};
+                    yield return @group with {GroupPart = GroupPart.Part1};
+                    yield return @group with {GroupPart = GroupPart.Part2};
                 }
                 else
                 {
-                    yield return group;
+                    yield return @group;
                 }
-            }
         }
     }
 
@@ -44,15 +42,12 @@ namespace Domain.Algorithms
             else
                 dict.Add(key1, new Dictionary<TKey2, TValue> {{key2, value}});
         }
-        
+
         public static void SafeAdd<TKey1, TValue>(
             this Dictionary<TKey1, SortedSet<TValue>> dict, TKey1 key1, TValue value)
             where TKey1 : notnull
         {
-            if (!dict.ContainsKey(key1))
-            {
-                dict[key1] = new SortedSet<TValue>();
-            }
+            if (!dict.ContainsKey(key1)) dict[key1] = new SortedSet<TValue>();
 
             dict[key1].Add(value);
         }
@@ -62,15 +57,9 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            if (!dict.ContainsKey(key1))
-            {
-                dict[key1] = new Dictionary<TKey2, SortedSet<TValue>>();
-            }
+            if (!dict.ContainsKey(key1)) dict[key1] = new Dictionary<TKey2, SortedSet<TValue>>();
 
-            if (!dict[key1].ContainsKey(key2))
-            {
-                dict[key1][key2] = new SortedSet<TValue>();
-            }
+            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = new SortedSet<TValue>();
 
             dict[key1][key2].Add(value);
         }
@@ -81,15 +70,9 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            if (!dict.ContainsKey(key1))
-            {
-                dict[key1] = new Dictionary<TKey2, int>();
-            }
+            if (!dict.ContainsKey(key1)) dict[key1] = new Dictionary<TKey2, int>();
 
-            if (!dict[key1].ContainsKey(key2))
-            {
-                dict[key1][key2] = 0;
-            }
+            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = 0;
 
             dict[key1][key2]++;
         }
@@ -100,15 +83,9 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            if (!dict.ContainsKey(key1))
-            {
-                throw new FormatException($"Dictionary does not contains key1: {key1}");
-            }
+            if (!dict.ContainsKey(key1)) throw new FormatException($"Dictionary does not contains key1: {key1}");
 
-            if (!dict[key1].ContainsKey(key2))
-            {
-                throw new FormatException($"Dictionary does not contains key2: {key2}");
-            }
+            if (!dict[key1].ContainsKey(key2)) throw new FormatException($"Dictionary does not contains key2: {key2}");
 
             if (dict[key1][key2] == 0)
                 return;

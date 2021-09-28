@@ -28,10 +28,7 @@ namespace Domain.Conversions
             var meetingSet = new HashSet<Meeting>();
             foreach (var meeting in schedule.GetMeetings())
             {
-                foreach (var group in meeting.Groups!)
-                {
-                    groupNamesSet.Add(group.GroupName);
-                }
+                foreach (var group in meeting.Groups!) groupNamesSet.Add(@group.GroupName);
                 meetingSet.Add(meeting);
             }
 
@@ -48,11 +45,12 @@ namespace Domain.Conversions
             PrepareSheet();
 
             BuildSchedulePattern(groupNames);
-            
+
             FillScheduleData(meetingSet, groupNames);
         }
 
-        private void PrepareSheet() {
+        private void PrepareSheet()
+        {
             repository.ModifySpreadSheet(sheetName)
                 .ClearAll()
                 .UnMergeAll()
@@ -67,38 +65,46 @@ namespace Domain.Conversions
 
         private void BuildTimeBar()
         {
-            var weekDays = new[] { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ" };
-            var classStarts = new[] { "I 9:00", "II 10:40", "III 12:50",
-                "IV 14:30", "V 16:40", "VI 17:50"};
+            var weekDays = new[] {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
+            var classStarts = new[]
+            {
+                "I 9:00", "II 10:40", "III 12:50",
+                "IV 14:30", "V 16:40", "VI 17:50"
+            };
             var weekDayCount = weekDays.Length;
             var startIndexesCount = classStarts.Length;
             var modifier = repository
-                    .ModifySpreadSheet(sheetName);
+                .ModifySpreadSheet(sheetName);
             var currentStart = TimeBarRowOffset;
             for (var i = 0; i < weekDayCount; i++)
             {
                 modifier
-                    .WriteRange((currentStart, TimeBarColumnOffset), new List<List<string>>() { new () { weekDays[i] } })
-                    .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset), new Color() { Blue = 1 })
+                    .WriteRange((currentStart, TimeBarColumnOffset), new List<List<string>>() {new() {weekDays[i]}})
+                    .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset),
+                        new Color() {Blue = 1})
                     .MergeCell((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset));
                 currentStart += 12;
             }
+
             currentStart = TimeBarRowOffset;
             for (var i = 0; i < weekDayCount * startIndexesCount; i++)
             {
                 modifier
-                    .WriteRange((currentStart, TimeBarColumnOffset + 1), new List<List<string>> { new() { classStarts[i % 6] } })
-                    .AddBorders((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1), new Color() { Blue = 1 })
+                    .WriteRange((currentStart, TimeBarColumnOffset + 1),
+                        new List<List<string>> {new() {classStarts[i % 6]}})
+                    .AddBorders((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1),
+                        new Color() {Blue = 1})
                     .MergeCell((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1));
                 currentStart += 2;
             }
+
             modifier.Execute();
         }
 
         private void BuildGroupHeaders(List<string> groups)
         {
             var modifier = repository
-                    .ModifySpreadSheet(sheetName);
+                .ModifySpreadSheet(sheetName);
             var currentStart = HeadersColumnOffset;
             for (var i = 0; i < groups.Count; i++)
             {
@@ -107,14 +113,15 @@ namespace Domain.Conversions
                     .AddBorders((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1),
                         new Color() {Blue = 1})
                     .MergeCell((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
-                    .WriteRange((HeadersRowOffset+1, currentStart),
+                    .WriteRange((HeadersRowOffset + 1, currentStart),
                         new List<List<string>> {new() {groups[i] + "-1", groups[i] + "-2"}})
-                    .AddBorders((HeadersRowOffset+1, currentStart), (HeadersRowOffset+1, currentStart),
+                    .AddBorders((HeadersRowOffset + 1, currentStart), (HeadersRowOffset + 1, currentStart),
                         new Color {Blue = 1})
-                    .AddBorders((HeadersRowOffset+1, currentStart + 1), (HeadersRowOffset+1, currentStart + 1),
+                    .AddBorders((HeadersRowOffset + 1, currentStart + 1), (HeadersRowOffset + 1, currentStart + 1),
                         new Color {Blue = 1});
                 currentStart += 2;
             }
+
             modifier.Execute();
         }
 
@@ -124,12 +131,9 @@ namespace Domain.Conversions
                 .Select((g, i) => (g, i))
                 .ToDictionary(gi => gi.g, gi => gi.i);
             var modifier = repository
-                    .ModifySpreadSheet(sheetName);
+                .ModifySpreadSheet(sheetName);
 
-            foreach (var meeting in meetings)
-            {
-                WriteMeeting(meeting, groupIndexDict, modifier);
-            }
+            foreach (var meeting in meetings) WriteMeeting(meeting, groupIndexDict, modifier);
             modifier.Execute();
         }
 
@@ -138,53 +142,41 @@ namespace Domain.Conversions
             var horizOffset = 2;
             var vertOffset = 2;
 
-            var weekDayToIntDict = new Dictionary<DayOfWeek, int>() {
-                { DayOfWeek.Monday, 0 },
-                { DayOfWeek.Tuesday, 1 },
-                { DayOfWeek.Wednesday, 2 },
-                { DayOfWeek.Thursday, 3 },
-                { DayOfWeek.Friday, 4 },
-                { DayOfWeek.Saturday, 5 },
+            var weekDayToIntDict = new Dictionary<DayOfWeek, int>()
+            {
+                {DayOfWeek.Monday, 0},
+                {DayOfWeek.Tuesday, 1},
+                {DayOfWeek.Wednesday, 2},
+                {DayOfWeek.Thursday, 3},
+                {DayOfWeek.Friday, 4},
+                {DayOfWeek.Saturday, 5}
                 // { DayOfWeek.Sunday, 6}
             };
-            
+
 
             foreach (var group in meeting.Groups!)
             {
                 // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
-                var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}, {meeting.MeetingType}, {group}, {(int)meeting.MeetingTime!.Day}, {meeting.MeetingTime.TimeSlotIndex}";
+                var data =
+                    $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}, {meeting.MeetingType}, {group}, {(int) meeting.MeetingTime!.Day}, {meeting.MeetingTime.TimeSlotIndex}";
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
                 var rowsInMeeting = 1;
-                if (meeting.WeekType == WeekType.Even)
-                {
-                    rowNum++;
-                }
-                if (meeting.WeekType == WeekType.All)
-                {
-                    rowsInMeeting = 2;
-                }
+                if (meeting.WeekType == WeekType.Even) rowNum++;
+                if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
 
                 var colNum = groupIndexDict[group.GroupName] * 2 + horizOffset;
                 var columnsInMeeting = 1;
-                if (group.GroupPart == GroupPart.Part2)
-                {
-                    colNum++;
-                }
-                if (group.GroupPart == GroupPart.FullGroup)
-                {
-                    columnsInMeeting = 2;
-                }
+                if (group.GroupPart == GroupPart.Part2) colNum++;
+                if (group.GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
                 modifier
-                    .WriteRange((rowNum, colNum), new List<List<string>>() { new () { data } })
-                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1), new Color() { Green = 1 });
+                    .WriteRange((rowNum, colNum), new List<List<string>>() {new() {data}})
+                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1),
+                        new Color() {Green = 1});
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
-                {
                     modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
-                }
             }
-
         }
     }
 }

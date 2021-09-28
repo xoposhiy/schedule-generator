@@ -17,18 +17,15 @@ namespace Domain.Estimators
             //TODO придумать как учитывать пары, которые идут не весь семестр. Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0;
             foreach (var day in schedule.GroupsMeetingsTimesByDay.Keys)
+            foreach (var group in schedule.GroupsMeetingsTimesByDay[day].Keys)
             {
-                foreach (var group in schedule.GroupsMeetingsTimesByDay[day].Keys)
-                {
-                    //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
-                    var previousTimeslot = schedule.GroupsMeetingsTimesByDay[day][group].FirstOrDefault();
-                    foreach (var timeslot in schedule.GroupsMeetingsTimesByDay[day][group].Skip(1))
-                    {
-                        penalty += timeslot - previousTimeslot - 1;
-                        // previousTimeslot = timeslot;
-                    }
-                }
+                //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
+                var previousTimeslot = schedule.GroupsMeetingsTimesByDay[day][@group].FirstOrDefault();
+                foreach (var timeslot in schedule.GroupsMeetingsTimesByDay[day][@group].Skip(1))
+                    penalty += timeslot - previousTimeslot - 1;
+                // previousTimeslot = timeslot;
             }
+
             return -penalty;
         }
     }

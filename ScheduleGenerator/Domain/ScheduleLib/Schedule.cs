@@ -106,28 +106,26 @@ namespace Domain.ScheduleLib
                     .ToHashSet();
 
                 foreach (var groupsChoice in possibleGroupsChoices)
+                foreach (var meetingTimeChoice in possibleTimeChoices)
                 {
-                    foreach (var meetingTimeChoice in possibleTimeChoices)
+                    var meetingCopy = TryCreateFilledMeeting(meeting, groupsChoice, meetingTimeChoice);
+                    if (meetingCopy == null) continue;
+                    if (meetingCopy.RequiredAdjacentMeeting != null)
                     {
-                        var meetingCopy = TryCreateFilledMeeting(meeting, groupsChoice, meetingTimeChoice);
-                        if (meetingCopy == null) continue;
-                        if (meetingCopy.RequiredAdjacentMeeting != null)
-                        {
-                            if (meetingTimeChoice.TimeSlotIndex < 2)
-                                continue;
-                            var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                                meetingTimeChoice.TimeSlotIndex - 1);
-                            var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
-                                groupsChoice,
-                                linkedMeetingTimeChoice);
+                        if (meetingTimeChoice.TimeSlotIndex < 2)
+                            continue;
+                        var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
+                            meetingTimeChoice.TimeSlotIndex - 1);
+                        var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
+                            groupsChoice,
+                            linkedMeetingTimeChoice);
 
-                            if (linkedMeeting == null) continue;
-                            meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
-                            linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
-                        }
-
-                        yield return meetingCopy;
+                        if (linkedMeeting == null) continue;
+                        meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
+                        linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
                     }
+
+                    yield return meetingCopy;
                 }
             }
         }
@@ -156,12 +154,8 @@ namespace Domain.ScheduleLib
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
                 if (!meeting.RequisitionItem.IsOnline)
-                {
                     foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
-                    {
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
-                    }
-                }
 
                 var requisitionItem = meeting.RequisitionItem;
                 var groupsChoicesCount = requisitionItem.GroupPriorities
@@ -177,12 +171,8 @@ namespace Domain.ScheduleLib
         private void FillClassroomsBySpec(Dictionary<string, List<RoomSpec>> classroomsWithSpecs)
         {
             foreach (var key in classroomsWithSpecs.Keys)
-            {
-                foreach (var spec in classroomsWithSpecs[key])
-                {
-                    RoomsBySpec.SafeAdd(spec, key);
-                }
-            }
+            foreach (var spec in classroomsWithSpecs[key])
+                RoomsBySpec.SafeAdd(spec, key);
         }
 
         private void FillRoomPool(IReadOnlyCollection<string> rooms)
@@ -234,10 +224,8 @@ namespace Domain.ScheduleLib
             var teacher = meetingToAdd.Teacher;
             if (TeacherMeetingsByTime.ContainsKey(teacher) &&
                 TeacherMeetingsByTime[teacher].ContainsKey(meetingTime))
-            {
                 // Console.WriteLine($"Коллизия у препода {teacher} во время {meetingTimeChoice}, встреча {m}");
                 return true;
-            }
 
             return false;
         }

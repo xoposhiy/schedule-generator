@@ -8,11 +8,11 @@ namespace Testing
 {
     public class MeetingCreator
     {
-        public static LearningPlanItem StandardLearningPlanItem = new LearningPlanItem(
+        public static LearningPlanItem StandardLearningPlanItem = new(
             "FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2,
             Array.Empty<RoomSpec>(), null, null);
 
-        public static Requisition StandardRequisition = new Requisition(new[]
+        public static Requisition StandardRequisition = new(new[]
         {
             new RequisitionItem(
                 StandardLearningPlanItem,

@@ -11,7 +11,7 @@ namespace Domain.ScheduleLib
         public readonly LearningPlanItem PlanItem;
         public readonly GroupRequisition[] GroupPriorities;
         public readonly bool IsOnline;
-        
+
         public readonly int RepetitionsCount;
 
         public readonly MeetingTimeRequisition[] MeetingTimePriorities;
@@ -19,17 +19,19 @@ namespace Domain.ScheduleLib
         public readonly WeekType WeekType;
 
         public RequisitionItem(LearningPlanItem planItem, string groupPriorities,
-            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All, bool isOnline = false)
+            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All,
+            bool isOnline = false)
             : this(planItem,
-                SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(), 
+                SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(),
                 repetitionsCount,
                 SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities).ToArray(),
                 teacher, weekType, isOnline)
         {
         }
-        
+
         public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
-            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All, bool isOnline = false)
+            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All,
+            bool isOnline = false)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
@@ -39,12 +41,11 @@ namespace Domain.ScheduleLib
             WeekType = weekType;
             IsOnline = isOnline;
         }
-        
-        
-        
+
+
         public override string ToString()
         {
-            return $"{string.Join(" ", GroupPriorities.ToList())}, {Teacher}";//, {}, {}, {}";
+            return $"{string.Join(" ", GroupPriorities.ToList())}, {Teacher}"; //, {}, {}, {}";
         }
 
         public RequisitionItem Copy()
@@ -58,7 +59,7 @@ namespace Domain.ScheduleLib
     {
         public override string ToString()
         {
-            return String.Join("; ", GroupsChoices.ToList());
+            return string.Join("; ", GroupsChoices.ToList());
         }
     }
 
@@ -66,11 +67,14 @@ namespace Domain.ScheduleLib
 
     public sealed record GroupsChoice(MeetingGroup[] Groups)
     {
-        public IEnumerable<MeetingGroup> GetGroupParts() => Groups.GetGroupParts();
+        public IEnumerable<MeetingGroup> GetGroupParts()
+        {
+            return Groups.GetGroupParts();
+        }
 
         public override string ToString()
         {
-            return String.Join(" ", Groups.ToList());
+            return string.Join(" ", Groups.ToList());
         }
     }
 }

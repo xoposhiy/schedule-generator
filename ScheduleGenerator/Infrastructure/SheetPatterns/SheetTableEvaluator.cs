@@ -6,6 +6,7 @@ namespace Infrastructure.SheetPatterns
     public class SheetTableEvaluator
     {
         private List<(Regex regex, string msg)> regexMsgList;
+
         public SheetTableEvaluator(List<(string, string)> patternMsgDict)
         {
             regexMsgList = SetUpRegexes(patternMsgDict);
@@ -31,18 +32,12 @@ namespace Infrastructure.SheetPatterns
                 var currentRow = tableData[r];
                 var rowCount = currentRow.Count;
                 for (var c = 0; c < rowCount; c++)
-                {
-
                     if (c < regexMsgList.Count)
                     {
                         var column = c + start.colIndex;
                         var cellData = currentRow[column];
-                        if (!regexMsgList[c].regex.IsMatch(cellData))
-                        {
-                            issues.Add(((r, column), regexMsgList[c].msg));
-                        }
+                        if (!regexMsgList[c].regex.IsMatch(cellData)) issues.Add(((r, column), regexMsgList[c].msg));
                     }
-                }
             }
 
             return issues;

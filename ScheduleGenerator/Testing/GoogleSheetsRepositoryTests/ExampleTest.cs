@@ -11,7 +11,6 @@ namespace Testing.GoogleSheetsRepositoryTests
         [SetUp]
         public void Setup()
         {
-
         }
 
         [Test]
@@ -28,22 +27,18 @@ namespace Testing.GoogleSheetsRepositoryTests
 
             var dataToWrite = new List<List<string>>()
             {
-                new List<string>() { "11", "12" },
-                new List<string>() { "21", "22"},
-                new List<string>() { "31", "32"},
+                new() {"11", "12"},
+                new() {"21", "22"},
+                new() {"31", "32"}
             };
             repo.ModifySpreadSheet(repo.CurrentSheetInfo.Sheets.Keys.First())
                 .WriteRange((1, 2), dataToWrite)
                 .Execute();
 
             var valRange = repo.ReadCellRange(repo.CurrentSheetInfo.Sheets.Keys.First(), (1, 2), (3, 4))!;
-            for (int r = 0; r < valRange.Count; r++)
-            {
-                for (int c = 0; c < valRange[r]!.Count; c++)
-                {
-                    Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
-                }
-            }
+            for (var r = 0; r < valRange.Count; r++)
+            for (var c = 0; c < valRange[r]!.Count; c++)
+                Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
         }
 
         [Test]
@@ -58,22 +53,18 @@ namespace Testing.GoogleSheetsRepositoryTests
 
             var dataToWrite = new List<List<string>>()
             {
-                new List<string>() { "11", "12" },
-                new List<string>() { "21", "22"},
-                new List<string>() { "31", "32"},
+                new() {"11", "12"},
+                new() {"21", "22"},
+                new() {"31", "32"}
             };
             repo1.ModifySpreadSheet(repo1.CurrentSheetInfo!.Sheets.Keys.First())
                 .WriteRange((1, 2), dataToWrite)
                 .Execute();
 
             var valRange = repo2.ReadCellRange(repo2.CurrentSheetInfo!.Sheets.Keys.First(), (1, 2), (3, 4))!;
-            for (int r = 0; r < valRange.Count; r++)
-            {
-                for (int c = 0; c < valRange[r]!.Count; c++)
-                {
-                    Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
-                }
-            }
+            for (var r = 0; r < valRange.Count; r++)
+            for (var c = 0; c < valRange[r]!.Count; c++)
+                Assert.AreEqual(dataToWrite[r][c], valRange[r]![c]);
         }
     }
 }

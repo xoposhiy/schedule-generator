@@ -5,7 +5,7 @@
         public double Penalty;
         public Meeting[] BadMeetings;
         public string PenaltyDescription;
-        
+
         public EvaluationResult(double penalty, Meeting[] badMeetings, string penalityDescription)
         {
             Penalty = penalty;

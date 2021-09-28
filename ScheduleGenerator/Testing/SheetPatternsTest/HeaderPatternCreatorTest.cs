@@ -6,11 +6,14 @@ using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
-    class HeaderPatternCreatorTest
+    internal class HeaderPatternCreatorTest
     {
         private static string CredentialsEnvVar = "GoogleApiCredentials";
         private static readonly string ApplicationName = "MyApp";
-        private static string url = "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+
+        private static string url =
+            "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+
         private static string sheetName = "headerPractice";
 
         [Test]
@@ -20,8 +23,9 @@ namespace Testing.SheetPatternsTest
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var repo = new GsRepository(ApplicationName, credentialPath, url);
 
-            var headers = new List<string>() {
-                "Преподавател", "Предмет",  "Тип занятия", "Количество повторений каждого занятия",
+            var headers = new List<string>()
+            {
+                "Преподавател", "Предмет", "Тип занятия", "Количество повторений каждого занятия",
                 "Приоритеты групп, в которых назначать занятия", "Время", "Четность"
             };
 
@@ -53,10 +57,7 @@ namespace Testing.SheetPatternsTest
             var actualHeaders = repo.ReadCellRange(sheetName, (5, 1), (5, 8))![0]!;
 
             Assert.AreEqual(headers.Count, actualHeaders.Count);
-            for (int i = 0; i < headers.Count; i++)
-            {
-                Assert.AreEqual(headers[i], actualHeaders[i]);
-            }
+            for (var i = 0; i < headers.Count; i++) Assert.AreEqual(headers[i], actualHeaders[i]);
         }
     }
 }

@@ -30,17 +30,16 @@ namespace Domain.ScheduleLib
 
         public Meeting BasicCopy()
         {
-            return new Meeting(
+            return new(
                 Discipline,
-                MeetingType, 
+                MeetingType,
                 Teacher,
                 WeekType,
                 RequisitionItem)
             {
                 BaseMeeting = this,
-                RequiredAdjacentMeeting = this.RequiredAdjacentMeeting
+                RequiredAdjacentMeeting = RequiredAdjacentMeeting
             };
-            
         }
 
         public override string ToString()
@@ -49,7 +48,7 @@ namespace Domain.ScheduleLib
             return $"{Discipline}, [{groupsString}], {MeetingTime}, {WeekType}," +
                    $" Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
-        
+
         public bool GroupsEquals(MeetingGroup[] meetingGroups)
         {
             var f = Groups!.ToHashSet();
@@ -57,7 +56,7 @@ namespace Domain.ScheduleLib
             return f.SetEquals(g);
         }
     }
-    
+
     public record MeetingGroup(string GroupName, GroupPart GroupPart)
     {
         public override string ToString()
@@ -73,16 +72,16 @@ namespace Domain.ScheduleLib
             return $"{parts[0]}-{parts[1][0]}";
         }
     }
-    
+
 
     public enum MeetingType
     {
         Lecture,
         ComputerLab,
-        Seminar,
+        Seminar
     }
-    
-    
+
+
     public record Discipline(string Name)
     {
         public override string ToString()
@@ -119,6 +118,6 @@ namespace Domain.ScheduleLib
     {
         FullGroup,
         Part1,
-        Part2,
+        Part2
     }
 }

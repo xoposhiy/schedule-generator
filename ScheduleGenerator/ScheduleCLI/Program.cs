@@ -10,9 +10,9 @@ using Ninject.Extensions.Conventions;
 
 namespace ScheduleCLI
 {
-    static class Program
+    internal static class Program
     {
-        static void Main()
+        private static void Main()
         {
             var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
 
@@ -40,7 +40,7 @@ namespace ScheduleCLI
             //var evaluator = container.Get<MeetingEvaluator>();
 
             var requisition = new Requisition(requisitions.ToArray());
-            
+
             // TODO все Estimtors: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
 
             var basic = (new FreedomDegreeEstimator(), 100);

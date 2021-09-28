@@ -17,9 +17,10 @@ namespace Infrastructure.GoogleSheetsRepository
         public string ApplicationName { get; private set; }
         public string? CurrentSheetId { get; private set; }
         public SheetInfo? CurrentSheetInfo { get; private set; }
+
         public GsRepository(string applicationName, string pathToCredentials, string tableUrl)
         {
-            Scopes = new[] { SheetsService.Scope.Spreadsheets };
+            Scopes = new[] {SheetsService.Scope.Spreadsheets};
             ApplicationName = applicationName;
             Credentials = LoadCredential(pathToCredentials);
             Service = CreateDefaultService();
@@ -78,7 +79,8 @@ namespace Infrastructure.GoogleSheetsRepository
             return ReadOneCellAsObject(sheetName, cellCoords)?.ToString() ?? "";
         }
 
-        public List<List<string?>?>? ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public List<List<string?>?>? ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart,
+            ValueTuple<int, int> rangeEnd)
         {
             var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
@@ -117,7 +119,7 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public static string ConvertIndexToTableColumnFormat(int index)
         {
-            int dividend = index;
+            var dividend = index;
             var columnName = string.Empty;
             int modulo;
 
@@ -134,11 +136,8 @@ namespace Infrastructure.GoogleSheetsRepository
         public SheetModifier ModifySpreadSheet(string sheetName)
         {
             var sheetId = CurrentSheetInfo!.Sheets[sheetName];
-            if (sheetId is null)
-            {
-                throw new ArgumentException($"No sheets with name {sheetName}");
-            }
-            return new SheetModifier(Service, CurrentSheetId!, (int)sheetId);
+            if (sheetId is null) throw new ArgumentException($"No sheets with name {sheetName}");
+            return new SheetModifier(Service, CurrentSheetId!, (int) sheetId);
         }
 
         public void ClearCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
@@ -188,14 +187,13 @@ namespace Infrastructure.GoogleSheetsRepository
 
     public class SheetModifier
     {
-
         private readonly List<Request> requests;
         private readonly SheetsService service;
         private readonly int sheetId;
         private readonly string spreadSheetId;
+
         public SheetModifier(SheetsService service, string spreadSheetId, int sheetId)
         {
-
             this.service = service;
             this.spreadSheetId = spreadSheetId;
             this.sheetId = sheetId;
@@ -210,7 +208,6 @@ namespace Infrastructure.GoogleSheetsRepository
             {
                 var cells = new List<CellData>();
                 foreach (var value in row)
-                {
                     cells.Add(new CellData
                     {
                         UserEnteredValue = new ExtendedValue
@@ -218,7 +215,6 @@ namespace Infrastructure.GoogleSheetsRepository
                             StringValue = value
                         }
                     });
-                }
                 rows.Add(
                     new RowData
                     {
@@ -226,6 +222,7 @@ namespace Infrastructure.GoogleSheetsRepository
                     }
                 );
             }
+
             requests.Add(new Request()
             {
                 UpdateCells = new UpdateCellsRequest
@@ -312,25 +309,23 @@ namespace Infrastructure.GoogleSheetsRepository
             bottom++;
             right++;
             var rows = new List<RowData>();
-            for (int r = top; r < bottom; r++)
+            for (var r = top; r < bottom; r++)
             {
                 var cells = new List<CellData>();
-                for (int c = left; c < right; c++)
-                {
+                for (var c = left; c < right; c++)
                     cells.Add(new CellData
                     {
                         UserEnteredFormat = new CellFormat
                         {
                             BackgroundColor = color
                         }
-
                     });
-                }
                 rows.Add(new RowData
                 {
                     Values = cells
                 });
             }
+
             requests.Add(new Request()
             {
                 UpdateCells = new UpdateCellsRequest
@@ -366,10 +361,14 @@ namespace Infrastructure.GoogleSheetsRepository
                         EndRowIndex = top + 1,
                         EndColumnIndex = leftIndex + 1
                     },
-                    Rows = new List<RowData>() {
-                        new RowData {
-                            Values = new List<CellData>{
-                                new CellData{
+                    Rows = new List<RowData>()
+                    {
+                        new RowData
+                        {
+                            Values = new List<CellData>
+                            {
+                                new CellData
+                                {
                                     Note = comment
                                 }
                             }
@@ -509,6 +508,7 @@ namespace Infrastructure.GoogleSheetsRepository
         public readonly string Url;
         public readonly Dictionary<string, int?> Sheets;
         public readonly Spreadsheet Spreadsheet;
+
         public SheetInfo(Spreadsheet spreadsheet)
         {
             Spreadsheet = spreadsheet;

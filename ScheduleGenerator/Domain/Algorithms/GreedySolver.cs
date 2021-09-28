@@ -12,10 +12,12 @@ namespace Domain.Algorithms
         private readonly IEstimator estimator;
         private readonly Requisition requisition;
         private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
+
         // ReSharper disable once NotAccessedField.Local
         private readonly Random random;
 
-        public GreedySolver(IEstimator estimator, Requisition requisition, Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random)
+        public GreedySolver(IEstimator estimator, Requisition requisition,
+            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random)
         {
             this.estimator = estimator;
             this.requisition = requisition;
@@ -45,6 +47,7 @@ namespace Domain.Algorithms
                     var bestMeeting = meetingsToAdd.First();
                     currentSchedule.AddMeeting(bestMeeting.Item1);
                 }
+
                 Console.WriteLine();
                 Console.WriteLine(sw.Elapsed);
                 Console.WriteLine();

@@ -12,7 +12,6 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestDeterminateRemove()
         {
-            
             var schedule = new Schedule(ObjectMother.CalculusRequisition, ObjectMother.ClassRooms);
             var addedMeetings = new List<Meeting>();
 
@@ -23,6 +22,7 @@ namespace Testing.ScheduleLibTests
                 schedule.AddMeeting(meeting);
                 addedMeetings.Add(meeting);
             }
+
             schedule.RemoveMeeting(addedMeetings[1]);
             var missingMeeting = schedule.GetMeetingsToAdd().First();
             Assert.AreEqual(addedMeetings[1].ToString(), missingMeeting.ToString());

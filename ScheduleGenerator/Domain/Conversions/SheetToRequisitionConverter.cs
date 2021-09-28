@@ -12,7 +12,7 @@ namespace Domain.Conversions
     public static class SheetToRequisitionConverter
     {
         private const int MaxIndex = 5;
-        
+
         private static MeetingType GetMeetingType(string rowMeetingType)
         {
             return rowMeetingType switch
@@ -33,13 +33,14 @@ namespace Domain.Conversions
             };
         }
 
-        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new() {
-            { "пн", DayOfWeek.Monday },
-            { "вт", DayOfWeek.Tuesday },
-            { "ср", DayOfWeek.Wednesday },
-            { "чт", DayOfWeek.Thursday },
-            { "пт", DayOfWeek.Friday },
-            { "сб", DayOfWeek.Saturday },
+        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
+        {
+            {"пн", DayOfWeek.Monday},
+            {"вт", DayOfWeek.Tuesday},
+            {"ср", DayOfWeek.Wednesday},
+            {"чт", DayOfWeek.Thursday},
+            {"пт", DayOfWeek.Friday},
+            {"сб", DayOfWeek.Saturday}
         };
 
         private static DayOfWeek GetDayOfWeek(string rowDayOfWeek)
@@ -65,7 +66,7 @@ namespace Domain.Conversions
                 _ => throw new FormatException($"Некорректная часть группы: {rowGroupPart}")
             };
         }
-        
+
         private static WeekType GetWeekType(string rowWeekType)
         {
             return rowWeekType switch
@@ -76,7 +77,7 @@ namespace Domain.Conversions
                 _ => throw new FormatException($"Некорректная четность недели: {rowWeekType}")
             };
         }
-        
+
         private static RoomSpec GetRoomSpec(string rowRoomSpec)
         {
             return rowRoomSpec switch
@@ -89,11 +90,12 @@ namespace Domain.Conversions
             };
         }
 
-        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(GsRepository repo,
+        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(
+            GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
             var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 8);
-            var learningPlanItems= ParseLearningPlanItems(planData).ToArray();
+            var learningPlanItems = ParseLearningPlanItems(planData).ToArray();
             var learningPlan = new LearningPlan(learningPlanItems);
             var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
             var requisitions = ParseRequisitions(requisitionData, learningPlan);
@@ -151,17 +153,18 @@ namespace Domain.Conversions
             MeetingType? connectAfter = string.IsNullOrWhiteSpace(row[6]) ? null : GetMeetingType(row[6]);
             MeetingType? sameTeacherWith = string.IsNullOrWhiteSpace(row[7]) ? null : GetMeetingType(row[7]);
             var discipline = new Discipline(disciplineRow);
-            
+
             var meetingType = GetMeetingType(meetingTypeRow);
             var groupSize = GetGroupSize(groupSizeRow);
             var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
-            return new LearningPlanItem(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek, locationRow, connectAfter,
-                    sameTeacherWith);
+            return new LearningPlanItem(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek, locationRow,
+                connectAfter,
+                sameTeacherWith);
         }
 
         private static RoomSpec[] ParseLocationSpec(string rowLocationSpec)
         {
-            return string.IsNullOrWhiteSpace(rowLocationSpec) 
+            return string.IsNullOrWhiteSpace(rowLocationSpec)
                 ? Array.Empty<RoomSpec>()
                 : rowLocationSpec.Split(',')
                     .Select(mgs => mgs.Trim())
@@ -191,10 +194,7 @@ namespace Domain.Conversions
             var requisitions = new List<RequisitionItem>();
             foreach (var requisitionRow in sheetData)
             {
-                if (requisitionRow.Count == 0 || requisitionRow.Take(8).All(string.IsNullOrEmpty))
-                {
-                    continue;
-                }
+                if (requisitionRow.Count == 0 || requisitionRow.Take(8).All(string.IsNullOrEmpty)) continue;
 
                 try
                 {
@@ -227,17 +227,19 @@ namespace Domain.Conversions
                     var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount,
                         meetingTimeRequisitionArray, teacher, weekType, isOnline);
                     requisitions.Add(requisition);
-
                 }
                 catch (Exception e)
                 {
-                    throw new FormatException($"Некорректная строка требований: {string.Join(", ", requisitionRow)}", e);
+                    throw new FormatException($"Некорректная строка требований: {string.Join(", ", requisitionRow)}",
+                        e);
                 }
             }
-            return requisitions; 
+
+            return requisitions;
         }
 
-        private static LearningPlanItem GetPlanItem(LearningPlan learningPlan, string disciplineName, MeetingType meetingType,
+        private static LearningPlanItem GetPlanItem(LearningPlan learningPlan, string disciplineName,
+            MeetingType meetingType,
             string groupSet)
         {
             var planItems = learningPlan.Items
@@ -354,24 +356,21 @@ namespace Domain.Conversions
             {
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in WeekDaysDict.Values)
-                {
                     for (var index = 1; index < MaxIndex + 1; index++)
-                    {
                         meetingTimes.Add(new MeetingTime(day, index));
-                    }
-                }
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
                 return meetingTimeRequisitions;
             }
 
-            var weekDaysList = new List<DayOfWeek> {
+            var weekDaysList = new List<DayOfWeek>
+            {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
                 DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
             };
-            var pattern = @"(?:(?:((?:пн|вт|ср|чт|пт|сб)\s?-\s?(?:пн|вт|ср|чт|пт|сб))|(пн|вт|ср|чт|пт|сб)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
+            var pattern =
+                @"(?:(?:((?:пн|вт|ср|чт|пт|сб)\s?-\s?(?:пн|вт|ср|чт|пт|сб))|(пн|вт|ср|чт|пт|сб)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
             var compiledPattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
 
 
             var records = rawMeetingTime.Split('\n');
@@ -392,15 +391,10 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = weekDaysStrList.IndexOf(rangeParts[0]);
                     var posEnd = weekDaysStrList.IndexOf(rangeParts[1]);
-                    for (var i = posStart; i < posEnd + 1; i++)
-                    {
-                        currWeekDays.Add(weekDaysList[i]);
-                    }
+                    for (var i = posStart; i < posEnd + 1; i++) currWeekDays.Add(weekDaysList[i]);
                 }
-                foreach (Capture dayStr in days)
-                {
-                    currWeekDays.Add(GetDayOfWeek(dayStr.Value));
-                }
+
+                foreach (Capture dayStr in days) currWeekDays.Add(GetDayOfWeek(dayStr.Value));
 
                 var currIndexes = new List<int>();
                 foreach (Capture part in indexRanges)
@@ -408,10 +402,7 @@ namespace Domain.Conversions
                     var rangeParts = part.Value.Split('-');
                     var posStart = int.Parse(rangeParts[0]);
                     var posEnd = int.Parse(rangeParts[1]);
-                    for (var i = posStart; i < posEnd + 1; i++)
-                    {
-                        currIndexes.Add(i);
-                    }
+                    for (var i = posStart; i < posEnd + 1; i++) currIndexes.Add(i);
                 }
 
                 foreach (Capture indexStr in indexes)
@@ -420,24 +411,14 @@ namespace Domain.Conversions
                     currIndexes.Add(index);
                 }
 
-                if (currWeekDays.Count == 0)
-                {
-                    currWeekDays = WeekDaysDict.Values.ToList();
-                }
+                if (currWeekDays.Count == 0) currWeekDays = WeekDaysDict.Values.ToList();
 
-                if (currIndexes.Count == 0)
-                {
-                    currIndexes.AddRange(new[] { 1, 2, 3, 4, 5,6 });
-                }
+                if (currIndexes.Count == 0) currIndexes.AddRange(new[] {1, 2, 3, 4, 5, 6});
 
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in currWeekDays)
-                {
-                    foreach (var index in currIndexes)
-                    {
-                        meetingTimes.Add(new MeetingTime(day, index));
-                    }
-                }
+                foreach (var index in currIndexes)
+                    meetingTimes.Add(new MeetingTime(day, index));
 
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);

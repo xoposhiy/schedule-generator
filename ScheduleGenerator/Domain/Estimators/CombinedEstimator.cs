@@ -5,7 +5,7 @@ using Domain.ScheduleLib;
 namespace Domain.Estimators
 {
     public class CombinedEstimator : IEstimator
-    
+
     {
         private readonly (IEstimator, int)[] childEstimators;
 
@@ -13,7 +13,7 @@ namespace Domain.Estimators
         {
             this.childEstimators = childEstimators;
         }
-        
+
 
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {

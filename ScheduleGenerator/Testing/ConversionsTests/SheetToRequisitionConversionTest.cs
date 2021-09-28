@@ -5,24 +5,26 @@ using NUnit.Framework;
 
 namespace Testing.ConversionsTests
 {
-    class SheetToRequisitionConversionTest
+    internal class SheetToRequisitionConversionTest
     {
         private static string CredentialsEnvVar = "GoogleApiCredentials";
         private static readonly string ApplicationName = "MyApp";
 
         [Test]
-        public void Test1() {
+        public void Test1()
+        {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
             var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var url = "https://docs.google.com/spreadsheets/d/1-CFNA5rFSKmrs5jdJm5xg2b1cQDbCJ8LA1FRrdBBRyg/edit#gid=1607674973";
+            var url =
+                "https://docs.google.com/spreadsheets/d/1-CFNA5rFSKmrs5jdJm5xg2b1cQDbCJ8LA1FRrdBBRyg/edit#gid=1607674973";
             var repo = new GsRepository(ApplicationName, credentialPath, url);
 
             var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, 
-                "Requisition", 
-                "Plan", 
+                repo,
+                "Requisition",
+                "Plan",
                 "");
-            
+
             //TODO update expected counts
             Assert.AreEqual(10, requisitions.Item1.Count);
             Assert.AreEqual(10, requisitions.Item2.Items.Length);

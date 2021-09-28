@@ -23,7 +23,7 @@ namespace Testing.ScheduleLibTests
             Console.Error.WriteLine(meeting);
 
             Assert.That(meeting.Location, Is.EqualTo("632"));
-            Assert.That(meeting.Groups, Is.EqualTo(new[] { Group1, Group2 }));
+            Assert.That(meeting.Groups, Is.EqualTo(new[] {Group1, Group2}));
             Assert.That(meeting.MeetingTime, Is.EqualTo(new MeetingTime(DayOfWeek.Tuesday, 3)));
         }
     }

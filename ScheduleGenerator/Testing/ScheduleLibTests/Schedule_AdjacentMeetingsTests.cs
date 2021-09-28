@@ -74,7 +74,7 @@ namespace Testing.ScheduleLibTests
             var actualMeetings = schedule.Meetings.ToList();
             AssertAdjacentTimeSlots(actualMeetings[0], actualMeetings[1]);
         }
-        
+
         [Test]
         public void RemoveMeeting_RemovesBothAdjacentMeetings()
         {

@@ -7,11 +7,14 @@ using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
-    class SheetTableErrorPainterTest
+    internal class SheetTableErrorPainterTest
     {
         private static string CredentialsEnvVar = "GoogleApiCredentials";
         private static readonly string ApplicationName = "MyApp";
-        private static string url = "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+
+        private static string url =
+            "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+
         private static string sheetName = "SheetTablePainterPractice";
 
         [Test]
@@ -22,7 +25,8 @@ namespace Testing.SheetPatternsTest
             var repo = new GsRepository(ApplicationName, credentialPath, url);
 
 
-            var errors = new List<((int, int), string)>() {
+            var errors = new List<((int, int), string)>()
+            {
                 ((0, 0), "error msg1"), ((1, 1), "error msg2"), ((4, 2), "error msg3")
             };
 
@@ -37,7 +41,8 @@ namespace Testing.SheetPatternsTest
             var credentialPath = credentialDirPath + "\\client_secrets.json";
             var repo = new GsRepository(ApplicationName, credentialPath, url);
 
-            var errors = new List<((int, int), string)>() {
+            var errors = new List<((int, int), string)>()
+            {
                 ((0, 0), "error msg1"), ((1, 1), "error msg2"), ((4, 2), "error msg3")
             };
             SheetTableErrorPainter.PaintErrors(repo, sheetName, (5, 0), errors);
