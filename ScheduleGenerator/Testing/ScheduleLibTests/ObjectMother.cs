@@ -7,9 +7,9 @@ namespace Testing.ScheduleLibTests
     {
         public static readonly Dictionary<string, List<RoomSpec>> ClassRooms = new()
         {
-            ["632"] = new List<RoomSpec> {RoomSpec.Big, RoomSpec.Projector},
-            ["605"] = new List<RoomSpec> {RoomSpec.ForGroup},
-            ["514"] = new List<RoomSpec> {RoomSpec.Computer, RoomSpec.ForGroup}
+            ["632"] = new() {RoomSpec.Big, RoomSpec.Projector},
+            ["605"] = new() {RoomSpec.ForGroup},
+            ["514"] = new() {RoomSpec.Computer, RoomSpec.ForGroup}
         };
 
 

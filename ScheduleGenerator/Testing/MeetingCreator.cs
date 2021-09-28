@@ -9,7 +9,7 @@ namespace Testing
     public class MeetingCreator
     {
         public static LearningPlanItem StandardLearningPlanItem = new(
-            "FT-202", new Discipline("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2,
+            "FT-202", new("OOP"), MeetingType.Lecture, GroupSize.HalfGroup, 2,
             Array.Empty<RoomSpec>(), null, null);
 
         public static Requisition StandardRequisition = new(new[]
@@ -22,7 +22,7 @@ namespace Testing
                 },
                 2,
                 new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2)})},
-                new Teacher("Eg"))
+                new("Eg"))
         });
 
         // Math 623 Fil 0 3 0 0 FT-202#0 FT-201#0 KN-201#2
@@ -40,14 +40,14 @@ namespace Testing
             foreach (var e in parts.Skip(7))
             {
                 var namePart = e.Split('#');
-                groups.Add(new MeetingGroup(namePart[0], (GroupPart) int.Parse(namePart[1])));
+                groups.Add(new(namePart[0], (GroupPart) int.Parse(namePart[1])));
             }
 
-            var meeting = new Meeting(new Discipline(discipline), meetingType, teacher, weekType,
+            var meeting = new Meeting(new(discipline), meetingType, teacher, weekType,
                 StandardRequisition.Items[0], groups.ToArray());
             meeting.Location = location;
             meeting.Teacher = teacher;
-            meeting.MeetingTime = new MeetingTime(dayOfWeek, slotIndex);
+            meeting.MeetingTime = new(dayOfWeek, slotIndex);
             meeting.WeekType = weekType;
             return meeting;
         }

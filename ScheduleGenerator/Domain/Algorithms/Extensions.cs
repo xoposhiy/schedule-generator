@@ -29,7 +29,7 @@ namespace Domain.Algorithms
             if (dict.ContainsKey(key))
                 dict[key].Add(value);
             else
-                dict.Add(key, new List<TValue> {value});
+                dict.Add(key, new() {value});
         }
 
         public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, TValue>> dict,
@@ -40,14 +40,14 @@ namespace Domain.Algorithms
             if (dict.ContainsKey(key1))
                 dict[key1].Add(key2, value);
             else
-                dict.Add(key1, new Dictionary<TKey2, TValue> {{key2, value}});
+                dict.Add(key1, new() {{key2, value}});
         }
 
         public static void SafeAdd<TKey1, TValue>(
             this Dictionary<TKey1, SortedSet<TValue>> dict, TKey1 key1, TValue value)
             where TKey1 : notnull
         {
-            if (!dict.ContainsKey(key1)) dict[key1] = new SortedSet<TValue>();
+            if (!dict.ContainsKey(key1)) dict[key1] = new();
 
             dict[key1].Add(value);
         }
@@ -57,9 +57,9 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            if (!dict.ContainsKey(key1)) dict[key1] = new Dictionary<TKey2, SortedSet<TValue>>();
+            if (!dict.ContainsKey(key1)) dict[key1] = new();
 
-            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = new SortedSet<TValue>();
+            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = new();
 
             dict[key1][key2].Add(value);
         }
@@ -70,7 +70,7 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            if (!dict.ContainsKey(key1)) dict[key1] = new Dictionary<TKey2, int>();
+            if (!dict.ContainsKey(key1)) dict[key1] = new();
 
             if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = 0;
 

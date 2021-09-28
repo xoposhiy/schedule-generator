@@ -31,8 +31,8 @@ namespace Domain.ScheduleLib
 
         public Schedule(Meeting[] meetings)
         {
-            Requisition = new Requisition(Array.Empty<RequisitionItem>());
-            SpecsByRoom = new Dictionary<string, List<RoomSpec>>();
+            Requisition = new(Array.Empty<RequisitionItem>());
+            SpecsByRoom = new();
             Meetings = meetings.ToHashSet();
         }
 

@@ -50,8 +50,8 @@ namespace ScheduleCLI
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
             var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
-            var solver = new GreedySolver(estimator, requisition, classrooms, new Random(42));
-            var solutions = solver.GetSolution(new TimeSpan(0, 1, 5)).ToList();
+            var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
+            var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(solutions.Last().Schedule);

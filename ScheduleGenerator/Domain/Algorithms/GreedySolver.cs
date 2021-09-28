@@ -51,7 +51,7 @@ namespace Domain.Algorithms
                 Console.WriteLine();
                 Console.WriteLine(sw.Elapsed);
                 Console.WriteLine();
-                yield return new Solution(currentSchedule, currentScore);
+                yield return new(currentSchedule, currentScore);
                 yield break;
             }
         }
