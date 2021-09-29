@@ -10,7 +10,7 @@ using Ninject.Extensions.Conventions;
 
 namespace ScheduleCLI
 {
-    internal static class Program
+    public static class Program
     {
         private static void Main()
         {
@@ -44,7 +44,7 @@ namespace ScheduleCLI
             // TODO все Estimators: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
             // TODO вынести подготовительные шаги в отдельные методы (и пофиксить дублирование в тестах)
 
-            var estimator = CombinedEstimator.GetDefaultCombinedEstimator();
+            var estimator = GetDefaultCombinedEstimator();
             
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
@@ -59,6 +59,18 @@ namespace ScheduleCLI
             var container = new StandardKernel();
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             return container;
+        }
+        
+        public static CombinedEstimator GetDefaultCombinedEstimator()
+        {
+            var basic = (new FreedomDegreeEstimator(), 100);
+            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
+            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
+            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
+            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
+            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
+            return estimator;
         }
     }
 }

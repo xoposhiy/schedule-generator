@@ -7,6 +7,7 @@ using Domain.Conversions;
 using Domain.Estimators;
 using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
+using ScheduleCLI;
 
 namespace Testing.ScheduleLibTests
 {
@@ -38,7 +39,7 @@ namespace Testing.ScheduleLibTests
 
             var requisition = new Requisition(requisitions.ToArray());
             
-            var estimator = CombinedEstimator.GetDefaultCombinedEstimator();
+            var estimator = ScheduleCLI.Program.GetDefaultCombinedEstimator();
             
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var schedule = solver
