@@ -1,4 +1,4 @@
-﻿namespace Domain.ScheduleLib
+﻿namespace Domain
 {
     public record LearningPlanItem(string GroupSet, Discipline Discipline,
         MeetingType MeetingType, GroupSize GroupSize, double MeetingsPerWeek, RoomSpec[] RoomSpecs,

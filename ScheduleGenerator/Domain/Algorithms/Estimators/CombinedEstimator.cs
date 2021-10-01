@@ -1,8 +1,6 @@
 using System.Linq;
-using Domain.Conversions;
-using Domain.ScheduleLib;
 
-namespace Domain.Estimators
+namespace Domain.Algorithms.Estimators
 {
     public class CombinedEstimator : IEstimator
 

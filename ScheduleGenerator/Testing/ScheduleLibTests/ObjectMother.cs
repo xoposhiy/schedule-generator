@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Domain.ScheduleLib;
+using Domain;
 
 namespace Testing.ScheduleLibTests
 {

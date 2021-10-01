@@ -1,8 +1,6 @@
 using System;
-using Domain.Conversions;
-using Domain.ScheduleLib;
 
-namespace Domain.Estimators
+namespace Domain.Algorithms.Estimators
 {
     public class MeetingsPerDayEstimator : IEstimator
     {

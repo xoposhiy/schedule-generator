@@ -1,14 +1,14 @@
 using System;
 using System.Linq;
 
-namespace Domain.ScheduleLib
+namespace Domain
 {
     public class Meeting
     {
         public const string OnlineLocationName = "Онлайн";
-        public RequisitionItem RequisitionItem;
-        public Discipline Discipline;
-        public MeetingType MeetingType;
+        public readonly RequisitionItem RequisitionItem;
+        public readonly Discipline Discipline;
+        public readonly MeetingType MeetingType;
         public Teacher Teacher;
         public WeekType WeekType;
         public MeetingGroup[]? Groups;

@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using Domain.Conversions;
-using Domain.ScheduleLib;
 
-namespace Domain.Estimators
+namespace Domain.Algorithms.Estimators
 {
     public class TeacherSpacesEstimator : IEstimator
     {

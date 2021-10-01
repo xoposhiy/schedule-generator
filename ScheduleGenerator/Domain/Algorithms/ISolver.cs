@@ -1,20 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Domain.ScheduleLib;
 
-namespace Domain.Conversions
+namespace Domain.Algorithms
 {
-    public record Solution(Schedule Schedule, double Score);
-
-    public interface IEstimator
-    {
-        double Estimate(Schedule schedule, Meeting meetingToAdd);
-        double Estimate(Schedule schedule);
-    }
-
     public interface ISolver
     {
         /// <returns>Последовательность все более хороших решений</returns>
         IEnumerable<Solution> GetSolution(TimeSpan timeBudget);
     }
+
+    public record Solution(Schedule Schedule, double Score);
+
 }

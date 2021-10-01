@@ -1,13 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using ApprovalTests;
 using ApprovalTests.Reporters;
+using Domain;
 using Domain.Algorithms;
 using Domain.Conversions;
-using Domain.Estimators;
-using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
-using ScheduleCLI;
 
 namespace Testing.ScheduleLibTests
 {
@@ -47,12 +46,20 @@ namespace Testing.ScheduleLibTests
                 .Last()
                 .Schedule;
             
-            var meetingStrings = schedule
+            var placedMeetings = schedule
                 .Meetings
                 .Select(m=>$"{m.Discipline} {m.MeetingType} {m.Teacher}")
+                .OrderBy(m => m)
                 .ToList();
-            meetingStrings.Sort();
-            var unifiedString = $"Placed:{meetingStrings.Count} Left:{schedule.NotUsedMeetings.Count}\n{string.Join("\n", meetingStrings)}";
+            var notePlacedMeetings = schedule
+                .NotUsedMeetings
+                .Select(m=>$"{m.Discipline} {m.MeetingType} {m.Teacher}")
+                .OrderBy(m => m)
+                .ToList();
+            var unifiedString = $"Placed:{placedMeetings.Count} Left:{schedule.NotUsedMeetings.Count}, Placed:{Environment.NewLine}" +
+                                $"{string.Join(Environment.NewLine, placedMeetings)}{Environment.NewLine}" +
+                                $"Not placed:{Environment.NewLine}" +
+                                $"{string.Join(Environment.NewLine, notePlacedMeetings)}{Environment.NewLine}";
             Approvals.Verify(unifiedString);
 
         }

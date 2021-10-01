@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Domain.ScheduleLib;
+using Domain;
 using NUnit.Framework;
 using static Testing.ScheduleLibTests.ObjectMother;
 

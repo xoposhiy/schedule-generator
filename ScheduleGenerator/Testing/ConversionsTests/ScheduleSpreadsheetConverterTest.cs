@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using Domain;
 using Domain.Conversions;
-using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
 

@@ -3,7 +3,7 @@ using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
 
-namespace Domain.ScheduleLib
+namespace Domain
 {
     public class RequisitionItem
     {

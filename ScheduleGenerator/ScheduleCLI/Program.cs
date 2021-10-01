@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Domain;
 using Domain.Algorithms;
+using Domain.Algorithms.Estimators;
 using Domain.Conversions;
-using Domain.Estimators;
-using Domain.ScheduleLib;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;

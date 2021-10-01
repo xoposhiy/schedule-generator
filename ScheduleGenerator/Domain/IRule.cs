@@ -1,4 +1,4 @@
-﻿namespace Domain.ScheduleLib
+﻿namespace Domain
 {
     public class EvaluationResult
     {
