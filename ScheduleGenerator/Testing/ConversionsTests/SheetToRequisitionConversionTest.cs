@@ -10,7 +10,7 @@ namespace Testing.ConversionsTests
         private static string CredentialsEnvVar = "GoogleApiCredentials";
         private static readonly string ApplicationName = "MyApp";
 
-        [Test]
+        // [Test]
         public void Test1()
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);

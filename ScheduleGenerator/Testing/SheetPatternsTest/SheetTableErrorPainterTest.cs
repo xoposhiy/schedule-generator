@@ -17,7 +17,7 @@ namespace Testing.SheetPatternsTest
 
         private static string sheetName = "SheetTablePainterPractice";
 
-        [Test]
+        // [Test]
         public void PaintErrorsWhenNoMergerCells()
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
@@ -34,7 +34,7 @@ namespace Testing.SheetPatternsTest
             Assert.Pass();
         }
 
-        [Test]
+        // [Test]
         public void PaintErrorsAndClear()
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);

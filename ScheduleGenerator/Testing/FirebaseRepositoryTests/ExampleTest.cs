@@ -11,7 +11,7 @@ namespace Testing.FirebaseRepositoryTests
         {
         }
 
-        [Test]
+        // [Test]
         public void Test1()
         {
             var basePath = "https://schedule-generator-5f50e.firebaseio.com/";

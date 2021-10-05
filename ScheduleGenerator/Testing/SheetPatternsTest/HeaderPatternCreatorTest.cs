@@ -16,7 +16,7 @@ namespace Testing.SheetPatternsTest
 
         private static string sheetName = "headerPractice";
 
-        [Test]
+        // [Test]
         public void SetUpHeadersOnClearSheet()
         {
             var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);

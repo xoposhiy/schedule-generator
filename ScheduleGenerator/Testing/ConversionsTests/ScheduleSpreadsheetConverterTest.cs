@@ -17,7 +17,7 @@ namespace Testing.ConversionsTests
         {
         }
 
-        [Test]
+        // [Test]
         public void Test1()
         {
             var testSchedule = new Schedule(new[]
