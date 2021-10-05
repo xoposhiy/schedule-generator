@@ -70,12 +70,16 @@ namespace Domain
 
         public void AddMeeting(Meeting meeting)
         {
-            var meetings = meeting.GetLinkedMeetings().SelectMany(GetSplitMeetings);
+            var meetings = meeting.GetLinkedMeetings();
 
-            foreach (var meetingToAdd in meetings)
+            foreach (var linkedMeetings in meetings)
             {
-                Meetings.Add(meetingToAdd);
+                Meetings.Add(linkedMeetings);
+                NotUsedMeetings.Remove(linkedMeetings.BaseMeeting!);
+            }
 
+            foreach (var meetingToAdd in meetings.SelectMany(GetSplitMeetings))
+            {
                 var meetingTime = meetingToAdd.MeetingTime!;
                 if (meetingTime.WeekType == WeekType.All)
                 {
@@ -86,19 +90,21 @@ namespace Domain
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
                 TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingToAdd.Teacher, meetingTime.TimeSlotIndex);
-
-                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
             }
         }
 
         public void RemoveMeeting(Meeting meeting)
         {
-            var meetings = meeting.GetLinkedMeetings().SelectMany(GetSplitMeetings);
+            var meetings = meeting.GetLinkedMeetings();
 
-            foreach (var meetingToRemove in meetings)
+            foreach (var linkedMeeting in meetings)
             {
-                Meetings.Remove(meetingToRemove);
+                Meetings.Remove(linkedMeeting);
+                NotUsedMeetings.Add(linkedMeeting.BaseMeeting!);
+            }
 
+            foreach (var meetingToRemove in meetings.SelectMany(GetSplitMeetings))
+            {
                 var meetingTime = meetingToRemove.MeetingTime!;
                 TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
                 if (meetingToRemove.Location != "Онлайн")
@@ -107,8 +113,6 @@ namespace Domain
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
 
                 TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
-
-                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
             }
         }
 
