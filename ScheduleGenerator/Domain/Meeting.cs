@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Domain
 {
-    public record Meeting
+    public class Meeting
     {
         public const string OnlineLocationName = "Онлайн";
         public readonly RequisitionItem RequisitionItem;
@@ -26,6 +26,32 @@ namespace Domain
             Teacher = teacher;
             WeekType = weekType;
             RequisitionItem = requisitionItem;
+        }
+
+        public Meeting FullCopy()
+        {
+            return new(
+                Discipline,
+                MeetingType,
+                Teacher,
+                WeekType,
+                RequisitionItem,
+                Groups)
+            {
+                RequiredAdjacentMeeting = RequiredAdjacentMeeting,
+                MeetingTime = MeetingTime,
+                Location = Location,
+                BaseMeeting = BaseMeeting
+            };
+        }
+
+        public Meeting WithWeekType(WeekType weekType)
+        {
+            var meeting = FullCopy();
+            var time = MeetingTime with {WeekType = weekType};
+            meeting.WeekType = weekType;
+            meeting.MeetingTime = time;
+            return meeting;
         }
 
         public Meeting BasicCopy()

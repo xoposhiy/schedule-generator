@@ -303,11 +303,11 @@ namespace Domain
                 return meetings;
             }
 
-            var oddTime = meeting.MeetingTime with {WeekType = WeekType.Odd};
-            var odd = GetLinkedMeetings(meeting with {MeetingTime = oddTime});
-            
-            var evenTime = meeting.MeetingTime with {WeekType = WeekType.Even};
-            var even = GetLinkedMeetings(meeting with {MeetingTime = evenTime});
+            var oddMeeting = meeting.WithWeekType(WeekType.Odd);
+            var odd = GetLinkedMeetings(oddMeeting);
+
+            var evenMeeting = meeting.WithWeekType(WeekType.Even);
+            var even = GetLinkedMeetings(evenMeeting);
             
             odd.AddRange(even);
 
