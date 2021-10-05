@@ -52,16 +52,35 @@ namespace Domain
         {
             return Meetings;
         }
+        
+        public IEnumerable<Meeting> GetSplitMeetings(Meeting meeting)
+        {
+            if (meeting.Discipline.Name == "ОП")
+            {
+                // Console.Error.WriteLine("Oop detected");
+            }
+            if (meeting.MeetingTime?.WeekType == WeekType.All)
+            {
+                yield return meeting.WithWeekType(WeekType.Odd);
+                yield return meeting.WithWeekType(WeekType.Even);
+            }
+
+            yield return meeting;
+        }
 
         public void AddMeeting(Meeting meeting)
         {
-            var meetings = GetLinkedMeetings(meeting);
+            var meetings = meeting.GetLinkedMeetings().SelectMany(GetSplitMeetings);
 
             foreach (var meetingToAdd in meetings)
             {
                 Meetings.Add(meetingToAdd);
 
                 var meetingTime = meetingToAdd.MeetingTime!;
+                if (meetingTime.WeekType == WeekType.All)
+                {
+                    throw new ArgumentException("WeekType All");
+                }
                 TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
                 FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
                 AddMeetingToGroup(meetingToAdd, meetingTime);
@@ -74,7 +93,7 @@ namespace Domain
 
         public void RemoveMeeting(Meeting meeting)
         {
-            var meetings = GetLinkedMeetings(meeting);
+            var meetings = meeting.GetLinkedMeetings().SelectMany(GetSplitMeetings);
 
             foreach (var meetingToRemove in meetings)
             {
@@ -199,7 +218,7 @@ namespace Domain
             meetingCopy.MeetingTime = meetingTime;
             meetingCopy.Location = room;
 
-            if (GetLinkedMeetings(meetingCopy).All(m => IsMeetingValid(groupsChoice, m)))
+            if (GetSplitMeetings(meetingCopy).All(m => IsMeetingValid(groupsChoice, m)))
             {
                 return meetingCopy;
             }
@@ -291,28 +310,6 @@ namespace Domain
                    && GroupLearningPlanItemsCount[group].ContainsKey(planItem)
                    && GroupLearningPlanItemsCount[group][planItem] == (int) Math.Ceiling(planItem.MeetingsPerWeek);
             //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
-        }
-
-        private List<Meeting> GetLinkedMeetings(Meeting meeting)
-        {
-            if (meeting.MeetingTime!.WeekType != WeekType.All)
-            {
-                var meetings = new List<Meeting> {meeting};
-                if (meeting.RequiredAdjacentMeeting != null)
-                    meetings.Add(meeting.RequiredAdjacentMeeting);
-                return meetings;
-            }
-
-            var oddMeeting = meeting.WithWeekType(WeekType.Odd);
-            oddMeeting.RequiredAdjacentMeeting = oddMeeting.RequiredAdjacentMeeting?.WithWeekType(WeekType.Odd);
-            var odd = GetLinkedMeetings(oddMeeting);
-
-            var evenMeeting = meeting.WithWeekType(WeekType.Even);
-            var even = GetLinkedMeetings(evenMeeting);
-            
-            odd.AddRange(even);
-
-            return odd;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)

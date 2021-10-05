@@ -18,6 +18,19 @@ namespace Domain.Algorithms
                     yield return @group;
                 }
         }
+        
+        public static List<Meeting> GetLinkedMeetings(this Meeting meeting)
+        {
+            if (meeting.Discipline.Name == "ОП")
+            {
+                // Console.Error.WriteLine("Oop detected");
+            }
+
+            var meetings = new List<Meeting> {meeting};
+            if (meeting.RequiredAdjacentMeeting != null)
+                meetings.Add(meeting.RequiredAdjacentMeeting);
+            return meetings;
+        }
     }
 
     public static class DictionaryExtensions

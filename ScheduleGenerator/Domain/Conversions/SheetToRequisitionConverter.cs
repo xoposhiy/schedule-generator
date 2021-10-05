@@ -219,7 +219,14 @@ namespace Domain.Conversions
                         throw new FormatException($"Некорректное описание приоритета групп: {groupPriorities}");
                     var groupSet = groupSets.Single();
                     var weekType = ParseWeekType(weekTypeRaw);
-                    var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw, weekType);
+                    var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
+                    WeekType[] weekTypes = weekType == WeekType.All
+                        ? new[] {WeekType.Odd, WeekType.Even}
+                        : new[] {weekType};
+                    foreach (var localWeekType in weekTypes)
+                    {
+                        meetingTimeRequisitions.AddRange(ParseMeetingTimeRequisitions(meetingTimesRaw, localWeekType));
+                    }
                     var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                     var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                     var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
