@@ -199,7 +199,7 @@ namespace Domain
             meetingCopy.MeetingTime = meetingTime;
             meetingCopy.Location = room;
 
-            if (GetLinkedMeetings(meetingCopy).All(m => IsMeetingValid(groupsChoice, meetingCopy)))
+            if (GetLinkedMeetings(meetingCopy).All(m => IsMeetingValid(groupsChoice, m)))
             {
                 return meetingCopy;
             }
@@ -304,6 +304,7 @@ namespace Domain
             }
 
             var oddMeeting = meeting.WithWeekType(WeekType.Odd);
+            oddMeeting.RequiredAdjacentMeeting = oddMeeting.RequiredAdjacentMeeting?.WithWeekType(WeekType.Odd);
             var odd = GetLinkedMeetings(oddMeeting);
 
             var evenMeeting = meeting.WithWeekType(WeekType.Even);

@@ -70,7 +70,7 @@ namespace Domain.Conversions
         {
             return rowWeekType switch
             {
-                "любая" => WeekType.OddOrEven,
+                "любая" => WeekType.OddOrEven, // TODO MexBanDoc: проверить, что любая - корректный вид
                 "четная" => WeekType.Even,
                 "нечетная" => WeekType.Odd,
                 _ => throw new FormatException($"Некорректная четность недели: {rowWeekType}")

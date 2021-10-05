@@ -28,8 +28,9 @@ namespace Domain
             RequisitionItem = requisitionItem;
         }
 
-        public Meeting FullCopy()
+        public Meeting FullCopy(bool first=true)
         {
+            var required = first ? RequiredAdjacentMeeting : null;
             return new(
                 Discipline,
                 MeetingType,
@@ -38,7 +39,7 @@ namespace Domain
                 RequisitionItem,
                 Groups)
             {
-                RequiredAdjacentMeeting = RequiredAdjacentMeeting,
+                RequiredAdjacentMeeting = required,
                 MeetingTime = MeetingTime,
                 Location = Location,
                 BaseMeeting = BaseMeeting
@@ -48,9 +49,16 @@ namespace Domain
         public Meeting WithWeekType(WeekType weekType)
         {
             var meeting = FullCopy();
-            var time = MeetingTime with {WeekType = weekType};
             meeting.WeekType = weekType;
-            meeting.MeetingTime = time;
+            if (MeetingTime != null)
+            {
+                var time = MeetingTime with {WeekType = weekType};
+                meeting.MeetingTime = time;
+            }
+
+            RequiredAdjacentMeeting = RequiredAdjacentMeeting?.FullCopy(false).WithWeekType(weekType);
+            if (RequiredAdjacentMeeting != null) RequiredAdjacentMeeting.RequiredAdjacentMeeting = meeting;
+
             return meeting;
         }
 
