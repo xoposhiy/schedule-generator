@@ -17,7 +17,10 @@ namespace Domain
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom = new();
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
-        public readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>> GroupMeetingsByTime = new();
+
+        public readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>>
+            GroupMeetingsByTime = new(); // TODO krutovsky: when see WeekType.All split to Odd and Even
+
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
@@ -111,7 +114,7 @@ namespace Domain
                         if (meetingTimeChoice.TimeSlotIndex < 2)
                             continue;
                         var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                            meetingTimeChoice.TimeSlotIndex - 1);
+                            meetingTimeChoice.TimeSlotIndex - 1, meetingCopy.WeekType);
                         var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
                             groupsChoice,
                             linkedMeetingTimeChoice);
@@ -175,11 +178,12 @@ namespace Domain
         {
             foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
             {
+                var time = new MeetingTime(day, 0, WeekType.All);
                 if (day == DayOfWeek.Sunday) continue;
                 for (var i = 1; i < 7; i++)
                 {
-                    var time = new MeetingTime(day, i);
-                    FreeRoomsByDay.Add(time, rooms.ToHashSet());
+                    FreeRoomsByDay.Add(time with {TimeSlotIndex = i, WeekType = WeekType.Even}, rooms.ToHashSet());
+                    FreeRoomsByDay.Add(time with {TimeSlotIndex = i, WeekType = WeekType.Odd}, rooms.ToHashSet());
                 }
             }
         }
@@ -194,12 +198,18 @@ namespace Domain
             meetingCopy.Groups = groupsChoice.Groups;
             meetingCopy.MeetingTime = meetingTime;
             meetingCopy.Location = room;
-            return !IsMeetingValid(groupsChoice, meetingTime, meetingCopy) ? null : meetingCopy;
+
+            if (GetLinkedMeetings(meetingCopy).All(m => IsMeetingValid(groupsChoice, meetingCopy)))
+            {
+                return meetingCopy;
+            }
+
+            return null;
         }
 
-        //TODO сгруппировать методы в цикл
-        private bool IsMeetingValid(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
+        private bool IsMeetingValid(GroupsChoice groupsChoice, Meeting meeting)
         {
+            var meetingTime = meeting.MeetingTime!;
             return !(HasMeetingAlreadyAtThisTime(groupsChoice, meetingTime)
                      || IsMeetingIsExtraForGroup(meeting, groupsChoice)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting, meetingTime)
@@ -207,12 +217,26 @@ namespace Domain
                      || !IsTimeAcceptableForTeacher(meeting, meetingTime));
         }
 
-        private string? FindFreeRoom(MeetingTime meetingTime, IEnumerable<RoomSpec> roomRequirement)
+        private string? FindFreeRoom(MeetingTime meetingTime, RoomSpec[] roomRequirement)
         {
+            return FindFreeRooms(meetingTime, roomRequirement)
+                .OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
+        }
+
+        private HashSet<string> FindFreeRooms(MeetingTime meetingTime, RoomSpec[] roomRequirement)
+        {
+            if (meetingTime.WeekType == WeekType.All)
+            {
+                var odd = FindFreeRooms(meetingTime with {WeekType = WeekType.Odd}, roomRequirement);
+                var even = FindFreeRooms(meetingTime with {WeekType = WeekType.Even}, roomRequirement);
+                odd.IntersectWith(even);
+                return odd;
+            }
+
             var possibleRooms = FreeRoomsByDay[meetingTime].ToHashSet();
             foreach (var rs in roomRequirement)
                 possibleRooms.IntersectWith(RoomsBySpec[rs]);
-            return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
+            return possibleRooms;
         }
 
         private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meetingToAdd, MeetingTime meetingTime)
@@ -241,14 +265,17 @@ namespace Domain
             return value.RequisitionItem.IsOnline == isOnline;
         }
 
-        private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
+        private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, MeetingTime meetingTime,
+            Meeting meeting)
         {
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time, !meeting.RequisitionItem.IsOnline)))
+                if (groupsChoice.GetGroupParts()
+                    .Any(g => HasMeetingAlready(g, time, !meeting.RequisitionItem.IsOnline)))
                     return true;
             }
+
             return false;
         }
 
@@ -260,7 +287,7 @@ namespace Domain
 
         private bool IsPlanItemFulfilled(MeetingGroup group, LearningPlanItem planItem)
         {
-            return GroupLearningPlanItemsCount.ContainsKey(group) 
+            return GroupLearningPlanItemsCount.ContainsKey(group)
                    && GroupLearningPlanItemsCount[group].ContainsKey(planItem)
                    && GroupLearningPlanItemsCount[group][planItem] == (int) Math.Ceiling(planItem.MeetingsPerWeek);
             //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
@@ -268,10 +295,23 @@ namespace Domain
 
         private List<Meeting> GetLinkedMeetings(Meeting meeting)
         {
-            var meetings = new List<Meeting> {meeting};
-            if (meeting.RequiredAdjacentMeeting != null)
-                meetings.Add(meeting.RequiredAdjacentMeeting);
-            return meetings;
+            if (meeting.MeetingTime!.WeekType != WeekType.All)
+            {
+                var meetings = new List<Meeting> {meeting};
+                if (meeting.RequiredAdjacentMeeting != null)
+                    meetings.Add(meeting.RequiredAdjacentMeeting);
+                return meetings;
+            }
+
+            var oddTime = meeting.MeetingTime with {WeekType = WeekType.Odd};
+            var odd = GetLinkedMeetings(meeting with {MeetingTime = oddTime});
+            
+            var evenTime = meeting.MeetingTime with {WeekType = WeekType.Even};
+            var even = GetLinkedMeetings(meeting with {MeetingTime = evenTime});
+            
+            odd.AddRange(even);
+
+            return odd;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)

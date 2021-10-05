@@ -24,7 +24,7 @@ namespace Testing.ScheduleLibTests
 
             Assert.That(meeting.Location, Is.EqualTo("632"));
             Assert.That(meeting.Groups, Is.EqualTo(new[] {Group1, Group2}));
-            Assert.That(meeting.MeetingTime, Is.EqualTo(new MeetingTime(DayOfWeek.Tuesday, 3)));
+            Assert.That(meeting.MeetingTime, Is.EqualTo(new MeetingTime(DayOfWeek.Tuesday, 3, WeekType.All)));
         }
     }
 }

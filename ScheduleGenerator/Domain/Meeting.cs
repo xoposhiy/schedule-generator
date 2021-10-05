@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Domain
 {
-    public class Meeting
+    public record Meeting
     {
         public const string OnlineLocationName = "Онлайн";
         public readonly RequisitionItem RequisitionItem;
@@ -98,11 +98,11 @@ namespace Domain
         }
     }
 
-    public record MeetingTime(DayOfWeek Day, int TimeSlotIndex)
+    public record MeetingTime(DayOfWeek Day, int TimeSlotIndex, WeekType WeekType)
     {
         public override string ToString()
         {
-            return $"Day: {Day}, TimeSlotIndex: {TimeSlotIndex}";
+            return $"Week: {WeekType}, Day: {Day}, TimeSlotIndex: {TimeSlotIndex}";
         }
     }
 

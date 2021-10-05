@@ -21,7 +21,7 @@ namespace Testing
                     new GroupRequisition(new[] {new GroupsChoice(new[] {new MeetingGroup("FT-202", GroupPart.Part1)})})
                 },
                 2,
-                new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2)})},
+                new[] {new MeetingTimeRequisition(new[] {new MeetingTime(DayOfWeek.Tuesday, 2, WeekType.All)})},
                 new("Eg"))
         });
 
@@ -47,7 +47,7 @@ namespace Testing
                 StandardRequisition.Items[0], groups.ToArray());
             meeting.Location = location;
             meeting.Teacher = teacher;
-            meeting.MeetingTime = new(dayOfWeek, slotIndex);
+            meeting.MeetingTime = new(dayOfWeek, slotIndex, WeekType.All);
             meeting.WeekType = weekType;
             return meeting;
         }

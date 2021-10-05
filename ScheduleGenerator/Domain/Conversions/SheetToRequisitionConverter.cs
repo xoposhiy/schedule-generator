@@ -218,11 +218,12 @@ namespace Domain.Conversions
                     if (groupSets.Count != 1)
                         throw new FormatException($"Некорректное описание приоритета групп: {groupPriorities}");
                     var groupSet = groupSets.Single();
-                    var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw);
+                    var weekType = ParseWeekType(weekTypeRaw);
+                    var meetingTimeRequisitions = ParseMeetingTimeRequisitions(meetingTimesRaw, weekType);
                     var meetingTimeRequisitionArray = meetingTimeRequisitions.ToArray();
                     var repetitionCount = repetitionCountRaw.Length != 0 ? int.Parse(repetitionCountRaw) : 1;
                     var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
-                    var weekType = ParseWeekType(weekTypeRaw);
+                    
                     var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount,
                         meetingTimeRequisitionArray, teacher, weekType, isOnline);
                     requisitions.Add(requisition);
@@ -346,7 +347,7 @@ namespace Domain.Conversions
             return matchedGroups;
         }
 
-        public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
+        public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime, WeekType weekType)
         {
             var weekDaysStrList = WeekDaysDict.Keys.ToList();
             var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
@@ -356,7 +357,7 @@ namespace Domain.Conversions
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in WeekDaysDict.Values)
                     for (var index = 1; index < MaxIndex + 1; index++)
-                        meetingTimes.Add(new(day, index));
+                        meetingTimes.Add(new(day, index, weekType));
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
                 return meetingTimeRequisitions;
@@ -417,7 +418,7 @@ namespace Domain.Conversions
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in currWeekDays)
                 foreach (var index in currIndexes)
-                    meetingTimes.Add(new(day, index));
+                    meetingTimes.Add(new(day, index, weekType));
 
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);

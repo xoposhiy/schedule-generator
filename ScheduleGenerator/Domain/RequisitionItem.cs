@@ -23,7 +23,7 @@ namespace Domain
             : this(planItem,
                 SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(),
                 repetitionsCount,
-                SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities).ToArray(),
+                SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities, weekType).ToArray(),
                 teacher, weekType, isOnline)
         {
         }
