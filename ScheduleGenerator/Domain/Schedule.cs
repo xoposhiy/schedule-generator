@@ -17,9 +17,15 @@ namespace Domain
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom = new();
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
-        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
+
+        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>>
+            GroupMeetingsByTime = new();
+
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
-        public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
+
+        public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>>
+            TeacherMeetingsByTime = new();
+
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
 
         public readonly Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>
@@ -59,7 +65,16 @@ namespace Domain
                 Meetings.Add(meetingToAdd);
 
                 var meetingTime = meetingToAdd.MeetingTime!;
-                TeacherMeetingsByTime.SafeAdd(meetingToAdd.Teacher, meetingTime, meetingToAdd);
+                if (!TeacherMeetingsByTime.ContainsKey(meetingToAdd.Teacher))
+                {
+                    TeacherMeetingsByTime[meetingToAdd.Teacher] = new();
+                }
+
+                foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
+                {
+                    TeacherMeetingsByTime[meetingToAdd.Teacher].SafeAdd(weekType, meetingTime, meetingToAdd);
+                }
+
                 FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
@@ -78,7 +93,11 @@ namespace Domain
                 Meetings.Remove(meetingToRemove);
 
                 var meetingTime = meetingToRemove.MeetingTime!;
-                TeacherMeetingsByTime[meetingToRemove.Teacher].Remove(meetingTime);
+                foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
+                {
+                    TeacherMeetingsByTime[meetingToRemove.Teacher][weekType].Remove(meetingTime);
+                }
+
                 if (meetingToRemove.Location != "Онлайн")
                     FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
 
@@ -92,6 +111,11 @@ namespace Domain
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
+            if (NotUsedMeetings.Count == 1)
+            {
+                Console.WriteLine("Surprise");
+            }
+
             foreach (var meeting in NotUsedMeetings.ToList())
             {
                 var requisitionItem = meeting.RequisitionItem;
@@ -186,23 +210,32 @@ namespace Domain
 
         private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime)
         {
-            var room = baseMeeting.RequisitionItem.IsOnline
-                ? Meeting.OnlineLocationName
-                : FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
-            if (room == null) return null;
-            var meetingCopy = baseMeeting.BasicCopy();
-            meetingCopy.Groups = groupsChoice.Groups;
-            meetingCopy.MeetingTime = meetingTime;
-            meetingCopy.Location = room;
-            return !IsMeetingValid(groupsChoice, meetingTime, meetingCopy) ? null : meetingCopy;
-        }
+            WeekType[] weekTypes = baseMeeting.WeekType == WeekType.OddOrEven
+                ? new[] {WeekType.Odd, WeekType.Even}
+                : new[] {baseMeeting.WeekType};
+            foreach (var weekType in weekTypes)
+            {
+                var meetingCopy = baseMeeting.BasicCopy();
+                meetingCopy.WeekType = weekType;
+                var room = baseMeeting.RequisitionItem.IsOnline
+                    ? Meeting.OnlineLocationName
+                    : FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
+                if (room == null) return null;
 
-        //TODO сгруппировать методы в цикл
+                meetingCopy.Groups = groupsChoice.Groups;
+                meetingCopy.MeetingTime = meetingTime;
+                meetingCopy.Location = room;
+                if (IsMeetingValid(groupsChoice, meetingTime, meetingCopy)) return meetingCopy;
+            }
+
+            return null;
+        }
+        
         private bool IsMeetingValid(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             return !(HasMeetingAlreadyAtThisTime(groupsChoice, meetingTime, meeting.WeekType)
                      || IsMeetingIsExtraForGroup(meeting, groupsChoice)
-                     || TeacherHasMeetingAlreadyAtThisTime(meeting, meetingTime)
+                     || TeacherHasMeetingAlreadyAtThisTime(meeting)
                      || IsNoGapBetweenOnlineAndOfflineMeetings(groupsChoice, meetingTime, meeting)
                      || !IsTimeAcceptableForTeacher(meeting, meetingTime));
         }
@@ -215,11 +248,18 @@ namespace Domain
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
         }
 
-        private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meetingToAdd, MeetingTime meetingTime)
+        private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
-            return TeacherMeetingsByTime.ContainsKey(teacher) &&
-                   TeacherMeetingsByTime[teacher].ContainsKey(meetingTime);
+            var meetingTime = meetingToAdd.MeetingTime;
+            if (!TeacherMeetingsByTime.TryGetValue(teacher, out var weekTypeByTeacher)) return false;
+            foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
+            {
+                if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
+                if (timeByWeekType.ContainsKey(meetingTime!)) return true;
+            }
+
+            return false;
         }
 
         private bool IsTimeAcceptableForTeacher(Meeting meeting, MeetingTime meetingTime)
@@ -228,7 +268,8 @@ namespace Domain
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
-        private bool HasMeetingAlreadyAtThisTime(GroupsChoice groupsChoice, MeetingTime meetingTime, WeekType meetingWeekType)
+        private bool HasMeetingAlreadyAtThisTime(GroupsChoice groupsChoice, MeetingTime meetingTime,
+            WeekType meetingWeekType)
         {
             foreach (var g in groupsChoice.GetGroupParts())
             {
@@ -241,12 +282,13 @@ namespace Domain
                     }
                 }
             }
+
             return false;
         }
 
-        private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline, WeekType meetingWeekType)
+        private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline,
+            WeekType meetingWeekType)
         {
-            
             if (!GroupMeetingsByTime.ContainsKey(group)) return false;
             foreach (var weekType in meetingWeekType.GetWeekTypes())
             {
@@ -260,7 +302,8 @@ namespace Domain
             return false;
         }
 
-        private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
+        private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, MeetingTime meetingTime,
+            Meeting meeting)
         {
             for (var dt = -1; dt < 2; dt += 2)
             {
@@ -269,6 +312,7 @@ namespace Domain
                     !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
                     return true;
             }
+
             return false;
         }
 
@@ -280,7 +324,7 @@ namespace Domain
 
         private bool IsPlanItemFulfilled(MeetingGroup group, LearningPlanItem planItem)
         {
-            return GroupLearningPlanItemsCount.ContainsKey(group) 
+            return GroupLearningPlanItemsCount.ContainsKey(group)
                    && GroupLearningPlanItemsCount[group].ContainsKey(planItem)
                    && GroupLearningPlanItemsCount[group][planItem] == (int) Math.Ceiling(planItem.MeetingsPerWeek);
             //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
@@ -304,6 +348,7 @@ namespace Domain
                         GroupMeetingsByTime[meetingGroup] = new();
                     GroupMeetingsByTime[meetingGroup].SafeAdd(weekType, meetingTime, meetingToAdd);
                 }
+
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem);
                 GroupsMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingGroup, meetingTime.TimeSlotIndex);
             }
@@ -317,6 +362,7 @@ namespace Domain
                 {
                     GroupMeetingsByTime[meetingGroup][weekType].Remove(meetingTime);
                 }
+
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem);
                 GroupsMeetingsTimesByDay[meetingTime.Day][meetingGroup].Remove(meetingTime.TimeSlotIndex);
             }

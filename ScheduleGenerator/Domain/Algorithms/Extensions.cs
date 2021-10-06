@@ -23,7 +23,7 @@ namespace Domain.Algorithms
         {
             if (weekType == WeekType.OddOrEven)
             {
-                // throw new FormatException("Biba");
+                throw new FormatException("Biba");
                 yield return WeekType.Odd;
                 yield break;
             }
@@ -55,6 +55,7 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
+            
             if (dict.ContainsKey(key1))
                 dict[key1].Add(key2, value);
             else
