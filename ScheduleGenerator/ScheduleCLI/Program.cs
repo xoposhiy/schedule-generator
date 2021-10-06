@@ -45,7 +45,7 @@ namespace ScheduleCLI
             // TODO вынести подготовительные шаги в отдельные методы (и пофиксить дублирование в тестах)
 
             var estimator = GetDefaultCombinedEstimator();
-            
+
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
@@ -60,7 +60,7 @@ namespace ScheduleCLI
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             return container;
         }
-        
+
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
             var basic = (new FreedomDegreeEstimator(), 100);

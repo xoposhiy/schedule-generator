@@ -18,6 +18,25 @@ namespace Domain.Algorithms
                     yield return @group;
                 }
         }
+
+        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType)
+        {
+            if (weekType == WeekType.OddOrEven)
+            {
+                // throw new FormatException("Biba");
+                yield return WeekType.Odd;
+                yield break;
+            }
+            if (weekType == WeekType.All)
+            {
+                yield return WeekType.Even;
+                yield return WeekType.Odd;
+            }
+            else
+            {
+                yield return weekType;
+            }
+        }
     }
 
     public static class DictionaryExtensions

@@ -17,7 +17,7 @@ namespace Domain
         public readonly HashSet<Meeting> NotUsedMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom = new();
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
-        public readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Meeting>> GroupMeetingsByTime = new();
+        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>> GroupMeetingsByTime = new();
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
         public readonly Dictionary<Teacher, Dictionary<MeetingTime, Meeting>> TeacherMeetingsByTime = new();
         public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
@@ -200,7 +200,7 @@ namespace Domain
         //TODO сгруппировать методы в цикл
         private bool IsMeetingValid(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
-            return !(HasMeetingAlreadyAtThisTime(groupsChoice, meetingTime)
+            return !(HasMeetingAlreadyAtThisTime(groupsChoice, meetingTime, meeting.WeekType)
                      || IsMeetingIsExtraForGroup(meeting, groupsChoice)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting, meetingTime)
                      || IsNoGapBetweenOnlineAndOfflineMeetings(groupsChoice, meetingTime, meeting)
@@ -228,16 +228,44 @@ namespace Domain
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
-        private bool HasMeetingAlreadyAtThisTime(GroupsChoice groupsChoice, MeetingTime meetingTime)
+        private bool HasMeetingAlreadyAtThisTime(GroupsChoice groupsChoice, MeetingTime meetingTime, WeekType meetingWeekType)
         {
-            return groupsChoice.GetGroupParts()
-                .Any(g => GroupMeetingsByTime.ContainsKey(g) && GroupMeetingsByTime[g].ContainsKey(meetingTime));
+            foreach (var g in groupsChoice.GetGroupParts())
+            {
+                if (GroupMeetingsByTime.ContainsKey(g))
+                {
+                    foreach (var weekType in meetingWeekType.GetWeekTypes())
+                    {
+                        if (GroupMeetingsByTime[g][weekType].ContainsKey(meetingTime))
+                            return true;
+                    }
+                }
+            }
+            return false;
         }
 
-        private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline)
+        private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline, WeekType meetingWeekType)
         {
+            
             if (!GroupMeetingsByTime.ContainsKey(group)) return false;
-            if (!GroupMeetingsByTime[group].TryGetValue(meetingTime, out var value)) return false;
+            if (meetingWeekType == WeekType.All)
+            {
+                if (!GroupMeetingsByTime[group].ContainsKey(WeekType.Even) &&
+                    !GroupMeetingsByTime[group].ContainsKey(WeekType.Odd))
+                    return false;
+                if (!GroupMeetingsByTime[group][WeekType.Even].TryGetValue(meetingTime, out var evenValue)) return false;
+                if (!GroupMeetingsByTime[group][WeekType.Odd].TryGetValue(meetingTime, out var oddValue)) return false;
+                return evenValue.RequisitionItem.IsOnline == isOnline && oddValue.RequisitionItem.IsOnline == isOnline;
+            }
+            
+            if (!GroupMeetingsByTime[group].ContainsKey(meetingWeekType))
+                return false;
+            if (meetingWeekType == WeekType.OddOrEven)
+            {
+                if (!GroupMeetingsByTime[group][WeekType.Odd].TryGetValue(meetingTime, out var value1)) return false;
+                return value1.RequisitionItem.IsOnline == isOnline;
+            }
+            if (!GroupMeetingsByTime[group][meetingWeekType].TryGetValue(meetingTime, out var value)) return false;
             return value.RequisitionItem.IsOnline == isOnline;
         }
 
@@ -246,7 +274,7 @@ namespace Domain
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time, !meeting.RequisitionItem.IsOnline)))
+                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time, !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
                     return true;
             }
             return false;
@@ -278,7 +306,12 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                GroupMeetingsByTime.SafeAdd(meetingGroup, meetingTime, meetingToAdd);
+                foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
+                {
+                    if (!GroupMeetingsByTime.ContainsKey(meetingGroup))
+                        GroupMeetingsByTime[meetingGroup] = new();
+                    GroupMeetingsByTime[meetingGroup].SafeAdd(weekType, meetingTime, meetingToAdd);
+                }
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem);
                 GroupsMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingGroup, meetingTime.TimeSlotIndex);
             }
@@ -288,7 +321,10 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToRemove.Groups!.GetGroupParts())
             {
-                GroupMeetingsByTime[meetingGroup].Remove(meetingTime);
+                foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
+                {
+                    GroupMeetingsByTime[meetingGroup][weekType].Remove(meetingTime);
+                }
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem);
                 GroupsMeetingsTimesByDay[meetingTime.Day][meetingGroup].Remove(meetingTime.TimeSlotIndex);
             }
