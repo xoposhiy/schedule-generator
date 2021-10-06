@@ -248,25 +248,16 @@ namespace Domain
         {
             
             if (!GroupMeetingsByTime.ContainsKey(group)) return false;
-            if (meetingWeekType == WeekType.All)
+            foreach (var weekType in meetingWeekType.GetWeekTypes())
             {
-                if (!GroupMeetingsByTime[group].ContainsKey(WeekType.Even) &&
-                    !GroupMeetingsByTime[group].ContainsKey(WeekType.Odd))
-                    return false;
-                if (!GroupMeetingsByTime[group][WeekType.Even].TryGetValue(meetingTime, out var evenValue)) return false;
-                if (!GroupMeetingsByTime[group][WeekType.Odd].TryGetValue(meetingTime, out var oddValue)) return false;
-                return evenValue.RequisitionItem.IsOnline == isOnline && oddValue.RequisitionItem.IsOnline == isOnline;
+                if (!GroupMeetingsByTime[group].ContainsKey(weekType))
+                    continue;
+                if (!GroupMeetingsByTime[group][weekType].TryGetValue(meetingTime, out var value)) continue;
+                if (value.RequisitionItem.IsOnline == isOnline)
+                    return true;
             }
-            
-            if (!GroupMeetingsByTime[group].ContainsKey(meetingWeekType))
-                return false;
-            if (meetingWeekType == WeekType.OddOrEven)
-            {
-                if (!GroupMeetingsByTime[group][WeekType.Odd].TryGetValue(meetingTime, out var value1)) return false;
-                return value1.RequisitionItem.IsOnline == isOnline;
-            }
-            if (!GroupMeetingsByTime[group][meetingWeekType].TryGetValue(meetingTime, out var value)) return false;
-            return value.RequisitionItem.IsOnline == isOnline;
+
+            return false;
         }
 
         private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
@@ -274,7 +265,8 @@ namespace Domain
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time, !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
+                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time,
+                    !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
                     return true;
             }
             return false;
