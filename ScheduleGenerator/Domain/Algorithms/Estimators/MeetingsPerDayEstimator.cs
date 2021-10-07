@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -12,18 +13,14 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule)
         {
             var penalty = 0;
-            const int maxMeetingsPerDay = 3;
-            foreach (var day in schedule.GroupsMeetingsTimesByDay.Keys)
-            foreach (var group in schedule.GroupsMeetingsTimesByDay[day].Keys)
-            {
-                //TODO четные и нечетные недели оценивать отдельно и складывать их результаты
-                //TODO 0 пар в день и от 2 до 4 пар в день -> penalty = 0.
-                var currentDif = schedule.GroupsMeetingsTimesByDay[day][@group].Count - maxMeetingsPerDay;
-                penalty += currentDif;
-            }
+            foreach (var byGroup in schedule.GroupMeetingsByTime.Values)
+            foreach (var byWeekType in byGroup.Values)
+                penalty += byWeekType.Keys.GroupBy(t => t.Day)
+                    .Select(g => g.Count())
+                    .Count(c => c is not (>= 2 and <= 4));
 
-            return
-                -penalty; // TODO поделить на количество половинок групп и количество дней и 2 (количество четностей недель)
+            return -penalty;
+            // TODO поделить на количество половинок групп и количество дней и 2 (количество четностей недель)
         }
     }
 }
