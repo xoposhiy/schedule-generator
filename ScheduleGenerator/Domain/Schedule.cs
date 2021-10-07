@@ -230,7 +230,7 @@ namespace Domain
 
             return null;
         }
-        
+
         private bool IsMeetingValid(GroupsChoice groupsChoice, MeetingTime meetingTime, Meeting meeting)
         {
             return !(HasMeetingAlreadyAtThisTime(groupsChoice, meetingTime, meeting.WeekType)
@@ -342,10 +342,10 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
+                if (!GroupMeetingsByTime.ContainsKey(meetingGroup))
+                    GroupMeetingsByTime[meetingGroup] = new();
                 foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
                 {
-                    if (!GroupMeetingsByTime.ContainsKey(meetingGroup))
-                        GroupMeetingsByTime[meetingGroup] = new();
                     GroupMeetingsByTime[meetingGroup].SafeAdd(weekType, meetingTime, meetingToAdd);
                 }
 

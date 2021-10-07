@@ -23,9 +23,7 @@ namespace Domain.Algorithms
         {
             if (weekType == WeekType.OddOrEven)
             {
-                throw new FormatException("Biba");
-                yield return WeekType.Odd;
-                yield break;
+                throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split");
             }
             if (weekType == WeekType.All)
             {
