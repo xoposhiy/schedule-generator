@@ -5,6 +5,14 @@ namespace Domain.Algorithms
 {
     public static class ArrayExtensions
     {
+        public static List<Meeting> GetLinkedMeetings(this Meeting meeting)
+        {
+            var meetings = new List<Meeting> {meeting};
+            if (meeting.RequiredAdjacentMeeting != null)
+                meetings.Add(meeting.RequiredAdjacentMeeting);
+            return meetings;
+        }
+        
         public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
             foreach (var group in groups)
