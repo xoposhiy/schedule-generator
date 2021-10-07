@@ -222,18 +222,18 @@ namespace Domain
                 meetingCopy.Groups = groupsChoice.Groups;
                 meetingCopy.MeetingTime = meetingTime;
                 meetingCopy.Location = room;
-                if (IsMeetingValid(groupsChoice, meetingCopy)) return meetingCopy;
+                if (IsMeetingValid(meetingCopy)) return meetingCopy;
             }
 
             return null;
         }
 
-        private bool IsMeetingValid(GroupsChoice groupsChoice, Meeting meeting)
+        private bool IsMeetingValid(Meeting meeting)
         {
-            return !(HasMeetingAlreadyAtThisTime(groupsChoice, meeting)
-                     || IsMeetingIsExtraForGroup(meeting, groupsChoice)
+            return !(HasMeetingAlreadyAtThisTime(meeting)
+                     || IsMeetingIsExtraForGroup(meeting)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting)
-                     || IsNoGapBetweenOnlineAndOfflineMeetings(groupsChoice, meeting)
+                     || IsNoGapBetweenOnlineAndOfflineMeetings(meeting)
                      || !IsTimeAcceptableForTeacher(meeting));
         }
 
@@ -245,12 +245,12 @@ namespace Domain
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
         }
 
-        private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meetingToAdd)
+        private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meeting)
         {
-            var teacher = meetingToAdd.Teacher;
-            var meetingTime = meetingToAdd.MeetingTime;
+            var teacher = meeting.Teacher;
+            var meetingTime = meeting.MeetingTime;
             if (!TeacherMeetingsByTime.TryGetValue(teacher, out var weekTypeByTeacher)) return false;
-            foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
+            foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
                 if (timeByWeekType.ContainsKey(meetingTime!)) return true;
@@ -266,10 +266,10 @@ namespace Domain
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }
 
-        private bool HasMeetingAlreadyAtThisTime(GroupsChoice groupsChoice, Meeting meeting)
+        private bool HasMeetingAlreadyAtThisTime(Meeting meeting)
         {
             var meetingTime = meeting.MeetingTime!;
-            foreach (var g in groupsChoice.GetGroupParts())
+            foreach (var g in meeting.Groups!.GetGroupParts())
             {
                 if (GroupMeetingsByTime.ContainsKey(g))
                 {
@@ -300,13 +300,13 @@ namespace Domain
             return false;
         }
 
-        private bool IsNoGapBetweenOnlineAndOfflineMeetings(GroupsChoice groupsChoice, Meeting meeting)
+        private bool IsNoGapBetweenOnlineAndOfflineMeetings(Meeting meeting)
         {
             var meetingTime = meeting.MeetingTime!;
             for (var dt = -1; dt < 2; dt += 2)
             {
                 var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                if (groupsChoice.GetGroupParts().Any(g => HasMeetingAlready(g, time,
+                if (meeting.Groups!.GetGroupParts().Any(g => HasMeetingAlready(g, time,
                     !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
                     return true;
             }
@@ -314,9 +314,9 @@ namespace Domain
             return false;
         }
 
-        private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd, GroupsChoice groupsChoice)
+        private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
-            return groupsChoice.GetGroupParts()
+            return meetingToAdd.Groups!.GetGroupParts()
                 .Any(g => IsPlanItemFulfilled(g, meetingToAdd.RequisitionItem.PlanItem));
         }
 
