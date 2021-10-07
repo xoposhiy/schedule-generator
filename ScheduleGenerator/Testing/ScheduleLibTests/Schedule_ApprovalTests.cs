@@ -10,7 +10,6 @@ using Infrastructure.GoogleSheetsRepository;
 
 namespace Testing.ScheduleLibTests
 {
-    
     [TestFixture]
     [UseReporter(typeof(DiffReporter))]
     public class Schedule_ApprovalTests
@@ -19,7 +18,7 @@ namespace Testing.ScheduleLibTests
         public void CheckMeetingsPlaced_Approval()
         {
             // TODO сейчас это копипаста мейна - пофиксить дублирование
-            
+
             var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
 
             var link =
@@ -37,32 +36,31 @@ namespace Testing.ScheduleLibTests
                 repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
 
             var requisition = new Requisition(requisitions.ToArray());
-            
+
             var estimator = ScheduleCLI.Program.GetDefaultCombinedEstimator();
-            
+
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var schedule = solver
                 .GetSolution(new(0, 1, 5))
                 .Last()
                 .Schedule;
-            
+
             var placedMeetings = schedule
                 .Meetings
-                .Select(m=>$"{m.Discipline} {m.MeetingType} {m.Teacher}")
+                .Select(m => $"{m.Discipline} {m.MeetingType} {m.Teacher}")
                 .OrderBy(m => m)
                 .ToList();
             var notePlacedMeetings = schedule
                 .NotUsedMeetings
-                .Select(m=>$"{m.Discipline} {m.MeetingType} {m.Teacher}")
+                .Select(m => $"{m.Discipline} {m.MeetingType} {m.Teacher}")
                 .OrderBy(m => m)
                 .ToList();
-            var unifiedString = $"Placed:{placedMeetings.Count} Left:{schedule.NotUsedMeetings.Count}, Placed:{Environment.NewLine}" +
-                                $"{string.Join(Environment.NewLine, placedMeetings)}{Environment.NewLine}" +
-                                $"Not placed:{Environment.NewLine}" +
-                                $"{string.Join(Environment.NewLine, notePlacedMeetings)}{Environment.NewLine}";
+            var unifiedString =
+                $"Placed:{placedMeetings.Count} Left:{schedule.NotUsedMeetings.Count}, Placed:{Environment.NewLine}" +
+                $"{string.Join(Environment.NewLine, placedMeetings)}{Environment.NewLine}" +
+                $"Not placed:{Environment.NewLine}" +
+                $"{string.Join(Environment.NewLine, notePlacedMeetings)}{Environment.NewLine}";
             Approvals.Verify(unifiedString);
-
         }
-        
     }
 }

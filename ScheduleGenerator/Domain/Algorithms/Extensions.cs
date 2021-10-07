@@ -12,27 +12,25 @@ namespace Domain.Algorithms
                 meetings.Add(meeting.RequiredAdjacentMeeting);
             return meetings;
         }
-        
+
         public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
             foreach (var group in groups)
-                if (@group.GroupPart == GroupPart.FullGroup)
+                if (group.GroupPart == GroupPart.FullGroup)
                 {
-                    yield return @group with {GroupPart = GroupPart.Part1};
-                    yield return @group with {GroupPart = GroupPart.Part2};
+                    yield return group with {GroupPart = GroupPart.Part1};
+                    yield return group with {GroupPart = GroupPart.Part2};
                 }
                 else
                 {
-                    yield return @group;
+                    yield return group;
                 }
         }
 
         public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType)
         {
             if (weekType == WeekType.OddOrEven)
-            {
                 throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split");
-            }
             if (weekType == WeekType.All)
             {
                 yield return WeekType.Even;
@@ -61,7 +59,6 @@ namespace Domain.Algorithms
             where TKey1 : notnull
             where TKey2 : notnull
         {
-            
             if (dict.ContainsKey(key1))
                 dict[key1].Add(key2, value);
             else

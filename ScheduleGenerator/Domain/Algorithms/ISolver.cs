@@ -10,5 +10,4 @@ namespace Domain.Algorithms
     }
 
     public record Solution(Schedule Schedule, double Score);
-
 }

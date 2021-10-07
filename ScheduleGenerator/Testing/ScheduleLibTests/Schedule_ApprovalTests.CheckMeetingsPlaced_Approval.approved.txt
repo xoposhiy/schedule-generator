@@ -1,4 +1,4 @@
-Placed:88 Left:1, Placed:
+Placed:89 Left:0, Placed:
 Алгебра и геометрия Lecture Волков Михаил
 Алгебра и геометрия Lecture Волков Михаил
 Алгебра и геометрия Seminar Белов
@@ -54,6 +54,7 @@ Placed:88 Left:1, Placed:
 Матанализ Seminar Першаков
 Матанализ Seminar Першаков
 Матанализ Seminar Симонов Иван
+Матанализ Seminar Симонов Иван
 Матанализ Seminar Филатова
 Матанализ Seminar Филатова
 Матстат Lecture Хлопин
@@ -88,4 +89,4 @@ Placed:88 Left:1, Placed:
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-Матанализ Seminar Симонов Иван
+
