@@ -13,9 +13,9 @@ namespace Domain.Algorithms.Estimators
         {
             const int maxTeacherDays = 1;
             var dayCount = 0;
-            foreach (var day in schedule.TeacherMeetingsTimesByDay.Keys)
-            foreach (var teacher in schedule.TeacherMeetingsTimesByDay[day].Keys)
-                dayCount += schedule.TeacherMeetingsTimesByDay[day][teacher].Count == 0 ? 0 : 1;
+            foreach (var byDay in schedule.TeacherMeetingsTimesByDay.Values)
+            foreach (var byTeacher in byDay.Values)
+                dayCount += Math.Max(byTeacher.Count, 1);
             var penalty = dayCount - maxTeacherDays;
             return penalty < 0 ? 0 : -penalty;
         }
