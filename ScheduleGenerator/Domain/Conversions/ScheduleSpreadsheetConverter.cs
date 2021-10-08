@@ -14,9 +14,13 @@ namespace Domain.Conversions
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 2;
-        private static readonly string[] weekDays = { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
-        private static readonly string[] classStarts = { "I 9:00", "II 10:40", "III 12:50", 
-            "IV 14:30", "V 16:40", "VI 17:50" };
+        private static readonly string[] weekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
+
+        private static readonly string[] classStarts =
+        {
+            "I 9:00", "II 10:40", "III 12:50",
+            "IV 14:30", "V 16:40", "VI 17:50"
+        };
 
         public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
         {
@@ -72,14 +76,14 @@ namespace Domain.Conversions
             var startIndexesCount = classStarts.Length;
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
-            modifier.ColorizeRange((TimeBarRowOffset, HeadersColumnOffset), 
+            modifier.ColorizeRange((TimeBarRowOffset, HeadersColumnOffset),
                 (TimeBarRowOffset + weekDayCount * startIndexesCount * 2 - 1,
                     HeadersColumnOffset + groups.Count * 2 - 1),
-                new() {Blue = 15/16f,Green = 15/16f,Red = 15/16f, Alpha = 1 - 0.05f});
-            
+                new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f, Alpha = 1 - 0.05f});
+
             modifier.Execute();
         }
-        
+
         private void BuildTimeBar()
         {
             var weekDayCount = weekDays.Length;

@@ -41,12 +41,16 @@ namespace Infrastructure.GoogleSheetsRepository
             }
             catch (FileNotFoundException)
             {
-                var secret = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Process);
-                secret = secret != null ? secret : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
-                secret = secret != null ? secret : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Machine);
+                var secret =
+                    Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Process);
+                secret = secret != null
+                    ? secret
+                    : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
+                secret = secret != null
+                    ? secret
+                    : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Machine);
                 return GoogleCredential.FromJson(secret);
             }
-            
         }
 
         private SheetsService CreateDefaultService()
@@ -229,7 +233,7 @@ namespace Infrastructure.GoogleSheetsRepository
                         {
                             TextFormat = new TextFormat
                             {
-                                FontSize = 9,
+                                FontSize = 9
                             },
                             BackgroundColor = value.Contains("Онлайн")
                                 ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}
