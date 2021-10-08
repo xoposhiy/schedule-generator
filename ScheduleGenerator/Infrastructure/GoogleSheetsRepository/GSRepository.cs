@@ -31,11 +31,22 @@ namespace Infrastructure.GoogleSheetsRepository
 
         private GoogleCredential LoadCredential(string pathToCredentials)
         {
-            using (var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read))
+            try
             {
-                return GoogleCredential.FromStream(stream)
-                    .CreateScoped(Scopes);
+                using (var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read))
+                {
+                    return GoogleCredential.FromStream(stream)
+                        .CreateScoped(Scopes);
+                }
             }
+            catch (FileNotFoundException e)
+            {
+                var secret = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Process);
+                secret = secret != null ? secret : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
+                secret = secret != null ? secret : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Machine);
+                return GoogleCredential.FromJson(secret);
+            }
+            
         }
 
         private SheetsService CreateDefaultService()
