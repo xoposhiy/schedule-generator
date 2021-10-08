@@ -39,7 +39,7 @@ namespace Infrastructure.GoogleSheetsRepository
                         .CreateScoped(Scopes);
                 }
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException)
             {
                 var secret = Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Process);
                 secret = secret != null ? secret : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
