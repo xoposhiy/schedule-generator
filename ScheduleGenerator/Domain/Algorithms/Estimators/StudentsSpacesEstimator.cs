@@ -11,7 +11,8 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            //TODO придумать как учитывать пары, которые идут не весь семестр. Например, учитывать аналогично четным-нечетным неделям (см ниже).
+            //TODO придумать как учитывать пары, которые идут не весь семестр.
+            //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0;
 
             foreach (var byGroup in schedule.GroupMeetingsByTime.Values)

@@ -382,7 +382,7 @@ namespace Infrastructure.GoogleSheetsRepository
         }
 
 
-        public SheetModifier AddBorders(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
+        public SheetModifier AddBorders(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
         {
             var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
@@ -400,22 +400,18 @@ namespace Infrastructure.GoogleSheetsRepository
                     },
                     Top = new Border
                     {
-                        Color = color,
                         Style = "SOLID"
                     },
                     Bottom = new Border
                     {
-                        Color = color,
                         Style = "SOLID"
                     },
                     Left = new Border
                     {
-                        Color = color,
                         Style = "SOLID"
                     },
                     Right = new Border
                     {
-                        Color = color,
                         Style = "SOLID"
                     }
                 }

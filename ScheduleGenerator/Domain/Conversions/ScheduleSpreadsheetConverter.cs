@@ -78,8 +78,7 @@ namespace Domain.Conversions
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset), new() {new() {weekDays[i]}})
-                    .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset),
-                        new() {Blue = 1})
+                    .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset))
                     .MergeCell((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset));
                 currentStart += 12;
             }
@@ -90,8 +89,7 @@ namespace Domain.Conversions
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset + 1),
                         new() {new() {classStarts[i % 6]}})
-                    .AddBorders((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1),
-                        new() {Blue = 1})
+                    .AddBorders((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1))
                     .MergeCell((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1));
                 currentStart += 2;
             }
@@ -108,15 +106,12 @@ namespace Domain.Conversions
             {
                 modifier
                     .WriteRange((HeadersRowOffset, currentStart), new() {new() {groups[i]}})
-                    .AddBorders((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1),
-                        new() {Blue = 1})
+                    .AddBorders((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
                     .MergeCell((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
                     .WriteRange((HeadersRowOffset + 1, currentStart),
                         new() {new() {groups[i] + "-1", groups[i] + "-2"}})
-                    .AddBorders((HeadersRowOffset + 1, currentStart), (HeadersRowOffset + 1, currentStart),
-                        new() {Blue = 1})
-                    .AddBorders((HeadersRowOffset + 1, currentStart + 1), (HeadersRowOffset + 1, currentStart + 1),
-                        new() {Blue = 1});
+                    .AddBorders((HeadersRowOffset + 1, currentStart), (HeadersRowOffset + 1, currentStart))
+                    .AddBorders((HeadersRowOffset + 1, currentStart + 1), (HeadersRowOffset + 1, currentStart + 1));
                 currentStart += 2;
             }
 
@@ -156,7 +151,9 @@ namespace Domain.Conversions
             {
                 // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
                 var data =
-                    $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.Location}, {meeting.MeetingType}, {group}, {(int) meeting.MeetingTime!.Day}, {meeting.MeetingTime.TimeSlotIndex}";
+                    $"{meeting.Discipline}, " +
+                    $"{meeting.Teacher?.Name}, " +
+                    $"{meeting.Location}";
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
@@ -170,8 +167,7 @@ namespace Domain.Conversions
                 if (group.GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
                 modifier
                     .WriteRange((rowNum, colNum), new() {new() {data}})
-                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1),
-                        new() {Green = 1});
+                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
                     modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
             }

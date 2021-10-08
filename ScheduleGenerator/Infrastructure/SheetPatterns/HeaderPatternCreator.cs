@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 
 namespace Infrastructure.SheetPatterns
@@ -15,7 +14,7 @@ namespace Infrastructure.SheetPatterns
             {
                 modifier
                     .WriteRange((start.row, start.col + i), new List<List<string>>() {new List<string>() {headers[i]}})
-                    .AddBorders((start.row, start.col + i), (start.row, start.col + i), new Color() {Blue = 1});
+                    .AddBorders((start.row, start.col + i), (start.row, start.col + i));
                 if (i < comments.Count) modifier.AddComment((start.row, start.col + i), comments[i]);
             }
 

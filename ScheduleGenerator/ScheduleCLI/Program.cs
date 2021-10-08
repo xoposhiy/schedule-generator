@@ -33,11 +33,6 @@ namespace ScheduleCLI
 
             var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
-            // foreach (var requisitionItem in requisitions)
-            // {
-            //     Console.WriteLine(requisitionItem.ToString());
-            // }
-            //var evaluator = container.Get<MeetingEvaluator>();
 
             var requisition = new Requisition(requisitions.ToArray());
 
