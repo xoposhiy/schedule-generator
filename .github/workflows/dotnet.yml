@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore ScheduleGenerator/Testing/
+      run: dotnet restore ScheduleGenerator/Testing/Testing.csproj
     - name: Build
-      run: dotnet build ScheduleGenerator/Testing/ --no-restore
+      run: dotnet build ScheduleGenerator/Testing/Testing.csproj --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
