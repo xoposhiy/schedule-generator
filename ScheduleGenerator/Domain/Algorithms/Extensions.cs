@@ -46,9 +46,14 @@ namespace Domain.Algorithms
         public static int GetMeetingsGapCount(this Dictionary<MeetingTime, Meeting> dictionary)
         {
             var count = 0;
-            foreach (var byDay in dictionary.Values.Select(m => m.MeetingTime!).GroupBy(t => t.Day))
+            foreach (var byDay in dictionary.Values
+                .Select(m => m.MeetingTime!)
+                .GroupBy(t => t.Day))
             {
-                var orderedSlots = byDay.Select(t => t.TimeSlotIndex).OrderBy(i => i).ToList();
+                var orderedSlots = byDay
+                    .Select(t => t.TimeSlotIndex)
+                    .OrderBy(i => i)
+                    .ToList();
                 for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
             }
 

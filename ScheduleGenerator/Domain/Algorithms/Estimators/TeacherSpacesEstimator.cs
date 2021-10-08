@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -16,9 +15,7 @@ namespace Domain.Algorithms.Estimators
 
             foreach (var byTeacher in schedule.TeacherMeetingsByTime.Values)
             foreach (var byWeekType in byTeacher.Values)
-            {
                 penalty += byWeekType.GetMeetingsGapCount();
-            }
 
             return -penalty;
         }
