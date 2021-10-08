@@ -46,8 +46,7 @@ namespace Domain.Algorithms
         public static int GetMeetingsGapCount(this Dictionary<MeetingTime, Meeting> dictionary)
         {
             var count = 0;
-            foreach (var byDay in dictionary.Values
-                .Select(m => m.MeetingTime!)
+            foreach (var byDay in dictionary.Keys
                 .GroupBy(t => t.Day))
             {
                 var orderedSlots = byDay
