@@ -57,6 +57,7 @@ namespace Domain.Conversions
 
         private void BuildSchedulePattern(List<string> groups)
         {
+            //TODO: добавить метод для покраски поля в серый.
             BuildTimeBar();
             BuildGroupHeaders(groups);
         }

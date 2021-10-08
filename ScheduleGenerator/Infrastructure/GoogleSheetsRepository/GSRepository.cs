@@ -218,11 +218,13 @@ namespace Infrastructure.GoogleSheetsRepository
                         {
                             TextFormat = new TextFormat
                             {
-                                FontSize = 9
+                                FontSize = 7,
                             },
                             BackgroundColor = value.Contains("Онлайн")
                                 ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}
-                                : new Color {Blue = 1, Green = 1, Red = 1, Alpha = 0}
+                                : new Color {Blue = 1, Green = 1, Red = 1, Alpha = 0},
+                            VerticalAlignment = "middle",
+                            HorizontalAlignment = "center"
                         }
                     });
                 rows.Add(
