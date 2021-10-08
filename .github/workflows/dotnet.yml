@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-
+    env:
+      GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
     runs-on: ubuntu-latest
 
     steps:
