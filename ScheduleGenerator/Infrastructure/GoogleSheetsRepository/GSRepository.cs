@@ -229,7 +229,7 @@ namespace Infrastructure.GoogleSheetsRepository
                         {
                             TextFormat = new TextFormat
                             {
-                                FontSize = 7,
+                                FontSize = 9,
                             },
                             BackgroundColor = value.Contains("Онлайн")
                                 ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}

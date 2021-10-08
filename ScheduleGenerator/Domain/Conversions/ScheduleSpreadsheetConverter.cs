@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 
 namespace Domain.Conversions
@@ -13,6 +14,9 @@ namespace Domain.Conversions
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 2;
+        private static readonly string[] weekDays = { "ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
+        private static readonly string[] classStarts = { "I 9:00", "II 10:40", "III 12:50", 
+            "IV 14:30", "V 16:40", "VI 17:50" };
 
         public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
         {
@@ -57,19 +61,27 @@ namespace Domain.Conversions
 
         private void BuildSchedulePattern(List<string> groups)
         {
-            //TODO: добавить метод для покраски поля в серый.
+            ColorField(groups);
             BuildTimeBar();
             BuildGroupHeaders(groups);
         }
 
+        private void ColorField(List<string> groups)
+        {
+            var weekDayCount = weekDays.Length;
+            var startIndexesCount = classStarts.Length;
+            var modifier = repository
+                .ModifySpreadSheet(sheetName);
+            modifier.ColorizeRange((TimeBarRowOffset, HeadersColumnOffset), 
+                (TimeBarRowOffset + weekDayCount * startIndexesCount * 2 - 1,
+                    HeadersColumnOffset + groups.Count * 2 - 1),
+                new() {Blue = 15/16f,Green = 15/16f,Red = 15/16f, Alpha = 1 - 0.05f});
+            
+            modifier.Execute();
+        }
+        
         private void BuildTimeBar()
         {
-            var weekDays = new[] {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
-            var classStarts = new[]
-            {
-                "I 9:00", "II 10:40", "III 12:50",
-                "IV 14:30", "V 16:40", "VI 17:50"
-            };
             var weekDayCount = weekDays.Length;
             var startIndexesCount = classStarts.Length;
             var modifier = repository
