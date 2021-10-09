@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
@@ -7,22 +6,19 @@ using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
+    [TestFixture]
     internal class SheetTableErrorPainterTest
     {
-        private static string CredentialsEnvVar = "GoogleApiCredentials";
-        private static readonly string ApplicationName = "MyApp";
-
-        private static string url =
-            "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+        private const string Url =
+            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
         private static string sheetName = "SheetTablePainterPractice";
 
-        // [Test]
+        [Test]
         public void PaintErrorsWhenNoMergerCells()
         {
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GsRepository(ApplicationName, credentialPath, url);
+            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
+            var repo = new GsRepository("test", credentialPath, Url);
 
 
             var errors = new List<((int, int), string)>()
@@ -32,14 +28,14 @@ namespace Testing.SheetPatternsTest
 
             SheetTableErrorPainter.PaintErrors(repo, sheetName, (1, 0), errors);
             Assert.Pass();
+            //TODO: test should probably check something
         }
 
-        // [Test]
+        [Test]
         public void PaintErrorsAndClear()
         {
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GsRepository(ApplicationName, credentialPath, url);
+            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
+            var repo = new GsRepository("test", credentialPath, Url);
 
             var errors = new List<((int, int), string)>()
             {
@@ -51,6 +47,7 @@ namespace Testing.SheetPatternsTest
             SheetTableErrorPainter.ClearErrorPaint(repo, sheetName, (5, 0), coordsToClear);
 
             Assert.Pass();
+            //TODO: test should probably check something
         }
     }
 }

@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
 using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
+    [TestFixture]
     internal class HeaderPatternCreatorTest
     {
-        private static string CredentialsEnvVar = "GoogleApiCredentials";
-        private static readonly string ApplicationName = "MyApp";
+        private const string Url =
+            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
-        private static string url =
-            "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=566045364";
+        private const string SheetName = "headerPractice";
 
-        private static string sheetName = "headerPractice";
-
-        // [Test]
+        [Test]
         public void SetUpHeadersOnClearSheet()
         {
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var repo = new GsRepository(ApplicationName, credentialPath, url);
+            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
+            var repo = new GsRepository("test", credentialPath, Url);
+            repo.SetUpSheetInfo();
 
             var headers = new List<string>()
             {
@@ -52,9 +49,9 @@ namespace Testing.SheetPatternsTest
                 "четная/нечетная (можно не указывать)"
             };
 
-            HeaderPatternCreator.SetUpHeaders(repo, sheetName, (5, 1), headers, comments);
+            HeaderPatternCreator.SetUpHeaders(repo, SheetName, (5, 1), headers, comments);
 
-            var actualHeaders = repo.ReadCellRange(sheetName, (5, 1), (5, 8))![0]!;
+            var actualHeaders = repo.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
 
             Assert.AreEqual(headers.Count, actualHeaders.Count);
             for (var i = 0; i < headers.Count; i++) Assert.AreEqual(headers[i], actualHeaders[i]);
