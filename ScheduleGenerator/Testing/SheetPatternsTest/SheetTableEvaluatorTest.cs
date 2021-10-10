@@ -4,6 +4,7 @@ using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
+    [TestFixture]
     internal class SheetTableEvaluatorTest
     {
         private List<(string pattern, string msg)> patternMsgList = new()

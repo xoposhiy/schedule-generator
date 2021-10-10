@@ -3,7 +3,7 @@ using Infrastructure.GoogleSheetsRepository;
 
 namespace Infrastructure.SheetPatterns
 {
-    public class HeaderPatternCreator
+    public static class HeaderPatternCreator
     {
         public static void SetUpHeaders(GsRepository repo, string sheetName,
             (int row, int col) start, List<string> headers, List<string> comments)

@@ -6,13 +6,14 @@ using NUnit.Framework;
 
 namespace Testing.SheetPatternsTest
 {
+    //TODO надо бы зачищать таблицу между тестами
     [TestFixture]
     internal class SheetTableErrorPainterTest
     {
         private const string Url =
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
-        private static string sheetName = "SheetTablePainterPractice";
+        private static string sheetName = "Testing";
 
         [Test]
         public void PaintErrorsWhenNoMergerCells()

@@ -11,8 +11,9 @@ namespace Testing.SheetPatternsTest
         private const string Url =
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
-        private const string SheetName = "headerPractice";
+        private const string SheetName = "Testing";
 
+        //TODO надо бы зачищать таблицу между тестами
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
