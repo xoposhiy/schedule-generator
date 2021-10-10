@@ -17,7 +17,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             var repo = new GsRepository("test", credentialPath, Url);
             repo.SetUpSheetInfo();
-            
+
             repo.ChangeTable(Url);
             repo.ReadCell("Testing", (1, 1)); // var read =
 

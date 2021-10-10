@@ -21,15 +21,10 @@ namespace Domain
         public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>>
             GroupMeetingsByTime = new();
 
-        public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
-
         public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<MeetingTime, Meeting>>>
             TeacherMeetingsByTime = new();
 
-        public readonly Dictionary<DayOfWeek, Dictionary<Teacher, SortedSet<int>>> TeacherMeetingsTimesByDay = new();
-
-        public readonly Dictionary<DayOfWeek, Dictionary<MeetingGroup, SortedSet<int>>>
-            GroupsMeetingsTimesByDay = new();
+        public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
 
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
@@ -72,8 +67,6 @@ namespace Domain
                 FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
-                TeacherMeetingsTimesByDay.SafeAdd(meetingTime.Day, teacher, meetingTime.TimeSlotIndex);
-
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
             }
         }
@@ -92,8 +85,6 @@ namespace Domain
                     FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
 
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
-
-                TeacherMeetingsTimesByDay[meetingTime.Day][meetingToRemove.Teacher].Remove(meetingTime.TimeSlotIndex);
 
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
             }
@@ -321,7 +312,6 @@ namespace Domain
                     GroupMeetingsByTime[meetingGroup].SafeAdd(weekType, meetingTime, meetingToAdd);
 
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem);
-                GroupsMeetingsTimesByDay.SafeAdd(meetingTime.Day, meetingGroup, meetingTime.TimeSlotIndex);
             }
         }
 
@@ -333,7 +323,6 @@ namespace Domain
                     GroupMeetingsByTime[meetingGroup][weekType].Remove(meetingTime);
 
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem);
-                GroupsMeetingsTimesByDay[meetingTime.Day][meetingGroup].Remove(meetingTime.TimeSlotIndex);
             }
         }
     }

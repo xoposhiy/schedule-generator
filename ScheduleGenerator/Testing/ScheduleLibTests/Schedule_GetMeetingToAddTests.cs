@@ -20,7 +20,6 @@ namespace Testing.ScheduleLibTests
             var schedule = new Schedule(requisition, ClassRooms);
 
             var meeting = schedule.GetMeetingsToAdd().Single();
-            Console.Error.WriteLine(meeting);
 
             Assert.That(meeting.Location, Is.EqualTo("632"));
             Assert.That(meeting.Groups, Is.EqualTo(new[] {Group1, Group2}));

@@ -23,7 +23,6 @@ namespace Testing.ScheduleLibTests
                 schedule.GetMeetingsToAdd().First(m => m.MeetingType == MeetingType.Seminar);
 
             schedule.AddMeeting(seminarWithAdjacentRequirement);
-            Console.WriteLine(seminarWithAdjacentRequirement);
             var actualMeetings = schedule.Meetings.ToList();
 
             Assert.AreEqual(0, schedule.NotUsedMeetings.Count);
@@ -44,7 +43,6 @@ namespace Testing.ScheduleLibTests
             var lab = schedule.GetMeetingsToAdd().First(m => m.MeetingType == MeetingType.ComputerLab);
 
             schedule.AddMeeting(lab);
-            Console.WriteLine(lab);
             var actualMeetings = schedule.Meetings.ToList();
 
             Assert.AreEqual(0, schedule.NotUsedMeetings.Count);

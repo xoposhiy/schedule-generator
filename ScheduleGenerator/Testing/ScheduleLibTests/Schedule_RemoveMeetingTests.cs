@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using NUnit.Framework;
@@ -18,7 +17,6 @@ namespace Testing.ScheduleLibTests
             for (var i = 0; i < 3; i++)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();
-                Console.Error.WriteLine(meeting);
                 schedule.AddMeeting(meeting);
                 addedMeetings.Add(meeting);
             }

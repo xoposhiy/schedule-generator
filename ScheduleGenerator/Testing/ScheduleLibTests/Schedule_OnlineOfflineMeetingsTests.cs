@@ -13,7 +13,6 @@ namespace Testing.ScheduleLibTests
         public void TestOnlineLocation()
         {
             var schedule = new Schedule(CalculusRequisition, ClassRooms);
-            foreach (var meeting in schedule.GetMeetingsToAdd()) Console.Error.WriteLine(meeting);
 
             var lecturePossibleLocations = schedule.GetMeetingsToAdd()
                 .Where(m => m.MeetingType == MeetingType.Lecture)

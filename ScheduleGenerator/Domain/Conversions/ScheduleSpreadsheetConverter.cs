@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 
 namespace Domain.Conversions
@@ -14,9 +13,9 @@ namespace Domain.Conversions
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 2;
-        private static readonly string[] weekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
+        private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
 
-        private static readonly string[] classStarts =
+        private static readonly string[] ClassStarts =
         {
             "I 9:00", "II 10:40", "III 12:50",
             "IV 14:30", "V 16:40", "VI 17:50"
@@ -72,8 +71,8 @@ namespace Domain.Conversions
 
         private void ColorField(List<string> groups)
         {
-            var weekDayCount = weekDays.Length;
-            var startIndexesCount = classStarts.Length;
+            var weekDayCount = WeekDays.Length;
+            var startIndexesCount = ClassStarts.Length;
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
             modifier.ColorizeRange((TimeBarRowOffset, HeadersColumnOffset),
@@ -86,15 +85,15 @@ namespace Domain.Conversions
 
         private void BuildTimeBar()
         {
-            var weekDayCount = weekDays.Length;
-            var startIndexesCount = classStarts.Length;
+            var weekDayCount = WeekDays.Length;
+            var startIndexesCount = ClassStarts.Length;
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
             var currentStart = TimeBarRowOffset;
             for (var i = 0; i < weekDayCount; i++)
             {
                 modifier
-                    .WriteRange((currentStart, TimeBarColumnOffset), new() {new() {weekDays[i]}})
+                    .WriteRange((currentStart, TimeBarColumnOffset), new() {new() {WeekDays[i]}})
                     .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset))
                     .MergeCell((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset));
                 currentStart += 12;
@@ -105,7 +104,7 @@ namespace Domain.Conversions
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset + 1),
-                        new() {new() {classStarts[i % 6]}})
+                        new() {new() {ClassStarts[i % 6]}})
                     .AddBorders((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1))
                     .MergeCell((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1));
                 currentStart += 2;
@@ -172,7 +171,7 @@ namespace Domain.Conversions
                     $"{meeting.Teacher?.Name}, " +
                     $"{meeting.Location}";
 
-                var rowNumOff = weekDayToIntDict[meeting.MeetingTime.Day] * 12 + vertOffset;
+                var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
                 var rowsInMeeting = 1;
                 if (meeting.WeekType == WeekType.Even) rowNum++;
