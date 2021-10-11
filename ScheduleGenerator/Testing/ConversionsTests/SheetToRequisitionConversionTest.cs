@@ -1,34 +1,30 @@
-﻿using System;
-using Domain.Conversions;
+﻿using Domain.Conversions;
 using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
 
 namespace Testing.ConversionsTests
 {
+    [TestFixture]
     internal class SheetToRequisitionConversionTest
     {
-        private static string CredentialsEnvVar = "GoogleApiCredentials";
-        private static readonly string ApplicationName = "MyApp";
+        private const string Url =
+            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
-        // [Test]
-        public void Test1()
+        [Test]
+        public void RequisitionsReadTest()
         {
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var url =
-                "https://docs.google.com/spreadsheets/d/1-CFNA5rFSKmrs5jdJm5xg2b1cQDbCJ8LA1FRrdBBRyg/edit#gid=1607674973";
-            var repo = new GsRepository(ApplicationName, credentialPath, url);
+            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
+            var repo = new GsRepository("test", credentialPath, Url);
 
             var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo,
-                "Requisition",
-                "Plan",
-                "");
-
-            //TODO update expected counts
-            Assert.AreEqual(10, requisitions.Item1.Count);
-            Assert.AreEqual(10, requisitions.Item2.Items.Length);
-            Assert.AreEqual(10, requisitions.Item3.Count);
+                "Входные требования",
+                "Учебный план",
+                "Аудитории");
+            
+            Assert.AreEqual(60, requisitions.Item1.Count);
+            Assert.AreEqual(21, requisitions.Item2.Items.Length);
+            Assert.AreEqual(24, requisitions.Item3.Count);
         }
     }
 }
