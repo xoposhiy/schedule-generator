@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 
 namespace Domain.Algorithms
 {
@@ -68,47 +67,37 @@ namespace Domain.Algorithms
                 dict.Add(key, new() {value});
         }
 
-        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, TValue>> dict,
-            TKey1 key1, TKey2 key2, TValue value)
-            where TKey1 : notnull
-            where TKey2 : notnull
-        {
-            if (dict.ContainsKey(key1))
-                dict[key1].Add(key2, value);
-            else
-                dict.Add(key1, new() {{key2, value}});
-        }
-        
-        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, SortedDictionary<TKey2, TValue>> dict,
-            TKey1 key1, TKey2 key2, TValue value)
-            where TKey1 : notnull
-            where TKey2 : notnull
-        {
-            if (dict.ContainsKey(key1))
-                dict[key1].Add(key2, value);
-            else
-                dict.Add(key1, new() {{key2, value}});
-        }
-
-        public static void SafeAdd<TKey1, TValue>(
-            this Dictionary<TKey1, SortedSet<TValue>> dict, TKey1 key1, TValue value)
+        public static void SafeAdd<TKey1>(
+            this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>> dict,
+            TKey1 key1, Meeting meeting)
             where TKey1 : notnull
         {
-            if (!dict.ContainsKey(key1)) dict[key1] = new();
+            if (!dict.ContainsKey(key1))
+            {
+                dict[key1] = new();
+            }
 
-            dict[key1].Add(value);
-        }
+            var byKey1 = dict[key1];
+            var (day, timeSlot) = meeting.MeetingTime!;
 
-        public static void SafeAdd<TKey1, TKey2, TValue>(
-            this Dictionary<TKey1, Dictionary<TKey2, SortedSet<TValue>>> dict, TKey1 key1, TKey2 key2, TValue value)
-            where TKey1 : notnull
-            where TKey2 : notnull
-        {
-            if (!dict.ContainsKey(key1)) dict[key1] = new();
+            foreach (var weekType in meeting.WeekType.GetWeekTypes())
+            {
+                if (!byKey1.ContainsKey(weekType))
+                {
+                    byKey1[weekType] = new();
+                }
 
-            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = new();
+                var byWeekType = byKey1[weekType];
 
-            dict[key1][key2].Add(value);
+                if (!byWeekType.ContainsKey(day))
+                {
+                    byWeekType[day] = new();
+                }
+
+                var byDay = byWeekType[day];
+                
+                byDay.Add(timeSlot, meeting);
+            }
         }
 
         public static void SafeIncrement<TKey1, TKey2>(

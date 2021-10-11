@@ -82,17 +82,10 @@ namespace Domain
 
                 var teacher = meetingToAdd.Teacher;
                 var meetingTime = meetingToAdd.MeetingTime!;
-                if (!TeacherMeetingsByTime.ContainsKey(teacher)) TeacherMeetingsByTime[teacher] = new();
-
-                foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
-                {
-                    if (!TeacherMeetingsByTime[teacher].ContainsKey(weekType))
-                        TeacherMeetingsByTime[teacher][weekType] = new();
-                    TeacherMeetingsByTime[teacher][weekType].SafeAdd(meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);   
-                }
+                TeacherMeetingsByTime.SafeAdd(teacher, meetingToAdd);
 
                 FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
-                AddMeetingToGroup(meetingToAdd, meetingTime);
+                AddMeetingToGroup(meetingToAdd);
 
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
 
@@ -118,7 +111,7 @@ namespace Domain
                 if (meetingToRemove.Location != "Онлайн")
                     FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
 
-                RemoveMeetingFromGroup(meetingToRemove, meetingTime);
+                RemoveMeetingFromGroup(meetingToRemove);
 
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
                 if (isSure)
@@ -267,13 +260,13 @@ namespace Domain
         private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meeting)
         {
             var teacher = meeting.Teacher;
-            var meetingTime = meeting.MeetingTime!;
+            var (day, timeSlotIndex) = meeting.MeetingTime!;
             if (!TeacherMeetingsByTime.TryGetValue(teacher, out var weekTypeByTeacher)) return false;
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
-                if (timeByWeekType.ContainsKey(meetingTime.Day) 
-                    && timeByWeekType[meetingTime.Day].ContainsKey(meetingTime.TimeSlotIndex)) return true;
+                if (timeByWeekType.ContainsKey(day) 
+                    && timeByWeekType[day].ContainsKey(timeSlotIndex)) return true;
             }
 
             return false;
@@ -288,12 +281,15 @@ namespace Domain
 
         private bool HasMeetingAlreadyAtThisTime(Meeting meeting)
         {
-            var meetingTime = meeting.MeetingTime!;
-            foreach (var group in meeting.Groups!.GetGroupParts().Where(GroupMeetingsByTime.ContainsKey))
+            var (day, timeSlotIndex) = meeting.MeetingTime!;
+            foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
-                if (GroupMeetingsByTime[group][weekType].ContainsKey(meetingTime.Day) 
-                    && GroupMeetingsByTime[group][weekType][meetingTime.Day].ContainsKey(meetingTime.TimeSlotIndex))
-                    return true;
+            {
+                if (!GroupMeetingsByTime.TryGetValue(group, out var byGroup)) continue;
+                if (!byGroup.TryGetValue(weekType, out var byWeekType)) continue;
+                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
+                if (byDay.ContainsKey(timeSlotIndex)) return true;
+            }
 
             return false;
         }
@@ -301,12 +297,13 @@ namespace Domain
         private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline,
             WeekType meetingWeekType)
         {
-            if (!GroupMeetingsByTime.ContainsKey(group)) return false;
+            var (day, timeSlotIndex) = meetingTime;
+            if (!GroupMeetingsByTime.TryGetValue(group, out var byGroup)) return false;
             foreach (var weekType in meetingWeekType.GetWeekTypes())
             {
-                if (!GroupMeetingsByTime[group].ContainsKey(weekType))
-                    continue;
-                if (!GroupMeetingsByTime[group][weekType][meetingTime.Day].TryGetValue(meetingTime.TimeSlotIndex, out var value)) continue;
+                if (!byGroup.TryGetValue(weekType, out var byWeekType)) continue;
+                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
+                if (!byDay.TryGetValue(timeSlotIndex, out var value)) continue;
                 if (value.RequisitionItem.IsOnline == isOnline)
                     return true;
             }
@@ -342,26 +339,22 @@ namespace Domain
             //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
         }
 
-        private void AddMeetingToGroup(Meeting meetingToAdd, MeetingTime meetingTime)
+        private void AddMeetingToGroup(Meeting meetingToAdd)
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                if (!GroupMeetingsByTime.ContainsKey(meetingGroup))
-                    GroupMeetingsByTime[meetingGroup] = new();
-                foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
-                    GroupMeetingsByTime[meetingGroup][weekType]
-                        .SafeAdd(meetingTime.Day, meetingTime.TimeSlotIndex, meetingToAdd);   
-
+                GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem);
             }
         }
 
-        private void RemoveMeetingFromGroup(Meeting meetingToRemove, MeetingTime meetingTime)
+        private void RemoveMeetingFromGroup(Meeting meetingToRemove)
         {
+            var (day, timeSlotIndex) = meetingToRemove.MeetingTime!;
             foreach (var meetingGroup in meetingToRemove.Groups!.GetGroupParts())
             {
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
-                    GroupMeetingsByTime[meetingGroup][weekType][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
+                    GroupMeetingsByTime[meetingGroup][weekType][day].Remove(timeSlotIndex);
 
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem);
             }
