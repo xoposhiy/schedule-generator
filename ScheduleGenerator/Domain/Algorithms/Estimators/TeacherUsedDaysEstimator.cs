@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -13,10 +14,12 @@ namespace Domain.Algorithms.Estimators
         {
             const int maxTeacherDays = 1;
             var dayCount = 0;
-            foreach (var byDay in schedule.TeacherMeetingsTimesByDay.Values)
-            foreach (var byTeacher in byDay.Values)
-                dayCount += Math.Max(byTeacher.Count, 1);
-            var penalty = dayCount - maxTeacherDays;
+
+            foreach (var byTeacher in schedule.TeacherMeetingsByTime.Values)
+            foreach (var byWeekType in byTeacher.Values)
+                dayCount += byWeekType.Keys.Select(t => t.Day).Distinct().Count();
+
+            var penalty = dayCount / 2 - maxTeacherDays;
             return penalty < 0 ? 0 : -penalty;
         }
     }
