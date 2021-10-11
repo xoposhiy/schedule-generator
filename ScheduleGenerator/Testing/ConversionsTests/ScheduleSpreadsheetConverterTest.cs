@@ -11,6 +11,7 @@ namespace Testing.ConversionsTests
     {
         private const string Url =
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
+
         private const string SheetName = "ScheduleTesting";
 
         [Test]
@@ -29,7 +30,7 @@ namespace Testing.ConversionsTests
             var converter = new ScheduleSpreadsheetConverter(repo, SheetName);
 
             converter.Build(testSchedule);
-            
+
             //TODO: проверок бы добавить
             Assert.Pass();
         }

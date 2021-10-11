@@ -18,7 +18,8 @@ namespace Domain
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom = new();
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
 
-        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>>
+        public readonly Dictionary<MeetingGroup,
+                Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>>
             GroupMeetingsByTime = new();
 
         public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>>
@@ -47,7 +48,7 @@ namespace Domain
                 .ToHashSet();
             LinkBasicMeetings(NotUsedMeetings);
             FillUsefulDicts(NotUsedMeetings);
-            
+
             FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
@@ -95,6 +96,7 @@ namespace Domain
                     MeetingsByTimeSlot[meetingTime].Remove(meetingToAdd.BaseMeeting!);
                 }
             }
+
             if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
@@ -106,7 +108,8 @@ namespace Domain
 
                 var meetingTime = meetingToRemove.MeetingTime!;
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
-                    TeacherMeetingsByTime[meetingToRemove.Teacher][weekType][meetingTime.Day].Remove(meetingTime.TimeSlotIndex);
+                    TeacherMeetingsByTime[meetingToRemove.Teacher][weekType][meetingTime.Day]
+                        .Remove(meetingTime.TimeSlotIndex);
 
                 if (meetingToRemove.Location != "Онлайн")
                     FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
@@ -120,13 +123,12 @@ namespace Domain
                     MeetingsByTimeSlot[meetingTime].Add(meetingToRemove.BaseMeeting!);
                 }
             }
+
             if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
-            if (NotUsedMeetings.Count == 1) Console.WriteLine("Surprise");
-
             foreach (var meeting in NotUsedMeetings.ToList())
             {
                 var requisitionItem = meeting.RequisitionItem;
@@ -265,7 +267,7 @@ namespace Domain
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
-                if (timeByWeekType.ContainsKey(day) 
+                if (timeByWeekType.ContainsKey(day)
                     && timeByWeekType[day].ContainsKey(timeSlotIndex)) return true;
             }
 

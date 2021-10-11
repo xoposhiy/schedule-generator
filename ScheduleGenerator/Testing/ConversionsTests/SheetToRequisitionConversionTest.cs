@@ -21,7 +21,7 @@ namespace Testing.ConversionsTests
                 "Входные требования",
                 "Учебный план",
                 "Аудитории");
-            
+
             Assert.AreEqual(60, requisitions.Item1.Count);
             Assert.AreEqual(21, requisitions.Item2.Items.Length);
             Assert.AreEqual(24, requisitions.Item3.Count);

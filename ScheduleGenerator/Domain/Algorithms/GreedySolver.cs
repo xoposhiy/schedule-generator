@@ -43,7 +43,7 @@ namespace Domain.Algorithms
                     if (meetingsToAdd.Count == 0)
                         break;
                     var bestMeeting = meetingsToAdd.First();
-                    currentSchedule.AddMeeting(bestMeeting.Item1, isSure: true);
+                    currentSchedule.AddMeeting(bestMeeting.Item1, true);
                 }
 
                 Console.WriteLine();

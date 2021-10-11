@@ -43,7 +43,7 @@ namespace Domain.Algorithms
             }
         }
 
-        public static int GetMeetingsGapCount(this Dictionary<DayOfWeek,SortedDictionary<int, Meeting>> dictionary)
+        public static int GetMeetingsGapCount(this Dictionary<DayOfWeek, SortedDictionary<int, Meeting>> dictionary)
         {
             var count = 0;
             foreach (var byDay in dictionary.Values)
@@ -72,30 +72,19 @@ namespace Domain.Algorithms
             TKey1 key1, Meeting meeting)
             where TKey1 : notnull
         {
-            if (!dict.ContainsKey(key1))
-            {
-                dict[key1] = new();
-            }
+            if (!dict.ContainsKey(key1)) dict[key1] = new();
 
             var byKey1 = dict[key1];
             var (day, timeSlot) = meeting.MeetingTime!;
 
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!byKey1.ContainsKey(weekType))
-                {
-                    byKey1[weekType] = new();
-                }
-
+                if (!byKey1.ContainsKey(weekType)) byKey1[weekType] = new();
                 var byWeekType = byKey1[weekType];
 
-                if (!byWeekType.ContainsKey(day))
-                {
-                    byWeekType[day] = new();
-                }
-
+                if (!byWeekType.ContainsKey(day)) byWeekType[day] = new();
                 var byDay = byWeekType[day];
-                
+
                 byDay.Add(timeSlot, meeting);
             }
         }
