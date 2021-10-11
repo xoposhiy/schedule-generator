@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Domain;
 using Domain.Conversions;
 using Infrastructure.GoogleSheetsRepository;
@@ -7,18 +5,16 @@ using NUnit.Framework;
 
 namespace Testing.ConversionsTests
 {
-    public class Tests
+    //TODO: зачищать таблицу между тестами
+    [TestFixture]
+    public class ScheduleSpreadSheetConverterTests
     {
-        private static string CredentialsEnvVar = "GoogleApiCredentials";
-        private static readonly string ApplicationName = "MyApp";
+        private const string Url =
+            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
+        private const string SheetName = "ScheduleTesting";
 
-        [SetUp]
-        public void Setup()
-        {
-        }
-
-        // [Test]
-        public void Test1()
+        [Test]
+        public void ScheduleWriteTest()
         {
             var testSchedule = new Schedule(new[]
             {
@@ -28,14 +24,13 @@ namespace Testing.ConversionsTests
                 MeetingCreator.CreateMeeting("Net 150 Ber 0 1 1 0 FT-202#0"),
                 MeetingCreator.CreateMeeting("Net 150 Ber 0 1 0 0 FT-201#1")
             });
-            var credentialDirPath = Environment.GetEnvironmentVariable(CredentialsEnvVar);
-            var credentialPath = credentialDirPath + "\\client_secrets.json";
-            var url = "https://docs.google.com/spreadsheets/d/1JxL_CTuc-NLaBRdY5F4vz3yn6WJe8bp-7Mn7ViycjtQ/edit#gid=0";
-            var repo = new GsRepository(ApplicationName, credentialPath, url);
-            var converter = new ScheduleSpreadsheetConverter(repo, repo.CurrentSheetInfo!.Sheets.Keys.First());
+            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
+            var repo = new GsRepository("test", credentialPath, Url);
+            var converter = new ScheduleSpreadsheetConverter(repo, SheetName);
 
             converter.Build(testSchedule);
-
+            
+            //TODO: проверок бы добавить
             Assert.Pass();
         }
     }
