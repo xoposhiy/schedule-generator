@@ -29,6 +29,9 @@ namespace Domain
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
+        public readonly Dictionary<Meeting, HashSet<MeetingTime>> FreeTimeSlotByMeeting = new();
+        public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
+
         public Schedule(Meeting[] meetings)
         {
             Meetings = meetings.ToHashSet();
@@ -43,7 +46,27 @@ namespace Domain
                 .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
                 .ToHashSet();
             LinkBasicMeetings(NotUsedMeetings);
+            FillUsefulDicts(NotUsedMeetings);
+            
             FillMeetingFreedomDegree(NotUsedMeetings);
+        }
+
+        private void FillUsefulDicts(IEnumerable<Meeting> meetings)
+        {
+            foreach (var meeting in meetings)
+            {
+                var requisitionItem = meeting.RequisitionItem;
+                var possibleTimeChoices = requisitionItem.MeetingTimePriorities
+                    .SelectMany(p => p.MeetingTimeChoices)
+                    .ToHashSet();
+                FreeTimeSlotByMeeting.Add(meeting, possibleTimeChoices);
+                foreach (var timeChoice in possibleTimeChoices)
+                {
+                    if (!MeetingsByTimeSlot.ContainsKey(timeChoice))
+                        MeetingsByTimeSlot[timeChoice] = new();
+                    MeetingsByTimeSlot[timeChoice].Add(meeting);
+                }
+            }
         }
 
         public IReadOnlySet<Meeting> GetMeetings()
@@ -51,7 +74,7 @@ namespace Domain
             return Meetings;
         }
 
-        public void AddMeeting(Meeting meeting)
+        public void AddMeeting(Meeting meeting, bool isSure = false)
         {
             foreach (var meetingToAdd in meeting.GetLinkedMeetings())
             {
@@ -68,10 +91,17 @@ namespace Domain
                 AddMeetingToGroup(meetingToAdd, meetingTime);
 
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+
+                if (isSure)
+                {
+                    FreeTimeSlotByMeeting[meetingToAdd.BaseMeeting!].Remove(meetingTime);
+                    MeetingsByTimeSlot[meetingTime].Remove(meetingToAdd.BaseMeeting!);
+                }
             }
+            if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
-        public void RemoveMeeting(Meeting meeting)
+        public void RemoveMeeting(Meeting meeting, bool isSure = false)
         {
             foreach (var meetingToRemove in meeting.GetLinkedMeetings())
             {
@@ -87,7 +117,13 @@ namespace Domain
                 RemoveMeetingFromGroup(meetingToRemove, meetingTime);
 
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
+                if (isSure)
+                {
+                    FreeTimeSlotByMeeting[meetingToRemove.BaseMeeting!].Add(meetingTime);
+                    MeetingsByTimeSlot[meetingTime].Add(meetingToRemove.BaseMeeting!);
+                }
             }
+            if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
@@ -159,10 +195,8 @@ namespace Domain
                 var groupsChoicesCount = requisitionItem.GroupPriorities
                     .SelectMany(p => p.GroupsChoices)
                     .Count();
-                var timeChoicesCount = requisitionItem.MeetingTimePriorities
-                    .SelectMany(p => p.MeetingTimeChoices)
-                    .Count();
-                MeetingFreedomDegree.Add(meeting, groupsChoicesCount * timeChoicesCount * possibleRooms.Count);
+                var timeChoicesCount = FreeTimeSlotByMeeting[meeting].Count;
+                MeetingFreedomDegree[meeting] = groupsChoicesCount * timeChoicesCount * possibleRooms.Count;
             }
         }
 
