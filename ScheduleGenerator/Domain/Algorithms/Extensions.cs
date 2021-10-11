@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace Domain.Algorithms
@@ -43,16 +44,12 @@ namespace Domain.Algorithms
             }
         }
 
-        public static int GetMeetingsGapCount(this Dictionary<MeetingTime, Meeting> dictionary)
+        public static int GetMeetingsGapCount(this Dictionary<DayOfWeek,SortedDictionary<int, Meeting>> dictionary)
         {
             var count = 0;
-            foreach (var byDay in dictionary.Keys
-                .GroupBy(t => t.Day))
+            foreach (var byDay in dictionary.Values)
             {
-                var orderedSlots = byDay
-                    .Select(t => t.TimeSlotIndex)
-                    .OrderBy(i => i)
-                    .ToList();
+                var orderedSlots = byDay.Keys.ToImmutableSortedSet();
                 for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
             }
 
@@ -72,6 +69,17 @@ namespace Domain.Algorithms
         }
 
         public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, Dictionary<TKey2, TValue>> dict,
+            TKey1 key1, TKey2 key2, TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+        {
+            if (dict.ContainsKey(key1))
+                dict[key1].Add(key2, value);
+            else
+                dict.Add(key1, new() {{key2, value}});
+        }
+        
+        public static void SafeAdd<TKey1, TKey2, TValue>(this Dictionary<TKey1, SortedDictionary<TKey2, TValue>> dict,
             TKey1 key1, TKey2 key2, TValue value)
             where TKey1 : notnull
             where TKey2 : notnull

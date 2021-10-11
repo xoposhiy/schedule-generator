@@ -15,8 +15,8 @@ namespace Domain.Algorithms.Estimators
             var penalty = 0;
             foreach (var byGroup in schedule.GroupMeetingsByTime.Values)
             foreach (var byWeekType in byGroup.Values)
-                penalty += byWeekType.Keys.GroupBy(t => t.Day)
-                    .Select(g => g.Count())
+                penalty += byWeekType.Values
+                    .Select(g => g.Count)
                     .Count(c => c is not (>= 2 and <= 4));
 
             return -penalty;

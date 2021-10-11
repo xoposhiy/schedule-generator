@@ -17,7 +17,7 @@ namespace Domain.Algorithms.Estimators
 
             foreach (var byTeacher in schedule.TeacherMeetingsByTime.Values)
             foreach (var byWeekType in byTeacher.Values)
-                dayCount += byWeekType.Keys.Select(t => t.Day).Distinct().Count();
+                dayCount += byWeekType.Keys.Count;
 
             var penalty = dayCount / 2 - maxTeacherDays;
             return penalty < 0 ? 0 : -penalty;
