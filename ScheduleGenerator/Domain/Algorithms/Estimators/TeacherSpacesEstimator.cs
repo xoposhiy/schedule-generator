@@ -11,13 +11,13 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            var penalty = 0;
-
-            foreach (var byTeacher in schedule.TeacherMeetingsByTime.Values)
+            var penalty = 0d;
+            var teachers = schedule.TeacherMeetingsByTime.Values;
+            foreach (var byTeacher in teachers)
             foreach (var byWeekType in byTeacher.Values)
                 penalty += byWeekType.GetMeetingsGapCount();
 
-            return -penalty;
+            return -penalty / (teachers.Count * 2);
         }
     }
 }

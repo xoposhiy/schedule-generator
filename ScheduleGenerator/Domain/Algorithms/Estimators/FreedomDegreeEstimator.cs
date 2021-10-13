@@ -12,8 +12,8 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            var penalty = schedule.Meetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting.BaseMeeting!]);
-            return -penalty;
+            var score = schedule.NotUsedMeetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting]);
+            return score;
         }
     }
 }

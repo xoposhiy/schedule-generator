@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -13,13 +14,14 @@ namespace Domain.Algorithms.Estimators
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
-            var penalty = 0;
+            var penalty = 0d;
 
-            foreach (var byGroup in schedule.GroupMeetingsByTime.Values)
+            var groups = schedule.GroupMeetingsByTime.Values;
+            foreach (var byGroup in groups)
             foreach (var byWeekType in byGroup.Values)
                 penalty += byWeekType.GetMeetingsGapCount();
 
-            return -penalty;
+            return -penalty / (groups.Count * 2);
         }
     }
 }

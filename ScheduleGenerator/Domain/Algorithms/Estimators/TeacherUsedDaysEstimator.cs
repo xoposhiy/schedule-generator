@@ -13,13 +13,15 @@ namespace Domain.Algorithms.Estimators
         {
             const int maxTeacherDays = 1;
             var dayCount = 0;
-
-            foreach (var byTeacher in schedule.TeacherMeetingsByTime.Values)
+            
+            var teachers = schedule.TeacherMeetingsByTime.Values;
+            
+            foreach (var byTeacher in teachers)
             foreach (var byWeekType in byTeacher.Values)
                 dayCount += byWeekType.Keys.Count;
 
-            var penalty = dayCount / 2 - maxTeacherDays;
-            return penalty < 0 ? 0 : -penalty;
+            var penalty = dayCount / 2;
+            return -(penalty / teachers.Count);
         }
     }
 }
