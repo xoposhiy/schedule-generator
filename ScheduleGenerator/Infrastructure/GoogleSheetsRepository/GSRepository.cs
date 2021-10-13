@@ -239,7 +239,8 @@ namespace Infrastructure.GoogleSheetsRepository
                                 ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}
                                 : new Color {Blue = 1, Green = 1, Red = 1, Alpha = 0},
                             VerticalAlignment = "middle",
-                            HorizontalAlignment = "center"
+                            HorizontalAlignment = "center",
+                            WrapStrategy = "wrap",
                         }
                     });
                 rows.Add(

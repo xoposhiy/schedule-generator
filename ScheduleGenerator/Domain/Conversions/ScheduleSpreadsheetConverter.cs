@@ -168,8 +168,8 @@ namespace Domain.Conversions
                 // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
                 var data =
                     $"{meeting.Discipline}, " +
-                    $"{meeting.Teacher?.Name}, " +
-                    $"{meeting.Location}";
+                    $"{meeting.Location}, " +
+                    $"{meeting.Teacher?.Name}";
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
