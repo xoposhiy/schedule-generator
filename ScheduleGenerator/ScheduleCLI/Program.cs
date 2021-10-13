@@ -46,6 +46,7 @@ namespace ScheduleCLI
 
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(solutions.Last().Schedule);
+            Console.WriteLine(solutions.Last().Score);
         }
 
         // ReSharper disable once UnusedMember.Local

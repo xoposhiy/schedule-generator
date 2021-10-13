@@ -42,8 +42,9 @@ namespace Domain.Algorithms
                     Console.WriteLine();
                     if (meetingsToAdd.Count == 0)
                         break;
-                    var bestMeeting = meetingsToAdd.First();
-                    currentSchedule.AddMeeting(bestMeeting.Item1, true);
+                    var (meeting, score) = meetingsToAdd.First();
+                    currentScore = score;
+                    currentSchedule.AddMeeting(meeting, true);
                 }
 
                 Console.WriteLine();

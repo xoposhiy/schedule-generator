@@ -23,7 +23,7 @@ namespace Domain
             GroupMeetingsByTime = new();
 
         public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>>
-            TeacherMeetingsByTime = new();
+            TeacherMeetingsByTime = new(); //TODO: change to List(?)
 
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
 
@@ -195,6 +195,7 @@ namespace Domain
                     .SelectMany(p => p.GroupsChoices)
                     .Count();
                 var timeChoicesCount = FreeTimeSlotByMeeting[meeting].Count;
+                //TODO: Optimize possibleRooms and groupsChoicesCount
                 MeetingFreedomDegree[meeting] = groupsChoicesCount * timeChoicesCount * possibleRooms.Count;
             }
         }

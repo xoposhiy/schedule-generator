@@ -43,12 +43,8 @@ namespace Infrastructure.GoogleSheetsRepository
             {
                 var secret =
                     Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Process);
-                secret = secret != null
-                    ? secret
-                    : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
-                secret = secret != null
-                    ? secret
-                    : Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Machine);
+                secret ??= Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.User);
+                secret ??= Environment.GetEnvironmentVariable("GOOGLE_CREDENTIALS", EnvironmentVariableTarget.Machine);
                 return GoogleCredential.FromJson(secret);
             }
         }
@@ -240,7 +236,8 @@ namespace Infrastructure.GoogleSheetsRepository
                                 : new Color {Blue = 1, Green = 1, Red = 1, Alpha = 0},
                             VerticalAlignment = "middle",
                             HorizontalAlignment = "center",
-                            WrapStrategy = "wrap",
+                            WrapStrategy = "wrap"
+                            //TODO: перенести логику в конвертер (параметры прокидывать там и т.п.)
                         }
                     });
                 rows.Add(
