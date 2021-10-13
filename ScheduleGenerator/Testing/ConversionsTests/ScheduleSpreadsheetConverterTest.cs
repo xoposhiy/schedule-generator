@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace Testing.ConversionsTests
 {
-    //TODO: зачищать таблицу между тестами
     [TestFixture]
     public class ScheduleSpreadSheetConverterTests
     {
@@ -27,6 +26,7 @@ namespace Testing.ConversionsTests
             });
             const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             var repo = new GsRepository("test", credentialPath, Url);
+            repo.ClearCellRange(SheetName, (0, 0), (20, 20));
             var converter = new ScheduleSpreadsheetConverter(repo, SheetName);
 
             converter.Build(testSchedule);

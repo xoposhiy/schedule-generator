@@ -12,14 +12,14 @@ namespace Testing.SheetPatternsTest
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
         private const string SheetName = "Testing";
-
-        //TODO надо бы зачищать таблицу между тестами
+        
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
             const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             var repo = new GsRepository("test", credentialPath, Url);
             repo.SetUpSheetInfo();
+            repo.ClearCellRange(SheetName, (0, 0), (10, 10));
 
             var headers = new List<string>()
             {
