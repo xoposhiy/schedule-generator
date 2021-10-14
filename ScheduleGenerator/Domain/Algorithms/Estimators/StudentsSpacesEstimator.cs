@@ -19,7 +19,7 @@ namespace Domain.Algorithms.Estimators
             var groups = schedule.GroupMeetingsByTime.Values;
             foreach (var byGroup in groups)
             foreach (var byWeekType in byGroup.Values)
-                penalty += byWeekType.GetMeetingsGapCount();
+                penalty += byWeekType.GetMeetingsSpacesCount();
 
             return -penalty / (groups.Count * 2);
         }

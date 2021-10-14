@@ -17,7 +17,7 @@ namespace Domain.Algorithms.Estimators
             foreach (var byGroup in groups)
             foreach (var byWeekType in byGroup.Values)
                 penalty += byWeekType.Values
-                    .Select(g => g.Count)
+                    .Select(g => g.Count(m => m != null))
                     .Count(c => c is not (>= 2 and <= 4));
 
             return -penalty / (groups.Count * 2);

@@ -43,13 +43,33 @@ namespace Domain.Algorithms
             }
         }
 
-        public static int GetMeetingsGapCount(this Dictionary<DayOfWeek, SortedDictionary<int, Meeting>> dictionary)
+        public static int GetMeetingsSpacesCount(this Dictionary<DayOfWeek, Meeting?[]> dictionary)
         {
             var count = 0;
+            
             foreach (var byDay in dictionary.Values)
             {
-                var orderedSlots = byDay.Keys.ToImmutableSortedSet();
-                for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
+                var i = 0;
+                var prev = 0;
+                for (; i < 7; i++)
+                {
+                    if (byDay[i] != null)
+                    {
+                        prev = i;
+                        break;
+                    }
+                }
+
+                for (; i < 7; i++)
+                {
+                    if (byDay[i] != null)
+                    {
+                        count += i - prev + 1;
+                        prev = i;
+                    }
+                }
+                // var orderedSlots = byDay.ToImmutableSortedSet();
+                // for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
             }
 
             return count;
@@ -68,7 +88,7 @@ namespace Domain.Algorithms
         }
 
         public static void SafeAdd<TKey1>(
-            this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, SortedDictionary<int, Meeting>>>> dict,
+            this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dict,
             TKey1 key1, Meeting meeting)
             where TKey1 : notnull
         {
@@ -82,10 +102,10 @@ namespace Domain.Algorithms
                 if (!byKey1.ContainsKey(weekType)) byKey1[weekType] = new();
                 var byWeekType = byKey1[weekType];
 
-                if (!byWeekType.ContainsKey(day)) byWeekType[day] = new();
+                if (!byWeekType.ContainsKey(day)) byWeekType[day] = new Meeting[7];
                 var byDay = byWeekType[day];
 
-                byDay.Add(timeSlot, meeting);
+                byDay[timeSlot] = meeting;
             }
         }
 

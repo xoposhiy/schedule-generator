@@ -21,7 +21,7 @@ namespace Testing.ScheduleLibTests
         }
 
         [Test]
-        public void TestOnlineOfflineGap()
+        public void TestOnlineOfflineSpace()
         {
             var schedule = new Schedule(CalculusRequisition, ClassRooms);
 
