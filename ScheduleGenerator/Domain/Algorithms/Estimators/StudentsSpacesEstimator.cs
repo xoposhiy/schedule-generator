@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -19,7 +18,10 @@ namespace Domain.Algorithms.Estimators
             var groups = schedule.GroupMeetingsByTime.Values;
             foreach (var byGroup in groups)
             foreach (var byWeekType in byGroup.Values)
-                penalty += byWeekType.GetMeetingsSpacesCount();
+            foreach (var byDay in byWeekType.Values)
+            {
+                penalty += byDay.GetMeetingsSpacesCount();
+            }
 
             return -penalty / (groups.Count * 2);
         }

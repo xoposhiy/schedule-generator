@@ -15,7 +15,10 @@ namespace Domain.Algorithms.Estimators
             var teachers = schedule.TeacherMeetingsByTime.Values;
             foreach (var byTeacher in teachers)
             foreach (var byWeekType in byTeacher.Values)
-                penalty += byWeekType.GetMeetingsSpacesCount();
+            foreach (var byDay in byWeekType.Values)
+            {
+                penalty += byDay.GetMeetingsSpacesCount();
+            }
 
             return -penalty / (teachers.Count * 2);
         }

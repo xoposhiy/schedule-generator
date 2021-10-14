@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Domain.Algorithms
 {
@@ -43,30 +42,25 @@ namespace Domain.Algorithms
             }
         }
 
-        public static int GetMeetingsSpacesCount(this Dictionary<DayOfWeek, Meeting?[]> dictionary)
+        public static int GetMeetingsSpacesCount(this Meeting?[] byDay)
         {
             var count = 0;
 
-            foreach (var byDay in dictionary.Values)
-            {
-                var i = 0;
-                var prev = 0;
-                for (; i < 7; i++)
-                    if (byDay[i] != null)
-                    {
-                        prev = i;
-                        break;
-                    }
+            var i = 0;
+            var prev = 0;
+            for (; i < 7; i++)
+                if (byDay[i] != null)
+                {
+                    prev = i;
+                    break;
+                }
 
-                for (; i < 7; i++)
-                    if (byDay[i] != null)
-                    {
-                        count += i - prev + 1;
-                        prev = i;
-                    }
-                // var orderedSlots = byDay.ToImmutableSortedSet();
-                // for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
-            }
+            for (; i < 7; i++)
+                if (byDay[i] != null)
+                {
+                    count += i - prev + 1;
+                    prev = i;
+                }
 
             return count;
         }

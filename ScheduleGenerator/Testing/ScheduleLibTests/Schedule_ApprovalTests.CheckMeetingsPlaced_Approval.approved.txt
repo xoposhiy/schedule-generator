@@ -1,4 +1,4 @@
-Placed:89 Left:0, Placed:
+Placed:89 Left:8, Placed:
 Алгем Lecture Волков Михаил
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
@@ -64,7 +64,6 @@ Placed:89 Left:0, Placed:
 Машинное обучение Lecture Стихин
 ОП ComputerLab Ермаков
 ОП ComputerLab Кулешова Ирина
-ОП ComputerLab Маценко
 ОП ComputerLab Петряшов
 ОП ComputerLab Политов
 ОП ComputerLab Романюк
@@ -72,7 +71,6 @@ Placed:89 Left:0, Placed:
 ОП ComputerLab Хапов
 ОП Seminar Ермаков
 ОП Seminar Кулешова Ирина
-ОП Seminar Маценко
 ОП Seminar Петряшов
 ОП Seminar Политов
 ОП Seminar Романюк
@@ -84,9 +82,18 @@ Placed:89 Left:0, Placed:
 Питон ComputerLab Мясников Даниил
 Публичные выступления Lecture Свалова Дарья
 Создание продукта Lecture Алексей Кулаков
+Физкультура Lecture Физруки1
+Физкультура Lecture Физруки1
 ФП ComputerLab Акентьев Евгений
 ФП ComputerLab Войцишевский Антон
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-
+ОП ComputerLab Маценко
+ОП Seminar Маценко
+Физкультура Lecture Физруки1
+Физкультура Lecture Физруки1
+Физкультура Lecture Физруки2
+Физкультура Lecture Физруки2
+Физкультура Lecture Физруки2
+Физкультура Lecture Физруки2

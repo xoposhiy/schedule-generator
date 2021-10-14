@@ -2,6 +2,7 @@
 using System.Linq;
 using Domain;
 using NUnit.Framework;
+using static Testing.ScheduleLibTests.ObjectMother;
 
 namespace Testing.ScheduleLibTests
 {
@@ -11,7 +12,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestDeterminateRemove()
         {
-            var schedule = new Schedule(ObjectMother.CalculusRequisition, ObjectMother.ClassRooms);
+            var schedule = new Schedule(CalculusRequisition, ClassRooms);
             var addedMeetings = new List<Meeting>();
 
             for (var i = 0; i < 3; i++)
