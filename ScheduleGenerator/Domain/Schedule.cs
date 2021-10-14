@@ -22,7 +22,7 @@ namespace Domain
             GroupMeetingsByTime = new();
 
         public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
-            TeacherMeetingsByTime = new(); //TODO: change to List(?)
+            TeacherMeetingsByTime = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
 
@@ -267,8 +267,8 @@ namespace Domain
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
-                if (timeByWeekType.ContainsKey(day)
-                    && timeByWeekType[day][timeSlotIndex] != null) return true;
+                if (!timeByWeekType.TryGetValue(day, out var byDay)) continue;
+                if (byDay[timeSlotIndex] != null) return true;
             }
 
             return false;
