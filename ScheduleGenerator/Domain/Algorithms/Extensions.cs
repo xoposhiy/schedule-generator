@@ -45,20 +45,12 @@ namespace Domain.Algorithms
         public static int GetMeetingsSpacesCount(this Meeting?[] byDay)
         {
             var count = 0;
+            var prev = -1;
 
-            var i = 0;
-            var prev = 0;
-            for (; i < 7; i++)
+            for (var i = 0; i < 7; i++)
                 if (byDay[i] != null)
                 {
-                    prev = i;
-                    break;
-                }
-
-            for (; i < 7; i++)
-                if (byDay[i] != null)
-                {
-                    count += i - prev + 1;
+                    if (prev != -1) count += i - prev + 1;
                     prev = i;
                 }
 
