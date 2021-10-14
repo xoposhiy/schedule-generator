@@ -22,7 +22,7 @@ namespace Testing.SheetPatternsTest
         [Test]
         public void EvaluateWhenCorrect()
         {
-            var testData = new List<List<string>>()
+            var testData = new List<List<string>>
             {
                 new()
                 {
@@ -42,7 +42,7 @@ namespace Testing.SheetPatternsTest
         [Test]
         public void EvaluateWhenIncorrect()
         {
-            var testData = new List<List<string>>()
+            var testData = new List<List<string>>
             {
                 new()
                 {

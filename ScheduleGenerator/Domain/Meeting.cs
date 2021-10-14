@@ -35,7 +35,8 @@ namespace Domain
                 MeetingType,
                 Teacher,
                 WeekType,
-                RequisitionItem)
+                RequisitionItem,
+                Groups)
             {
                 BaseMeeting = this,
                 RequiredAdjacentMeeting = RequiredAdjacentMeeting

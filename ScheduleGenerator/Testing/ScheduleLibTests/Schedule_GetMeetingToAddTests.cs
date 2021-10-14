@@ -12,12 +12,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void SetLocationGroupAndTimeToRequiredValues()
         {
-            var requisition = new Requisition(new[]
-            {
-                new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт, 3 пара", OsTeacher)
-            });
-
-            var schedule = new Schedule(requisition, ClassRooms);
+            var schedule = new Schedule(OsRequisition, ClassRooms);
 
             var meeting = schedule.GetMeetingsToAdd().Single();
 

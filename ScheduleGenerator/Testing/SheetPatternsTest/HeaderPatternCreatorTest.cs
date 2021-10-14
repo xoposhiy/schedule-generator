@@ -12,7 +12,7 @@ namespace Testing.SheetPatternsTest
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
         private const string SheetName = "Testing";
-        
+
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
@@ -21,13 +21,13 @@ namespace Testing.SheetPatternsTest
             repo.SetUpSheetInfo();
             repo.ClearCellRange(SheetName, (0, 0), (10, 10));
 
-            var headers = new List<string>()
+            var headers = new List<string>
             {
                 "Преподавател", "Предмет", "Тип занятия", "Количество повторений каждого занятия",
                 "Приоритеты групп, в которых назначать занятия", "Время", "Четность"
             };
 
-            var comments = new List<string>()
+            var comments = new List<string>
             {
                 "Имя преподавателя",
                 "Название предмета (например Матанализ)",

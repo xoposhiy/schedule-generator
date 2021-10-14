@@ -25,7 +25,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             repo.ChangeTable(Url);
             repo.ReadCell(SheetName, (1, 1)); // var read =
 
-            var dataToWrite = new List<List<string>>()
+            var dataToWrite = new List<List<string>>
             {
                 new() {"11", "12"},
                 new() {"21", "22"},
@@ -49,7 +49,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             repo1.ClearCellRange(SheetName, (0, 0), (10, 10));
             var repo2 = new GsRepository("test", credentialPath, Url);
 
-            var dataToWrite = new List<List<string>>()
+            var dataToWrite = new List<List<string>>
             {
                 new() {"11", "12"},
                 new() {"21", "22"},

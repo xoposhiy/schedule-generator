@@ -22,7 +22,7 @@ namespace Testing.SheetPatternsTest
             repo.ClearCellRange(SheetName, (0, 0), (10, 10));
 
 
-            var errors = new List<((int, int), string)>()
+            var errors = new List<((int, int), string)>
             {
                 ((0, 0), "error msg1"), ((1, 1), "error msg2"), ((4, 2), "error msg3")
             };
@@ -39,7 +39,7 @@ namespace Testing.SheetPatternsTest
             var repo = new GsRepository("test", credentialPath, Url);
             repo.ClearCellRange(SheetName, (0, 0), (10, 10));
 
-            var errors = new List<((int, int), string)>()
+            var errors = new List<((int, int), string)>
             {
                 ((0, 0), "error msg1"), ((1, 1), "error msg2"), ((4, 2), "error msg3")
             };

@@ -33,11 +33,9 @@ namespace Infrastructure.GoogleSheetsRepository
         {
             try
             {
-                using (var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read))
-                {
-                    return GoogleCredential.FromStream(stream)
-                        .CreateScoped(Scopes);
-                }
+                using var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read);
+                return GoogleCredential.FromStream(stream)
+                    .CreateScoped(Scopes);
             }
             catch (FileNotFoundException)
             {
@@ -51,7 +49,7 @@ namespace Infrastructure.GoogleSheetsRepository
 
         private SheetsService CreateDefaultService()
         {
-            return new SheetsService(new BaseClientService.Initializer()
+            return new SheetsService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = Credentials,
                 ApplicationName = ApplicationName
@@ -248,7 +246,7 @@ namespace Infrastructure.GoogleSheetsRepository
                 );
             }
 
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 UpdateCells = new UpdateCellsRequest
                 {
@@ -269,7 +267,7 @@ namespace Infrastructure.GoogleSheetsRepository
         {
             var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 MergeCells = new MergeCellsRequest
                 {
@@ -290,7 +288,7 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier IncertRows(int startRow, int count)
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 InsertDimension = new InsertDimensionRequest
                 {
@@ -309,7 +307,7 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier IncertColumns(int startColumn, int count)
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 InsertDimension = new InsertDimensionRequest
                 {
@@ -351,7 +349,7 @@ namespace Infrastructure.GoogleSheetsRepository
                 });
             }
 
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 UpdateCells = new UpdateCellsRequest
                 {
@@ -374,7 +372,7 @@ namespace Infrastructure.GoogleSheetsRepository
         public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string? comment)
         {
             var (top, leftIndex) = rangeStart;
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 UpdateCells = new UpdateCellsRequest
                 {
@@ -386,7 +384,7 @@ namespace Infrastructure.GoogleSheetsRepository
                         EndRowIndex = top + 1,
                         EndColumnIndex = leftIndex + 1
                     },
-                    Rows = new List<RowData>()
+                    Rows = new List<RowData>
                     {
                         new RowData
                         {
@@ -411,7 +409,7 @@ namespace Infrastructure.GoogleSheetsRepository
         {
             var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 UpdateBorders = new UpdateBordersRequest
                 {
@@ -446,9 +444,9 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier DeleteRows(int startRow, int count)
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
-                DeleteDimension = new DeleteDimensionRequest()
+                DeleteDimension = new DeleteDimensionRequest
                 {
                     Range = new DimensionRange
                     {
@@ -464,9 +462,9 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier DeleteColumns(int startRow, int count)
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
-                DeleteDimension = new DeleteDimensionRequest()
+                DeleteDimension = new DeleteDimensionRequest
                 {
                     Range = new DimensionRange
                     {
@@ -482,11 +480,11 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier UnMergeAll()
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
-                UnmergeCells = new UnmergeCellsRequest()
+                UnmergeCells = new UnmergeCellsRequest
                 {
-                    Range = new GridRange()
+                    Range = new GridRange
                     {
                         SheetId = sheetId
                     }
@@ -497,7 +495,7 @@ namespace Infrastructure.GoogleSheetsRepository
 
         public SheetModifier ClearAll()
         {
-            requests.Add(new Request()
+            requests.Add(new Request
             {
                 UpdateCells = new UpdateCellsRequest
                 {

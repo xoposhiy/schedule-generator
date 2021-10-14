@@ -55,5 +55,10 @@ namespace Testing.ScheduleLibTests
                 1, isOnline: true),
             new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher)
         });
+
+        public static readonly Requisition OsRequisition = new(new[]
+        {
+            new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт, 3 пара", OsTeacher)
+        });
     }
 }

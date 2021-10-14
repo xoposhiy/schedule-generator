@@ -20,7 +20,7 @@ namespace Testing.FirebaseRepositoryTests
             var repo = new SessionRepository(basePath, authSecret);
 
             long sessionId = 27;
-            var newSession = new ScheduleSession()
+            var newSession = new ScheduleSession
             {
                 Id = sessionId,
                 SpreadsheetUrl = "some url34567689",

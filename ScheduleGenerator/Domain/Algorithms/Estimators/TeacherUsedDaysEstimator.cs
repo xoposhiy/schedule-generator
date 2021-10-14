@@ -13,9 +13,9 @@ namespace Domain.Algorithms.Estimators
         {
             const int maxTeacherDays = 1;
             var dayCount = 0;
-            
+
             var teachers = schedule.TeacherMeetingsByTime.Values;
-            
+
             foreach (var byTeacher in teachers)
             foreach (var byWeekType in byTeacher.Values)
                 dayCount += byWeekType.Keys.Count - maxTeacherDays;

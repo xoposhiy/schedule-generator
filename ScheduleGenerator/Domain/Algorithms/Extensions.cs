@@ -46,28 +46,24 @@ namespace Domain.Algorithms
         public static int GetMeetingsSpacesCount(this Dictionary<DayOfWeek, Meeting?[]> dictionary)
         {
             var count = 0;
-            
+
             foreach (var byDay in dictionary.Values)
             {
                 var i = 0;
                 var prev = 0;
                 for (; i < 7; i++)
-                {
                     if (byDay[i] != null)
                     {
                         prev = i;
                         break;
                     }
-                }
 
                 for (; i < 7; i++)
-                {
                     if (byDay[i] != null)
                     {
                         count += i - prev + 1;
                         prev = i;
                     }
-                }
                 // var orderedSlots = byDay.ToImmutableSortedSet();
                 // for (var i = 1; i < orderedSlots.Count; i++) count += orderedSlots[i] - orderedSlots[i - 1] - 1;
             }

@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <None Remove="AlgorithmTests\**"/>
+        <None Remove="ScheduleLibTests\Schedule_ApprovalTests.CheckMeetingsPlaced_Approval.received.txt"/>
     </ItemGroup>
 
 </Project>

@@ -151,7 +151,7 @@ namespace Domain.Conversions
             var horizOffset = 2;
             var vertOffset = 2;
 
-            var weekDayToIntDict = new Dictionary<DayOfWeek, int>()
+            var weekDayToIntDict = new Dictionary<DayOfWeek, int>
             {
                 {DayOfWeek.Monday, 0},
                 {DayOfWeek.Tuesday, 1},
