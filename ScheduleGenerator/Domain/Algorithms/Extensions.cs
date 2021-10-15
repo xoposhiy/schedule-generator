@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain.Algorithms
 {
@@ -89,6 +90,26 @@ namespace Domain.Algorithms
 
                 byDay[timeSlot] = meeting;
             }
+        }
+
+        public static IEnumerable<Meeting?[]> GetDaysByMeeting<TKey1>(
+            this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary,
+            TKey1 key1, Meeting meeting)
+            where TKey1 : notnull
+        {
+            var day = meeting.MeetingTime!.Day;
+            foreach (var weekType in meeting.WeekType.GetWeekTypes())
+            {
+                if (!dictionary.TryGetValue(key1, out var byKey1)) continue;
+                if (!byKey1.TryGetValue(weekType, out var byWeekType)) continue;
+                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
+                yield return byDay;
+            }
+        }
+
+        public static bool HasMeetingsAtTime(this IEnumerable<Meeting?[]> days, int timeSlot)
+        {
+            return days.Select(d => d[timeSlot]).Any(m => m != null);
         }
 
         public static void SafeIncrement<TKey1, TKey2>(

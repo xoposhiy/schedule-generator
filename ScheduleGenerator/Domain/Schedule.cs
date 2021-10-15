@@ -262,16 +262,9 @@ namespace Domain
         private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meeting)
         {
             var teacher = meeting.Teacher;
-            var (day, timeSlotIndex) = meeting.MeetingTime!;
-            if (!TeacherMeetingsByTime.TryGetValue(teacher, out var weekTypeByTeacher)) return false;
-            foreach (var weekType in meeting.WeekType.GetWeekTypes())
-            {
-                if (!weekTypeByTeacher.TryGetValue(weekType, out var timeByWeekType)) continue;
-                if (!timeByWeekType.TryGetValue(day, out var byDay)) continue;
-                if (byDay[timeSlotIndex] != null) return true;
-            }
-
-            return false;
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            return TeacherMeetingsByTime.GetDaysByMeeting(teacher, meeting)
+                .HasMeetingsAtTime(timeSlotIndex);
         }
 
         private bool IsTimeAcceptableForTeacher(Meeting meeting)
@@ -283,48 +276,23 @@ namespace Domain
 
         private bool HasMeetingAlreadyAtThisTime(Meeting meeting)
         {
-            var (day, timeSlotIndex) = meeting.MeetingTime!;
-            foreach (var group in meeting.Groups!.GetGroupParts())
-            foreach (var weekType in meeting.WeekType.GetWeekTypes())
-            {
-                if (!GroupMeetingsByTime.TryGetValue(group, out var byGroup)) continue;
-                if (!byGroup.TryGetValue(weekType, out var byWeekType)) continue;
-                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
-                if (byDay[timeSlotIndex] != null) return true;
-            }
-
-            return false;
-        }
-
-        private bool HasMeetingAlready(MeetingGroup group, MeetingTime meetingTime, bool isOnline,
-            WeekType meetingWeekType)
-        {
-            var (day, timeSlotIndex) = meetingTime;
-            if (timeSlotIndex is -1 or 7) return false;
-            if (!GroupMeetingsByTime.TryGetValue(group, out var byGroup)) return false;
-            foreach (var weekType in meetingWeekType.GetWeekTypes())
-            {
-                if (!byGroup.TryGetValue(weekType, out var byWeekType)) continue;
-                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
-                var value = byDay[timeSlotIndex];
-                if (value == null) continue;
-                if (value.RequisitionItem.IsOnline == isOnline)
-                    return true;
-            }
-
-            return false;
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            return meeting.Groups!.GetGroupParts()
+                .SelectMany(g => GroupMeetingsByTime.GetDaysByMeeting(g, meeting))
+                .HasMeetingsAtTime(timeSlotIndex);
         }
 
         private bool IsNoSpaceBetweenOnlineAndOfflineMeetings(Meeting meeting)
         {
-            var meetingTime = meeting.MeetingTime!;
-            for (var dt = -1; dt < 2; dt += 2)
-            {
-                var time = meetingTime with {TimeSlotIndex = meetingTime.TimeSlotIndex + dt};
-                if (meeting.Groups!.GetGroupParts().Any(g => HasMeetingAlready(g, time,
-                    !meeting.RequisitionItem.IsOnline, meeting.WeekType)))
-                    return true;
-            }
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            var onlineNeeded = !meeting.RequisitionItem.IsOnline;
+            foreach (var group in meeting.Groups!.GetGroupParts())
+            foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
+                for (var timeSlot = timeSlotIndex - 1; timeSlot <= timeSlotIndex + 1; timeSlot += 2)
+                {
+                    if (timeSlot is not (> 0 and < 7)) continue;
+                    if (day[timeSlot]?.RequisitionItem.IsOnline == onlineNeeded) return true;
+                }
 
             return false;
         }
