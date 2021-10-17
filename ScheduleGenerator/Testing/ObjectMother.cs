@@ -60,5 +60,14 @@ namespace Testing.ScheduleLibTests
         {
             new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт, 3 пара", OsTeacher)
         });
+        
+        public static readonly Requisition FullMondayRequisition = new Requisition(new[]
+        {
+            new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher),
+            new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 3-6 пара", CalculusTeacher),
+            new RequisitionItem(OsLecture, "ФИИТ-101", "пн 4-6 пара", OsTeacher),
+            new RequisitionItem(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2),
+            new RequisitionItem(OopSeminar, "ФИИТ-101", "пн 6 пара", OopTeacher2),
+        });
     }
 }

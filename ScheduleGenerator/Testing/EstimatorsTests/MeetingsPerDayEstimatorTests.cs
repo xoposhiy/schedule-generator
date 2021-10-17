@@ -40,16 +40,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void LotOfMeetingsSingleDay()
         {
-            var requisition = new Requisition(new[]
-            {
-                new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-2 пара", CalculusTeacher),
-                new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 3 пара", CalculusTeacher),
-                new RequisitionItem(OsLecture, "ФИИТ-101", "пн 4 пара", OsTeacher),
-                new RequisitionItem(OopLab, "ФИИТ-101", "пн 5 пара", OopTeacher2),
-                new RequisitionItem(OopSeminar, "ФИИТ-101", "пн 6 пара", OopTeacher2),
-            });
-            
-            var schedule = new Schedule(requisition, ClassRooms);
+            var schedule = new Schedule(FullMondayRequisition, ClassRooms);
             
             while (schedule.NotUsedMeetings.Count != 0)
             {

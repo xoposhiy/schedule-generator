@@ -18,7 +18,7 @@ namespace Testing.EstimatorsTests
             var schedule = new Schedule(OsRequisition, ClassRooms);
 
             var score = freedomDegreeEstimator.Estimate(schedule);
-            Assert.AreNotEqual(0, score);
+            Assert.Less(0, score);
         }
 
         [Test]
@@ -29,6 +29,21 @@ namespace Testing.EstimatorsTests
             schedule.AddMeeting(osLecture);
             var score = freedomDegreeEstimator.Estimate(schedule);
             Assert.AreEqual(0, score);
+        }
+        
+        [Test]
+        public void ScoreDynamicWhenPlacingMeetings()
+        {
+            var schedule = new Schedule(FullMondayRequisition, ClassRooms);
+            var score1 = freedomDegreeEstimator.Estimate(schedule);
+            var meeting1 = schedule.GetMeetingsToAdd().Last();
+            var meeting2 = schedule.NotUsedMeetings.Skip(2).First();
+            var meeting2ScoreBefore = schedule.MeetingFreedomDegree[meeting2];
+            schedule.AddMeeting(meeting1, true);
+            var score2 = freedomDegreeEstimator.Estimate(schedule);
+            var meeting2ScoreAfter = schedule.MeetingFreedomDegree[meeting2];
+            Assert.Greater(score1, score2);
+            Assert.Greater(meeting2ScoreBefore, meeting2ScoreAfter);
         }
     }
 }

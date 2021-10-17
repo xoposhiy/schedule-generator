@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Testing.GoogleSheetsRepositoryTests
 {
-    //TODO надо бы зачищать таблицу между тестами
+    //TODO: зачищать и форматирование таблицы
     [TestFixture]
     public class WriteReadTests
     {

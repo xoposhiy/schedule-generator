@@ -26,7 +26,7 @@ namespace Testing.ConversionsTests
             });
             const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             var repo = new GsRepository("test", credentialPath, Url);
-            repo.ClearCellRange(SheetName, (0, 0), (20, 20));
+            repo.ClearCellRange(SheetName, (0, 0), (100, 100));
             var converter = new ScheduleSpreadsheetConverter(repo, SheetName);
 
             converter.Build(testSchedule);
