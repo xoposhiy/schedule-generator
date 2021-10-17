@@ -11,10 +11,9 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            var missingPriorityMeetings = schedule
-                .NotUsedMeetings
-                .Count(m => m.Discipline.Name == "Физкультура" || m.Discipline.Name == "ИнЯз");
-            return -1 * missingPriorityMeetings;
+            return -schedule
+                .NotUsedMeetings.Select(m => m.Discipline.Name)
+                .Count(n => n is "Физкультура" or "ИнЯз");
         }
     }
 }

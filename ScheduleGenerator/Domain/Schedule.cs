@@ -289,8 +289,9 @@ namespace Domain
             var onlineNeeded = !meeting.RequisitionItem.IsOnline;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
-                for (var timeSlot = timeSlotIndex - 1; timeSlot <= timeSlotIndex + 1; timeSlot += 2)
+                for (var i = - 1; i <= 1; i += 2)
                 {
+                    var timeSlot = timeSlotIndex + i;
                     if (timeSlot is not (> 0 and < 7)) continue;
                     if (day[timeSlot]?.RequisitionItem.IsOnline == onlineNeeded) return true;
                 }

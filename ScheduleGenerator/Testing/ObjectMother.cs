@@ -61,7 +61,7 @@ namespace Testing
             new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт, 3 пара", OsTeacher)
         });
         
-        public static readonly Requisition FullMondayRequisition = new Requisition(new[]
+        public static readonly Requisition FullMondayRequisition = new(new[]
         {
             new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher),
             new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 3-6 пара", CalculusTeacher),
