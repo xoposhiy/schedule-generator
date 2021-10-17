@@ -28,7 +28,7 @@ namespace Testing.EstimatorsTests
             var osLecture = schedule.GetMeetingsToAdd().First();
             schedule.AddMeeting(osLecture);
             var score = freedomDegreeEstimator.Estimate(schedule);
-            Assert.AreEqual(0, score);
+            Assert.Zero(score);
         }
         
         [Test]
