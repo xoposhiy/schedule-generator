@@ -46,7 +46,7 @@ namespace Domain
         public override string ToString()
         {
             var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
-            return $"{Discipline}, Groups: [{groupsString}], Time: {MeetingTime}, {WeekType}," +
+            return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
                    $" Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
 

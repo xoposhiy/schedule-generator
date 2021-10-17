@@ -29,7 +29,7 @@ namespace Domain
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
-        public readonly Dictionary<Meeting, HashSet<MeetingTime>> FreeTimeSlotByMeeting = new();
+        public readonly Dictionary<Meeting, int> FreeTimeSlotByMeeting = new();
         public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
 
         public Schedule(Meeting[] meetings)
@@ -59,7 +59,7 @@ namespace Domain
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-                FreeTimeSlotByMeeting.Add(meeting, possibleTimeChoices);
+                FreeTimeSlotByMeeting.Add(meeting, possibleTimeChoices.Count);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
                     if (!MeetingsByTimeSlot.ContainsKey(timeChoice))
@@ -72,6 +72,11 @@ namespace Domain
         public IReadOnlySet<Meeting> GetMeetings()
         {
             return Meetings;
+        }
+
+        private void UpdateTimeToMeetingsDictionaries(MeetingTime time, int dt)
+        {
+            foreach (var meeting in MeetingsByTimeSlot[time]) FreeTimeSlotByMeeting[meeting] += dt;
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -91,8 +96,7 @@ namespace Domain
 
                 if (isSure)
                 {
-                    FreeTimeSlotByMeeting[meetingToAdd.BaseMeeting!].Remove(meetingTime);
-                    MeetingsByTimeSlot[meetingTime].Remove(meetingToAdd.BaseMeeting!);
+                    UpdateTimeToMeetingsDictionaries(meetingTime, -1);
                 }
             }
 
@@ -118,8 +122,7 @@ namespace Domain
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
                 if (isSure)
                 {
-                    FreeTimeSlotByMeeting[meetingToRemove.BaseMeeting!].Add(meetingTime);
-                    MeetingsByTimeSlot[meetingTime].Add(meetingToRemove.BaseMeeting!);
+                    UpdateTimeToMeetingsDictionaries(meetingTime, 1);
                 }
             }
 
@@ -193,7 +196,7 @@ namespace Domain
                 var groupsChoicesCount = requisitionItem.GroupPriorities
                     .SelectMany(p => p.GroupsChoices)
                     .Count();
-                var timeChoicesCount = FreeTimeSlotByMeeting[meeting].Count;
+                var timeChoicesCount = FreeTimeSlotByMeeting[meeting];
                 //TODO: Optimize possibleRooms and groupsChoicesCount
                 MeetingFreedomDegree[meeting] = groupsChoicesCount * timeChoicesCount * possibleRooms.Count;
                 //MeetingFreedomDegree[meeting] = timeChoicesCount;
@@ -289,7 +292,7 @@ namespace Domain
             var onlineNeeded = !meeting.RequisitionItem.IsOnline;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
-                for (var i = - 1; i <= 1; i += 2)
+                for (var i = -1; i <= 1; i += 2)
                 {
                     var timeSlot = timeSlotIndex + i;
                     if (timeSlot is not (> 0 and < 7)) continue;

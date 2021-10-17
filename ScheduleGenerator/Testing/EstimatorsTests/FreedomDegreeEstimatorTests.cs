@@ -30,21 +30,30 @@ namespace Testing.EstimatorsTests
             var score = freedomDegreeEstimator.Estimate(schedule);
             Assert.Zero(score);
         }
-        
+
         [Test]
         public void ScoreDynamicWhenPlacingMeetings()
         {
             var schedule = new Schedule(FullMondayRequisition, ClassRooms);
-            var score1 = freedomDegreeEstimator.Estimate(schedule);
-            var meeting1 = schedule.GetMeetingsToAdd().Last();
-            var meeting2 = schedule.NotUsedMeetings.Skip(2).First();
-            var meeting2ScoreBefore = schedule.MeetingFreedomDegree[meeting2];
-            schedule.AddMeeting(meeting1, true);
-            var score2 = freedomDegreeEstimator.Estimate(schedule);
-            var meeting2ScoreAfter = schedule.MeetingFreedomDegree[meeting2];
-            Assert.Greater(score1, score2);
-            // Assert.Greater(meeting2ScoreBefore, meeting2ScoreAfter);
-            // TODO: truly recalculate FreedomDegree
+
+            var freedomWhenEmpty = freedomDegreeEstimator.Estimate(schedule);
+
+            var meetingToPlace = schedule.GetMeetingsToAdd().Last();
+            var notPlacedMeeting = schedule.NotUsedMeetings.Skip(2).First();
+
+            var notPlacedScoreBefore = schedule.MeetingFreedomDegree[notPlacedMeeting];
+
+            schedule.AddMeeting(meetingToPlace, true);
+
+            var freedomWhenSomePlaced = freedomDegreeEstimator.Estimate(schedule);
+            var notPlacedScoreAfter = schedule.MeetingFreedomDegree[notPlacedMeeting];
+
+            Assert.Greater(freedomWhenEmpty, freedomWhenSomePlaced);
+            Assert.Greater(notPlacedScoreBefore, notPlacedScoreAfter);
+
+            schedule.RemoveMeeting(meetingToPlace, true);
+
+            Assert.AreEqual(notPlacedScoreBefore, schedule.MeetingFreedomDegree[notPlacedMeeting]);
         }
     }
 }
