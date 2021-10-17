@@ -51,7 +51,7 @@ namespace Domain.Algorithms
             for (var i = 0; i < 7; i++)
                 if (byDay[i] != null)
                 {
-                    if (prev != -1) count += i - prev + 1;
+                    if (prev != -1) count += i - prev - 1;
                     prev = i;
                 }
 

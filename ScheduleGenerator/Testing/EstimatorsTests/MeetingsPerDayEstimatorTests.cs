@@ -28,7 +28,7 @@ namespace Testing.EstimatorsTests
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var score = estimator.Estimate(schedule);
-                Assert.Greater(0, score);
+                Assert.GreaterOrEqual(0, score);
                 var meeting = schedule.GetMeetingsToAdd().First();
                 schedule.AddMeeting(meeting);
             }
@@ -50,6 +50,27 @@ namespace Testing.EstimatorsTests
 
             var finalScore = estimator.Estimate(schedule);
             Assert.Greater(0, finalScore);
+        }
+        
+        [Test]
+        public void TwoBadDaysAreWorseThanOne()
+        {
+            Requisition TwoDaysRequisition = new (new[]
+            {
+                new RequisitionItem(OopLab, "ФИИТ-101", "пн 1-6 пара", OopTeacher1),
+                new RequisitionItem(OsLecture, "ФИИТ-101", "вт 4-6 пара", OsTeacher)            
+            });
+            var schedule = new Schedule(TwoDaysRequisition, ClassRooms);
+
+            var prevScore = 0d;
+            while (schedule.NotUsedMeetings.Count != 0)
+            {
+                var meeting = schedule.GetMeetingsToAdd().First();
+                schedule.AddMeeting(meeting);
+                var curScore = estimator.Estimate(schedule);
+                Assert.Greater(prevScore, curScore);
+                prevScore = curScore;
+            }
         }
     }
 }
