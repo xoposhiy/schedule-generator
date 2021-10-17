@@ -196,6 +196,7 @@ namespace Domain
                 var timeChoicesCount = FreeTimeSlotByMeeting[meeting].Count;
                 //TODO: Optimize possibleRooms and groupsChoicesCount
                 MeetingFreedomDegree[meeting] = groupsChoicesCount * timeChoicesCount * possibleRooms.Count;
+                //MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Domain;
 
-namespace Testing.ScheduleLibTests
+namespace Testing
 {
     public static class ObjectMother
     {

@@ -11,14 +11,14 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule)
         {
-            const int maxTeacherDays = 1;
+            const int maxTeacherDays = 2;
             var dayCount = 0;
 
             var teachers = schedule.TeacherMeetingsByTime.Values;
 
             foreach (var byTeacher in teachers)
             foreach (var byWeekType in byTeacher.Values)
-                dayCount += byWeekType.Keys.Count - maxTeacherDays;
+                dayCount += Math.Max(0, byWeekType.Count - maxTeacherDays);
 
             var penalty = dayCount / 2;
             return -(penalty / teachers.Count);

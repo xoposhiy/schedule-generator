@@ -5,9 +5,9 @@ namespace Domain.Algorithms.Estimators
     public class CombinedEstimator : IEstimator
 
     {
-        private readonly (IEstimator, int)[] childEstimators;
+        private readonly (IEstimator, double)[] childEstimators;
 
-        public CombinedEstimator(params (IEstimator, int)[] childEstimators)
+        public CombinedEstimator(params (IEstimator, double)[] childEstimators)
         {
             this.childEstimators = childEstimators;
         }

@@ -2,7 +2,7 @@
 using Domain;
 using Domain.Algorithms.Estimators;
 using NUnit.Framework;
-using static Testing.ScheduleLibTests.ObjectMother;
+using static Testing.ObjectMother;
 
 
 namespace Testing.EstimatorsTests

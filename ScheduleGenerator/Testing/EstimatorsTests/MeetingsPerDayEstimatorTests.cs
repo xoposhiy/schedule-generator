@@ -2,7 +2,7 @@
 using Domain;
 using Domain.Algorithms.Estimators;
 using NUnit.Framework;
-using static Testing.ScheduleLibTests.ObjectMother;
+using static Testing.ObjectMother;
 
 namespace Testing.EstimatorsTests
 {
@@ -55,12 +55,12 @@ namespace Testing.EstimatorsTests
         [Test]
         public void TwoBadDaysAreWorseThanOne()
         {
-            Requisition TwoDaysRequisition = new (new[]
+            Requisition twoDaysRequisition = new (new[]
             {
                 new RequisitionItem(OopLab, "ФИИТ-101", "пн 1-6 пара", OopTeacher1),
                 new RequisitionItem(OsLecture, "ФИИТ-101", "вт 4-6 пара", OsTeacher)            
             });
-            var schedule = new Schedule(TwoDaysRequisition, ClassRooms);
+            var schedule = new Schedule(twoDaysRequisition, ClassRooms);
 
             var prevScore = 0d;
             while (schedule.NotUsedMeetings.Count != 0)

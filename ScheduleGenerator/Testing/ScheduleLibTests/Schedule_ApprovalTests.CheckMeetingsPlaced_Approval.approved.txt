@@ -1,5 +1,4 @@
-Placed:91 Left:6, Placed:
-Алгем Lecture Волков Михаил
+Placed:92 Left:1, Placed:
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
 Алгем Seminar Белов
@@ -86,14 +85,11 @@ Placed:91 Left:6, Placed:
 Создание продукта Lecture Алексей Кулаков
 Физкультура Lecture Физруки1
 Физкультура Lecture Физруки1
+Физкультура Lecture Физруки2
+Физкультура Lecture Физруки2
 ФП ComputerLab Акентьев Евгений
 ФП ComputerLab Войцишевский Антон
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки2
-Физкультура Lecture Физруки2
-Физкультура Lecture Физруки2
-Физкультура Lecture Физруки2
+Алгем Lecture Волков Михаил

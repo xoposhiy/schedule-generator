@@ -64,8 +64,9 @@ namespace ScheduleCLI
             var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
             var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 10);
+            var priorityEstimator = (new PriorityMeetingsEstimator(), 100500);
             var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator);
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, priorityEstimator);
             return estimator;
         }
     }

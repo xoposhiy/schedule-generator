@@ -2,7 +2,7 @@
 using System.Linq;
 using Domain;
 using NUnit.Framework;
-using static Testing.ScheduleLibTests.ObjectMother;
+using static Testing.ObjectMother;
 
 namespace Testing.ScheduleLibTests
 {

@@ -3,14 +3,15 @@ using Domain;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
 using NUnit.Framework;
-using static Testing.ScheduleLibTests.ObjectMother;
+using static Testing.ObjectMother;
 
 namespace Testing.EstimatorsTests
 {
     [TestFixture]
-    public class StudentsSpacesEstimatorTests
+    public class SpacesEstimatorTests
     {
-        private readonly IEstimator estimator = new StudentsSpacesEstimator();
+        private readonly IEstimator studentEstimator = new StudentsSpacesEstimator();
+        private readonly IEstimator teacherEstimator = new TeacherSpacesEstimator();
 
         [Test]
         public void OneDayWithSpaces()
@@ -24,7 +25,8 @@ namespace Testing.EstimatorsTests
                 schedule.AddMeeting(meeting);
             }
 
-            Assert.Less(estimator.Estimate(schedule), 0); //one space per 2 weeks
+            Assert.Less(studentEstimator.Estimate(schedule), 0); //one space per 2 weeks
+            Assert.Less(teacherEstimator.Estimate(schedule), 0);
         }
 
         [Test]

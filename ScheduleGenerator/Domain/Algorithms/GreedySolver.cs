@@ -41,7 +41,13 @@ namespace Domain.Algorithms
                     Console.WriteLine($"Number of placed meetings: {currentSchedule.Meetings.Count}");
                     Console.WriteLine();
                     if (meetingsToAdd.Count == 0)
+                    {
+                        foreach (var notUsedMeeting in currentSchedule.NotUsedMeetings)
+                        {
+                            Console.WriteLine(notUsedMeeting);
+                        }
                         break;
+                    }
                     var (meeting, score) = meetingsToAdd.First();
                     currentScore = score;
                     currentSchedule.AddMeeting(meeting, true);
