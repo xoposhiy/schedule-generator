@@ -18,7 +18,7 @@ namespace Testing.EstimatorsTests
             var schedule = new Schedule(OsRequisition, ClassRooms);
 
             var score = freedomDegreeEstimator.Estimate(schedule);
-            Assert.Less(0, score);
+            Assert.Positive(score);
         }
 
         [Test]

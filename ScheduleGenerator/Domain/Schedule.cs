@@ -27,10 +27,11 @@ namespace Domain
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
 
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
-        public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
-        public readonly Dictionary<Meeting, int> FreeTimeSlotByMeeting = new();
         public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
+        public readonly Dictionary<Meeting, int> FreeTimeSlotsCountByMeeting = new();
+
+        public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public Schedule(Meeting[] meetings)
         {
@@ -55,11 +56,10 @@ namespace Domain
         {
             foreach (var meeting in meetings)
             {
-                var requisitionItem = meeting.RequisitionItem;
-                var possibleTimeChoices = requisitionItem.MeetingTimePriorities
+                var possibleTimeChoices = meeting.RequisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-                FreeTimeSlotByMeeting.Add(meeting, possibleTimeChoices.Count);
+                FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
                     if (!MeetingsByTimeSlot.ContainsKey(timeChoice))
@@ -76,7 +76,7 @@ namespace Domain
 
         private void UpdateTimeToMeetingsDictionaries(MeetingTime time, int dt)
         {
-            foreach (var meeting in MeetingsByTimeSlot[time]) FreeTimeSlotByMeeting[meeting] += dt;
+            foreach (var meeting in MeetingsByTimeSlot[time]) FreeTimeSlotsCountByMeeting[meeting] += dt;
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -177,7 +177,7 @@ namespace Domain
                                          && e.MeetingType.Equals(requiredAdjacentMeetingType)
                                          && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
-                    throw new FormatException(meeting.ToString());
+                    throw new ArgumentException(meeting.ToString());
                 meeting.RequiredAdjacentMeeting = linkedMeeting;
                 linkedMeeting.RequiredAdjacentMeeting = meeting;
             }
@@ -192,13 +192,9 @@ namespace Domain
                     foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
-                var requisitionItem = meeting.RequisitionItem;
-                var groupsChoicesCount = requisitionItem.GroupPriorities
-                    .SelectMany(p => p.GroupsChoices)
-                    .Count();
-                var timeChoicesCount = FreeTimeSlotByMeeting[meeting];
-                //TODO: Optimize possibleRooms and groupsChoicesCount
-                MeetingFreedomDegree[meeting] = groupsChoicesCount * timeChoicesCount * possibleRooms.Count;
+                var timeChoicesCount = FreeTimeSlotsCountByMeeting[meeting];
+                //TODO: Optimize possibleRooms
+                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count;
                 //MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }

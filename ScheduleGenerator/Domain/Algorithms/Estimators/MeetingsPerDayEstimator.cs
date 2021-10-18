@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -9,28 +10,34 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule)
+        public double Estimate(Schedule schedule, List<string>? logger = null)
         {
             var penalty = 0d;
-            var groups = schedule.GroupMeetingsByTime.Values;
-            foreach (var byGroup in groups)
-            foreach (var byWeekType in byGroup.Values)
-            foreach (var day in byWeekType.Values)
+
+            var daysCount = 0;
+            var groupsCount = schedule.GroupMeetingsByTime.Count;
+
+            // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
+            foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
             {
                 var count = 0;
                 for (var i = 0; i < 7; i++)
                 {
-                    if (day[i] != null) count++;
+                    if (byDay[i] != null) count++;
                 }
 
                 if (count is not (>= 2 and <= 4))
                 {
+                    logger?.Add($"{group} has bad {weekType} {day} with {count} meetings");
                     penalty++;
                 }
+
+                daysCount++;
             }
 
-            return -penalty / (groups.Count * 2);
-            // TODO поделить на количество половинок групп и количество дней и 2 (количество четностей недель)
+            return -penalty / (groupsCount * daysCount);
         }
     }
 }

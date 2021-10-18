@@ -25,8 +25,8 @@ namespace Testing.EstimatorsTests
                 schedule.AddMeeting(meeting);
             }
 
-            Assert.Less(studentEstimator.Estimate(schedule), 0); //one space per 2 weeks
-            Assert.Less(teacherEstimator.Estimate(schedule), 0);
+            Assert.Negative(studentEstimator.Estimate(schedule)); //one space per 2 weeks
+            Assert.Negative(teacherEstimator.Estimate(schedule));
         }
 
         [Test]
@@ -34,8 +34,8 @@ namespace Testing.EstimatorsTests
         {
             var day = new Meeting[7];
             Assert.Zero(day.GetMeetingsSpacesCount());
-            day[1] = new (Oop, MeetingType.Lecture, OopTeacher2, WeekType.All,
-                new (OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2));
+            day[1] = new(Oop, MeetingType.Lecture, OopTeacher2, WeekType.All,
+                new(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2));
             Assert.Zero(day.GetMeetingsSpacesCount());
             day[2] = day[1];
             Assert.Zero(day.GetMeetingsSpacesCount());

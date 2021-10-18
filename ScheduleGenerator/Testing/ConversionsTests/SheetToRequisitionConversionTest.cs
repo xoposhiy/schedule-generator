@@ -22,8 +22,8 @@ namespace Testing.ConversionsTests
                 "Учебный план",
                 "Аудитории");
 
-            Assert.AreEqual(62, requisitions.Item1.Count);
-            Assert.AreEqual(23, requisitions.Item2.Items.Length);
+            Assert.AreEqual(63, requisitions.Item1.Count);
+            Assert.AreEqual(24, requisitions.Item2.Items.Length);
             Assert.AreEqual(24, requisitions.Item3.Count);
         }
     }

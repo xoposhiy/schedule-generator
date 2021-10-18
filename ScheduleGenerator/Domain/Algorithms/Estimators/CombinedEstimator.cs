@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Algorithms.Estimators
@@ -18,9 +19,18 @@ namespace Domain.Algorithms.Estimators
             return childEstimators.Sum(e => e.Item1.Estimate(schedule, meetingToAdd));
         }
 
-        public double Estimate(Schedule schedule)
+        public double Estimate(Schedule schedule, List<string>? logger = null)
         {
-            return childEstimators.Sum(e => e.Item1.Estimate(schedule) * e.Item2);
+            var score = 0d;
+            foreach (var (estimator, weight) in childEstimators)
+            {
+                logger?.Add($"{estimator.GetType().Name}:");
+                var estimatedScore = weight * estimator.Estimate(schedule, logger);
+                logger?.Add($"Total {estimatedScore}");
+                score += estimatedScore;
+            }
+
+            return score;
         }
     }
 }

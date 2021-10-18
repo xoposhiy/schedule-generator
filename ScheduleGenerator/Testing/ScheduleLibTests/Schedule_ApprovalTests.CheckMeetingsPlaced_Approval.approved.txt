@@ -1,4 +1,5 @@
-Placed:92 Left:1, Placed:
+Placed:94 Left:0, Placed:
+Алгем Lecture Волков Михаил
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
 Алгем Seminar Белов
@@ -34,6 +35,7 @@ Placed:92 Left:1, Placed:
 Дизайн Seminar Пушин + преподаватель2
 Дизайн Seminar Пушин + преподаватель3
 Дизайн Seminar Пушин + преподаватель3
+ИнЯз Lecture Англичане
 КБ ComputerLab Котов
 КБ ComputerLab Котов
 Матанализ Lecture Алексеева Ульяна
@@ -83,13 +85,13 @@ Placed:92 Left:1, Placed:
 Питон ComputerLab Мясников Даниил
 Публичные выступления Lecture Свалова Дарья
 Создание продукта Lecture Алексей Кулаков
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки2
-Физкультура Lecture Физруки2
+Физкультура Lecture Физруки
+Физкультура Lecture Физруки
+Физкультура Lecture Физруки
+Физкультура Lecture Физруки
 ФП ComputerLab Акентьев Евгений
 ФП ComputerLab Войцишевский Антон
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-Алгем Lecture Волков Михаил
+

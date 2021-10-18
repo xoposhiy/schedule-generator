@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -9,21 +10,27 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule)
+        public double Estimate(Schedule schedule, List<string>? logger = null)
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0d;
 
-            var groups = schedule.GroupMeetingsByTime.Values;
-            foreach (var byGroup in groups)
-            foreach (var byWeekType in byGroup.Values)
-            foreach (var byDay in byWeekType.Values)
+            var daysCount = 0;
+            var groupsCount = schedule.GroupMeetingsByTime.Count;
+
+            // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
+            foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
             {
-                penalty += byDay.GetMeetingsSpacesCount();
+                var spacesCount = byDay.GetMeetingsSpacesCount();
+                if (spacesCount != 0) logger?.Add($"{@group} has {spacesCount} spaces on {weekType} {day}");
+                penalty += spacesCount;
+                daysCount++;
             }
 
-            return -penalty / (groups.Count * 2);
+            return -penalty / (groupsCount * daysCount);
         }
     }
 }

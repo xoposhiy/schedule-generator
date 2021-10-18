@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -9,18 +10,25 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule)
+        public double Estimate(Schedule schedule, List<string>? logger = null)
         {
             var penalty = 0d;
-            var teachers = schedule.TeacherMeetingsByTime.Values;
-            foreach (var byTeacher in teachers)
-            foreach (var byWeekType in byTeacher.Values)
-            foreach (var byDay in byWeekType.Values)
+
+            var daysCount = 0;
+            var teachersCount = schedule.TeacherMeetingsByTime.Count;
+
+            // foreach (var (teacher, weekType, day, byDay) in schedule.TeacherMeetingsByTime.Enumerate())
+            foreach (var (teacher, byGroup) in schedule.TeacherMeetingsByTime)
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
             {
-                penalty += byDay.GetMeetingsSpacesCount();
+                var spacesCount = byDay.GetMeetingsSpacesCount();
+                if (spacesCount != 0) logger?.Add($"{teacher} has {spacesCount} spaces on {weekType} {day}");
+                penalty += spacesCount;
+                daysCount++;
             }
 
-            return -penalty / (teachers.Count * 2);
+            return -penalty / (teachersCount * daysCount);
         }
     }
 }

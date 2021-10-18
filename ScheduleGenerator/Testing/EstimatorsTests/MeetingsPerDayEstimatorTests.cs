@@ -18,7 +18,7 @@ namespace Testing.EstimatorsTests
             var osLecture = schedule.GetMeetingsToAdd().First();
             schedule.AddMeeting(osLecture);
             var score = estimator.Estimate(schedule);
-            Assert.AreEqual(-1, score);
+            Assert.Negative(score);
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace Testing.EstimatorsTests
         public void LotOfMeetingsSingleDay()
         {
             var schedule = new Schedule(FullMondayRequisition, ClassRooms);
-            
+
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();
@@ -49,16 +49,16 @@ namespace Testing.EstimatorsTests
             }
 
             var finalScore = estimator.Estimate(schedule);
-            Assert.Greater(0, finalScore);
+            Assert.Negative(finalScore);
         }
-        
+
         [Test]
         public void TwoBadDaysAreWorseThanOne()
         {
-            Requisition twoDaysRequisition = new (new[]
+            Requisition twoDaysRequisition = new(new[]
             {
                 new RequisitionItem(OopLab, "ФИИТ-101", "пн 1-6 пара", OopTeacher1),
-                new RequisitionItem(OsLecture, "ФИИТ-101", "вт 4-6 пара", OsTeacher)            
+                new RequisitionItem(OsLecture, "ФИИТ-101", "вт 4-6 пара", OsTeacher)
             });
             var schedule = new Schedule(twoDaysRequisition, ClassRooms);
 
@@ -68,7 +68,7 @@ namespace Testing.EstimatorsTests
                 var meeting = schedule.GetMeetingsToAdd().First();
                 schedule.AddMeeting(meeting);
                 var curScore = estimator.Estimate(schedule);
-                Assert.Greater(prevScore, curScore);
+                Assert.GreaterOrEqual(prevScore, curScore);
                 prevScore = curScore;
             }
         }

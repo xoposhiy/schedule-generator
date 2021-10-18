@@ -112,6 +112,16 @@ namespace Domain.Algorithms
             return days.Select(d => d[timeSlot]).Any(m => m != null);
         }
 
+        public static IEnumerable<(TKey1, WeekType, DayOfWeek, Meeting?[])> Enumerate<TKey1>(
+            this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary)
+            where TKey1 : notnull
+        {
+            foreach (var (key1, byGroup) in dictionary)
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
+                yield return (key1, weekType, day, byDay);
+        }
+
         public static void SafeIncrement<TKey1, TKey2>(
             this Dictionary<TKey1, Dictionary<TKey2, int>> dict,
             TKey1 key1, TKey2 key2)

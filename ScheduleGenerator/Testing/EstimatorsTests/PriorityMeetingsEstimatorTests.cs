@@ -10,7 +10,7 @@ namespace Testing.EstimatorsTests
     public class PriorityMeetingsEstimatorTests
     {
         private readonly PriorityMeetingsEstimator estimator = new();
-        
+
         [Test]
         public void ZeroWhenAllUnnecessary()
         {
@@ -22,14 +22,14 @@ namespace Testing.EstimatorsTests
         public void PenaltyWhenNecessaryNotPlaced()
         {
             var schedule = new Schedule(NecessaryMeetings, ClassRooms);
-            Assert.Greater(0, estimator.Estimate(schedule));
+            Assert.Negative(estimator.Estimate(schedule));
 
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();
                 schedule.AddMeeting(meeting);
             }
-            
+
             Assert.Zero(estimator.Estimate(schedule));
         }
     }

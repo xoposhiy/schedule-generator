@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -9,19 +10,22 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule)
+        public double Estimate(Schedule schedule, List<string>? logger = null)
         {
             const int maxTeacherDays = 2;
             var dayCount = 0;
+            var teachersCount = schedule.TeacherMeetingsByTime.Count;
 
-            var teachers = schedule.TeacherMeetingsByTime.Values;
-
-            foreach (var byTeacher in teachers)
-            foreach (var byWeekType in byTeacher.Values)
-                dayCount += Math.Max(0, byWeekType.Count - maxTeacherDays);
+            foreach (var (teacher, byTeacher) in schedule.TeacherMeetingsByTime)
+            foreach (var (weekType, byWeekType) in byTeacher)
+            {
+                var extraDays = Math.Max(0, byWeekType.Count - maxTeacherDays);
+                if (extraDays > 0) logger?.Add($"{teacher} has {extraDays} extra days at {weekType} week");
+                dayCount += extraDays;
+            }
 
             var penalty = dayCount / 2;
-            return -(penalty / teachers.Count);
+            return -(penalty / teachersCount);
         }
     }
 }
