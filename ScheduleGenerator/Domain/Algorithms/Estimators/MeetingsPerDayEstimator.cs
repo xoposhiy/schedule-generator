@@ -14,7 +14,6 @@ namespace Domain.Algorithms.Estimators
         {
             var penalty = 0d;
 
-            var daysCount = 0;
             var groupsCount = schedule.GroupMeetingsByTime.Count;
 
             // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
@@ -28,16 +27,14 @@ namespace Domain.Algorithms.Estimators
                     if (byDay[i] != null) count++;
                 }
 
-                if (count is not (>= 2 and <= 4))
+                if (count is not (>= 2 and <= 4 or 0))
                 {
                     logger?.Add($"{group} has bad {weekType} {day} with {count} meetings");
                     penalty++;
                 }
-
-                daysCount++;
             }
 
-            return -penalty / (groupsCount * daysCount);
+            return -penalty / groupsCount;
         }
     }
 }

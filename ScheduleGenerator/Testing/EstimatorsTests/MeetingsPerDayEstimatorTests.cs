@@ -68,7 +68,7 @@ namespace Testing.EstimatorsTests
                 var meeting = schedule.GetMeetingsToAdd().First();
                 schedule.AddMeeting(meeting);
                 var curScore = estimator.Estimate(schedule);
-                Assert.GreaterOrEqual(prevScore, curScore);
+                Assert.Greater(prevScore, curScore);
                 prevScore = curScore;
             }
         }
