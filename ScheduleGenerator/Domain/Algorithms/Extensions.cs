@@ -57,6 +57,17 @@ namespace Domain.Algorithms
 
             return count;
         }
+
+
+        public static int MeetingsCount(this Meeting?[] byDay)
+        {
+            var count = 0;
+            for (var i = 0; i < 7; i++)
+                if (byDay[i] != null)
+                    count++;
+
+            return count;
+        }
     }
 
     public static class DictionaryExtensions

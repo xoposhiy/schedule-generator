@@ -16,8 +16,7 @@ namespace Domain.Algorithms.Estimators
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0d;
 
-            var daysCount = 0;
-            var groupsCount = schedule.GroupMeetingsByTime.Count;
+            var maxPenalty = schedule.GroupMeetingsByTime.Count * 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
 
             // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
@@ -25,12 +24,11 @@ namespace Domain.Algorithms.Estimators
             foreach (var (day, byDay) in byWeekType)
             {
                 var spacesCount = byDay.GetMeetingsSpacesCount();
-                if (spacesCount != 0) logger?.Add($"{@group} has {spacesCount} spaces on {weekType} {day}");
+                if (spacesCount != 0) logger?.Add($"{group} has {spacesCount} spaces on {weekType} {day}");
                 penalty += spacesCount;
-                daysCount++;
             }
 
-            return -penalty / (groupsCount * daysCount);
+            return -penalty / maxPenalty;
         }
     }
 }

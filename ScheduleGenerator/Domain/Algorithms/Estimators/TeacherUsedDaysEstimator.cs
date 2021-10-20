@@ -13,18 +13,22 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, List<string>? logger = null)
         {
             const int maxTeacherDays = 2;
-            var dayCount = 0;
-            var teachersCount = schedule.TeacherMeetingsByTime.Count;
+            var penalty = 0d;
+            var teachersCount = schedule.TeacherMeetingsByTime.Count * 2 * 4; // weekTypes * maxExtraDays
 
             foreach (var (teacher, byTeacher) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byTeacher)
             {
-                var extraDays = Math.Max(0, byWeekType.Count - maxTeacherDays);
+                var days = 0;
+                foreach (var day in byWeekType.Values)
+                    if (day.MeetingsCount() != 0)
+                        days++;
+
+                var extraDays = Math.Max(0, days - maxTeacherDays);
                 if (extraDays > 0) logger?.Add($"{teacher} has {extraDays} extra days at {weekType} week");
-                dayCount += extraDays;
+                penalty += extraDays;
             }
 
-            var penalty = dayCount / 2;
             return -(penalty / teachersCount);
         }
     }

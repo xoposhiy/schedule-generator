@@ -14,8 +14,7 @@ namespace Domain.Algorithms.Estimators
         {
             var penalty = 0d;
 
-            var daysCount = 0;
-            var teachersCount = schedule.TeacherMeetingsByTime.Count;
+            var maxPenalty = schedule.TeacherMeetingsByTime.Count * 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
 
             // foreach (var (teacher, weekType, day, byDay) in schedule.TeacherMeetingsByTime.Enumerate())
             foreach (var (teacher, byGroup) in schedule.TeacherMeetingsByTime)
@@ -25,10 +24,9 @@ namespace Domain.Algorithms.Estimators
                 var spacesCount = byDay.GetMeetingsSpacesCount();
                 if (spacesCount != 0) logger?.Add($"{teacher} has {spacesCount} spaces on {weekType} {day}");
                 penalty += spacesCount;
-                daysCount++;
             }
 
-            return -penalty / (teachersCount * daysCount);
+            return -penalty / maxPenalty;
         }
     }
 }
