@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Algorithms.Estimators
@@ -10,12 +9,12 @@ namespace Domain.Algorithms.Estimators
             throw new System.NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule, List<string>? logger = null)
+        public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var score = 0;
             foreach (var meeting in schedule.NotUsedMeetings.Where(m => m.Discipline.Name is "Физкультура" or "ИнЯз"))
             {
-                logger?.Add($"{meeting} is not placed");
+                logger?.Log($"{meeting} is not placed", -1);
                 score--;
             }
 

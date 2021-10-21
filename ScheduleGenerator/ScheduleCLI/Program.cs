@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using Domain.Algorithms;
@@ -47,10 +46,10 @@ namespace ScheduleCLI
 
             var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(solutions.Last().Schedule);
-            var logger = new List<string>();
+            var logger = new Logger("Combined");
             estimator.Estimate(solutions.Last().Schedule, logger);
-            Console.WriteLine(string.Join("\n", logger));
-            Console.WriteLine(solutions.Last().Score);
+            Console.WriteLine(logger);
+            // Console.WriteLine(solutions.Last().Score);
         }
 
         // ReSharper disable once UnusedMember.Local

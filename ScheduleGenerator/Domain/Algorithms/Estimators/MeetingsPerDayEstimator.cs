@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -10,11 +9,11 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule, List<string>? logger = null)
+        public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
 
-            var maxPenalty = schedule.GroupMeetingsByTime.Count * 2 * 6; // weekTypes * daysOfWeek
+            double maxPenalty = schedule.GroupMeetingsByTime.Count * 2 * 6; // weekTypes * daysOfWeek
 
             // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
@@ -25,7 +24,7 @@ namespace Domain.Algorithms.Estimators
 
                 if (count is not (>= 2 and <= 4 or 0))
                 {
-                    logger?.Add($"{group} has bad {weekType} {day} with {count} meetings");
+                    logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / maxPenalty);
                     penalty++;
                 }
             }

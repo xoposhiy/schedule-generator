@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Domain.Algorithms.Estimators
@@ -11,7 +10,7 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule, List<string>? logger = null)
+        public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var score = schedule.NotUsedMeetings.Sum(meeting => schedule.MeetingFreedomDegree[meeting]);
             return score;

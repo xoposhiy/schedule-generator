@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -10,13 +9,14 @@ namespace Domain.Algorithms.Estimators
             throw new NotImplementedException();
         }
 
-        public double Estimate(Schedule schedule, List<string>? logger = null)
+        public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0d;
 
-            var maxPenalty = schedule.GroupMeetingsByTime.Count * 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
+            double maxPenalty =
+                schedule.GroupMeetingsByTime.Count * 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
 
             // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
@@ -24,7 +24,8 @@ namespace Domain.Algorithms.Estimators
             foreach (var (day, byDay) in byWeekType)
             {
                 var spacesCount = byDay.GetMeetingsSpacesCount();
-                if (spacesCount != 0) logger?.Add($"{group} has {spacesCount} spaces on {weekType} {day}");
+                if (spacesCount == 0) continue;
+                logger?.Log($"{group} has {spacesCount} spaces on {weekType} {day}", -spacesCount / maxPenalty);
                 penalty += spacesCount;
             }
 
