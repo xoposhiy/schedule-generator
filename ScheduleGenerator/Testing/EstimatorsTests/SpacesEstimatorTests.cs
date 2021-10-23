@@ -34,8 +34,7 @@ namespace Testing.EstimatorsTests
         {
             var day = new Meeting[7];
             Assert.Zero(day.GetMeetingsSpacesCount());
-            day[1] = new(Oop, MeetingType.Lecture, OopTeacher2, WeekType.All,
-                new(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2));
+            day[1] = new(WeekType.All, OopLabRequisitionItem);
             Assert.Zero(day.GetMeetingsSpacesCount());
             day[2] = day[1];
             Assert.Zero(day.GetMeetingsSpacesCount());

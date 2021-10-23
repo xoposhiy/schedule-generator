@@ -7,9 +7,9 @@ namespace Domain
     {
         public const string OnlineLocationName = "Онлайн";
         public readonly RequisitionItem RequisitionItem;
-        public readonly Discipline Discipline;
-        public readonly MeetingType MeetingType;
-        public Teacher Teacher;
+        public Discipline Discipline => RequisitionItem.PlanItem.Discipline;
+        public MeetingType MeetingType => RequisitionItem.PlanItem.MeetingType;
+        public Teacher Teacher => RequisitionItem.Teacher;
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
         public string? Location;
@@ -17,26 +17,16 @@ namespace Domain
         public Meeting? BaseMeeting;
         public Meeting? RequiredAdjacentMeeting;
 
-        public Meeting(Discipline discipline, MeetingType meetingType, Teacher teacher, WeekType weekType,
-            RequisitionItem requisitionItem, MeetingGroup[]? groups = null)
+        public Meeting(WeekType weekType, RequisitionItem requisitionItem)
         {
-            Discipline = discipline;
-            MeetingType = meetingType;
-            Groups = groups;
-            Teacher = teacher;
             WeekType = weekType;
             RequisitionItem = requisitionItem;
         }
 
         public Meeting BasicCopy()
         {
-            return new(
-                Discipline,
-                MeetingType,
-                Teacher,
-                WeekType,
-                RequisitionItem,
-                Groups)
+            return new(WeekType,
+                RequisitionItem)
             {
                 BaseMeeting = this,
                 RequiredAdjacentMeeting = RequiredAdjacentMeeting

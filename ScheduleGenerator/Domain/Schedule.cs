@@ -14,8 +14,8 @@ namespace Domain
     public class Schedule : IReadonlySchedule
     {
         public readonly HashSet<Meeting> Meetings = new();
-        public readonly HashSet<Meeting> NotUsedMeetings = new();
-        public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom = new();
+        public readonly HashSet<Meeting> NotUsedMeetings;
+        public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
@@ -32,11 +32,6 @@ namespace Domain
         public readonly Dictionary<Meeting, int> FreeTimeSlotsCountByMeeting = new();
 
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
-
-        public Schedule(Meeting[] meetings)
-        {
-            Meetings = meetings.ToHashSet();
-        }
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {

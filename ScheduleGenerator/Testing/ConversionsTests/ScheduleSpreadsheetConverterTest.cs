@@ -1,7 +1,9 @@
+using System.Linq;
 using Domain;
 using Domain.Conversions;
 using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
+using static Testing.ObjectMother;
 
 namespace Testing.ConversionsTests
 {
@@ -16,14 +18,14 @@ namespace Testing.ConversionsTests
         [Test]
         public void ScheduleWriteTest()
         {
-            var testSchedule = new Schedule(new[]
+            var testSchedule = new Schedule(FullMondayRequisition, ClassRooms);
+
+            while (testSchedule.NotUsedMeetings.Count != 0)
             {
-                MeetingCreator.CreateMeeting("Math 623 Fil 0 3 0 0 FT-202#0 FT-201#0 KN-201#2"),
-                MeetingCreator.CreateMeeting("DM 622 Str 0 0 0 0 FT-202#0 KN-201#0"),
-                MeetingCreator.CreateMeeting("OOP 526 Eg 0 2 0 0 FT-202#1 FT-202#0 FT-201#1 FT-201#2"),
-                MeetingCreator.CreateMeeting("Net 150 Ber 0 1 1 0 FT-202#0"),
-                MeetingCreator.CreateMeeting("Net 150 Ber 0 1 0 0 FT-201#1")
-            });
+                var meeting = testSchedule.GetMeetingsToAdd().First();
+                testSchedule.AddMeeting(meeting, true);
+            }
+
             const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
             var repo = new GsRepository("test", credentialPath, Url);
             repo.ClearCellRange(SheetName, (0, 0), (100, 100));

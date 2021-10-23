@@ -54,6 +54,9 @@ namespace Testing
         public static readonly Teacher OsTeacher = new("Копейцев");
         public static readonly Teacher PeTeacher = new("Физрук");
 
+        public static readonly RequisitionItem OopLabRequisitionItem =
+            new(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2);
+
         public static readonly Requisition CalculusRequisition = new(new[]
         {
             new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher,
