@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
+using Domain.Enums;
+using Domain.MeetingsParts;
 
 namespace Domain
 {
@@ -228,8 +230,6 @@ namespace Domain
                 string? room = null;
                 if (isRoomNeeded)
                     room = FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
-                if (room == null && isRoomNeeded)
-                    Console.WriteLine("BIBA!!!!!");
                 if (room == null && isRoomNeeded) return null;
 
                 meetingCopy.Groups = groupsChoice.Groups;
@@ -284,17 +284,15 @@ namespace Domain
         private bool IsNoSpaceBetweenDifferentLocatedMeetings(Meeting meeting)
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
-            var location = meeting.RequisitionItem.Location;
+            var location = meeting.Location;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
                 for (var i = -1; i <= 1; i += 2)
                 {
                     var timeSlot = timeSlotIndex + i;
                     if (timeSlot is not (> 0 and < 7)) continue;
-                    if (day[timeSlot] == null)
-                        continue;
-                    if (day[timeSlot]?.RequisitionItem.Location != location)
-                        return true;
+                    if (day[timeSlot] == null) continue;
+                    if (day[timeSlot]!.Location != location) return true;
                 }
 
             return false;

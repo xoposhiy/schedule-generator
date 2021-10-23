@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Domain;
+using Domain.MeetingsParts;
 using NUnit.Framework;
 using static Testing.ObjectMother;
 

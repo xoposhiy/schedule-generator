@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Domain;
 using Domain.Algorithms.Estimators;
+using Domain.MeetingsParts;
 using NUnit.Framework;
 using static Testing.ObjectMother;
 

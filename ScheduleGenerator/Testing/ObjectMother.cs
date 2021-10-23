@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Domain;
+using Domain.Enums;
+using Domain.MeetingsParts;
 
 namespace Testing
 {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-using NUnit.Framework;
 using ApprovalTests;
 using ApprovalTests.Reporters;
-using Domain;
 using Domain.Algorithms;
 using Domain.Conversions;
+using Domain.MeetingsParts;
 using Infrastructure.GoogleSheetsRepository;
+using NUnit.Framework;
 
 namespace Testing.ScheduleLibTests
 {

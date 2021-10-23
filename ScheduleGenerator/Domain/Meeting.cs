@@ -1,5 +1,6 @@
-using System;
 using System.Linq;
+using Domain.Enums;
+using Domain.MeetingsParts;
 
 namespace Domain
 {
@@ -9,6 +10,7 @@ namespace Domain
         public readonly RequisitionItem RequisitionItem;
         public Discipline Discipline => RequisitionItem.PlanItem.Discipline;
         public MeetingType MeetingType => RequisitionItem.PlanItem.MeetingType;
+        public Location Location => RequisitionItem.Location;
         public Teacher Teacher => RequisitionItem.Teacher;
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
@@ -25,8 +27,7 @@ namespace Domain
 
         public Meeting BasicCopy()
         {
-            return new(WeekType,
-                RequisitionItem)
+            return new(WeekType, RequisitionItem)
             {
                 BaseMeeting = this,
                 RequiredAdjacentMeeting = RequiredAdjacentMeeting
@@ -36,11 +37,8 @@ namespace Domain
         public override string ToString()
         {
             var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
-            var classroom = RequisitionItem.Location != Location.MathMeh
-                ? RequisitionItem.Location.ToString()
-                : Classroom;
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
-                   $" Classroom: {classroom}, MeetingType: {MeetingType}, Teacher: {Teacher}";
+                   $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
 
         public bool IsRoomNeeded()
@@ -54,77 +52,5 @@ namespace Domain
             var g = meetingGroups.ToHashSet();
             return f.SetEquals(g);
         }
-    }
-
-    public record MeetingGroup(string GroupName, GroupPart GroupPart)
-    {
-        public override string ToString()
-        {
-            return $"{GroupName} {GroupPart}";
-        }
-
-        public string GetGroupSet()
-        {
-            var parts = GroupName.Split(new[] {"-"}, 2, StringSplitOptions.None);
-            //ФИИТ-1
-            //КН-2
-            return $"{parts[0]}-{parts[1][0]}";
-        }
-    }
-
-
-    public enum MeetingType
-    {
-        Lecture,
-        ComputerLab,
-        Seminar
-    }
-
-
-    public record Discipline(string Name)
-    {
-        public override string ToString()
-        {
-            return Name;
-        }
-    }
-
-    public record Teacher(string Name)
-    {
-        public override string ToString()
-        {
-            return Name;
-        }
-    }
-
-    public record MeetingTime(DayOfWeek Day, int TimeSlotIndex)
-    {
-        public override string ToString()
-        {
-            return $"Day: {Day}, TimeSlotIndex: {TimeSlotIndex}";
-        }
-    }
-
-    public enum WeekType
-    {
-        All,
-        Even,
-        Odd,
-        OddOrEven
-    }
-
-    public enum GroupPart
-    {
-        FullGroup,
-        Part1,
-        Part2
-    }
-
-    public enum Location
-    {
-        MathMeh,
-        PashaEgorov,
-        Kontur,
-        Online
     }
 }

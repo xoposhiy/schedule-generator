@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
 

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Domain.Enums;
+using Domain.MeetingsParts;
 
 namespace Domain.Conversions
 {

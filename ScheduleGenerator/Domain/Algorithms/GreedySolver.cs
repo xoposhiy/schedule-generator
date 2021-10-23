@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Domain.Enums;
+using Domain.MeetingsParts;
 
 namespace Domain.Algorithms
 {
@@ -46,8 +48,10 @@ namespace Domain.Algorithms
                         {
                             Console.WriteLine(notUsedMeeting);
                         }
+
                         break;
                     }
+
                     var (meeting, score) = meetingsToAdd.First();
                     currentScore = score;
                     currentSchedule.AddMeeting(meeting, true);

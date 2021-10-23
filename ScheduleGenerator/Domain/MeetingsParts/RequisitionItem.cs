@@ -2,8 +2,9 @@
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Conversions;
+using Domain.Enums;
 
-namespace Domain
+namespace Domain.MeetingsParts
 {
     public class RequisitionItem
     {
