@@ -60,7 +60,7 @@ namespace Testing
         public static readonly Requisition CalculusRequisition = new(new[]
         {
             new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher,
-                1, isOnline: true),
+                1, Location.Online),
             new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher)
         });
 

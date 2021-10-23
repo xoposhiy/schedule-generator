@@ -84,7 +84,8 @@ namespace Domain
                 var meetingTime = meetingToAdd.MeetingTime!;
                 TeacherMeetingsByTime.SafeAdd(teacher, meetingToAdd);
 
-                FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Location!);
+                if (meetingToAdd.Classroom != null)
+                    FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Classroom);
                 AddMeetingToGroup(meetingToAdd);
 
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
@@ -109,8 +110,8 @@ namespace Domain
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     TeacherMeetingsByTime[meetingToRemove.Teacher][weekType][day][timeSlot] = null;
 
-                if (meetingToRemove.Location != "Онлайн")
-                    FreeRoomsByDay[meetingTime].Add(meetingToRemove.Location!);
+                if (meetingToRemove.Classroom != null)
+                    FreeRoomsByDay[meetingTime].Add(meetingToRemove.Classroom);
 
                 RemoveMeetingFromGroup(meetingToRemove);
 
@@ -183,7 +184,7 @@ namespace Domain
             foreach (var meeting in meetings)
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                if (!meeting.RequisitionItem.IsOnline)
+                if (meeting.IsRoomNeeded())
                     foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
@@ -223,14 +224,17 @@ namespace Domain
             {
                 var meetingCopy = baseMeeting.BasicCopy();
                 meetingCopy.WeekType = weekType;
-                var room = baseMeeting.RequisitionItem.IsOnline
-                    ? Meeting.OnlineLocationName
-                    : FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
-                if (room == null) return null;
+                var isRoomNeeded = baseMeeting.IsRoomNeeded();
+                string? room = null;
+                if (isRoomNeeded)
+                    room = FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
+                if (room == null && isRoomNeeded)
+                    Console.WriteLine("BIBA!!!!!");
+                if (room == null && isRoomNeeded) return null;
 
                 meetingCopy.Groups = groupsChoice.Groups;
                 meetingCopy.MeetingTime = meetingTime;
-                meetingCopy.Location = room;
+                meetingCopy.Classroom = room;
                 if (IsMeetingValid(meetingCopy)) return meetingCopy;
             }
 
@@ -242,7 +246,7 @@ namespace Domain
             return !(HasMeetingAlreadyAtThisTime(meeting)
                      || IsMeetingIsExtraForGroup(meeting)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting)
-                     || IsNoSpaceBetweenOnlineAndOfflineMeetings(meeting)
+                     || IsNoSpaceBetweenDifferentLocatedMeetings(meeting)
                      || !IsTimeAcceptableForTeacher(meeting));
         }
 
@@ -277,17 +281,20 @@ namespace Domain
                 .HasMeetingsAtTime(timeSlotIndex);
         }
 
-        private bool IsNoSpaceBetweenOnlineAndOfflineMeetings(Meeting meeting)
+        private bool IsNoSpaceBetweenDifferentLocatedMeetings(Meeting meeting)
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
-            var onlineNeeded = !meeting.RequisitionItem.IsOnline;
+            var location = meeting.RequisitionItem.Location;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
                 for (var i = -1; i <= 1; i += 2)
                 {
                     var timeSlot = timeSlotIndex + i;
                     if (timeSlot is not (> 0 and < 7)) continue;
-                    if (day[timeSlot]?.RequisitionItem.IsOnline == onlineNeeded) return true;
+                    if (day[timeSlot] == null)
+                        continue;
+                    if (day[timeSlot]?.RequisitionItem.Location != location)
+                        return true;
                 }
 
             return false;

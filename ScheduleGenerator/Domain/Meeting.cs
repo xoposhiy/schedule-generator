@@ -5,14 +5,14 @@ namespace Domain
 {
     public class Meeting
     {
-        public const string OnlineLocationName = "Онлайн";
+        public const string English = "ИнЯз";
         public readonly RequisitionItem RequisitionItem;
         public Discipline Discipline => RequisitionItem.PlanItem.Discipline;
         public MeetingType MeetingType => RequisitionItem.PlanItem.MeetingType;
         public Teacher Teacher => RequisitionItem.Teacher;
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
-        public string? Location;
+        public string? Classroom;
         public MeetingTime? MeetingTime;
         public Meeting? BaseMeeting;
         public Meeting? RequiredAdjacentMeeting;
@@ -36,8 +36,16 @@ namespace Domain
         public override string ToString()
         {
             var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
+            var classroom = RequisitionItem.Location != Location.MathMeh
+                ? RequisitionItem.Location.ToString()
+                : Classroom;
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
-                   $" Location: {Location}, MeetingType: {MeetingType}, Teacher: {Teacher}";
+                   $" Classroom: {classroom}, MeetingType: {MeetingType}, Teacher: {Teacher}";
+        }
+
+        public bool IsRoomNeeded()
+        {
+            return RequisitionItem.Location == Location.MathMeh && Discipline.Name != English;
         }
 
         public bool GroupsEquals(MeetingGroup[] meetingGroups)
@@ -110,5 +118,13 @@ namespace Domain
         FullGroup,
         Part1,
         Part2
+    }
+
+    public enum Location
+    {
+        MathMeh,
+        PashaEgorov,
+        Kontur,
+        Online
     }
 }

@@ -10,13 +10,13 @@ namespace Testing.ScheduleLibTests
     public class Schedule_GetMeetingToAddTests
     {
         [Test]
-        public void SetLocationGroupAndTimeToRequiredValues()
+        public void SetGroupClassroomAndTimeToRequiredValues()
         {
             var schedule = new Schedule(OsRequisition, ClassRooms);
 
             var meeting = schedule.GetMeetingsToAdd().Single();
 
-            Assert.That(meeting.Location, Is.EqualTo("632"));
+            Assert.That(meeting.Classroom, Is.EqualTo("632"));
             Assert.That(meeting.Groups, Is.EqualTo(new[] {Group1, Group2}));
             Assert.That(meeting.MeetingTime, Is.EqualTo(new MeetingTime(DayOfWeek.Tuesday, 3)));
         }

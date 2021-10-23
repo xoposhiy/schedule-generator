@@ -16,8 +16,8 @@ namespace Testing.ScheduleLibTests
 
             var lecturePossibleLocations = schedule.GetMeetingsToAdd()
                 .Where(m => m.MeetingType == MeetingType.Lecture)
-                .Select(m => m.Location);
-            Assert.That(lecturePossibleLocations, Has.All.EqualTo(Meeting.OnlineLocationName));
+                .Select(m => m.Classroom);
+            Assert.That(lecturePossibleLocations, Has.All.EqualTo(null));
         }
 
         [Test]

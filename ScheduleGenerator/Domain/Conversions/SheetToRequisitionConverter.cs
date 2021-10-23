@@ -89,6 +89,18 @@ namespace Domain.Conversions
             };
         }
 
+        private static Location GetMeetingLocation(string rowMeetingLocation)
+        {
+            return rowMeetingLocation switch
+            {
+                "Тургенева 4" => Location.MathMeh,
+                "Физра" => Location.PashaEgorov,
+                "Контур" => Location.Kontur,
+                "Онлайн" => Location.Online,
+                _ => throw new FormatException($"Некорректная локация занятия: {rowMeetingLocation}")
+            };
+        }
+
         public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(
             GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
@@ -103,37 +115,6 @@ namespace Domain.Conversions
                 .ToDictionary(e => e.Item1, e => e.Item2);
             return (requisitions, learningPlan, classrooms);
         }
-
-        //private static List<List<string>> ReadRowsUsingBoundary(GSRepository repo, string SheetName, (int row, int col) start, int width)
-        //{
-        //    var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
-        //    var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
-        //    var rowCountToRead = Math.Min((int)actualRowCount, 300);
-        //    var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
-        //    var rowsWithDataCount = testData.Count;
-        //    var dotBoundary = Enumerable.Repeat(new List<string>() { "." }, rowsWithDataCount).ToList();
-        //    repo.ModifySpreadSheet(SheetName).WriteRange((start.row, width), dotBoundary).Execute();
-        //    var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
-        //    return sheetData;
-        //}
-
-        //private static List<List<string>> ReadRowsFromSheet(GSRepository repo, string SheetName, (int row, int col) start, int width)
-        //{
-        //    var sheetObj = repo.CurrentSheetInfo.spreadsheet.Sheets.Where(s => s.Properties.Title == SheetName).First();
-        //    var actualRowCount = sheetObj.Properties.GridProperties.RowCount;
-        //    var rowCountToRead = Math.Min((int)actualRowCount, 300);
-        //    var testData = repo.ReadCellRange(SheetName, start, (rowCountToRead + 1, width - 1));
-        //    var rowsWithDataCount = testData.Count;
-        //    var sheetData = repo.ReadCellRange(SheetName, start, (rowsWithDataCount, width));
-        //    foreach (var row in sheetData)
-        //    {
-        //        for (var i = width - row.Count; i > 0; i--)
-        //        {
-        //            row.Add("");
-        //        }
-        //    }
-        //    return sheetData;
-        //}
 
         private static IEnumerable<LearningPlanItem> ParseLearningPlanItems(List<List<string>> sheetData)
         {
@@ -205,7 +186,7 @@ namespace Domain.Conversions
                     var groupPriorities = requisitionRow[4];
                     var meetingTimesRaw = requisitionRow[5];
                     var weekTypeRaw = requisitionRow[6];
-                    var isOnline = requisitionRow[7].Trim().Contains("онлайн");
+                    var location = GetMeetingLocation(requisitionRow[7]);
 
                     var teacher = new Teacher(teacherName);
 
@@ -224,7 +205,7 @@ namespace Domain.Conversions
                     var planItem = GetPlanItem(learningPlan, disciplineName, meetingType, groupSet);
                     var weekType = ParseWeekType(weekTypeRaw);
                     var requisition = new RequisitionItem(planItem, groupRequisitions.ToArray(), repetitionCount,
-                        meetingTimeRequisitionArray, teacher, weekType, isOnline);
+                        meetingTimeRequisitionArray, teacher, location, weekType);
                     requisitions.Add(requisition);
                 }
                 catch (Exception e)

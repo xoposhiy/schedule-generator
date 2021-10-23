@@ -9,7 +9,7 @@ namespace Domain
     {
         public readonly LearningPlanItem PlanItem;
         public readonly GroupRequisition[] GroupPriorities;
-        public readonly bool IsOnline;
+        public readonly Location Location;
 
         public readonly int RepetitionsCount;
 
@@ -18,19 +18,19 @@ namespace Domain
         public readonly WeekType WeekType;
 
         public RequisitionItem(LearningPlanItem planItem, string groupPriorities,
-            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1, WeekType weekType = WeekType.All,
-            bool isOnline = false)
+            string meetingTimePriorities, Teacher teacher, int repetitionsCount = 1,
+            Location location = Location.MathMeh, WeekType weekType = WeekType.All)
             : this(planItem,
                 SheetToRequisitionConverter.ParseGroupRequisitions(groupPriorities).ToArray(),
                 repetitionsCount,
                 SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimePriorities).ToArray(),
-                teacher, weekType, isOnline)
+                teacher, location, weekType)
         {
         }
 
         public RequisitionItem(LearningPlanItem planItem, GroupRequisition[] groupPriorities, int repetitionsCount,
-            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, WeekType weekType = WeekType.All,
-            bool isOnline = false)
+            MeetingTimeRequisition[] meetingTimePriorities, Teacher teacher, Location location,
+            WeekType weekType = WeekType.All)
         {
             PlanItem = planItem;
             GroupPriorities = groupPriorities;
@@ -38,7 +38,7 @@ namespace Domain
             MeetingTimePriorities = meetingTimePriorities;
             Teacher = teacher;
             WeekType = weekType;
-            IsOnline = isOnline;
+            Location = location;
         }
 
 
@@ -50,7 +50,7 @@ namespace Domain
         public RequisitionItem Copy()
         {
             return new(PlanItem, GroupPriorities, RepetitionsCount,
-                MeetingTimePriorities, Teacher, WeekType);
+                MeetingTimePriorities, Teacher, Location, WeekType);
         }
     }
 

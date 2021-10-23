@@ -146,6 +146,24 @@ namespace Domain.Conversions
             modifier.Execute();
         }
 
+        private string FillLocation(Meeting meeting)
+        {
+            if (meeting.Classroom is not null)
+                return meeting.Classroom;
+            var location = meeting.RequisitionItem.Location;
+            switch (location)
+            {
+                case Location.Kontur:
+                    return "Контур";
+                case Location.PashaEgorov:
+                    return "ФОК";
+                case Location.Online:
+                    return "Онлайн";
+                default:
+                    return "БИбиба!";
+            }
+        }
+
         private void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict, SheetModifier modifier)
         {
             var horizOffset = 2;
@@ -166,9 +184,10 @@ namespace Domain.Conversions
             foreach (var group in meeting.Groups!)
             {
                 // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
+                var classroom = FillLocation(meeting);
                 var data =
                     $"{meeting.Discipline}, " +
-                    $"{meeting.Location}, " +
+                    $"{classroom}, " +
                     $"{meeting.Teacher?.Name}";
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
