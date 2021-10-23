@@ -186,7 +186,7 @@ namespace Domain
             foreach (var meeting in meetings)
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                if (meeting.IsRoomNeeded())
+                if (meeting.IsRoomNeeded)
                     foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
@@ -226,11 +226,10 @@ namespace Domain
             {
                 var meetingCopy = baseMeeting.BasicCopy();
                 meetingCopy.WeekType = weekType;
-                var isRoomNeeded = baseMeeting.IsRoomNeeded();
                 string? room = null;
-                if (isRoomNeeded)
+                if (baseMeeting.IsRoomNeeded)
                     room = FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
-                if (room == null && isRoomNeeded) return null;
+                if (room == null && baseMeeting.IsRoomNeeded) return null;
 
                 meetingCopy.Groups = groupsChoice.Groups;
                 meetingCopy.MeetingTime = meetingTime;
@@ -286,7 +285,7 @@ namespace Domain
             var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
             var location = meeting.Location;
             foreach (var group in meeting.Groups!.GetGroupParts())
-            foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
+            foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(group, meeting))
                 for (var i = -1; i <= 1; i += 2)
                 {
                     var timeSlot = timeSlotIndex + i;

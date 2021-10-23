@@ -5,7 +5,7 @@ using Infrastructure.GoogleSheetsRepository;
 
 namespace Infrastructure.SheetPatterns
 {
-    public class SheetTableReader
+    public static class SheetTableReader
     {
         public static List<List<string>> ReadRowsFromSheet(GsRepository repo, string sheetName,
             (int row, int col) start, int width)

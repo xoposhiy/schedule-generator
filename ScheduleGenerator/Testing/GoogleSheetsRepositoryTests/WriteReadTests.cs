@@ -23,7 +23,6 @@ namespace Testing.GoogleSheetsRepositoryTests
 
 
             repo.ChangeTable(Url);
-            repo.ReadCell(SheetName, (1, 1)); // var read =
 
             var dataToWrite = new List<List<string>>
             {

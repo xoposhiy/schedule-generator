@@ -1,31 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using System.IO;
-using System.Linq;
 
 namespace Infrastructure.GoogleSheetsRepository
 {
     public class GsRepository
     {
-        public GoogleCredential Credentials { get; private set; }
-        public SheetsService Service { get; private set; }
-        public string[] Scopes { get; private set; }
-        public string ApplicationName { get; private set; }
+        public SheetsService Service { get; }
+        public string[] Scopes { get; } = {SheetsService.Scope.Spreadsheets};
         public string? CurrentSheetId { get; private set; }
         public SheetInfo? CurrentSheetInfo { get; private set; }
 
         public GsRepository(string applicationName, string pathToCredentials, string tableUrl)
         {
-            Scopes = new[] {SheetsService.Scope.Spreadsheets};
-            ApplicationName = applicationName;
-            Credentials = LoadCredential(pathToCredentials);
-            Service = CreateDefaultService();
-            CurrentSheetId = null;
-            CurrentSheetInfo = null;
+            var credentials = LoadCredential(pathToCredentials);
+            Service = new SheetsService(new BaseClientService.Initializer
+            {
+                HttpClientInitializer = credentials,
+                ApplicationName = applicationName
+            });
             ChangeTable(tableUrl);
         }
 
@@ -34,8 +32,7 @@ namespace Infrastructure.GoogleSheetsRepository
             try
             {
                 using var stream = new FileStream(pathToCredentials, FileMode.Open, FileAccess.Read);
-                return GoogleCredential.FromStream(stream)
-                    .CreateScoped(Scopes);
+                return GoogleCredential.FromStream(stream).CreateScoped(Scopes);
             }
             catch (FileNotFoundException)
             {
@@ -47,19 +44,10 @@ namespace Infrastructure.GoogleSheetsRepository
             }
         }
 
-        private SheetsService CreateDefaultService()
-        {
-            return new SheetsService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = Credentials,
-                ApplicationName = ApplicationName
-            });
-        }
-
         public void ChangeTable(string url)
         {
             var urlParts = url.Split('/');
-            var id = urlParts[urlParts.Length - 2];
+            var id = urlParts[^2];
             CurrentSheetId = id;
             SetUpSheetInfo();
         }
@@ -73,19 +61,6 @@ namespace Infrastructure.GoogleSheetsRepository
                 .Execute();
 
             CurrentSheetInfo = new SheetInfo(metadata);
-        }
-
-        public List<string> GetSheetNames(string id)
-        {
-            var metadata = Service.Spreadsheets.Get(id).Execute();
-            var sheets = metadata.Sheets;
-            var sheetTitles = sheets.Select(x => x.Properties.Title);
-            return sheetTitles.ToList();
-        }
-
-        public string ReadCell(string sheetName, ValueTuple<int, int> cellCoords)
-        {
-            return ReadOneCellAsObject(sheetName, cellCoords)?.ToString() ?? "";
         }
 
         public List<List<string?>?>? ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart,
@@ -104,18 +79,6 @@ namespace Infrastructure.GoogleSheetsRepository
             return values;
         }
 
-        private object? ReadOneCellAsObject(string sheetName, ValueTuple<int, int> rangeStart)
-        {
-            var (top, leftIndex) = rangeStart;
-            leftIndex++;
-            top++;
-            var left = ConvertIndexToTableColumnFormat(leftIndex);
-            var range = $"{left}{top}";
-            var values = ReadCellRangeUsingStringRangeFormat(sheetName, range);
-            var value = values?.First()?.First();
-            return value;
-        }
-
         public List<List<string?>?>? ReadCellRangeUsingStringRangeFormat(string sheetName, string range)
         {
             var fullRange = $"{sheetName}!{range}";
@@ -130,11 +93,10 @@ namespace Infrastructure.GoogleSheetsRepository
         {
             var dividend = index;
             var columnName = string.Empty;
-            int modulo;
 
             while (dividend > 0)
             {
-                modulo = (dividend - 1) % 26;
+                var modulo = (dividend - 1) % 26;
                 columnName = Convert.ToChar(65 + modulo) + columnName;
                 dividend = (dividend - modulo) / 26;
             }
@@ -163,7 +125,7 @@ namespace Infrastructure.GoogleSheetsRepository
             string fullRange = $"{sheetName}!{range}";
             var requestBody = new ClearValuesRequest();
             var deleteRequest = Service.Spreadsheets.Values.Clear(requestBody, CurrentSheetId, fullRange);
-            deleteRequest.Execute(); // DeleteResponse
+            deleteRequest.Execute();
         }
 
         public void CreateNewSheet(string title)
@@ -190,7 +152,7 @@ namespace Infrastructure.GoogleSheetsRepository
                 Requests = requests
             };
             var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
-            request.Execute(); // Response
+            request.Execute();
         }
     }
 
@@ -231,7 +193,7 @@ namespace Infrastructure.GoogleSheetsRepository
                             },
                             BackgroundColor = value.Contains("Онлайн")
                                 ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}
-                                : new Color {Blue = 1, Green = 1, Red = 1, Alpha = 0},
+                                : new Color {Blue = 1, Green = 1, Red = 1},
                             VerticalAlignment = "middle",
                             HorizontalAlignment = "center",
                             WrapStrategy = "wrap"
@@ -286,7 +248,7 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier IncertRows(int startRow, int count)
+        public SheetModifier InsertRows(int startRow, int count)
         {
             requests.Add(new Request
             {
@@ -328,7 +290,6 @@ namespace Infrastructure.GoogleSheetsRepository
         {
             var (top, left) = rangeStart;
             var (bottom, right) = rangeEnd;
-            // new
             bottom++;
             right++;
             var rows = new List<RowData>();

@@ -1,4 +1,3 @@
-using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
 
@@ -12,6 +11,8 @@ namespace Domain
         public MeetingType MeetingType => RequisitionItem.PlanItem.MeetingType;
         public Location Location => RequisitionItem.Location;
         public Teacher Teacher => RequisitionItem.Teacher;
+        public bool IsRoomNeeded => Location == Location.MathMeh && Discipline.Name != English;
+
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
         public string? Classroom;
@@ -39,18 +40,6 @@ namespace Domain
             var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
-        }
-
-        public bool IsRoomNeeded()
-        {
-            return RequisitionItem.Location == Location.MathMeh && Discipline.Name != English;
-        }
-
-        public bool GroupsEquals(MeetingGroup[] meetingGroups)
-        {
-            var f = Groups!.ToHashSet();
-            var g = meetingGroups.ToHashSet();
-            return f.SetEquals(g);
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Domain.MeetingsParts
 
         public override string ToString()
         {
-            return $"{string.Join(" ", GroupPriorities.ToList())}, {Teacher}"; //, {}, {}, {}";
+            return $"{string.Join<GroupRequisition>(" ", GroupPriorities)}, {Teacher}"; //, {}, {}, {}";
         }
 
         public RequisitionItem Copy()
