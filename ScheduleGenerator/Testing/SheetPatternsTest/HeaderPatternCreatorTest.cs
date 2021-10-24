@@ -2,22 +2,17 @@
 using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
 using static Infrastructure.SheetPatterns.HeaderPatternCreator;
+using static Infrastructure.SheetConstants;
 
 namespace Testing.SheetPatternsTest
 {
     [TestFixture]
     internal class HeaderPatternCreatorTest
     {
-        private const string Url =
-            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
-
-        private const string SheetName = "Testing";
-
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
-            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-            var repo = new GsRepository("test", credentialPath, Url);
+            var repo = new GsRepository("test", CredentialPath, Url);
             repo.SetUpSheetInfo();
             repo.ClearCellRange(SheetName, (0, 0), (10, 10));
 

@@ -7,7 +7,7 @@ namespace Testing.SheetPatternsTest
     [TestFixture]
     internal class SheetTableEvaluatorTest
     {
-        private List<(string pattern, string msg)> patternMsgList = new()
+        private readonly List<(string pattern, string msg)> patternMsgList = new()
         {
             (@".+", "Нужно вписать имя преподавателя"),
             (@".+", "Нужно вписать назваине дисциплины"),

@@ -96,7 +96,7 @@ namespace Testing.ScheduleLibTests
             Assert.That(schedule.NotUsedMeetings, Has.Count.EqualTo(2));
         }
 
-        private void AssertAdjacentTimeSlots(Meeting meeting1, Meeting meeting2)
+        private static void AssertAdjacentTimeSlots(Meeting meeting1, Meeting meeting2)
         {
             Assert.That(meeting1.MeetingTime!.Day, Is.EqualTo(meeting2.MeetingTime!.Day));
             var timeDelta = meeting1.MeetingTime!.TimeSlotIndex - meeting2.MeetingTime!.TimeSlotIndex;

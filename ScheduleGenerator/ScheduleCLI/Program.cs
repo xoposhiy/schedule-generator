@@ -7,6 +7,7 @@ using Domain.MeetingsParts;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;
+using static Infrastructure.SheetConstants;
 
 namespace ScheduleCLI
 {
@@ -14,25 +15,17 @@ namespace ScheduleCLI
     {
         private static void Main()
         {
-            var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-
             //var container = ConfigureContainer();
 
             Console.WriteLine("Starting...");
 
-            var link =
-                "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
             var inputRequirementsSheetId = 861045221;
-            var inputRequirementsSheetUrl = link + inputRequirementsSheetId;
-            var repo = new GsRepository("test", credentialPath, inputRequirementsSheetUrl);
+            var inputRequirementsSheetUrl = Url + inputRequirementsSheetId;
+            var repo = new GsRepository("test", CredentialPath, inputRequirementsSheetUrl);
             repo.SetUpSheetInfo();
-            var inputRequirementsSheetName = "Входные требования";
-            var learningPlanSheetName = "Учебный план";
-            var scheduleSheetName = "Расписание";
-            var classroomsSheetName = "Аудитории";
 
             var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
+                repo, InputRequirementsSheetName, LearningPlanSheetName, ClassroomsSheetName);
 
             var requisition = new Requisition(requisitions.ToArray());
 
@@ -44,7 +37,7 @@ namespace ScheduleCLI
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
-            var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
+            var converter = new ScheduleSpreadsheetConverter(repo, ScheduleSheetName);
             converter.Build(solutions.Last().Schedule);
             var logger = new Logger("Combined");
             estimator.Estimate(solutions.Last().Schedule, logger);

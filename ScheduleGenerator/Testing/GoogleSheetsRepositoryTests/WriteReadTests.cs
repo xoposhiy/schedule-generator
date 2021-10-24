@@ -6,7 +6,6 @@ using static Infrastructure.Extensions;
 
 namespace Testing.GoogleSheetsRepositoryTests
 {
-    //TODO: зачищать и форматирование таблицы
     [TestFixture]
     public class WriteReadTests
     {
@@ -14,6 +13,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
         private const string SheetName = "Testing";
+        private const string CredentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
 
         private readonly List<List<CellData>> dataToWrite = new()
         {
@@ -22,36 +22,37 @@ namespace Testing.GoogleSheetsRepositoryTests
             new() {CommonCellData("31"), CommonCellData("32")}
         };
 
+        private readonly GsRepository repository = new("test", CredentialPath, Url);
+
+        [SetUp]
+        [TearDown]
+        public void SetUp()
+        {
+            repository.ClearCellRange(SheetName, (0, 0), (10, 10));
+        }
+
         [Test]
         public void WriteRead()
         {
-            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-            var repo = new GsRepository("test", credentialPath, Url);
-            repo.ClearCellRange(SheetName, (0, 0), (10, 10));
-            repo.SetUpSheetInfo();
+            repository.SetUpSheetInfo();
+            repository.ChangeTable(Url);
 
-
-            repo.ChangeTable(Url);
-
-            repo.ModifySpreadSheet(SheetName)
+            repository.ModifySpreadSheet(SheetName)
                 .WriteRange(1, 2, dataToWrite)
                 .Execute();
 
-            var valRange = repo.ReadCellRange(SheetName, (1, 2), (3, 4))!;
+            var valRange = repository.ReadCellRange(SheetName, (1, 2), (3, 4))!;
             for (var r = 0; r < valRange.Count; r++)
             for (var c = 0; c < valRange[r]!.Count; c++)
                 Assert.AreEqual(dataToWrite[r][c].UserEnteredValue.StringValue, valRange[r]![c]);
         }
 
         [Test]
-        public void WriteReadTwoReposWithSameCreds()
+        public void WriteReadTwoReposWithSameCredentials()
         {
-            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-            var repo1 = new GsRepository("test", credentialPath, Url);
-            repo1.ClearCellRange(SheetName, (0, 0), (10, 10));
-            var repo2 = new GsRepository("test", credentialPath, Url);
+            var repo2 = new GsRepository("test", CredentialPath, Url);
 
-            repo1.ModifySpreadSheet(SheetName)
+            repository.ModifySpreadSheet(SheetName)
                 .WriteRange(1, 2, dataToWrite)
                 .Execute();
 

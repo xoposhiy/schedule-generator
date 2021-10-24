@@ -7,6 +7,7 @@ using Domain.Conversions;
 using Domain.MeetingsParts;
 using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
+using static Infrastructure.SheetConstants;
 
 namespace Testing.ScheduleLibTests
 {
@@ -19,21 +20,13 @@ namespace Testing.ScheduleLibTests
         {
             // TODO сейчас это копипаста мейна - пофиксить дублирование
 
-            var credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-
-            var link =
-                "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
             var inputRequirementsSheetId = 861045221;
-            var inputRequirementsSheetUrl = link + inputRequirementsSheetId;
-            var repo = new GsRepository("test", credentialPath, inputRequirementsSheetUrl);
+            var inputRequirementsSheetUrl = Url + inputRequirementsSheetId;
+            var repo = new GsRepository("test", CredentialPath, inputRequirementsSheetUrl);
             repo.SetUpSheetInfo();
-            var inputRequirementsSheetName = "Входные требования";
-            var learningPlanSheetName = "Учебный план";
-            //var scheduleSheetName = "Расписание";
-            var classroomsSheetName = "Аудитории";
 
             var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, inputRequirementsSheetName, learningPlanSheetName, classroomsSheetName);
+                repo, InputRequirementsSheetName, LearningPlanSheetName, ClassroomsSheetName);
 
             var requisition = new Requisition(requisitions.ToArray());
 
