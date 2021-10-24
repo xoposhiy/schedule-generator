@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
 using static Infrastructure.SheetPatterns.HeaderPatternCreator;
 using static Infrastructure.SheetConstants;
@@ -12,9 +11,8 @@ namespace Testing.SheetPatternsTest
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
-            var repo = new GsRepository("test", CredentialPath, Url);
-            repo.SetUpSheetInfo();
-            repo.ClearCellRange(SheetName, (0, 0), (10, 10));
+            Repository.SetUpSheetInfo();
+            Repository.ClearCellRange(SheetName, (0, 0), (10, 10));
 
             var headers = new List<string>
             {
@@ -45,9 +43,9 @@ namespace Testing.SheetPatternsTest
                 "четная/нечетная (можно не указывать)"
             };
 
-            SetUpHeaders(repo, SheetName, 5, 1, headers, comments);
+            SetUpHeaders(Repository, SheetName, 5, 1, headers, comments);
 
-            var actualHeaders = repo.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
+            var actualHeaders = Repository.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
 
             Assert.AreEqual(headers.Count, actualHeaders.Count);
             for (var i = 0; i < headers.Count; i++) Assert.AreEqual(headers[i], actualHeaders[i]);

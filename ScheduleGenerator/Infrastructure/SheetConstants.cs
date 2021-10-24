@@ -1,4 +1,6 @@
-﻿namespace Infrastructure
+﻿using Infrastructure.GoogleSheetsRepository;
+
+namespace Infrastructure
 {
     public static class SheetConstants
     {
@@ -12,5 +14,7 @@
         public const string LearningPlanSheetName = "Учебный план";
         public const string ScheduleSheetName = "Расписание";
         public const string ClassroomsSheetName = "Аудитории";
+
+        public static readonly GsRepository Repository = new("test", CredentialPath, Url);
     }
 }

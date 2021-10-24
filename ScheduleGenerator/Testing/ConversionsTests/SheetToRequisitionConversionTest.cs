@@ -1,30 +1,26 @@
 ﻿using Domain.Conversions;
-using Infrastructure.GoogleSheetsRepository;
 using NUnit.Framework;
+using static Infrastructure.SheetConstants;
 
 namespace Testing.ConversionsTests
 {
     [TestFixture]
     internal class SheetToRequisitionConversionTest
     {
-        private const string Url =
-            "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
-
         [Test]
         public void RequisitionsReadTest()
         {
-            const string credentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
-            var repo = new GsRepository("test", credentialPath, Url);
+            var repo = Repository;
 
-            var requisitions = SheetToRequisitionConverter.ConvertToRequisitions(
+            var (requisitionItems, learningPlan, dictionary) = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo,
-                "Входные требования",
-                "Учебный план",
-                "Аудитории");
+                InputRequirementsSheetName,
+                LearningPlanSheetName,
+                ClassroomsSheetName);
 
-            Assert.AreEqual(63, requisitions.Item1.Count);
-            Assert.AreEqual(24, requisitions.Item2.Items.Length);
-            Assert.AreEqual(24, requisitions.Item3.Count);
+            Assert.AreEqual(63, requisitionItems.Count);
+            Assert.AreEqual(24, learningPlan.Items.Length);
+            Assert.AreEqual(24, dictionary.Count);
         }
     }
 }
