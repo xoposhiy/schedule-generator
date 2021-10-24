@@ -15,7 +15,7 @@ namespace Testing.GoogleSheetsRepositoryTests
 
         private const string SheetName = "Testing";
 
-        private List<List<CellData>> dataToWrite = new()
+        private readonly List<List<CellData>> dataToWrite = new()
         {
             new() {CommonCellData("11"), CommonCellData("12")},
             new() {CommonCellData("21"), CommonCellData("22")},
@@ -34,7 +34,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             repo.ChangeTable(Url);
 
             repo.ModifySpreadSheet(SheetName)
-                .WriteRange((1, 2), dataToWrite)
+                .WriteRange(1, 2, dataToWrite)
                 .Execute();
 
             var valRange = repo.ReadCellRange(SheetName, (1, 2), (3, 4))!;
@@ -52,7 +52,7 @@ namespace Testing.GoogleSheetsRepositoryTests
             var repo2 = new GsRepository("test", credentialPath, Url);
 
             repo1.ModifySpreadSheet(SheetName)
-                .WriteRange((1, 2), dataToWrite)
+                .WriteRange(1, 2, dataToWrite)
                 .Execute();
 
             var valRange = repo2.ReadCellRange(SheetName, (1, 2), (3, 4))!;

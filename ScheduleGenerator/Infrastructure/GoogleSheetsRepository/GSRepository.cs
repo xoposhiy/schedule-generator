@@ -170,9 +170,9 @@ namespace Infrastructure.GoogleSheetsRepository
             requests = new();
         }
 
-        public SheetModifier WriteRange(ValueTuple<int, int> leftTop, List<List<CellData>> payload)
+        public SheetModifier WriteRange(int top, int left, List<List<CellData>> payload)
         {
-            var (topIndex, leftIndex) = leftTop;
+            // var (topIndex, leftIndex) = topLeft;
             var rows = payload.Select(row => new RowData {Values = row}).ToList();
 
             requests.Add(new()
@@ -182,8 +182,8 @@ namespace Infrastructure.GoogleSheetsRepository
                     Start = new()
                     {
                         SheetId = sheetId,
-                        RowIndex = topIndex,
-                        ColumnIndex = leftIndex
+                        RowIndex = top,
+                        ColumnIndex = left
                     },
                     Rows = rows,
                     Fields = "*"
@@ -278,9 +278,9 @@ namespace Infrastructure.GoogleSheetsRepository
         }
 
 
-        public SheetModifier AddBorders(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public SheetModifier AddBorders(int top, int left, ValueTuple<int, int> rangeEnd)
         {
-            var (top, leftIndex) = rangeStart;
+            // var (top, leftIndex) = rangeStart;
             var (bottom, rightIndex) = rangeEnd;
             requests.Add(new()
             {
@@ -290,7 +290,7 @@ namespace Infrastructure.GoogleSheetsRepository
                     {
                         SheetId = sheetId,
                         StartRowIndex = top,
-                        StartColumnIndex = leftIndex,
+                        StartColumnIndex = left,
                         EndRowIndex = bottom + 1,
                         EndColumnIndex = rightIndex + 1
                     },

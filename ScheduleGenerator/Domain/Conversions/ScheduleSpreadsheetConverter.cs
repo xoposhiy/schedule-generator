@@ -74,7 +74,6 @@ namespace Domain.Conversions
             var color = new Color {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
             var height = WeekDayCount * StartIndexesCount * 2;
             var width = groups.Count * 2;
-            var start = (TimeBarRowOffset, HeadersColumnOffset);
             // TODO krutovsky: return GsRepository
             repository
                 .ModifySpreadSheet(sheetName)
@@ -90,8 +89,8 @@ namespace Domain.Conversions
             foreach (var weekDay in WeekDays.Select(CommonCellData))
             {
                 modifier
-                    .WriteRange((currentStart, TimeBarColumnOffset), new() {new() {weekDay}})
-                    .AddBorders((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset))
+                    .WriteRange(currentStart, TimeBarColumnOffset, new() {new() {weekDay}})
+                    .AddBorders(currentStart, TimeBarColumnOffset, (currentStart + 11, TimeBarColumnOffset))
                     .MergeCell((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset));
                 currentStart += 12;
             }
@@ -101,11 +100,9 @@ namespace Domain.Conversions
             foreach (var classStart in ClassStarts.Select(CommonCellData))
             {
                 modifier
-                    .WriteRange((currentStart, TimeBarColumnOffset + 1), new() {new() {classStart}})
-                    .AddBorders((currentStart, TimeBarColumnOffset + 1),
-                        (currentStart + 1, TimeBarColumnOffset + 1))
-                    .MergeCell((currentStart, TimeBarColumnOffset + 1),
-                        (currentStart + 1, TimeBarColumnOffset + 1));
+                    .WriteRange(currentStart, TimeBarColumnOffset + 1, new() {new() {classStart}})
+                    .AddBorders(currentStart, TimeBarColumnOffset + 1, (currentStart + 1, TimeBarColumnOffset + 1))
+                    .MergeCell((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1));
                 currentStart += 2;
             }
 
@@ -120,13 +117,13 @@ namespace Domain.Conversions
             foreach (var group in groups)
             {
                 modifier
-                    .WriteRange((HeadersRowOffset, currentStart), new() {new() {CommonCellData(group)}})
-                    .AddBorders((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
+                    .WriteRange(HeadersRowOffset, currentStart, new() {new() {CommonCellData(group)}})
+                    .AddBorders(HeadersRowOffset, currentStart, (HeadersRowOffset, currentStart + 1))
                     .MergeCell((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
-                    .WriteRange((HeadersRowOffset + 1, currentStart),
+                    .WriteRange(HeadersRowOffset + 1, currentStart,
                         new() {new() {CommonCellData(group + "-1"), CommonCellData(group + "-2")}})
-                    .AddBorders((HeadersRowOffset + 1, currentStart), (HeadersRowOffset + 1, currentStart))
-                    .AddBorders((HeadersRowOffset + 1, currentStart + 1), (HeadersRowOffset + 1, currentStart + 1));
+                    .AddBorders(HeadersRowOffset + 1, currentStart, (HeadersRowOffset + 1, currentStart))
+                    .AddBorders(HeadersRowOffset + 1, currentStart + 1, (HeadersRowOffset + 1, currentStart + 1));
                 currentStart += 2;
             }
 
@@ -203,8 +200,8 @@ namespace Domain.Conversions
                 if (groupPart == GroupPart.Part2) colNum++;
                 if (groupPart == GroupPart.FullGroup) columnsInMeeting = 2;
                 modifier
-                    .WriteRange((rowNum, colNum), new() {new() {data}})
-                    .AddBorders((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
+                    .WriteRange(rowNum, colNum, new() {new() {data}})
+                    .AddBorders(rowNum, colNum, (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
                     modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
             }

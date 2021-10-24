@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Infrastructure.GoogleSheetsRepository;
-using Infrastructure.SheetPatterns;
 using NUnit.Framework;
+using static Infrastructure.SheetPatterns.HeaderPatternCreator;
 
 namespace Testing.SheetPatternsTest
 {
@@ -50,7 +50,7 @@ namespace Testing.SheetPatternsTest
                 "четная/нечетная (можно не указывать)"
             };
 
-            HeaderPatternCreator.SetUpHeaders(repo, SheetName, (5, 1), headers, comments);
+            SetUpHeaders(repo, SheetName, (5, 1), headers, comments);
 
             var actualHeaders = repo.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
 
