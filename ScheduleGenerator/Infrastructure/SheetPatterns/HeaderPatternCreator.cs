@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Infrastructure.GoogleSheetsRepository;
+using static Infrastructure.Extensions;
 
 namespace Infrastructure.SheetPatterns
 {
@@ -13,7 +14,7 @@ namespace Infrastructure.SheetPatterns
             for (var i = 0; i < headers.Count; i++)
             {
                 modifier
-                    .WriteRange((start.row, start.col + i), new List<List<string>> {new List<string> {headers[i]}})
+                    .WriteRange((start.row, start.col + i), new() {new() {CommonCellData(headers[i])}})
                     .AddBorders((start.row, start.col + i), (start.row, start.col + i));
                 if (i < comments.Count) modifier.AddComment((start.row, start.col + i), comments[i]);
             }

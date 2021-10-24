@@ -171,42 +171,10 @@ namespace Infrastructure.GoogleSheetsRepository
             requests = new List<Request>();
         }
 
-        public SheetModifier WriteRange(ValueTuple<int, int> leftTop, List<List<string>> payload)
+        public SheetModifier WriteRange(ValueTuple<int, int> leftTop, List<List<CellData>> payload)
         {
             var (topIndex, leftIndex) = leftTop;
-            var rows = new List<RowData>();
-            foreach (var row in payload)
-            {
-                var cells = new List<CellData>();
-                foreach (var value in row)
-                    cells.Add(new CellData
-                    {
-                        UserEnteredValue = new ExtendedValue
-                        {
-                            StringValue = value
-                        },
-                        UserEnteredFormat = new CellFormat
-                        {
-                            TextFormat = new TextFormat
-                            {
-                                FontSize = 9
-                            },
-                            BackgroundColor = value.Contains("Онлайн")
-                                ? new Color {Blue = 1, Red = 15 / 16f, Green = 15 / 16f}
-                                : new Color {Blue = 1, Green = 1, Red = 1},
-                            VerticalAlignment = "middle",
-                            HorizontalAlignment = "center",
-                            WrapStrategy = "wrap"
-                            //TODO: перенести логику в конвертер (параметры прокидывать там и т.п.)
-                        }
-                    });
-                rows.Add(
-                    new RowData
-                    {
-                        Values = cells
-                    }
-                );
-            }
+            var rows = payload.Select(row => new RowData {Values = row}).ToList();
 
             requests.Add(new Request
             {

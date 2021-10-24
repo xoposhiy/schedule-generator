@@ -4,6 +4,7 @@ using System.Linq;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
+using static Infrastructure.Extensions;
 
 namespace Domain.Conversions
 {
@@ -87,7 +88,7 @@ namespace Domain.Conversions
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
             var currentStart = TimeBarRowOffset;
-            foreach (var weekDay in WeekDays)
+            foreach (var weekDay in WeekDays.Select(CommonCellData))
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset), new() {new() {weekDay}})
@@ -98,7 +99,7 @@ namespace Domain.Conversions
 
             currentStart = TimeBarRowOffset;
             foreach (var unused in WeekDays)
-            foreach (var classStart in ClassStarts)
+            foreach (var classStart in ClassStarts.Select(CommonCellData))
             {
                 modifier
                     .WriteRange((currentStart, TimeBarColumnOffset + 1), new() {new() {classStart}})
@@ -120,11 +121,11 @@ namespace Domain.Conversions
             foreach (var group in groups)
             {
                 modifier
-                    .WriteRange((HeadersRowOffset, currentStart), new() {new() {group}})
+                    .WriteRange((HeadersRowOffset, currentStart), new() {new() {CommonCellData(group)}})
                     .AddBorders((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
                     .MergeCell((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
                     .WriteRange((HeadersRowOffset + 1, currentStart),
-                        new() {new() {group + "-1", group + "-2"}})
+                        new() {new() {CommonCellData(group + "-1"), CommonCellData(group + "-2")}})
                     .AddBorders((HeadersRowOffset + 1, currentStart), (HeadersRowOffset + 1, currentStart))
                     .AddBorders((HeadersRowOffset + 1, currentStart + 1), (HeadersRowOffset + 1, currentStart + 1));
                 currentStart += 2;
@@ -145,7 +146,20 @@ namespace Domain.Conversions
             modifier.Execute();
         }
 
-        private string FillLocation(Meeting meeting)
+        public static CellData MeetingCellData(Meeting meeting)
+        {
+            var classroom = FillLocation(meeting);
+            var value = $"{meeting.Discipline}, " +
+                        $"{classroom}, " +
+                        $"{meeting.Teacher?.Name}";
+            var cellData = CommonCellData(value);
+            if (meeting.Location == Location.Online)
+                cellData.UserEnteredFormat.BackgroundColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
+
+            return cellData;
+        }
+
+        private static string FillLocation(Meeting meeting)
         {
             return meeting.Location switch
             {
@@ -176,12 +190,7 @@ namespace Domain.Conversions
 
             foreach (var (groupName, groupPart) in meeting.Groups!)
             {
-                // var data = $"{meeting.Discipline}, {meeting.Teacher?.Name}, {meeting.MeetingTime}";
-                var classroom = FillLocation(meeting);
-                var data =
-                    $"{meeting.Discipline}, " +
-                    $"{classroom}, " +
-                    $"{meeting.Teacher?.Name}";
+                var data = MeetingCellData(meeting);
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
                 var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;

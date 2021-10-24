@@ -58,7 +58,7 @@ namespace Domain.Algorithms
                 score += child.totalScore;
             }
 
-            lines.Add($"Total: {score}");
+            lines.Add($"{offset}Total: {score}");
             return string.Join("\n", lines);
         }
     }
