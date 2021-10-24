@@ -50,7 +50,7 @@ namespace Testing.SheetPatternsTest
                 "четная/нечетная (можно не указывать)"
             };
 
-            SetUpHeaders(repo, SheetName, (5, 1), headers, comments);
+            SetUpHeaders(repo, SheetName, 5, 1, headers, comments);
 
             var actualHeaders = repo.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
 

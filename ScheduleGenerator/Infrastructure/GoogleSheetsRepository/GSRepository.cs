@@ -170,9 +170,8 @@ namespace Infrastructure.GoogleSheetsRepository
             requests = new();
         }
 
-        public SheetModifier WriteRange(int top, int left, List<List<CellData>> payload)
+        public SheetModifier WriteRange(int startRow, int startColumn, List<List<CellData>> payload)
         {
-            // var (topIndex, leftIndex) = topLeft;
             var rows = payload.Select(row => new RowData {Values = row}).ToList();
 
             requests.Add(new()
@@ -182,8 +181,8 @@ namespace Infrastructure.GoogleSheetsRepository
                     Start = new()
                     {
                         SheetId = sheetId,
-                        RowIndex = top,
-                        ColumnIndex = left
+                        RowIndex = startRow,
+                        ColumnIndex = startColumn
                     },
                     Rows = rows,
                     Fields = "*"
@@ -192,22 +191,13 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier MergeCell(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public SheetModifier MergeCell(int startRow, int startColumn, int height, int width)
         {
-            var (top, leftIndex) = rangeStart;
-            var (bottom, rightIndex) = rangeEnd;
             requests.Add(new()
             {
                 MergeCells = new()
                 {
-                    Range = new()
-                    {
-                        SheetId = sheetId,
-                        StartRowIndex = top,
-                        StartColumnIndex = leftIndex,
-                        EndRowIndex = bottom + 1,
-                        EndColumnIndex = rightIndex + 1
-                    },
+                    Range = GetRange(startRow, startColumn, height, width),
                     MergeType = "MERGE_ALL"
                 }
             });
@@ -215,7 +205,7 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier ColorizeRange(int top, int left, int height, int width, Color color)
+        public SheetModifier ColorizeRange(int startRow, int startColumn, int height, int width, Color color)
         {
             var commonCellData = new CellData {UserEnteredFormat = new() {BackgroundColor = color}};
             var cells = Enumerable.Repeat(commonCellData, width).ToList();
@@ -226,14 +216,7 @@ namespace Infrastructure.GoogleSheetsRepository
             {
                 UpdateCells = new()
                 {
-                    Range = new()
-                    {
-                        SheetId = sheetId,
-                        StartRowIndex = top,
-                        StartColumnIndex = left,
-                        EndRowIndex = top + height,
-                        EndColumnIndex = left + width
-                    },
+                    Range = GetRange(startRow, startColumn, height, width),
                     Rows = rows,
                     Fields = "userEnteredFormat(backgroundColor)"
                 }
@@ -242,21 +225,13 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier AddComment(ValueTuple<int, int> rangeStart, string? comment)
+        public SheetModifier AddComment(int startRow, int startColumn, string? comment)
         {
-            var (top, leftIndex) = rangeStart;
             requests.Add(new()
             {
                 UpdateCells = new()
                 {
-                    Range = new()
-                    {
-                        SheetId = sheetId,
-                        StartRowIndex = top,
-                        StartColumnIndex = leftIndex,
-                        EndRowIndex = top + 1,
-                        EndColumnIndex = leftIndex + 1
-                    },
+                    Range = GetRange(startRow, startColumn, 1, 1),
                     Rows = new List<RowData>
                     {
                         new()
@@ -278,38 +253,17 @@ namespace Infrastructure.GoogleSheetsRepository
         }
 
 
-        public SheetModifier AddBorders(int top, int left, ValueTuple<int, int> rangeEnd)
+        public SheetModifier AddBorders(int startRow, int startColumn, int height = 1, int width = 1)
         {
-            // var (top, leftIndex) = rangeStart;
-            var (bottom, rightIndex) = rangeEnd;
             requests.Add(new()
             {
                 UpdateBorders = new()
                 {
-                    Range = new()
-                    {
-                        SheetId = sheetId,
-                        StartRowIndex = top,
-                        StartColumnIndex = left,
-                        EndRowIndex = bottom + 1,
-                        EndColumnIndex = rightIndex + 1
-                    },
-                    Top = new()
-                    {
-                        Style = "SOLID"
-                    },
-                    Bottom = new()
-                    {
-                        Style = "SOLID"
-                    },
-                    Left = new()
-                    {
-                        Style = "SOLID"
-                    },
-                    Right = new()
-                    {
-                        Style = "SOLID"
-                    }
+                    Range = GetRange(startRow, startColumn, height, width),
+                    Top = new() {Style = "SOLID"},
+                    Bottom = new() {Style = "SOLID"},
+                    Left = new() {Style = "SOLID"},
+                    Right = new() {Style = "SOLID"}
                 }
             });
             return this;
@@ -382,7 +336,6 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-
         public void Execute()
         {
             var requestBody = new BatchUpdateSpreadsheetRequest
@@ -390,7 +343,19 @@ namespace Infrastructure.GoogleSheetsRepository
                 Requests = requests
             };
             var request = service.Spreadsheets.BatchUpdate(requestBody, spreadSheetId);
-            request.Execute(); // Response
+            request.Execute();
+        }
+
+        private GridRange GetRange(int startRow, int startColumn, int height, int width)
+        {
+            return new()
+            {
+                SheetId = sheetId,
+                StartRowIndex = startRow,
+                StartColumnIndex = startColumn,
+                EndRowIndex = startRow + height,
+                EndColumnIndex = startColumn + width
+            };
         }
     }
 

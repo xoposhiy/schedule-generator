@@ -74,7 +74,6 @@ namespace Domain.Conversions
             var color = new Color {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
             var height = WeekDayCount * StartIndexesCount * 2;
             var width = groups.Count * 2;
-            // TODO krutovsky: return GsRepository
             repository
                 .ModifySpreadSheet(sheetName)
                 .ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, color)
@@ -85,25 +84,21 @@ namespace Domain.Conversions
         {
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
-            var currentStart = TimeBarRowOffset;
+            var rowStart = TimeBarRowOffset;
             foreach (var weekDay in WeekDays.Select(CommonCellData))
             {
                 modifier
-                    .WriteRange(currentStart, TimeBarColumnOffset, new() {new() {weekDay}})
-                    .AddBorders(currentStart, TimeBarColumnOffset, (currentStart + 11, TimeBarColumnOffset))
-                    .MergeCell((currentStart, TimeBarColumnOffset), (currentStart + 11, TimeBarColumnOffset));
-                currentStart += 12;
-            }
-
-            currentStart = TimeBarRowOffset;
-            foreach (var unused in WeekDays)
-            foreach (var classStart in ClassStarts.Select(CommonCellData))
-            {
-                modifier
-                    .WriteRange(currentStart, TimeBarColumnOffset + 1, new() {new() {classStart}})
-                    .AddBorders(currentStart, TimeBarColumnOffset + 1, (currentStart + 1, TimeBarColumnOffset + 1))
-                    .MergeCell((currentStart, TimeBarColumnOffset + 1), (currentStart + 1, TimeBarColumnOffset + 1));
-                currentStart += 2;
+                    .WriteRange(rowStart, TimeBarColumnOffset, new() {new() {weekDay}})
+                    .AddBorders(rowStart, TimeBarColumnOffset)
+                    .MergeCell(rowStart, TimeBarColumnOffset, 12, 1);
+                foreach (var classStart in ClassStarts.Select(CommonCellData))
+                {
+                    modifier
+                        .WriteRange(rowStart, TimeBarColumnOffset + 1, new() {new() {classStart}})
+                        .AddBorders(rowStart, TimeBarColumnOffset + 1)
+                        .MergeCell(rowStart, TimeBarColumnOffset + 1, 2, 1);
+                    rowStart += 2;
+                }
             }
 
             modifier.Execute();
@@ -113,18 +108,18 @@ namespace Domain.Conversions
         {
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
-            var currentStart = HeadersColumnOffset;
+            var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
                 modifier
-                    .WriteRange(HeadersRowOffset, currentStart, new() {new() {CommonCellData(group)}})
-                    .AddBorders(HeadersRowOffset, currentStart, (HeadersRowOffset, currentStart + 1))
-                    .MergeCell((HeadersRowOffset, currentStart), (HeadersRowOffset, currentStart + 1))
-                    .WriteRange(HeadersRowOffset + 1, currentStart,
+                    .WriteRange(HeadersRowOffset, startColumn, new() {new() {CommonCellData(group)}})
+                    .AddBorders(HeadersRowOffset, startColumn, 1, 2)
+                    .MergeCell(HeadersRowOffset, startColumn, 1, 2)
+                    .WriteRange(HeadersRowOffset + 1, startColumn,
                         new() {new() {CommonCellData(group + "-1"), CommonCellData(group + "-2")}})
-                    .AddBorders(HeadersRowOffset + 1, currentStart, (HeadersRowOffset + 1, currentStart))
-                    .AddBorders(HeadersRowOffset + 1, currentStart + 1, (HeadersRowOffset + 1, currentStart + 1));
-                currentStart += 2;
+                    .AddBorders(HeadersRowOffset + 1, startColumn)
+                    .AddBorders(HeadersRowOffset + 1, startColumn + 1);
+                startColumn += 2;
             }
 
             modifier.Execute();
@@ -184,7 +179,7 @@ namespace Domain.Conversions
                 // { DayOfWeek.Sunday, 6}
             };
 
-
+            // TODO krutovsky: refactor + merge when PE
             foreach (var (groupName, groupPart) in meeting.Groups!)
             {
                 var data = MeetingCellData(meeting);
@@ -195,15 +190,15 @@ namespace Domain.Conversions
                 if (meeting.WeekType == WeekType.Even) rowNum++;
                 if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
 
-                var colNum = groupIndexDict[groupName] * 2 + horizOffset;
+                var startColumn = groupIndexDict[groupName] * 2 + horizOffset;
                 var columnsInMeeting = 1;
-                if (groupPart == GroupPart.Part2) colNum++;
+                if (groupPart == GroupPart.Part2) startColumn++;
                 if (groupPart == GroupPart.FullGroup) columnsInMeeting = 2;
                 modifier
-                    .WriteRange(rowNum, colNum, new() {new() {data}})
-                    .AddBorders(rowNum, colNum, (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
+                    .WriteRange(rowNum, startColumn, new() {new() {data}})
+                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
-                    modifier.MergeCell((rowNum, colNum), (rowNum + rowsInMeeting - 1, colNum + columnsInMeeting - 1));
+                    modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
             }
         }
     }

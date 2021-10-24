@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Infrastructure.FirebaseRepository;
+using Infrastructure.GoogleSheetsRepository;
+using Infrastructure.SheetPatterns;
 using Newtonsoft.Json;
+using Ninject;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using Ninject;
-using Infrastructure.FirebaseRepository;
-using Infrastructure.GoogleSheetsRepository;
-using Infrastructure.SheetPatterns;
 
 // ReSharper disable NotAccessedField.Local
 #pragma warning disable 8602
@@ -327,7 +327,7 @@ namespace Application.TelegramBot
                 repo.CreateNewSheet(newSheetName);
                 repo.SetUpSheetInfo();
                 // Add headers
-                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), requisitionSheetHeaders,
+                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, 0, 0, requisitionSheetHeaders,
                     requirementsSheetHeaderComments);
 
                 scheduleSession.InputRequirementsSheet = newSheetName;
@@ -379,7 +379,7 @@ namespace Application.TelegramBot
                 repo.CreateNewSheet(newSheetName);
                 repo.SetUpSheetInfo();
                 // Add headers
-                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, (0, 0), learningPlanSheetHeaders,
+                HeaderPatternCreator.SetUpHeaders(repo, newSheetName, 0, 0, learningPlanSheetHeaders,
                     learningPlanSheetHeaderComments);
 
                 scheduleSession.LearningPlanSheet = newSheetName;
