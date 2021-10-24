@@ -72,14 +72,13 @@ namespace Domain.Conversions
         private void ColorField(List<string> groups)
         {
             var color = new Color {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
-            var height = WeekDayCount * StartIndexesCount * 2 - 1;
-            var width = groups.Count * 2 - 1;
+            var height = WeekDayCount * StartIndexesCount * 2;
+            var width = groups.Count * 2;
             var start = (TimeBarRowOffset, HeadersColumnOffset);
-            var end = (TimeBarRowOffset + height, HeadersColumnOffset + width);
             // TODO krutovsky: return GsRepository
             repository
                 .ModifySpreadSheet(sheetName)
-                .ColorizeRange(start, end, color)
+                .ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, color)
                 .Execute();
         }
 

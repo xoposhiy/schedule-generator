@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 
 namespace Infrastructure.SheetPatterns
@@ -14,7 +13,7 @@ namespace Infrastructure.SheetPatterns
             {
                 var cellToModify = (coords.row + offset.row, coords.col + offset.col);
                 modifier.AddComment(cellToModify, msg)
-                    .ColorizeRange(cellToModify, cellToModify, new() {Red = 1});
+                    .ColorizeRange(coords.row + offset.row, coords.col + offset.col, 1, 1, new() {Red = 1});
             }
 
             modifier.Execute();
@@ -28,7 +27,8 @@ namespace Infrastructure.SheetPatterns
             {
                 var cellToModify = (coord.row + offset.row, coord.col + offset.col);
                 modifier.AddComment(cellToModify, null);
-                modifier.ColorizeRange(cellToModify, cellToModify, new Color {Red = 1, Green = 1, Blue = 1});
+                modifier.ColorizeRange(coord.row + offset.row, coord.col + offset.col, 1, 1,
+                    new() {Red = 1, Green = 1, Blue = 1});
             }
 
             modifier.Execute();

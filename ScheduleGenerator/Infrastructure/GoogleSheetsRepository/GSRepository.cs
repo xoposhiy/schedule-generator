@@ -215,20 +215,12 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier ColorizeRange(ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd, Color color)
+        public SheetModifier ColorizeRange(int top, int left, int height, int width, Color color)
         {
-            var commonCellData = new CellData
-            {
-                UserEnteredFormat = new() {BackgroundColor = color}
-            };
-            var (top, left) = rangeStart;
-            var (bottom, right) = rangeEnd;
-            bottom++;
-            right++;
-
-            var cells = Enumerable.Repeat(commonCellData, right - left).ToList();
+            var commonCellData = new CellData {UserEnteredFormat = new() {BackgroundColor = color}};
+            var cells = Enumerable.Repeat(commonCellData, width).ToList();
             var commonRowData = new RowData {Values = cells};
-            var rows = Enumerable.Repeat(commonRowData, bottom - top).ToList();
+            var rows = Enumerable.Repeat(commonRowData, height).ToList();
 
             requests.Add(new()
             {
@@ -239,8 +231,8 @@ namespace Infrastructure.GoogleSheetsRepository
                         SheetId = sheetId,
                         StartRowIndex = top,
                         StartColumnIndex = left,
-                        EndRowIndex = bottom,
-                        EndColumnIndex = right
+                        EndRowIndex = top + height,
+                        EndColumnIndex = left + width
                     },
                     Rows = rows,
                     Fields = "userEnteredFormat(backgroundColor)"
