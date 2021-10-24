@@ -148,10 +148,11 @@ namespace Domain.Conversions
 
         public static CellData MeetingCellData(Meeting meeting)
         {
+            // TODO krutovsky: create data more carefully
             var classroom = FillLocation(meeting);
             var value = $"{meeting.Discipline}, " +
                         $"{classroom}, " +
-                        $"{meeting.Teacher?.Name}";
+                        $"{meeting.Teacher.Name}";
             var cellData = CommonCellData(value);
             if (meeting.Location == Location.Online)
                 cellData.UserEnteredFormat.BackgroundColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};

@@ -18,7 +18,6 @@ namespace Infrastructure
                     {
                         FontSize = 9
                     },
-                    BackgroundColor = new() {Blue = 1, Green = 1, Red = 1},
                     VerticalAlignment = "middle",
                     HorizontalAlignment = "center",
                     WrapStrategy = "wrap"
