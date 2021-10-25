@@ -1,4 +1,5 @@
 using System;
+using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
 {

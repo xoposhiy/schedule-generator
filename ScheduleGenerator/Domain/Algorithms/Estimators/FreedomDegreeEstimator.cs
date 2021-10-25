@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
 {

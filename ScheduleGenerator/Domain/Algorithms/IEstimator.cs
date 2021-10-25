@@ -1,3 +1,5 @@
+using Infrastructure;
+
 namespace Domain.Algorithms
 {
     public interface IEstimator

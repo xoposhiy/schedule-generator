@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Domain.Algorithms
+namespace Infrastructure
 {
     public interface ILogger
     {
@@ -10,6 +10,8 @@ namespace Domain.Algorithms
         public ILogger GetChild(string childName = "Child", int childTopN = 10);
     }
 
+    public record LogRecord(string Message, double Score);
+
     public class Logger : ILogger
     {
         private readonly int topN;
@@ -17,7 +19,7 @@ namespace Domain.Algorithms
         private const string Tab = "\t";
 
         private double totalScore;
-        private readonly List<string> messages = new();
+        private readonly List<LogRecord> records = new();
         private readonly List<Logger> children = new();
 
         public Logger(string name, int topN = 100)
@@ -28,7 +30,7 @@ namespace Domain.Algorithms
 
         public void Log(string message, double score)
         {
-            messages.Add(message);
+            records.Add(new(message, score));
             totalScore += score;
         }
 
@@ -48,8 +50,10 @@ namespace Domain.Algorithms
         {
             var offset = string.Join("", Enumerable.Repeat(Tab, level));
             var score = totalScore;
-            var lines = messages.Take(topN)
-                .Select(m => offset + m)
+            var lines = records
+                .OrderBy(r => r.Score)
+                .Take(topN)
+                .Select(m => offset + m.Message)
                 .ToList();
             foreach (var child in children.Where(c => c.totalScore != 0))
             {
