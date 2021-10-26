@@ -173,37 +173,7 @@ namespace Domain.Conversions
             var horizOffset = 2;
             var vertOffset = 2;
 
-            // TODO krutovsky: refactor + merge when PE
-            foreach (var (groupName, groupPart) in meeting.Groups!)
-            {
-                var data = MeetingCellData(meeting);
-
-                var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-                var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
-                var rowsInMeeting = 1;
-                if (meeting.WeekType == WeekType.Even) rowNum++;
-                if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
-
-                var startColumn = groupIndexDict[groupName] * 2 + horizOffset;
-                var columnsInMeeting = 1;
-                if (groupPart == GroupPart.Part2) startColumn++;
-                if (groupPart == GroupPart.FullGroup) columnsInMeeting = 2;
-                modifier
-                    .WriteRange(rowNum, startColumn, new() {new() {data}})
-                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
-                if (rowsInMeeting == 2 || columnsInMeeting == 2)
-                    modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
-            }
-        }
-
-        private static void WriteMeetingDebug(Meeting meeting, Dictionary<string, int> groupIndexDict,
-            SheetModifier modifier)
-        {
-            var horizOffset = 2;
-            var vertOffset = 2;
-
             var data = MeetingCellData(meeting);
-            Console.WriteLine(meeting);
             var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
             var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
             var rowsInMeeting = 1;
@@ -219,7 +189,7 @@ namespace Domain.Conversions
                     continue;
                 var startColumn = firstMeetingPos * 2 + horizOffset;
                 var columnsInMeeting = 1;
-                if (i == firstMeetingPos)
+                if (groupIndexDict[groups[i].GroupName] == firstMeetingPos)
                 {
                     if (groups[i].GroupPart == GroupPart.Part2) startColumn++;
                     if (groups[i].GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
@@ -231,16 +201,13 @@ namespace Domain.Conversions
 
                 modifier
                     .WriteRange(rowNum, startColumn, new() {new() {data}})
-                    .AddBorders(rowNum, startColumn);
-                Console.WriteLine($"Row: {rowNum}\nColumns: {startColumn}");
-                Console.WriteLine($"Rows: {rowsInMeeting}\nColumns: {columnsInMeeting}");
+                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+
                 if (rowsInMeeting > 1 || columnsInMeeting > 1)
                     modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
                 if (i != groups.Count - 1)
                     firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
             }
-
-            modifier.Execute();
         }
     }
 }
