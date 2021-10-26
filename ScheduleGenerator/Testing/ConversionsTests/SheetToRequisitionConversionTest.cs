@@ -10,10 +10,8 @@ namespace Testing.ConversionsTests
         [Test]
         public void RequisitionsReadTest()
         {
-            var repo = Repository;
-
             var (requisitionItems, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo,
+                Repository,
                 InputRequirementsSheetName,
                 LearningPlanSheetName,
                 ClassroomsSheetName);

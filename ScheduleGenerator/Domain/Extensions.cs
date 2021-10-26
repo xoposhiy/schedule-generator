@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Algorithms;
+using Domain.Algorithms.Estimators;
+using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using Infrastructure;
+using Infrastructure.GoogleSheetsRepository;
+using static Infrastructure.SheetConstants;
 
-namespace Domain.Algorithms
+namespace Domain
 {
     public static class ArrayExtensions
     {
@@ -161,6 +167,34 @@ namespace Domain.Algorithms
             if (dict[key1][key2] == 0)
                 return;
             dict[key1][key2] -= value;
+        }
+    }
+
+    public static class Extensions
+    {
+        public static CombinedEstimator GetDefaultCombinedEstimator()
+        {
+            var basic = (new FreedomDegreeEstimator(), 100);
+            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
+            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
+            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
+            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
+            var priorityEstimator = (new PriorityMeetingsEstimator(), 100500);
+            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, priorityEstimator);
+            return estimator;
+        }
+
+        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
+            var (requirements, learningPlan, _) = sheetNamesConfig;
+            var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
+                repo, requirements, learningPlan, ClassroomsSheetName);
+
+            var requisition = new Requisition(requisitions.ToArray());
+            var estimator = GetDefaultCombinedEstimator();
+
+            return new GreedySolver(estimator, requisition, classrooms, new(42));
         }
     }
 }

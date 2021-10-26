@@ -24,6 +24,7 @@ namespace Infrastructure.GoogleSheetsRepository
                 ApplicationName = applicationName
             });
             ChangeTable(tableUrl);
+            SetUpSheetInfo();
         }
 
         private GoogleCredential LoadCredential(string pathToCredentials)
@@ -153,7 +154,7 @@ namespace Infrastructure.GoogleSheetsRepository
             var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
             request.Execute();
         }
-        
+
         public void ClearSheet(string sheetName)
         {
             ModifySpreadSheet(sheetName)

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Domain.Algorithms;
-using Domain.Algorithms.Estimators;
 using Domain.Conversions;
-using Domain.MeetingsParts;
 using Infrastructure;
-using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;
 using static Infrastructure.SheetConstants;
+using static Domain.Extensions;
 
 namespace ScheduleCLI
 {
@@ -20,35 +17,20 @@ namespace ScheduleCLI
 
             Console.WriteLine("Starting...");
 
-            var requirementsSheetName = InputRequirementsSheetName2;
-            var learningPlanSheetName = LearningPlanSheetName2;
-            var scheduleSheetName = ScheduleSheetName2;
-
-
-            var inputRequirementsSheetId = 861045221;
-            var inputRequirementsSheetUrl = Url + inputRequirementsSheetId;
-            var repo = new GsRepository("test", CredentialPath, inputRequirementsSheetUrl);
-            repo.SetUpSheetInfo();
-
-            var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, requirementsSheetName, learningPlanSheetName, ClassroomsSheetName);
-
-            var requisition = new Requisition(requisitions.ToArray());
+            var config = SpringConfig;
 
             // TODO все Estimators: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
-            // TODO вынести подготовительные шаги в отдельные методы (и пофиксить дублирование в тестах)
 
-            var estimator = GetDefaultCombinedEstimator();
-
-            var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
+            var solver = GetSolver(config, Repository);
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
-            var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
+            var converter = new ScheduleSpreadsheetConverter(Repository, config.Schedule);
             converter.Build(solutions.Last().Schedule);
             var logger = new Logger("Combined");
+
+            var estimator = GetDefaultCombinedEstimator();
             estimator.Estimate(solutions.Last().Schedule, logger);
             Console.WriteLine(logger);
-            // Console.WriteLine(solutions.Last().Score);
         }
 
         // ReSharper disable once UnusedMember.Local
@@ -57,19 +39,6 @@ namespace ScheduleCLI
             var container = new StandardKernel();
             container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
             return container;
-        }
-
-        public static CombinedEstimator GetDefaultCombinedEstimator()
-        {
-            var basic = (new FreedomDegreeEstimator(), 100);
-            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
-            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
-            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
-            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
-            var priorityEstimator = (new PriorityMeetingsEstimator(), 100500);
-            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, priorityEstimator);
-            return estimator;
         }
     }
 }
