@@ -8,6 +8,13 @@ namespace Testing.SheetPatternsTest
     [TestFixture]
     internal class HeaderPatternCreatorTest
     {
+        [SetUp]
+        [TearDown]
+        public void SetUp()
+        {
+            Repository.ClearSheet(SheetName);
+        }
+        
         [Test]
         public void SetUpHeadersOnClearSheet()
         {

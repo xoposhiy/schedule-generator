@@ -47,19 +47,11 @@ namespace Domain.Conversions
             Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
-            PrepareSheet();
+            repository.ClearSheet(sheetName);
 
             BuildSchedulePattern(groupNames);
 
             FillScheduleData(meetingSet, groupNames);
-        }
-
-        private void PrepareSheet()
-        {
-            repository.ModifySpreadSheet(sheetName)
-                .ClearAll()
-                .UnMergeAll()
-                .Execute();
         }
 
         private void BuildSchedulePattern(List<string> groups)

@@ -35,7 +35,7 @@ Placed:94 Left:0, Placed:
 Дизайн Seminar Пушин + преподаватель2
 Дизайн Seminar Пушин + преподаватель3
 Дизайн Seminar Пушин + преподаватель3
-ИнЯз Lecture Англичане
+ИнЯз Seminar Англичане
 КБ ComputerLab Котов
 КБ ComputerLab Котов
 Матанализ Lecture Алексеева Ульяна
@@ -85,10 +85,10 @@ Placed:94 Left:0, Placed:
 Питон ComputerLab Мясников Даниил
 Публичные выступления Lecture Свалова Дарья
 Создание продукта Lecture Алексей Кулаков
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки1
-Физкультура Lecture Физруки2
-Физкультура Lecture Физруки2
+Физкультура Seminar Физруки1
+Физкультура Seminar Физруки1
+Физкультура Seminar Физруки2
+Физкультура Seminar Физруки2
 ФП ComputerLab Акентьев Евгений
 ФП ComputerLab Войцишевский Антон
 ФП ComputerLab Кирпичников Алексей

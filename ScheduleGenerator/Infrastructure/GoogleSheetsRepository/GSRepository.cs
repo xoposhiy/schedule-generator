@@ -153,6 +153,14 @@ namespace Infrastructure.GoogleSheetsRepository
             var request = Service.Spreadsheets.BatchUpdate(requestBody, CurrentSheetId);
             request.Execute();
         }
+        
+        public void ClearSheet(string sheetName)
+        {
+            ModifySpreadSheet(sheetName)
+                .ClearAll()
+                .UnMergeAll()
+                .Execute();
+        }
     }
 
     public class SheetModifier

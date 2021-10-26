@@ -1,12 +1,20 @@
 ﻿using System.Collections.Generic;
 using Infrastructure.SheetPatterns;
 using NUnit.Framework;
+using static Infrastructure.SheetConstants;
 
 namespace Testing.SheetPatternsTest
 {
     [TestFixture]
     internal class SheetTableEvaluatorTest
     {
+        [SetUp]
+        [TearDown]
+        public void SetUp()
+        {
+            Repository.ClearSheet(SheetName);
+        }
+        
         private readonly List<(string pattern, string msg)> patternMsgList = new()
         {
             (@".+", "Нужно вписать имя преподавателя"),

@@ -12,15 +12,15 @@ namespace Testing.ConversionsTests
         {
             var repo = Repository;
 
-            var (requisitionItems, learningPlan, dictionary) = SheetToRequisitionConverter.ConvertToRequisitions(
+            var (requisitionItems, learningPlan, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
                 repo,
                 InputRequirementsSheetName,
                 LearningPlanSheetName,
                 ClassroomsSheetName);
 
             Assert.AreEqual(63, requisitionItems.Count);
-            Assert.AreEqual(24, learningPlan.Items.Length);
-            Assert.AreEqual(24, dictionary.Count);
+            Assert.AreEqual(23, learningPlan.Items.Length);
+            Assert.AreEqual(24, classrooms.Count);
         }
     }
 }

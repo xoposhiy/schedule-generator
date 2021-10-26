@@ -18,7 +18,7 @@ namespace Testing.SheetPatternsTest
         [TearDown]
         public void SetUp()
         {
-            Repository.ClearCellRange(SheetName, (0, 0), (10, 10));
+            Repository.ClearSheet(SheetName);
         }
 
         [Test]
