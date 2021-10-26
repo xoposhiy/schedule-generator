@@ -107,7 +107,7 @@ namespace Domain.Conversions
             GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
-            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 8);
+            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 9);
             var learningPlanItems = ParseLearningPlanItems(planData).ToArray();
             var learningPlan = new LearningPlan(learningPlanItems);
             var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
@@ -134,6 +134,7 @@ namespace Domain.Conversions
             var locationRow = ParseLocationSpec(row[5]);
             MeetingType? connectAfter = string.IsNullOrWhiteSpace(row[6]) ? null : GetMeetingType(row[6]);
             MeetingType? sameTeacherWith = string.IsNullOrWhiteSpace(row[7]) ? null : GetMeetingType(row[7]);
+            int.TryParse(row[8], out var priority);
             var discipline = new Discipline(disciplineRow);
 
             var meetingType = GetMeetingType(meetingTypeRow);
@@ -141,7 +142,7 @@ namespace Domain.Conversions
             var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
             return new(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek, locationRow,
                 connectAfter,
-                sameTeacherWith);
+                sameTeacherWith, priority);
         }
 
         private static RoomSpec[] ParseLocationSpec(string rowLocationSpec)

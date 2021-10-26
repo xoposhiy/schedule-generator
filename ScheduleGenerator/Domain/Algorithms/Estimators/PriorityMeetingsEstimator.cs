@@ -13,10 +13,10 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var score = 0;
-            foreach (var meeting in schedule.NotUsedMeetings.Where(m => m.Discipline.Name is "Физкультура" or "ИнЯз"))
+            foreach (var meeting in schedule.NotUsedMeetings.Where(m => m.Priority != 0))
             {
-                logger?.Log($"{meeting} is not placed", -1);
-                score--;
+                logger?.Log($"{meeting} is not placed", -1 * (1 << (2 * meeting.Priority)));
+                score -= 1 << (2 * meeting.Priority);
             }
 
             return score;

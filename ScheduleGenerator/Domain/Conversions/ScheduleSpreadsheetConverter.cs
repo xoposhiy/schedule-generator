@@ -163,7 +163,8 @@ namespace Domain.Conversions
             };
         }
 
-        private void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict, SheetModifier modifier)
+        private static void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict,
+            SheetModifier modifier)
         {
             var horizOffset = 2;
             var vertOffset = 2;
