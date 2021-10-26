@@ -156,10 +156,10 @@ namespace Domain.Conversions
             return meeting.Location switch
             {
                 Location.Kontur => "Контур",
-                Location.PashaEgorov => "ФОК",
+                Location.PE => "ФОК",
                 Location.Online => "Онлайн",
                 Location.MathMeh => meeting.Classroom ?? "",
-                _ => "БИбиба!"
+                _ => throw new FormatException("Неизвестная Локация")
             };
         }
 

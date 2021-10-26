@@ -3,7 +3,8 @@
     public enum Location
     {
         MathMeh,
-        PashaEgorov,
+        // ReSharper disable once InconsistentNaming
+        PE,
         Kontur,
         Online
     }

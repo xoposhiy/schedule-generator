@@ -96,7 +96,7 @@ namespace Domain.Conversions
             return rowMeetingLocation switch
             {
                 "Тургенева 4" => Location.MathMeh,
-                "Физра" => Location.PashaEgorov,
+                "Физра" => Location.PE,
                 "Контур" => Location.Kontur,
                 "Онлайн" => Location.Online,
                 _ => throw new FormatException($"Некорректная локация занятия: {rowMeetingLocation}")
