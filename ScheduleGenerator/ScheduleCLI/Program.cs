@@ -20,13 +20,18 @@ namespace ScheduleCLI
 
             Console.WriteLine("Starting...");
 
+            var requirementsSheetName = InputRequirementsSheetName2;
+            var learningPlanSheetName = LearningPlanSheetName2;
+            var scheduleSheetName = ScheduleSheetName2;
+
+
             var inputRequirementsSheetId = 861045221;
             var inputRequirementsSheetUrl = Url + inputRequirementsSheetId;
             var repo = new GsRepository("test", CredentialPath, inputRequirementsSheetUrl);
             repo.SetUpSheetInfo();
 
             var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
-                repo, InputRequirementsSheetName, LearningPlanSheetName, ClassroomsSheetName);
+                repo, requirementsSheetName, learningPlanSheetName, ClassroomsSheetName);
 
             var requisition = new Requisition(requisitions.ToArray());
 
@@ -38,7 +43,7 @@ namespace ScheduleCLI
             var solver = new GreedySolver(estimator, requisition, classrooms, new(42));
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
-            var converter = new ScheduleSpreadsheetConverter(repo, ScheduleSheetName);
+            var converter = new ScheduleSpreadsheetConverter(repo, scheduleSheetName);
             converter.Build(solutions.Last().Schedule);
             var logger = new Logger("Combined");
             estimator.Estimate(solutions.Last().Schedule, logger);
