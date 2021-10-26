@@ -12,10 +12,10 @@ namespace Domain.Conversions
     {
         private readonly GsRepository repository;
         private readonly string sheetName;
-        private const int TimeBarRowOffset = 4;
+        private const int TimeBarRowOffset = 2;
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
-        private const int HeadersRowOffset = 2;
+        private const int HeadersRowOffset = 0;
 
         private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
         private static readonly int WeekDayCount = WeekDays.Length;
@@ -186,7 +186,7 @@ namespace Domain.Conversions
                 var data = MeetingCellData(meeting);
 
                 var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-                var rowNum = meeting.MeetingTime.TimeSlotIndex * 2 + rowNumOff;
+                var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
                 var rowsInMeeting = 1;
                 if (meeting.WeekType == WeekType.Even) rowNum++;
                 if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;

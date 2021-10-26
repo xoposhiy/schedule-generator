@@ -47,7 +47,7 @@ namespace Testing
             }, null, MeetingType.Seminar);
 
         public static readonly LearningPlanItem PeSeminar = new("ФИИТ-202 + ФИИТ-201", Pe, MeetingType.Seminar,
-            GroupSize.FullGroup, 2, System.Array.Empty<RoomSpec>(), null, null);
+            GroupSize.FullGroup, 2, System.Array.Empty<RoomSpec>(), null, null, 1);
 
         public static readonly Teacher OopTeacher1 = new("Петряшов");
         public static readonly Teacher OopTeacher2 = new("Романюк");
