@@ -24,5 +24,12 @@ namespace Infrastructure
                 }
             };
         }
+
+        public static CellData HeaderCellData(string value)
+        {
+            var cellData = CommonCellData(value);
+            cellData.UserEnteredFormat.TextFormat.Bold = true;
+            return cellData;
+        }
     }
 }

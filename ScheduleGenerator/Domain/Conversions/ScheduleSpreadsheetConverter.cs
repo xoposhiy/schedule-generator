@@ -85,13 +85,13 @@ namespace Domain.Conversions
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
             var rowStart = TimeBarRowOffset;
-            foreach (var weekDay in WeekDays.Select(CommonCellData))
+            foreach (var weekDay in WeekDays.Select(HeaderCellData))
             {
                 modifier
                     .WriteRange(rowStart, TimeBarColumnOffset, new() {new() {weekDay}})
                     .AddBorders(rowStart, TimeBarColumnOffset)
                     .MergeCell(rowStart, TimeBarColumnOffset, 12, 1);
-                foreach (var classStart in ClassStarts.Select(CommonCellData))
+                foreach (var classStart in ClassStarts.Select(HeaderCellData))
                 {
                     modifier
                         .WriteRange(rowStart, TimeBarColumnOffset + 1, new() {new() {classStart}})
@@ -112,11 +112,11 @@ namespace Domain.Conversions
             foreach (var group in groups)
             {
                 modifier
-                    .WriteRange(HeadersRowOffset, startColumn, new() {new() {CommonCellData(group)}})
+                    .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
                     .AddBorders(HeadersRowOffset, startColumn, 1, 2)
                     .MergeCell(HeadersRowOffset, startColumn, 1, 2)
                     .WriteRange(HeadersRowOffset + 1, startColumn,
-                        new() {new() {CommonCellData(group + "-1"), CommonCellData(group + "-2")}})
+                        new() {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}})
                     .AddBorders(HeadersRowOffset + 1, startColumn)
                     .AddBorders(HeadersRowOffset + 1, startColumn + 1);
                 startColumn += 2;

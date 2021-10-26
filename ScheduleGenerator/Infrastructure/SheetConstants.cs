@@ -11,8 +11,11 @@ namespace Infrastructure
         public const string CredentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
 
         public const string InputRequirementsSheetName = "Входные требования";
+        public const string InputRequirementsSheetName2 = "Входные требования осень";
         public const string LearningPlanSheetName = "Учебный план";
+        public const string LearningPlanSheetName2 = "Учебный план осень";
         public const string ScheduleSheetName = "Расписание";
+        public const string ScheduleSheetName2 = "Расписание осень";
         public const string ClassroomsSheetName = "Аудитории";
 
         public static readonly GsRepository Repository = new("test", CredentialPath, Url);
