@@ -136,8 +136,8 @@ namespace Domain.Algorithms
         }
 
         public static void SafeIncrement<TKey1, TKey2>(
-            this Dictionary<TKey1, Dictionary<TKey2, int>> dict,
-            TKey1 key1, TKey2 key2)
+            this Dictionary<TKey1, Dictionary<TKey2, double>> dict,
+            TKey1 key1, TKey2 key2, double value)
             where TKey1 : notnull
             where TKey2 : notnull
         {
@@ -145,12 +145,12 @@ namespace Domain.Algorithms
 
             if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = 0;
 
-            dict[key1][key2]++;
+            dict[key1][key2] += value;
         }
 
         public static void SafeDecrement<TKey1, TKey2>(
-            this Dictionary<TKey1, Dictionary<TKey2, int>> dict,
-            TKey1 key1, TKey2 key2)
+            this Dictionary<TKey1, Dictionary<TKey2, double>> dict,
+            TKey1 key1, TKey2 key2, double value)
             where TKey1 : notnull
             where TKey2 : notnull
         {
@@ -160,7 +160,7 @@ namespace Domain.Algorithms
 
             if (dict[key1][key2] == 0)
                 return;
-            dict[key1][key2]--;
+            dict[key1][key2] -= value;
         }
     }
 }

@@ -26,7 +26,8 @@ namespace Domain
         public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
             TeacherMeetingsByTime = new();
 
-        public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, int>> GroupLearningPlanItemsCount = new();
+        public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, double>> GroupLearningPlanItemsCount =
+            new();
 
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
 
@@ -300,14 +301,15 @@ namespace Domain
         private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
             return meetingToAdd.Groups!.GetGroupParts()
-                .Any(g => IsPlanItemFulfilled(g, meetingToAdd.RequisitionItem.PlanItem));
+                .Any(g => IsPlanItemFulfilled(g, meetingToAdd.RequisitionItem.PlanItem,
+                    meetingToAdd.WeekType == WeekType.All ? 1 : 0.5));
         }
 
-        private bool IsPlanItemFulfilled(MeetingGroup group, LearningPlanItem planItem)
+        private bool IsPlanItemFulfilled(MeetingGroup group, LearningPlanItem planItem, double value)
         {
             return GroupLearningPlanItemsCount.ContainsKey(group)
                    && GroupLearningPlanItemsCount[group].ContainsKey(planItem)
-                   && GroupLearningPlanItemsCount[group][planItem] == (int) Math.Ceiling(planItem.MeetingsPerWeek);
+                   && GroupLearningPlanItemsCount[group][planItem] + value > planItem.MeetingsPerWeek;
             //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
         }
 
@@ -315,8 +317,9 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
+                var value = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
-                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem);
+                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem, value);
             }
         }
 
@@ -328,7 +331,9 @@ namespace Domain
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlotIndex] = null;
 
-                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem);
+                var value = meetingToRemove.WeekType == WeekType.All ? 1 : 0.5;
+                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem,
+                    value);
             }
         }
     }
