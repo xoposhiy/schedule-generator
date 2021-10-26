@@ -7,11 +7,12 @@ namespace Domain
     {
         public const string English = "ИнЯз";
         public readonly RequisitionItem RequisitionItem;
-        public Discipline Discipline => RequisitionItem.PlanItem.Discipline;
-        public MeetingType MeetingType => RequisitionItem.PlanItem.MeetingType;
-        public int Priority => RequisitionItem.PlanItem.Priority;
         public Location Location => RequisitionItem.Location;
         public Teacher Teacher => RequisitionItem.Teacher;
+        public LearningPlanItem PlanItem => RequisitionItem.PlanItem;
+        public Discipline Discipline => PlanItem.Discipline;
+        public MeetingType MeetingType => PlanItem.MeetingType;
+        public int Priority => PlanItem.Priority;
         public bool IsRoomNeeded => Location == Location.MathMeh && Discipline.Name != English;
 
         public WeekType WeekType;

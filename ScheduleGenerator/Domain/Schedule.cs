@@ -168,7 +168,7 @@ namespace Domain
         {
             foreach (var meeting in notUsedMeetings)
             {
-                var requiredAdjacentMeetingType = meeting.RequisitionItem.PlanItem.RequiredAdjacentMeetingType;
+                var requiredAdjacentMeetingType = meeting.PlanItem.RequiredAdjacentMeetingType;
                 if (requiredAdjacentMeetingType == null) continue;
                 var linkedMeeting = notUsedMeetings
                     .FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
@@ -188,13 +188,14 @@ namespace Domain
             {
                 var possibleRooms = SpecsByRoom.Keys.ToHashSet();
                 if (meeting.IsRoomNeeded)
-                    foreach (var roomSpec in meeting.RequisitionItem.PlanItem.RoomSpecs)
+                    foreach (var roomSpec in meeting.PlanItem.RoomSpecs)
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
                 var timeChoicesCount = FreeTimeSlotsCountByMeeting[meeting];
-                var weekTypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
+                // var weekTypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
+                // timeChoicesCount *= weekTypeDegree;
                 //TODO: Optimize possibleRooms
-                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count * weekTypeDegree;
+                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count;
                 //MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }
@@ -230,7 +231,7 @@ namespace Domain
                 meetingCopy.WeekType = weekType;
                 string? room = null;
                 if (baseMeeting.IsRoomNeeded)
-                    room = FindFreeRoom(meetingTime, baseMeeting.RequisitionItem.PlanItem.RoomSpecs);
+                    room = FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs);
                 if (room == null && baseMeeting.IsRoomNeeded) return null;
 
                 meetingCopy.Groups = groupsChoice.Groups;
@@ -302,7 +303,7 @@ namespace Domain
         private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
             return meetingToAdd.Groups!.GetGroupParts()
-                .Any(g => IsPlanItemFulfilled(g, meetingToAdd.RequisitionItem.PlanItem,
+                .Any(g => IsPlanItemFulfilled(g, meetingToAdd.PlanItem,
                     meetingToAdd.WeekType == WeekType.All ? 1 : 0.5));
         }
 
@@ -320,7 +321,7 @@ namespace Domain
             {
                 var value = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
-                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.RequisitionItem.PlanItem, value);
+                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.PlanItem, value);
             }
         }
 
@@ -333,8 +334,7 @@ namespace Domain
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlotIndex] = null;
 
                 var value = meetingToRemove.WeekType == WeekType.All ? 1 : 0.5;
-                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.RequisitionItem.PlanItem,
-                    value);
+                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
             }
         }
     }

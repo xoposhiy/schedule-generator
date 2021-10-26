@@ -156,29 +156,29 @@ namespace Domain.Conversions
             };
         }
 
+        private static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
+        {
+            {DayOfWeek.Monday, 0},
+            {DayOfWeek.Tuesday, 1},
+            {DayOfWeek.Wednesday, 2},
+            {DayOfWeek.Thursday, 3},
+            {DayOfWeek.Friday, 4},
+            {DayOfWeek.Saturday, 5}
+            // { DayOfWeek.Sunday, 6}
+        };
+
         private static void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict,
             SheetModifier modifier)
         {
             var horizOffset = 2;
             var vertOffset = 2;
 
-            var weekDayToIntDict = new Dictionary<DayOfWeek, int>
-            {
-                {DayOfWeek.Monday, 0},
-                {DayOfWeek.Tuesday, 1},
-                {DayOfWeek.Wednesday, 2},
-                {DayOfWeek.Thursday, 3},
-                {DayOfWeek.Friday, 4},
-                {DayOfWeek.Saturday, 5}
-                // { DayOfWeek.Sunday, 6}
-            };
-
             // TODO krutovsky: refactor + merge when PE
             foreach (var (groupName, groupPart) in meeting.Groups!)
             {
                 var data = MeetingCellData(meeting);
 
-                var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
+                var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
                 var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
                 var rowsInMeeting = 1;
                 if (meeting.WeekType == WeekType.Even) rowNum++;
