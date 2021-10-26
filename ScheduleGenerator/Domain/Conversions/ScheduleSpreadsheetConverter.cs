@@ -28,19 +28,6 @@ namespace Domain.Conversions
 
         private static readonly int StartIndexesCount = ClassStarts.Length;
 
-        private static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
-        {
-            {DayOfWeek.Monday, 0},
-            {DayOfWeek.Tuesday, 1},
-            {DayOfWeek.Wednesday, 2},
-            {DayOfWeek.Thursday, 3},
-            {DayOfWeek.Friday, 4},
-            {DayOfWeek.Saturday, 5}
-            // { DayOfWeek.Sunday, 6}
-        };
-
-        private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
-
         public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
         {
             repository = repo;
@@ -116,13 +103,12 @@ namespace Domain.Conversions
             var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
-                var payload = new List<List<CellData>>
-                    {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}};
                 modifier
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
-                    .AddBorders(HeadersRowOffset, startColumn)
+                    .AddBorders(HeadersRowOffset, startColumn, 1, 2)
                     .MergeCell(HeadersRowOffset, startColumn, 1, 2)
-                    .WriteRange(HeadersRowOffset + 1, startColumn, payload)
+                    .WriteRange(HeadersRowOffset + 1, startColumn,
+                        new() {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}})
                     .AddBorders(HeadersRowOffset + 1, startColumn)
                     .AddBorders(HeadersRowOffset + 1, startColumn + 1);
                 startColumn += 2;
@@ -149,10 +135,11 @@ namespace Domain.Conversions
             var classroom = FillLocation(meeting);
             var value = $"{meeting.Discipline}, " +
                         $"{classroom}, " +
-                        $"{meeting.Teacher.Name}";
+                        $"{meeting.Teacher.Name}, " +
+                        $"{meeting.MeetingType}";
             var cellData = CommonCellData(value);
             if (meeting.Location == Location.Online)
-                cellData.UserEnteredFormat.BackgroundColor = OnlineColor;
+                cellData.UserEnteredFormat.BackgroundColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
             return cellData;
         }
@@ -175,41 +162,37 @@ namespace Domain.Conversions
             var horizOffset = 2;
             var vertOffset = 2;
 
-            var meetingCellData = MeetingCellData(meeting);
-            var payload = new List<List<CellData>> {new() {meetingCellData}};
-
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-            var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
-            var rowsInMeeting = 1;
-            if (meeting.WeekType == WeekType.Even) rowNum++;
-            if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
-
-            var groups = meeting.Groups!.OrderBy(m => m.GroupName).ToList();
-            var firstMeetingPos = groupIndexDict[groups[0].GroupName];
-            for (var i = 0; i < groups.Count; i++)
+            var weekDayToIntDict = new Dictionary<DayOfWeek, int>
             {
-                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] -
-                    groupIndexDict[groups[i].GroupName] == 1)
-                    continue;
-                var startColumn = firstMeetingPos * 2 + horizOffset;
-                var columnsInMeeting = 1;
-                if (i == firstMeetingPos)
-                {
-                    if (groups[i].GroupPart == GroupPart.Part2) startColumn++;
-                    if (groups[i].GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
-                }
-                else
-                {
-                    columnsInMeeting = 2 * (groupIndexDict[groups[i].GroupName] - firstMeetingPos + 1);
-                }
+                {DayOfWeek.Monday, 0},
+                {DayOfWeek.Tuesday, 1},
+                {DayOfWeek.Wednesday, 2},
+                {DayOfWeek.Thursday, 3},
+                {DayOfWeek.Friday, 4},
+                {DayOfWeek.Saturday, 5}
+                // { DayOfWeek.Sunday, 6}
+            };
 
+            // TODO krutovsky: refactor + merge when PE
+            foreach (var (groupName, groupPart) in meeting.Groups!)
+            {
+                var data = MeetingCellData(meeting);
+
+                var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
+                var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
+                var rowsInMeeting = 1;
+                if (meeting.WeekType == WeekType.Even) rowNum++;
+                if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
+
+                var startColumn = groupIndexDict[groupName] * 2 + horizOffset;
+                var columnsInMeeting = 1;
+                if (groupPart == GroupPart.Part2) startColumn++;
+                if (groupPart == GroupPart.FullGroup) columnsInMeeting = 2;
                 modifier
-                    .WriteRange(rowNum, startColumn, payload)
-                    .AddBorders(rowNum, startColumn);
-                if (rowsInMeeting > 1 || columnsInMeeting > 1)
+                    .WriteRange(rowNum, startColumn, new() {new() {data}})
+                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                if (rowsInMeeting == 2 || columnsInMeeting == 2)
                     modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
-                if (i != groups.Count - 1)
-                    firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
             }
         }
     }

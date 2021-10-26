@@ -192,9 +192,9 @@ namespace Domain
                         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
                 var timeChoicesCount = FreeTimeSlotsCountByMeeting[meeting];
-                var weektypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
+                var weekTypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
                 //TODO: Optimize possibleRooms
-                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count * weektypeDegree;
+                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count * weekTypeDegree;
                 //MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }
