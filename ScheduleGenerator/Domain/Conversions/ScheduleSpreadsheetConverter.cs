@@ -172,26 +172,41 @@ namespace Domain.Conversions
                 // { DayOfWeek.Sunday, 6}
             };
 
-            // TODO krutovsky: refactor + merge when PE
-            foreach (var (groupName, groupPart) in meeting.Groups!)
+            var groups = meeting.Groups!.OrderBy(m=>m.GroupName).ToList();
+            var firstMeetingPos = groupIndexDict[groups[0].GroupName];
+            for (int i = 0; i < groups.Count; i++)
             {
-                var data = MeetingCellData(meeting);
+                if (i == groups.Count - 1 || groupIndexDict[groups[i + 1].GroupName] -
+                    groupIndexDict[groups[i].GroupName] != 1)
+                {
+                    var data = MeetingCellData(meeting);
 
-                var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-                var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
-                var rowsInMeeting = 1;
-                if (meeting.WeekType == WeekType.Even) rowNum++;
-                if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
+                    var rowNumOff = weekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
+                    var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
+                    var rowsInMeeting = 1;
+                    if (meeting.WeekType == WeekType.Even) rowNum++;
+                    if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
 
-                var startColumn = groupIndexDict[groupName] * 2 + horizOffset;
-                var columnsInMeeting = 1;
-                if (groupPart == GroupPart.Part2) startColumn++;
-                if (groupPart == GroupPart.FullGroup) columnsInMeeting = 2;
-                modifier
-                    .WriteRange(rowNum, startColumn, new() {new() {data}})
-                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
-                if (rowsInMeeting == 2 || columnsInMeeting == 2)
-                    modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                    var startColumn = firstMeetingPos * 2 + horizOffset;
+                    var columnsInMeeting = 1;
+                    if (i == firstMeetingPos)
+                    {
+                        if (groups[i].GroupPart == GroupPart.Part2) startColumn++;
+                        if (groups[i].GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
+                    }
+                    else
+                    {
+                        columnsInMeeting = 2 * (groupIndexDict[groups[i].GroupName] - firstMeetingPos + 1);
+                    }
+                    
+                    modifier
+                        .WriteRange(rowNum, startColumn, new() {new() {data}})
+                        .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                    if (rowsInMeeting > 1 || columnsInMeeting > 1)
+                        modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                    if (i != groups.Count - 1)
+                        firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
+                }
             }
         }
     }
