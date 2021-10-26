@@ -105,7 +105,7 @@ namespace Domain.Conversions
             {
                 modifier
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
-                    .AddBorders(HeadersRowOffset, startColumn, 1, 2)
+                    .AddBorders(HeadersRowOffset, startColumn)
                     .MergeCell(HeadersRowOffset, startColumn, 1, 2)
                     .WriteRange(HeadersRowOffset + 1, startColumn,
                         new() {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}})
@@ -194,6 +194,53 @@ namespace Domain.Conversions
                 if (rowsInMeeting == 2 || columnsInMeeting == 2)
                     modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
             }
+        }
+
+        private static void WriteMeetingDebug(Meeting meeting, Dictionary<string, int> groupIndexDict,
+            SheetModifier modifier)
+        {
+            var horizOffset = 2;
+            var vertOffset = 2;
+
+            var data = MeetingCellData(meeting);
+            Console.WriteLine(meeting);
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
+            var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
+            var rowsInMeeting = 1;
+            if (meeting.WeekType == WeekType.Even) rowNum++;
+            if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
+
+            var groups = meeting.Groups!.OrderBy(m => m.GroupName).ToList();
+            var firstMeetingPos = groupIndexDict[groups[0].GroupName];
+            for (var i = 0; i < groups.Count; i++)
+            {
+                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] -
+                    groupIndexDict[groups[i].GroupName] == 1)
+                    continue;
+                var startColumn = firstMeetingPos * 2 + horizOffset;
+                var columnsInMeeting = 1;
+                if (i == firstMeetingPos)
+                {
+                    if (groups[i].GroupPart == GroupPart.Part2) startColumn++;
+                    if (groups[i].GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
+                }
+                else
+                {
+                    columnsInMeeting = 2 * (groupIndexDict[groups[i].GroupName] - firstMeetingPos + 1);
+                }
+
+                modifier
+                    .WriteRange(rowNum, startColumn, new() {new() {data}})
+                    .AddBorders(rowNum, startColumn);
+                Console.WriteLine($"Row: {rowNum}\nColumns: {startColumn}");
+                Console.WriteLine($"Rows: {rowsInMeeting}\nColumns: {columnsInMeeting}");
+                if (rowsInMeeting > 1 || columnsInMeeting > 1)
+                    modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                if (i != groups.Count - 1)
+                    firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
+            }
+
+            modifier.Execute();
         }
     }
 }

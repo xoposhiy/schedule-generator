@@ -17,10 +17,27 @@ namespace ScheduleCLI
 
             Console.WriteLine("Starting...");
 
-            var config = SpringConfig;
+            SheetNamesConfig[] configs =
+            {
+                SpringConfig,
+                AutumnConfig
+            };
+
+            foreach (var config in configs) MakeAndWriteSchedule(config);
 
             // TODO все Estimators: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
+        }
 
+        // ReSharper disable once UnusedMember.Local
+        private static StandardKernel ConfigureContainer()
+        {
+            var container = new StandardKernel();
+            container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
+            return container;
+        }
+
+        public static void MakeAndWriteSchedule(SheetNamesConfig config)
+        {
             var solver = GetSolver(config, Repository);
             var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
 
@@ -31,14 +48,6 @@ namespace ScheduleCLI
             var estimator = GetDefaultCombinedEstimator();
             estimator.Estimate(solutions.Last().Schedule, logger);
             Console.WriteLine(logger);
-        }
-
-        // ReSharper disable once UnusedMember.Local
-        private static StandardKernel ConfigureContainer()
-        {
-            var container = new StandardKernel();
-            container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
-            return container;
         }
     }
 }
