@@ -301,17 +301,16 @@ namespace Domain
 
         private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
-            return meetingToAdd.Groups!.GetGroupParts()
-                .Any(g => IsPlanItemFulfilled(g, meetingToAdd.PlanItem,
-                    meetingToAdd.WeekType == WeekType.All ? 1 : 0.5));
-        }
+            var planItem = meetingToAdd.PlanItem;
+            var weight = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
+            foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
+            {
+                if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, out var byGroup)) continue;
+                if (!byGroup.TryGetValue(planItem, out var byPlan)) continue;
+                if (byPlan + weight > planItem.MeetingsPerWeek) return true;
+            }
 
-        private bool IsPlanItemFulfilled(MeetingGroup group, LearningPlanItem planItem, double value)
-        {
-            return GroupLearningPlanItemsCount.ContainsKey(group)
-                   && GroupLearningPlanItemsCount[group].ContainsKey(planItem)
-                   && GroupLearningPlanItemsCount[group][planItem] + value > planItem.MeetingsPerWeek;
-            //TODO pe: это неверно в общем случае. Может быть поставлено три мигающих пары, что в сумме даст 1.5 пары в неделю.
+            return false;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd)
