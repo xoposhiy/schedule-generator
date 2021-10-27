@@ -234,7 +234,7 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
-        public SheetModifier AddComment(int startRow, int startColumn, string? comment)
+        public SheetModifier AddNote(int startRow, int startColumn, string? note)
         {
             requests.Add(new()
             {
@@ -249,7 +249,7 @@ namespace Infrastructure.GoogleSheetsRepository
                             {
                                 new()
                                 {
-                                    Note = comment
+                                    Note = note
                                 }
                             }
                         }

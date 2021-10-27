@@ -14,7 +14,7 @@ namespace Infrastructure.SheetPatterns
                 var top = coord.row + offset.row;
                 var left = coord.col + offset.col;
                 modifier
-                    .AddComment(top, left, msg)
+                    .AddNote(top, left, msg)
                     .ColorizeRange(top, left, 1, 1, new() {Red = 1});
             }
 
@@ -30,7 +30,7 @@ namespace Infrastructure.SheetPatterns
                 var top = coord.row + offset.row;
                 var left = coord.col + offset.col;
                 modifier
-                    .AddComment(top, left, null)
+                    .AddNote(top, left, null)
                     .ColorizeRange(top, left, 1, 1, new() {Red = 1, Green = 1, Blue = 1});
             }
 

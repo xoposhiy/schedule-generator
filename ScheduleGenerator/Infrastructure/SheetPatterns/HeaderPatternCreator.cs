@@ -16,7 +16,7 @@ namespace Infrastructure.SheetPatterns
                 modifier
                     .WriteRange(startRow, startColumn + i, new() {new() {CommonCellData(headers[i])}})
                     .AddBorders(startRow, startColumn + i);
-                if (i < comments.Count) modifier.AddComment(startRow, startColumn + i, comments[i]);
+                if (i < comments.Count) modifier.AddNote(startRow, startColumn + i, comments[i]);
             }
 
             modifier.Execute();

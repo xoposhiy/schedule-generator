@@ -302,12 +302,12 @@ namespace Domain
         private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
             var planItem = meetingToAdd.PlanItem;
-            var weight = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
+            var additionalWeight = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
                 if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, out var byGroup)) continue;
-                if (!byGroup.TryGetValue(planItem, out var byPlan)) continue;
-                if (byPlan + weight > planItem.MeetingsPerWeek) return true;
+                if (!byGroup.TryGetValue(planItem, out var weight)) continue;
+                if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
             }
 
             return false;

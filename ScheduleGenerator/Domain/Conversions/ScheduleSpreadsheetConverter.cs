@@ -135,8 +135,9 @@ namespace Domain.Conversions
             var classroom = FillLocation(meeting);
             var value = $"{meeting.Discipline}, " +
                         $"{classroom}, " +
-                        $"{meeting.Teacher.Name}, " +
-                        $"{meeting.MeetingType}";
+                        $"{meeting.Teacher.Name}"
+                // + $", {meeting.MeetingType}"
+                ;
             var cellData = CommonCellData(value);
             if (meeting.Location == Location.Online)
                 cellData.UserEnteredFormat.BackgroundColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
