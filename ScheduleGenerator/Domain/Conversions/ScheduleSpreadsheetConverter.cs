@@ -170,44 +170,65 @@ namespace Domain.Conversions
         private static void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict,
             SheetModifier modifier)
         {
-            var horizOffset = 2;
-            var vertOffset = 2;
-
             var data = MeetingCellData(meeting);
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-            var rowNum = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
-            var rowsInMeeting = 1;
-            if (meeting.WeekType == WeekType.Even) rowNum++;
-            if (meeting.WeekType == WeekType.All) rowsInMeeting = 2;
+            var payload = new List<List<CellData>> {new() {data}};
+
+            var startRow = GetStartRow(meeting);
+            var height = meeting.WeekType == WeekType.All ? 2 : 1;
 
             var groups = meeting.Groups!.OrderBy(m => m.GroupName).ToList();
             var firstMeetingPos = groupIndexDict[groups[0].GroupName];
             for (var i = 0; i < groups.Count; i++)
             {
-                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] -
-                    groupIndexDict[groups[i].GroupName] == 1)
-                    continue;
-                var startColumn = firstMeetingPos * 2 + horizOffset;
-                var columnsInMeeting = 1;
-                if (groupIndexDict[groups[i].GroupName] == firstMeetingPos)
-                {
-                    if (groups[i].GroupPart == GroupPart.Part2) startColumn++;
-                    if (groups[i].GroupPart == GroupPart.FullGroup) columnsInMeeting = 2;
-                }
-                else
-                {
-                    columnsInMeeting = 2 * (groupIndexDict[groups[i].GroupName] - firstMeetingPos + 1);
-                }
+                var meetingPos = groupIndexDict[groups[i].GroupName];
+                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] - meetingPos == 1) continue;
+
+                var groupPart = groups[i].GroupPart;
+                var startColumn = GetStartColumn(firstMeetingPos, meetingPos, groupPart);
+                var width = GetMeetingWidth(firstMeetingPos, meetingPos, groupPart);
 
                 modifier
-                    .WriteRange(rowNum, startColumn, new() {new() {data}})
-                    .AddBorders(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                    .WriteRange(startRow, startColumn, payload)
+                    .AddBorders(startRow, startColumn, height, width);
 
-                if (rowsInMeeting > 1 || columnsInMeeting > 1)
-                    modifier.MergeCell(rowNum, startColumn, rowsInMeeting, columnsInMeeting);
+                if (height > 1 || width > 1)
+                    modifier.MergeCell(startRow, startColumn, height, width);
                 if (i != groups.Count - 1)
                     firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
             }
+        }
+
+        private static int GetStartRow(Meeting meeting)
+        {
+            var vertOffset = 2;
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
+            var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
+            if (meeting.WeekType == WeekType.Even) startRow++;
+            return startRow;
+        }
+
+        private static int GetStartColumn(int firstMeetingPos, int meetingPos, GroupPart groupPart)
+        {
+            var horizOffset = 2;
+            var startColumn = firstMeetingPos * 2 + horizOffset;
+            if (meetingPos == firstMeetingPos && groupPart == GroupPart.Part2) startColumn++;
+
+            return startColumn;
+        }
+
+        private static int GetMeetingWidth(int firstMeetingPos, int meetingPos, GroupPart groupPart)
+        {
+            var width = 1;
+            if (meetingPos == firstMeetingPos)
+            {
+                if (groupPart == GroupPart.FullGroup) width = 2;
+            }
+            else
+            {
+                width = 2 * (meetingPos - firstMeetingPos + 1);
+            }
+
+            return width;
         }
     }
 }
