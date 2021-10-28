@@ -17,6 +17,8 @@ namespace Domain.Conversions
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 0;
 
+        private const int WeekTypesCount = 2;
+
         private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
         private static readonly int WeekDayCount = WeekDays.Length;
 
@@ -27,6 +29,8 @@ namespace Domain.Conversions
         };
 
         private static readonly int StartIndexesCount = ClassStarts.Length;
+
+        private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
         public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
         {
@@ -132,6 +136,8 @@ namespace Domain.Conversions
         public static CellData MeetingCellData(Meeting meeting)
         {
             // TODO krutovsky: create data more carefully
+            if (meeting.Location == Location.PE) return CommonCellData("ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {}");
+
             var classroom = FillLocation(meeting);
             var value = $"{meeting.Discipline}, " +
                         $"{classroom}, " +
@@ -140,7 +146,7 @@ namespace Domain.Conversions
                 ;
             var cellData = CommonCellData(value);
             if (meeting.Location == Location.Online)
-                cellData.UserEnteredFormat.BackgroundColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
+                cellData.UserEnteredFormat.BackgroundColor = OnlineColor;
 
             return cellData;
         }
@@ -175,7 +181,7 @@ namespace Domain.Conversions
             var payload = new List<List<CellData>> {new() {data}};
 
             var startRow = GetStartRow(meeting);
-            var height = meeting.WeekType == WeekType.All ? 2 : 1;
+            var height = (int) (meeting.Weight * WeekTypesCount);
 
             var groups = meeting.Groups!.OrderBy(m => m.GroupName).ToList();
             var firstMeetingPos = groupIndexDict[groups[0].GroupName];
@@ -202,8 +208,8 @@ namespace Domain.Conversions
         private static int GetStartRow(Meeting meeting)
         {
             var vertOffset = 2;
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * 12 + vertOffset;
-            var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * 2 + rowNumOff;
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartIndexesCount * WeekDayCount + vertOffset;
+            var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * WeekTypesCount + rowNumOff;
             if (meeting.WeekType == WeekType.Even) startRow++;
             return startRow;
         }

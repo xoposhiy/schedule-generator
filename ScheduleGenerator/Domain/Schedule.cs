@@ -302,7 +302,7 @@ namespace Domain
         private bool IsMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
             var planItem = meetingToAdd.PlanItem;
-            var additionalWeight = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
+            var additionalWeight = meetingToAdd.Weight;
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
                 if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, out var byGroup)) continue;
@@ -317,7 +317,7 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                var value = meetingToAdd.WeekType == WeekType.All ? 1 : 0.5;
+                var value = meetingToAdd.Weight;
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.PlanItem, value);
             }
@@ -331,7 +331,7 @@ namespace Domain
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlotIndex] = null;
 
-                var value = meetingToRemove.WeekType == WeekType.All ? 1 : 0.5;
+                var value = meetingToRemove.Weight;
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
             }
         }

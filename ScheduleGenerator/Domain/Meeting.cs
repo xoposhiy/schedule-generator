@@ -14,6 +14,8 @@ namespace Domain
         public MeetingType MeetingType => PlanItem.MeetingType;
         public int Priority => PlanItem.Priority;
         public bool IsRoomNeeded => Location == Location.MathMeh && Discipline.Name != English;
+        public double Weight => WeekType == WeekType.All ? 1 : 0.5;
+
 
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
