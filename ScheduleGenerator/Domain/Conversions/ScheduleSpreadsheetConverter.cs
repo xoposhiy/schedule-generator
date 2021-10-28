@@ -208,7 +208,7 @@ namespace Domain.Conversions
         private static int GetStartRow(Meeting meeting)
         {
             var vertOffset = 2;
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartIndexesCount * WeekDayCount + vertOffset;
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartIndexesCount * WeekTypesCount + vertOffset;
             var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * WeekTypesCount + rowNumOff;
             if (meeting.WeekType == WeekType.Even) startRow++;
             return startRow;
