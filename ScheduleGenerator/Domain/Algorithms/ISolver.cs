@@ -5,8 +5,8 @@ namespace Domain.Algorithms
 {
     public interface ISolver
     {
-        /// <returns>Последовательность все более хороших решений</returns>
-        IEnumerable<Solution> GetSolution(TimeSpan timeBudget);
+        /// <returns>Решение</returns>
+        Solution GetSolution(TimeSpan timeBudget);
     }
 
     public record Solution(Schedule Schedule, double Score);

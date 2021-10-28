@@ -20,7 +20,7 @@ namespace ScheduleCLI
             SheetNamesConfig[] configs =
             {
                 SpringConfig,
-                AutumnConfig
+                //AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
@@ -39,14 +39,14 @@ namespace ScheduleCLI
         public static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var solutions = solver.GetSolution(new(0, 1, 5)).ToList();
+            var solution = solver.GetSolution(new(0, 1, 5));
 
             var converter = new ScheduleSpreadsheetConverter(Repository, config.Schedule);
-            converter.Build(solutions.Last().Schedule);
+            converter.Build(solution.Schedule);
             var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();
-            estimator.Estimate(solutions.Last().Schedule, logger);
+            estimator.Estimate(solution.Schedule, logger);
             Console.WriteLine(logger);
         }
     }

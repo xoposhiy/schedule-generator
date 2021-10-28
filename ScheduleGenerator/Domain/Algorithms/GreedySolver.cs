@@ -25,44 +25,40 @@ namespace Domain.Algorithms
             this.random = random;
         }
 
-        public IEnumerable<Solution> GetSolution(TimeSpan timeBudget)
+        public Solution GetSolution(TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
+            var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
+            var currentScore = double.NegativeInfinity;
             while (sw.Elapsed < timeBudget)
             {
-                var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
-                var currentScore = double.NegativeInfinity;
-                while (true)
+                var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
+                    .Select(meetings => (meetings, score: EstimateResult(currentSchedule, meetings)))
+                    .OrderByDescending(ms => ms.score)
+                    .ToList();
+                Console.WriteLine($"Number of possible meetings positions: {meetingsToAdd.Count}");
+                Console.WriteLine($"Number of not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
+                Console.WriteLine($"Number of placed meetings: {currentSchedule.Meetings.Count}");
+                Console.WriteLine();
+                if (meetingsToAdd.Count == 0)
                 {
-                    var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
-                        .Select(meetings => (meetings, score: EstimateResult(currentSchedule, meetings)))
-                        .OrderByDescending(ms => ms.score)
-                        .ToList();
-                    Console.WriteLine($"Number of possible meetings positions: {meetingsToAdd.Count}");
-                    Console.WriteLine($"Number of not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
-                    Console.WriteLine($"Number of placed meetings: {currentSchedule.Meetings.Count}");
-                    Console.WriteLine();
-                    if (meetingsToAdd.Count == 0)
+                    foreach (var notUsedMeeting in currentSchedule.NotUsedMeetings)
                     {
-                        foreach (var notUsedMeeting in currentSchedule.NotUsedMeetings)
-                        {
-                            Console.WriteLine(notUsedMeeting);
-                        }
-
-                        break;
+                        Console.WriteLine(notUsedMeeting);
                     }
 
-                    var (meeting, score) = meetingsToAdd.First();
-                    currentScore = score;
-                    currentSchedule.AddMeeting(meeting, true);
+                    break;
                 }
 
-                Console.WriteLine();
-                Console.WriteLine(sw.Elapsed);
-                Console.WriteLine();
-                yield return new(currentSchedule, currentScore);
-                yield break;
+                var (meeting, score) = meetingsToAdd.First();
+                currentScore = score;
+                currentSchedule.AddMeeting(meeting, true);
             }
+
+            Console.WriteLine();
+            Console.WriteLine($"Greedy {sw.Elapsed}");
+            Console.WriteLine();
+            return new(currentSchedule, currentScore);
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting)
