@@ -16,7 +16,7 @@ namespace Domain.Algorithms
         {
             var sw = Stopwatch.StartNew();
             Solution bestSolution = Solver.GetSolution(timeBudget - sw.Elapsed);
-            var repeats = 0;
+            var repeats = 1;
             while (sw.Elapsed < timeBudget)
             {
                 var solution = Solver.GetSolution(timeBudget - sw.Elapsed);

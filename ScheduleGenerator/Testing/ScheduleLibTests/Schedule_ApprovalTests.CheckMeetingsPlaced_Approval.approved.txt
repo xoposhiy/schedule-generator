@@ -1,5 +1,4 @@
-Placed:94 Left:0, Placed:
-Алгем Lecture Волков Михаил
+Placed:93 Left:1, Placed:
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
 Алгем Seminar Белов
@@ -94,4 +93,4 @@ Placed:94 Left:0, Placed:
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-
+Алгем Lecture Волков Михаил
