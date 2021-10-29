@@ -181,7 +181,8 @@ namespace Domain
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var priorityEstimator = (new PriorityMeetingsEstimator(), 100500);
             var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, priorityEstimator);
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, 
+                priorityEstimator);
             return estimator;
         }
 
@@ -194,7 +195,8 @@ namespace Domain
             var requisition = new Requisition(requisitions.ToArray());
             var estimator = GetDefaultCombinedEstimator();
 
-            return new GreedySolver(estimator, requisition, classrooms, new(42));
+            //return new GreedySolver(estimator, requisition, classrooms, new(42));
+            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(42), 3));
         }
     }
 }

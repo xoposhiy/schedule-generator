@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Text;
 using Domain.Conversions;
 using Infrastructure;
 using Ninject;
@@ -13,6 +13,7 @@ namespace ScheduleCLI
     {
         private static void Main()
         {
+            Console.OutputEncoding = Encoding.UTF8;
             //var container = ConfigureContainer();
 
             Console.WriteLine("Starting...");
@@ -39,7 +40,7 @@ namespace ScheduleCLI
         public static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var solution = solver.GetSolution(new(0, 1, 5));
+            var solution = solver.GetSolution(new(0, 5, 0));
 
             var converter = new ScheduleSpreadsheetConverter(Repository, config.Schedule);
             converter.Build(solution.Schedule);

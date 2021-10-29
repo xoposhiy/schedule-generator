@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Domain.Algorithms
 {
@@ -18,13 +16,23 @@ namespace Domain.Algorithms
         {
             var sw = Stopwatch.StartNew();
             Solution bestSolution = null;
+            var repeats = 0;
             while (sw.Elapsed < timeBudget)
             {
                 var solution = Solver.GetSolution(timeBudget - sw.Elapsed);
                 if (bestSolution is null || solution.Score > bestSolution.Score)
                     bestSolution = solution;
+                repeats++;
             }
-
+            
+            Console.WriteLine();
+            Console.WriteLine($"Repeater {sw.Elapsed}");
+            Console.WriteLine($"Total repeats {repeats}");
+            Console.WriteLine();
+            Console.WriteLine($"Not placed meetings: {bestSolution.Schedule.NotUsedMeetings.Count}");
+            Console.WriteLine($"Placed meetings: {bestSolution.Schedule.Meetings.Count}");
+            Console.WriteLine();
+            
             return bestSolution;
         }
     }
