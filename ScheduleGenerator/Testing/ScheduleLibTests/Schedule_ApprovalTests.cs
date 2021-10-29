@@ -17,7 +17,7 @@ namespace Testing.ScheduleLibTests
         {
             var solver = GetSolver(SpringConfig, Repository);
             var schedule = solver
-                .GetSolution(new(0, 1, 5))
+                .GetSolution(new(0, 0, 0, 0, 100))
                 .Schedule;
 
             var placedMeetings = schedule
