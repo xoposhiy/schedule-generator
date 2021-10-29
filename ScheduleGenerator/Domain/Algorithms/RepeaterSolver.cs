@@ -6,25 +6,25 @@ namespace Domain.Algorithms
     public class RepeaterSolver : ISolver
     {
         public readonly ISolver Solver;
-        
+
         public RepeaterSolver(ISolver solver)
         {
             Solver = solver;
         }
-        
+
         public Solution GetSolution(TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
-            Solution bestSolution = null;
+            Solution bestSolution = Solver.GetSolution(timeBudget - sw.Elapsed);
             var repeats = 0;
             while (sw.Elapsed < timeBudget)
             {
                 var solution = Solver.GetSolution(timeBudget - sw.Elapsed);
-                if (bestSolution is null || solution.Score > bestSolution.Score)
+                if (solution.Score > bestSolution.Score)
                     bestSolution = solution;
                 repeats++;
             }
-            
+
             Console.WriteLine();
             Console.WriteLine($"Repeater {sw.Elapsed}");
             Console.WriteLine($"Total repeats {repeats}");
@@ -32,7 +32,7 @@ namespace Domain.Algorithms
             Console.WriteLine($"Not placed meetings: {bestSolution.Schedule.NotUsedMeetings.Count}");
             Console.WriteLine($"Placed meetings: {bestSolution.Schedule.Meetings.Count}");
             Console.WriteLine();
-            
+
             return bestSolution;
         }
     }

@@ -18,7 +18,7 @@ namespace Testing.ConversionsTests
 
             Assert.AreEqual(63, requisitionItems.Count);
             Assert.AreEqual(23, learningPlan.Items.Length);
-            Assert.AreEqual(24, classrooms.Count);
+            Assert.AreEqual(25, classrooms.Count);
         }
     }
 }
