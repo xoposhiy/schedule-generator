@@ -5,16 +5,15 @@ using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
 
-namespace Domain.Algorithms
+namespace Domain.Algorithms.Solvers
 {
     public class GreedySolver : ISolver
     {
         private readonly IEstimator estimator;
         private readonly Requisition requisition;
         private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
-        public readonly int ChoiceCount;
+        private readonly int choiceCount;
 
-        // ReSharper disable once NotAccessedField.Local
         private readonly Random random;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
@@ -24,17 +23,16 @@ namespace Domain.Algorithms
             this.requisition = requisition;
             this.classroomsWithSpecs = classroomsWithSpecs;
             this.random = random;
-            this.ChoiceCount = choiceCount;
+            this.choiceCount = choiceCount;
         }
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
-            var currentScore = double.NegativeInfinity;
             //while (sw.Elapsed < timeBudget)
             //empty schedule is scored too high
-            while(true)
+            while (true)
             {
                 var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
                     .Select(meetings => (meetings, score: EstimateResult(currentSchedule, meetings)))
@@ -46,21 +44,20 @@ namespace Domain.Algorithms
                 Console.WriteLine();
                 if (meetingsToAdd.Count == 0)
                 {
-                    foreach (var notUsedMeeting in currentSchedule.NotUsedMeetings)
-                    {
-                        Console.WriteLine(notUsedMeeting);
-                    }
+                    var notUsedMeetings = string.Join("\n", currentSchedule.NotUsedMeetings);
+                    Console.WriteLine(notUsedMeetings);
 
                     break;
                 }
 
-                var (meeting, score) = 
-                    meetingsToAdd[random.Next(Math.Min(ChoiceCount, meetingsToAdd.Count))];
-                currentScore = score;
+                var maxIndex = Math.Min(choiceCount, meetingsToAdd.Count);
+                var (meeting, _) = meetingsToAdd[random.Next(maxIndex)];
                 currentSchedule.AddMeeting(meeting, true);
             }
+
             sw.Stop();
 
+            var currentScore = estimator.Estimate(currentSchedule);
             Console.WriteLine();
             Console.WriteLine($"Greedy {sw.Elapsed}");
             Console.WriteLine();

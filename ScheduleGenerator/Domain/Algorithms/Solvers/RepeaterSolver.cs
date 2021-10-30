@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Domain.Algorithms
+namespace Domain.Algorithms.Solvers
 {
     public class RepeaterSolver : ISolver
     {

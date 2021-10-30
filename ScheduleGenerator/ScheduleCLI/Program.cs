@@ -40,14 +40,14 @@ namespace ScheduleCLI
         public static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var solution = solver.GetSolution(new(0, 1, 0));
+            var (schedule, _) = solver.GetSolution(new(0, 1, 0));
 
             var converter = new ScheduleSpreadsheetConverter(Repository, config.Schedule);
-            converter.Build(solution.Schedule);
+            converter.Build(schedule);
             var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();
-            estimator.Estimate(solution.Schedule, logger);
+            estimator.Estimate(schedule, logger);
             Console.WriteLine(logger);
         }
     }

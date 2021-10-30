@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
+using Domain.Algorithms.Solvers;
 using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
@@ -181,7 +182,7 @@ namespace Domain
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var priorityEstimator = (new PriorityMeetingsEstimator(), 100500);
             var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, 
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator,
                 priorityEstimator);
             return estimator;
         }
