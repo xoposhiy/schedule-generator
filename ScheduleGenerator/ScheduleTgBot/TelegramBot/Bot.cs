@@ -434,7 +434,7 @@ namespace Application.TelegramBot
                 Console.WriteLine("REQUISITION EVALUATION");
                 // read data
                 var requisitionData = SheetTableReader.ReadRowsFromSheet(
-                    repo, scheduleSession.InputRequirementsSheet, (0, 0), requisitionSheetHeaders.Count);
+                    repo, scheduleSession.InputRequirementsSheet, 0, 0, requisitionSheetHeaders.Count);
                 // clear last errors
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (additionalSessionState.RequisitionLastErrorCoords != null &&
@@ -457,7 +457,7 @@ namespace Application.TelegramBot
                 Console.WriteLine("LEARNING PLAN EVALUATION");
                 // read data
                 var learningPlanData = SheetTableReader.ReadRowsFromSheet(
-                    repo, scheduleSession.LearningPlanSheet, (0, 0), learningPlanSheetHeaders.Count);
+                    repo, scheduleSession.LearningPlanSheet, 0, 0, learningPlanSheetHeaders.Count);
                 // clear last errors
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (additionalSessionState.LearningPlanLastErrorCoords != null &&
@@ -621,8 +621,10 @@ namespace Application.TelegramBot
             }
 
             if (currentRow.Length > 0) buttons[currRow] = currentRow;
-            var replyKeyboardMarkup = new ReplyKeyboardMarkup();
-            replyKeyboardMarkup.Keyboard = buttons;
+            var replyKeyboardMarkup = new ReplyKeyboardMarkup
+            {
+                Keyboard = buttons
+            };
             return replyKeyboardMarkup;
         }
 
@@ -636,6 +638,8 @@ namespace Application.TelegramBot
 
     public class AdditionalSessionState
     {
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public long Id { get; }
         public bool AccessReceived;
         public bool TableValidationInProgress;

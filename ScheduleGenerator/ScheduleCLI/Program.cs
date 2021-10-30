@@ -42,8 +42,7 @@ namespace ScheduleCLI
             var solver = GetSolver(config, Repository);
             var (schedule, _) = solver.GetSolution(new(0, 1, 0));
 
-            var converter = new ScheduleSpreadsheetConverter(Repository, config.Schedule);
-            converter.Build(schedule);
+            ScheduleSpreadsheetConverter.Build(schedule, Repository, config.Schedule);
             var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();

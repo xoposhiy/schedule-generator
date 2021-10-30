@@ -23,10 +23,9 @@ namespace Testing.ConversionsTests
                 testSchedule.AddMeeting(meeting, true);
             }
 
-            Repository.ClearCellRange(SheetName, (0, 0), (100, 100));
-            var converter = new ScheduleSpreadsheetConverter(Repository, SheetName);
+            Repository.ClearCellRange(SheetName, 0, 0, 100, 100);
 
-            converter.Build(testSchedule);
+            ScheduleSpreadsheetConverter.Build(testSchedule, Repository, SheetName);
 
             //TODO: проверок бы добавить
         }

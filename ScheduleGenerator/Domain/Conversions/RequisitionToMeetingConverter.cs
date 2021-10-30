@@ -14,8 +14,7 @@ namespace Domain.Conversions
             if (requisitionItem.PlanItem.MeetingsPerWeek % 1 == 0)
             {
                 for (var i = 0; i < meetingCount; i++)
-                    meetings.Add(new(requisitionItem.WeekType,
-                        requisitionItem));
+                    meetings.Add(new(requisitionItem.WeekType, requisitionItem));
             }
             else
             {
@@ -29,7 +28,6 @@ namespace Domain.Conversions
                     meetings.Add(new(weekType, requisitionItem));
             }
 
-            // Console.WriteLine(string.Join(" ", meetings));
             return meetings;
         }
     }

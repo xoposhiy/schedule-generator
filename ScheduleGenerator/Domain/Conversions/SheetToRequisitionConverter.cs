@@ -93,12 +93,12 @@ namespace Domain.Conversions
             GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
-            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, (1, 0), 9);
+            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, 1, 0, 9);
             var learningPlanItems = ParseLearningPlanItems(planData).ToArray();
             var learningPlan = new LearningPlan(learningPlanItems);
-            var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, (1, 0), 7);
+            var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, 1, 0, 7);
             var requisitions = ParseRequisitions(requisitionData, learningPlan);
-            var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, (1, 0), 4);
+            var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, 1, 0, 4);
             var classrooms = ParseClassrooms(classroomsData)
                 .ToDictionary(e => e.Item1, e => e.Item2);
             return (requisitions, learningPlan, classrooms);

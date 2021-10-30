@@ -8,10 +8,8 @@ using static Infrastructure.Extensions;
 
 namespace Domain.Conversions
 {
-    public class ScheduleSpreadsheetConverter
+    public static class ScheduleSpreadsheetConverter
     {
-        private readonly GsRepository repository;
-        private readonly string sheetName;
         private const int TimeBarRowOffset = 2;
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
@@ -40,13 +38,7 @@ namespace Domain.Conversions
         private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
         private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
-        public ScheduleSpreadsheetConverter(GsRepository repo, string sheetName)
-        {
-            repository = repo;
-            this.sheetName = sheetName;
-        }
-
-        public void Build(IReadonlySchedule schedule)
+        public static void Build(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var groupNamesSet = new HashSet<string>();
             var meetingSet = new HashSet<Meeting>();
@@ -60,34 +52,31 @@ namespace Domain.Conversions
             var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
             repository.ClearSheet(sheetName);
+            var modifier = repository.ModifySpreadSheet(sheetName);
 
-            BuildSchedulePattern(groupNames);
+            modifier.BuildSchedulePattern(groupNames);
 
-            FillScheduleData(meetingSet, groupNames);
+            FillScheduleData(modifier, meetingSet, groupNames);
         }
 
-        private void BuildSchedulePattern(List<string> groups)
+        private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
         {
-            ColorField(groups);
-            BuildTimeBar();
-            BuildGroupHeaders(groups);
-        }
-
-        private void ColorField(List<string> groups)
-        {
-            var height = WeekDayCount * StartsCount * WeekTypesCount;
-            var width = groups.Count * SubGroupsCount;
-            repository
-                .ModifySpreadSheet(sheetName)
-                .ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, BackgroundColor)
+            modifier.ColorField(groups.Count)
+                .BuildTimeBar()
+                .BuildGroupHeaders(groups)
                 .Execute();
         }
 
-        private void BuildTimeBar()
+        private static SheetModifier ColorField(this SheetModifier modifier, int groupsCount)
+        {
+            var height = WeekDayCount * StartsCount * WeekTypesCount;
+            var width = groupsCount * SubGroupsCount;
+            return modifier.ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, BackgroundColor);
+        }
+
+        private static SheetModifier BuildTimeBar(this SheetModifier modifier)
         {
             var height = StartsCount * WeekTypesCount;
-            var modifier = repository
-                .ModifySpreadSheet(sheetName);
             var rowStart = TimeBarRowOffset;
             foreach (var weekDay in WeekDays.Select(HeaderCellData))
             {
@@ -105,13 +94,11 @@ namespace Domain.Conversions
                 }
             }
 
-            modifier.Execute();
+            return modifier;
         }
 
-        private void BuildGroupHeaders(List<string> groups)
+        private static SheetModifier BuildGroupHeaders(this SheetModifier modifier, List<string> groups)
         {
-            var modifier = repository
-                .ModifySpreadSheet(sheetName);
             var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
@@ -127,36 +114,42 @@ namespace Domain.Conversions
                 startColumn += SubGroupsCount;
             }
 
-            modifier.Execute();
+            return modifier;
         }
 
-        private void FillScheduleData(HashSet<Meeting> meetings, List<string> groups)
+        private static void FillScheduleData(this SheetModifier modifier, HashSet<Meeting> meetings,
+            List<string> groups)
         {
             var groupIndexDict = groups
                 .Select((g, i) => (g, i))
                 .ToDictionary(gi => gi.g, gi => gi.i);
-            var modifier = repository
-                .ModifySpreadSheet(sheetName);
 
             foreach (var meeting in meetings) WriteMeeting(meeting, groupIndexDict, modifier);
             modifier.Execute();
         }
 
-        public static CellData MeetingCellData(Meeting meeting)
+        private static string MeetingToString(Meeting meeting)
         {
-            // TODO krutovsky: create data more carefully
+            // TODO krutovsky: create string more careful
             if (meeting.Location == Location.PE)
             {
                 var timePeriod = PeClassStarts[meeting.MeetingTime!.TimeSlotIndex - 1];
-                return CommonCellData($"ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {timePeriod}");
+                return $"ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {timePeriod}";
             }
 
             var classroom = FillLocation(meeting);
-            var value = $"{meeting.Discipline}, " +
-                        $"{classroom}, " +
-                        $"{meeting.Teacher.Name}"
+            if (string.IsNullOrEmpty(classroom)) return meeting.Discipline.Name;
+
+            return $"{meeting.Discipline}, " +
+                   $"{classroom}, " +
+                   $"{meeting.Teacher.Name}"
                 // + $", {meeting.MeetingType}"
                 ;
+        }
+
+        private static CellData MeetingCellData(Meeting meeting)
+        {
+            var value = MeetingToString(meeting);
             var cellData = CommonCellData(value);
             if (meeting.Location == Location.Online)
                 cellData.UserEnteredFormat.BackgroundColor = OnlineColor;

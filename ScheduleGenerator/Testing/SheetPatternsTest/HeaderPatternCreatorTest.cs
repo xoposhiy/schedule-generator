@@ -14,12 +14,12 @@ namespace Testing.SheetPatternsTest
         {
             Repository.ClearSheet(SheetName);
         }
-        
+
         [Test]
         public void SetUpHeadersOnClearSheet()
         {
             Repository.SetUpSheetInfo();
-            Repository.ClearCellRange(SheetName, (0, 0), (10, 10));
+            Repository.ClearCellRange(SheetName, 0, 0, 10, 10);
 
             var headers = new List<string>
             {
@@ -52,7 +52,7 @@ namespace Testing.SheetPatternsTest
 
             SetUpHeaders(Repository, SheetName, 5, 1, headers, comments);
 
-            var actualHeaders = Repository.ReadCellRange(SheetName, (5, 1), (5, 8))![0]!;
+            var actualHeaders = Repository.ReadCellRange(SheetName, 5, 1, 5, 8)![0]!;
 
             Assert.AreEqual(headers.Count, actualHeaders.Count);
             for (var i = 0; i < headers.Count; i++) Assert.AreEqual(headers[i], actualHeaders[i]);

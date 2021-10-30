@@ -63,25 +63,14 @@ namespace Infrastructure.GoogleSheetsRepository
             CurrentSheetInfo = new(metadata);
         }
 
-        public List<List<string?>?>? ReadCellRange(string sheetName, ValueTuple<int, int> rangeStart,
-            ValueTuple<int, int> rangeEnd)
+        public List<List<string?>?>? ReadCellRange(string sheetName, int top, int left, int bottom, int right)
         {
-            var (top, leftIndex) = rangeStart;
-            var (bottom, rightIndex) = rangeEnd;
-            leftIndex++;
-            top++;
-            rightIndex++;
-            bottom++;
-            var left = ConvertIndexToTableColumnFormat(leftIndex);
-            var right = ConvertIndexToTableColumnFormat(rightIndex);
-            var range = $"{left}{top}:{right}{bottom}";
-            var values = ReadCellRangeUsingStringRangeFormat(sheetName, range);
-            return values;
+            var fullRange = GetFullRange(sheetName, top, left, bottom, right);
+            return ReadCellRangeUsingStringRangeFormat(fullRange);
         }
 
-        public List<List<string?>?>? ReadCellRangeUsingStringRangeFormat(string sheetName, string range)
+        public List<List<string?>?>? ReadCellRangeUsingStringRangeFormat(string fullRange)
         {
-            var fullRange = $"{sheetName}!{range}";
             var request = Service.Spreadsheets.Values.Get(CurrentSheetId, fullRange);
             var response = request.Execute();
             var values = response.Values;
@@ -111,18 +100,9 @@ namespace Infrastructure.GoogleSheetsRepository
             return new(Service, CurrentSheetId!, (int) sheetId);
         }
 
-        public void ClearCellRange(string sheetName, ValueTuple<int, int> rangeStart, ValueTuple<int, int> rangeEnd)
+        public void ClearCellRange(string sheetName, int top, int left, int bottom, int right)
         {
-            var (top, leftIndex) = rangeStart;
-            var (bottom, rightIndex) = rangeEnd;
-            leftIndex++;
-            top++;
-            rightIndex++;
-            bottom++;
-            var left = ConvertIndexToTableColumnFormat(leftIndex);
-            var right = ConvertIndexToTableColumnFormat(rightIndex);
-            var range = $"{left}{top}:{right}{bottom}";
-            string fullRange = $"{sheetName}!{range}";
+            var fullRange = GetFullRange(sheetName, top, left, bottom, right);
             var requestBody = new ClearValuesRequest();
             var deleteRequest = Service.Spreadsheets.Values.Clear(requestBody, CurrentSheetId, fullRange);
             deleteRequest.Execute();
@@ -161,6 +141,13 @@ namespace Infrastructure.GoogleSheetsRepository
                 .ClearAll()
                 .UnMergeAll()
                 .Execute();
+        }
+
+        private static string GetFullRange(string sheetName, int top, int left, int bottom, int right)
+        {
+            var leftFormatted = ConvertIndexToTableColumnFormat(left + 1);
+            var rightFormatted = ConvertIndexToTableColumnFormat(right + 1);
+            return $"{sheetName}!{leftFormatted}{top + 1}:{rightFormatted}{bottom + 1}";
         }
     }
 
