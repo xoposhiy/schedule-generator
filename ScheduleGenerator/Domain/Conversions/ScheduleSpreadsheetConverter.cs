@@ -35,7 +35,7 @@ namespace Domain.Conversions
             "14:15 - 15:45", "16:00 - 15:30", "слишком поздно"
         };
 
-        private static readonly int StartIndexesCount = ClassStarts.Length;
+        private static readonly int StartsCount = ClassStarts.Length;
 
         private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
         private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
@@ -75,7 +75,7 @@ namespace Domain.Conversions
 
         private void ColorField(List<string> groups)
         {
-            var height = WeekDayCount * StartIndexesCount * WeekTypesCount;
+            var height = WeekDayCount * StartsCount * WeekTypesCount;
             var width = groups.Count * SubGroupsCount;
             repository
                 .ModifySpreadSheet(sheetName)
@@ -85,7 +85,7 @@ namespace Domain.Conversions
 
         private void BuildTimeBar()
         {
-            var height = StartIndexesCount * WeekTypesCount;
+            var height = StartsCount * WeekTypesCount;
             var modifier = repository
                 .ModifySpreadSheet(sheetName);
             var rowStart = TimeBarRowOffset;
@@ -115,12 +115,13 @@ namespace Domain.Conversions
             var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
+                var subGroupsRow = new List<List<CellData>>()
+                    {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}};
                 modifier
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
                     .AddBorders(HeadersRowOffset, startColumn)
                     .MergeCell(HeadersRowOffset, startColumn, 1, SubGroupsCount)
-                    .WriteRange(HeadersRowOffset + 1, startColumn,
-                        new() {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}})
+                    .WriteRange(HeadersRowOffset + 1, startColumn, subGroupsRow)
                     .AddBorders(HeadersRowOffset + 1, startColumn)
                     .AddBorders(HeadersRowOffset + 1, startColumn + 1);
                 startColumn += SubGroupsCount;
@@ -203,7 +204,7 @@ namespace Domain.Conversions
                 if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] - meetingPos == 1) continue;
 
                 var groupPart = groups[i].GroupPart;
-                var startColumn = GetStartColumn(firstMeetingPos, meetingPos, groupPart);
+                var startColumn = GetStartColumn(firstMeetingPos, groupPart);
                 var width = GetMeetingWidth(firstMeetingPos, meetingPos, groupPart);
 
                 modifier
@@ -219,36 +220,23 @@ namespace Domain.Conversions
 
         private static int GetStartRow(Meeting meeting)
         {
-            var vertOffset = TimeBarRowOffset;
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartIndexesCount * WeekTypesCount +
-                            vertOffset;
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartsCount * WeekTypesCount;
             var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * WeekTypesCount + rowNumOff;
-            if (meeting.WeekType == WeekType.Even) startRow++;
-            return startRow;
+            var weekOffset = meeting.WeekType == WeekType.Even ? 1 : 0;
+            return startRow + TimeBarRowOffset + weekOffset;
         }
 
-        private static int GetStartColumn(int firstMeetingPos, int meetingPos, GroupPart groupPart)
+        private static int GetStartColumn(int firstMeetingPos, GroupPart groupPart)
         {
-            var horizOffset = HeadersColumnOffset;
-            var startColumn = firstMeetingPos * SubGroupsCount + horizOffset;
-            if (meetingPos == firstMeetingPos && groupPart == GroupPart.Part2) startColumn++;
-
-            return startColumn;
+            var startColumn = firstMeetingPos * SubGroupsCount;
+            var groupOffset = groupPart == GroupPart.Part2 ? 1 : 0;
+            return startColumn + HeadersColumnOffset + groupOffset;
         }
 
         private static int GetMeetingWidth(int firstMeetingPos, int meetingPos, GroupPart groupPart)
         {
-            var width = 1;
-            if (meetingPos == firstMeetingPos)
-            {
-                if (groupPart == GroupPart.FullGroup) width = SubGroupsCount;
-            }
-            else
-            {
-                width = SubGroupsCount * (meetingPos - firstMeetingPos + 1);
-            }
-
-            return width;
+            if (groupPart != GroupPart.FullGroup) return 1;
+            return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
         }
     }
 }

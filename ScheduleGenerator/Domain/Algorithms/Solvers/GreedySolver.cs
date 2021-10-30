@@ -12,9 +12,8 @@ namespace Domain.Algorithms.Solvers
         private readonly IEstimator estimator;
         private readonly Requisition requisition;
         private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
-        private readonly int choiceCount;
-
         private readonly Random random;
+        private readonly int choiceCount;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
             Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random, int choiceCount = 1)
@@ -30,13 +29,12 @@ namespace Domain.Algorithms.Solvers
         {
             var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
-            //while (sw.Elapsed < timeBudget)
-            //empty schedule is scored too high
             while (true)
             {
                 var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
-                    .Select(meetings => (meetings, score: EstimateResult(currentSchedule, meetings)))
+                    .Select(meeting => (meeting, score: EstimateResult(currentSchedule, meeting)))
                     .OrderByDescending(ms => ms.score)
+                    .Select(ms => ms.meeting)
                     .ToList();
                 Console.WriteLine($"Possible meetings positions: {meetingsToAdd.Count}");
                 Console.WriteLine($"Not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
@@ -51,8 +49,8 @@ namespace Domain.Algorithms.Solvers
                 }
 
                 var maxIndex = Math.Min(choiceCount, meetingsToAdd.Count);
-                var (meeting, _) = meetingsToAdd[random.Next(maxIndex)];
-                currentSchedule.AddMeeting(meeting, true);
+                var meetingToAdd = meetingsToAdd[random.Next(maxIndex)];
+                currentSchedule.AddMeeting(meetingToAdd, true);
             }
 
             sw.Stop();

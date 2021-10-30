@@ -5,35 +5,49 @@ namespace Domain.Algorithms.Solvers
 {
     public class RepeaterSolver : ISolver
     {
-        public readonly ISolver Solver;
+        private readonly ISolver solver;
 
         public RepeaterSolver(ISolver solver)
         {
-            Solver = solver;
+            this.solver = solver;
         }
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
-            Solution bestSolution = Solver.GetSolution(timeBudget - sw.Elapsed);
+            Solution bestSolution = solver.GetSolution(timeBudget - sw.Elapsed);
             var repeats = 1;
             while (sw.Elapsed < timeBudget)
             {
-                var solution = Solver.GetSolution(timeBudget - sw.Elapsed);
+                var solution = solver.GetSolution(timeBudget - sw.Elapsed);
                 if (solution.Score > bestSolution.Score)
                     bestSolution = solution;
                 repeats++;
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"Repeater {sw.Elapsed}");
-            Console.WriteLine($"Total repeats {repeats}");
-            Console.WriteLine();
-            Console.WriteLine($"Not placed meetings: {bestSolution.Schedule.NotUsedMeetings.Count}");
-            Console.WriteLine($"Placed meetings: {bestSolution.Schedule.Meetings.Count}");
-            Console.WriteLine();
+            sw.Stop();
+
+            Console.WriteLine(GetFinalMessage(sw, repeats, bestSolution));
 
             return bestSolution;
+        }
+
+        private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution)
+        {
+            var (schedule, score) = bestSolution;
+            var lines = new[]
+            {
+                "",
+                $"Repeater: {sw.Elapsed}",
+                $"Total repeats: {repeats}",
+                $"Mean elapsed: {sw.Elapsed / repeats}",
+                "",
+                $"Not placed meetings: {schedule.NotUsedMeetings.Count}",
+                $"Placed meetings: {schedule.Meetings.Count}",
+                $"Score: {score}",
+                ""
+            };
+            return string.Join("\n", lines);
         }
     }
 }

@@ -44,20 +44,6 @@ namespace Domain.Conversions
             {"сб", DayOfWeek.Saturday}
         };
 
-        private static DayOfWeek GetDayOfWeek(string rowDayOfWeek)
-        {
-            return rowDayOfWeek switch
-            {
-                "пн" => DayOfWeek.Monday,
-                "вт" => DayOfWeek.Tuesday,
-                "ср" => DayOfWeek.Wednesday,
-                "чт" => DayOfWeek.Thursday,
-                "пт" => DayOfWeek.Friday,
-                "сб" => DayOfWeek.Saturday,
-                _ => throw new FormatException($"Некорректный день недели: {rowDayOfWeek}")
-            };
-        }
-
         private static GroupPart GetGroupPart(int rowGroupPart)
         {
             return rowGroupPart switch
@@ -270,8 +256,8 @@ namespace Domain.Conversions
         private static GroupsChoice CreateGroupChoices(string meetingGroupString)
         {
             var meetingGroups = new List<MeetingGroup>();
-            var meetingGroupStringSplited = meetingGroupString.Split("+").Select(x => x.Trim());
-            foreach (var singleMeetingGroup in meetingGroupStringSplited)
+            var meetingGroupStringSplit = meetingGroupString.Split("+").Select(x => x.Trim());
+            foreach (var singleMeetingGroup in meetingGroupStringSplit)
             {
                 var groupPart = DetermineGroupPart(singleMeetingGroup);
                 var parentGroup = GetParentGroup(singleMeetingGroup);
@@ -339,7 +325,7 @@ namespace Domain.Conversions
             {
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in WeekDaysDict.Values)
-                    for (var index = 1; index < MaxIndex + 1; index++)
+                    for (var index = 1; index <= MaxIndex; index++)
                         meetingTimes.Add(new(day, index));
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
@@ -377,7 +363,7 @@ namespace Domain.Conversions
                     for (var i = posStart; i < posEnd + 1; i++) currWeekDays.Add(weekDaysList[i]);
                 }
 
-                foreach (Capture dayStr in days) currWeekDays.Add(GetDayOfWeek(dayStr.Value));
+                foreach (Capture dayStr in days) currWeekDays.Add(WeekDaysDict[dayStr.Value]);
 
                 var currIndexes = new List<int>();
                 foreach (Capture part in indexRanges)

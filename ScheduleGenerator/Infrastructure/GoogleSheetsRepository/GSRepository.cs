@@ -179,9 +179,9 @@ namespace Infrastructure.GoogleSheetsRepository
             requests = new();
         }
 
-        public SheetModifier WriteRange(int startRow, int startColumn, List<List<CellData>> payload)
+        public SheetModifier WriteRange(int startRow, int startColumn, List<List<CellData>> rowsData)
         {
-            var rows = payload.Select(row => new RowData {Values = row}).ToList();
+            var rows = rowsData.Select(row => new RowData {Values = row}).ToList();
 
             requests.Add(new()
             {
