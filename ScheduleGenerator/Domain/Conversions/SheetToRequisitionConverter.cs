@@ -12,8 +12,6 @@ namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
     {
-        private const int MaxIndex = 5;
-
         private static MeetingType GetMeetingType(string rowMeetingType)
         {
             return rowMeetingType switch
@@ -318,76 +316,59 @@ namespace Domain.Conversions
 
         public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
-            var weekDaysStrList = WeekDaysDict.Keys.ToList();
             var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
             if (string.IsNullOrWhiteSpace(rawMeetingTime))
             {
                 var meetingTimes = new List<MeetingTime>();
                 foreach (var day in WeekDaysDict.Values)
-                    for (var index = 1; index <= MaxIndex; index++)
+                    for (var index = 1; index <= 6; index++)
                         meetingTimes.Add(new(day, index));
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
                 return meetingTimeRequisitions;
             }
 
-            var weekDaysList = new List<DayOfWeek>
-            {
-                DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
-                DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday, DayOfWeek.Sunday
-            };
-            var pattern =
-                @"(?:(?:((?:пн|вт|ср|чт|пт|сб)\s?-\s?(?:пн|вт|ср|чт|пт|сб))|(пн|вт|ср|чт|пт|сб)),?\s?)*\s?(?:(?:(\d\s?-\s?\d)|(\d))\sпара)?";
-            var compiledPattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-
             var records = rawMeetingTime.Split('\n');
 
             foreach (var record in records)
             {
-                var matches = compiledPattern.Matches(record);
-                var groups = matches[0].Groups;
-                var dayRanges = groups[1].Captures;
-                var days = groups[2].Captures;
-                var indexRanges = groups[3].Captures;
-                var indexes = groups[4].Captures;
-
-                var currWeekDays = new List<DayOfWeek>();
-
-                foreach (Capture part in dayRanges)
-                {
-                    var rangeParts = part.Value.Split('-');
-                    var posStart = weekDaysStrList.IndexOf(rangeParts[0]);
-                    var posEnd = weekDaysStrList.IndexOf(rangeParts[1]);
-                    for (var i = posStart; i < posEnd + 1; i++) currWeekDays.Add(weekDaysList[i]);
-                }
-
-                foreach (Capture dayStr in days) currWeekDays.Add(WeekDaysDict[dayStr.Value]);
-
-                var currIndexes = new List<int>();
-                foreach (Capture part in indexRanges)
-                {
-                    var rangeParts = part.Value.Split('-');
-                    var posStart = int.Parse(rangeParts[0]);
-                    var posEnd = int.Parse(rangeParts[1]);
-                    for (var i = posStart; i < posEnd + 1; i++) currIndexes.Add(i);
-                }
-
-                foreach (Capture indexStr in indexes)
-                {
-                    var index = int.Parse(indexStr.Value);
-                    currIndexes.Add(index);
-                }
-
-                if (currWeekDays.Count == 0) currWeekDays = WeekDaysDict.Values.ToList();
-
-                if (currIndexes.Count == 0) currIndexes.AddRange(new[] {1, 2, 3, 4, 5, 6});
-
                 var meetingTimes = new List<MeetingTime>();
-                foreach (var day in currWeekDays)
-                foreach (var index in currIndexes)
-                    meetingTimes.Add(new(day, index));
+
+                var blocks = record.Split(';');
+                foreach (var block in blocks)
+                {
+                    var parts = block.Replace(" ", "").Split(':');
+                    
+                    var days = new List<DayOfWeek>();
+                    var dayString = parts[0];
+                    var dayReqs = dayString.Split(',');
+                    foreach (var req in dayReqs)
+                    {
+                        var tmp = req.Split('-');
+                        var firstDay = WeekDaysDict[tmp[0]];
+                        var lastDay = tmp.Length == 1 ? firstDay : WeekDaysDict[tmp[1]];
+                        for (var day = firstDay; day <= lastDay; day++)
+                            days.Add(day);
+                    }
+
+                    var slots = new List<int>();
+                    var slotString = parts[1];
+                    var slotReqs = slotString.Split(',');
+                    foreach (var req in slotReqs)
+                    {
+                        //пн-пт: 3,4 пара
+                        var tmp = req.Split('-');
+                        var firstSlot = int.Parse(tmp[0][0].ToString());
+                        var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
+                        for (var slot = firstSlot; slot <= lastSlot; slot++)
+                            slots.Add(slot);
+                    }
+
+                    foreach (var day in days)
+                    foreach (var slot in slots)
+                        meetingTimes.Add(new (day, slot));
+                }
 
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
                 meetingTimeRequisitions.Add(meetingTimeRequisition);

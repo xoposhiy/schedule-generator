@@ -16,6 +16,7 @@ namespace Infrastructure
 
         public const string InputRequirementsSheetName = "Входные требования";
         public const string InputRequirementsSheetName2 = "Входные требования осень";
+        public const string InputRequirementsTestSheetName = "Входные требования Тест";
         public const string LearningPlanSheetName = "Учебный план";
         public const string LearningPlanSheetName2 = "Учебный план осень";
         public const string ScheduleSheetName = "Расписание";
