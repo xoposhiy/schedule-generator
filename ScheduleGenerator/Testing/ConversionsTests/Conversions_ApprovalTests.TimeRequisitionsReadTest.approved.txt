@@ -1,0 +1,172 @@
+﻿пн: 1-3 пара 
+пт: 4-6 пара
+Day: Monday, TimeSlotIndex: 1
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 6
+------
+пн, ср, пт-сб: 2-5 пара
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Monday, TimeSlotIndex: 5
+Day: Wednesday, TimeSlotIndex: 2
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 2
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+Day: Saturday, TimeSlotIndex: 2
+Day: Saturday, TimeSlotIndex: 3
+Day: Saturday, TimeSlotIndex: 4
+Day: Saturday, TimeSlotIndex: 5
+------
+вт,ср,пт: 1-4 пара
+Day: Tuesday, TimeSlotIndex: 1
+Day: Tuesday, TimeSlotIndex: 2
+Day: Tuesday, TimeSlotIndex: 3
+Day: Tuesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 1
+Day: Wednesday, TimeSlotIndex: 2
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 1
+Day: Friday, TimeSlotIndex: 2
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+------
+пн-пт: 3,4 пара
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Tuesday, TimeSlotIndex: 3
+Day: Tuesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Thursday, TimeSlotIndex: 3
+Day: Thursday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+------
+пн, ср, пт: 2-5 пара
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Monday, TimeSlotIndex: 5
+Day: Wednesday, TimeSlotIndex: 2
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 2
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+------
+пн,пт: 3-4 пара; вт:2 пара
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Tuesday, TimeSlotIndex: 2
+------
+пн: 1-3 пара 
+пт: 4,6 пара
+Day: Monday, TimeSlotIndex: 1
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 6
+------
+
+Day: Monday, TimeSlotIndex: 1
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Monday, TimeSlotIndex: 5
+Day: Monday, TimeSlotIndex: 6
+Day: Tuesday, TimeSlotIndex: 1
+Day: Tuesday, TimeSlotIndex: 2
+Day: Tuesday, TimeSlotIndex: 3
+Day: Tuesday, TimeSlotIndex: 4
+Day: Tuesday, TimeSlotIndex: 5
+Day: Tuesday, TimeSlotIndex: 6
+Day: Wednesday, TimeSlotIndex: 1
+Day: Wednesday, TimeSlotIndex: 2
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 5
+Day: Wednesday, TimeSlotIndex: 6
+Day: Thursday, TimeSlotIndex: 1
+Day: Thursday, TimeSlotIndex: 2
+Day: Thursday, TimeSlotIndex: 3
+Day: Thursday, TimeSlotIndex: 4
+Day: Thursday, TimeSlotIndex: 5
+Day: Thursday, TimeSlotIndex: 6
+Day: Friday, TimeSlotIndex: 1
+Day: Friday, TimeSlotIndex: 2
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 6
+Day: Saturday, TimeSlotIndex: 1
+Day: Saturday, TimeSlotIndex: 2
+Day: Saturday, TimeSlotIndex: 3
+Day: Saturday, TimeSlotIndex: 4
+Day: Saturday, TimeSlotIndex: 5
+Day: Saturday, TimeSlotIndex: 6
+------
+вт: 1-5 пара
+пт: 3-6 пара
+Day: Tuesday, TimeSlotIndex: 1
+Day: Tuesday, TimeSlotIndex: 2
+Day: Tuesday, TimeSlotIndex: 3
+Day: Tuesday, TimeSlotIndex: 4
+Day: Tuesday, TimeSlotIndex: 5
+
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 6
+------
+
+Day: Monday, TimeSlotIndex: 1
+Day: Monday, TimeSlotIndex: 2
+Day: Monday, TimeSlotIndex: 3
+Day: Monday, TimeSlotIndex: 4
+Day: Monday, TimeSlotIndex: 5
+Day: Monday, TimeSlotIndex: 6
+Day: Tuesday, TimeSlotIndex: 1
+Day: Tuesday, TimeSlotIndex: 2
+Day: Tuesday, TimeSlotIndex: 3
+Day: Tuesday, TimeSlotIndex: 4
+Day: Tuesday, TimeSlotIndex: 5
+Day: Tuesday, TimeSlotIndex: 6
+Day: Wednesday, TimeSlotIndex: 1
+Day: Wednesday, TimeSlotIndex: 2
+Day: Wednesday, TimeSlotIndex: 3
+Day: Wednesday, TimeSlotIndex: 4
+Day: Wednesday, TimeSlotIndex: 5
+Day: Wednesday, TimeSlotIndex: 6
+Day: Thursday, TimeSlotIndex: 1
+Day: Thursday, TimeSlotIndex: 2
+Day: Thursday, TimeSlotIndex: 3
+Day: Thursday, TimeSlotIndex: 4
+Day: Thursday, TimeSlotIndex: 5
+Day: Thursday, TimeSlotIndex: 6
+Day: Friday, TimeSlotIndex: 1
+Day: Friday, TimeSlotIndex: 2
+Day: Friday, TimeSlotIndex: 3
+Day: Friday, TimeSlotIndex: 4
+Day: Friday, TimeSlotIndex: 5
+Day: Friday, TimeSlotIndex: 6
+Day: Saturday, TimeSlotIndex: 1
+Day: Saturday, TimeSlotIndex: 2
+Day: Saturday, TimeSlotIndex: 3
+Day: Saturday, TimeSlotIndex: 4
+Day: Saturday, TimeSlotIndex: 5
+Day: Saturday, TimeSlotIndex: 6
