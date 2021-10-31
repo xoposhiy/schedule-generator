@@ -22,7 +22,6 @@ namespace Testing.ConversionsTests
             var requisitionData = SheetTableReader
                 .ReadRowsFromSheet(Repository, InputRequirementsTestSheetName, 1, 0, 7)
                 .Take(10);
-            //var allTimeRequisitions = new List<List<MeetingTimeRequisition>>();
             var checkStrings = new List<string>();
             foreach (var requisitionRow in requisitionData)
             {
