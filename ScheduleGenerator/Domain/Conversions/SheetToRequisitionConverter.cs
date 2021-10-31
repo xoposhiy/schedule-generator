@@ -329,13 +329,13 @@ namespace Domain.Conversions
                 return meetingTimeRequisitions;
             }
 
-            var records = rawMeetingTime.Split('\n');
+            var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var record in records)
             {
                 var meetingTimes = new List<MeetingTime>();
 
-                var blocks = record.Split(';');
+                var blocks = record.Split(';', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var block in blocks)
                 {
                     var parts = block.Replace(" ", "").Split(':');
