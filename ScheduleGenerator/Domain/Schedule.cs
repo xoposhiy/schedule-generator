@@ -47,6 +47,33 @@ namespace Domain
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
 
             FillMeetingFreedomDegree(NotUsedMeetings);
+
+            FillTeachersKeys(requisition);
+            FillGroupsKey(requisition);
+        }
+
+        private void FillGroupsKey(Requisition requisition)
+        {
+            var groups = requisition.Items
+                .SelectMany(r => r.GroupPriorities)
+                .SelectMany(g => g.GroupsChoices)
+                .SelectMany(g => g.Groups)
+                .Distinct();
+
+            foreach (var group in groups)
+            {
+                GroupMeetingsByTime[group] = new();
+                GroupLearningPlanItemsCount[group] = new();
+            }
+        }
+
+        private void FillTeachersKeys(Requisition requisition)
+        {
+            var teachers = requisition.Items
+                .Select(r => r.Teacher)
+                .Distinct();
+
+            foreach (var teacher in teachers) TeacherMeetingsByTime[teacher] = new();
         }
 
         private void FillTimeToMeetingsDictionaries(IEnumerable<Meeting> meetings)
@@ -163,7 +190,7 @@ namespace Domain
             }
         }
 
-        private void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
+        private static void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
         {
             foreach (var meeting in notUsedMeetings)
             {
@@ -325,14 +352,14 @@ namespace Domain
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove)
         {
-            var (day, timeSlotIndex) = meetingToRemove.MeetingTime!;
-            foreach (var meetingGroup in meetingToRemove.Groups!.GetGroupParts())
+            var (day, timeSlot) = meetingToRemove.MeetingTime!;
+            foreach (var group in meetingToRemove.Groups!.GetGroupParts())
             {
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
-                    GroupMeetingsByTime[meetingGroup][weekType][day][timeSlotIndex] = null;
+                    GroupMeetingsByTime[group][weekType][day][timeSlot] = null;
 
                 var value = meetingToRemove.Weight;
-                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
+                GroupLearningPlanItemsCount.SafeDecrement(group, meetingToRemove.PlanItem, value);
             }
         }
     }
