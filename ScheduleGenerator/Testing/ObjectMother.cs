@@ -56,32 +56,32 @@ namespace Testing
         public static readonly Teacher PeTeacher = new("Физрук");
 
         public static readonly RequisitionItem OopLabRequisitionItem =
-            new(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2);
+            new(OopLab, "ФИИТ-101", "пн: 5-6 пара", OopTeacher2);
 
         public static readonly Requisition CalculusRequisition = new(new[]
         {
-            new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher,
+            new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн: 1-6 пара", CalculusTeacher,
                 1, Location.Online),
-            new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher)
+            new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн: 1-6 пара", CalculusTeacher)
         });
 
         public static readonly Requisition OsRequisition = new(new[]
         {
-            new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт, 3 пара", OsTeacher)
+            new RequisitionItem(OsLecture, "ФИИТ-101+ФИИТ-102", "вт: 3 пара", OsTeacher)
         });
 
         public static readonly Requisition FullMondayRequisition = new(new[]
         {
-            new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн 1-6 пара", CalculusTeacher),
-            new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн 3-6 пара", CalculusTeacher),
-            new RequisitionItem(OsLecture, "ФИИТ-101", "пн 4-6 пара", OsTeacher),
-            new RequisitionItem(OopLab, "ФИИТ-101", "пн 5-6 пара", OopTeacher2),
-            new RequisitionItem(OopSeminar, "ФИИТ-101", "пн 6 пара", OopTeacher2),
+            new RequisitionItem(CalculusLecture, "ФИИТ-101", "пн: 1-6 пара", CalculusTeacher),
+            new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн: 3-6 пара", CalculusTeacher),
+            new RequisitionItem(OsLecture, "ФИИТ-101", "пн: 4-6 пара", OsTeacher),
+            new RequisitionItem(OopLab, "ФИИТ-101", "пн: 5-6 пара", OopTeacher2),
+            new RequisitionItem(OopSeminar, "ФИИТ-101", "пн: 6 пара", OopTeacher2),
         });
 
         public static readonly Requisition NecessaryMeetings = new(new[]
         {
-            new RequisitionItem(PeSeminar, "ФИИТ-202 + ФИИТ-201", "ср, пт 1 пара", PeTeacher)
+            new RequisitionItem(PeSeminar, "ФИИТ-202 + ФИИТ-201", "ср, пт: 1 пара", PeTeacher)
         });
     }
 }

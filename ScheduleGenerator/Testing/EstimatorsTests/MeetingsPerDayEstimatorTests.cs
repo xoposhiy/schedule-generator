@@ -58,8 +58,8 @@ namespace Testing.EstimatorsTests
         {
             Requisition twoDaysRequisition = new(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-101", "пн 1-6 пара", OopTeacher1),
-                new RequisitionItem(OsLecture, "ФИИТ-101", "вт 4-6 пара", OsTeacher)
+                new RequisitionItem(OopLab, "ФИИТ-101", "пн: 1-6 пара", OopTeacher1),
+                new RequisitionItem(OsLecture, "ФИИТ-101", "вт: 4-6 пара", OsTeacher)
             });
             var schedule = new Schedule(twoDaysRequisition, ClassRooms);
 

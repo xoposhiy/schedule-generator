@@ -16,8 +16,8 @@ namespace Testing.ScheduleLibTests
         {
             var requisitionWithAdjacentRequirement = new Requisition(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1),
-                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1)
+                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1),
+                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1)
             });
 
             var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRooms);
@@ -37,8 +37,8 @@ namespace Testing.ScheduleLibTests
         {
             var requisitionWithAdjacentRequirement = new Requisition(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1),
-                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт, 1-2 пара\nвт-пт, 5-6 пара", OopTeacher1)
+                new RequisitionItem(OopLab, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1),
+                new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1)
             });
 
             var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRooms);
@@ -57,9 +57,9 @@ namespace Testing.ScheduleLibTests
         {
             var requisitionWithAdjacentRequirement = new Requisition(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
+                new RequisitionItem(OopLab, "ФИИТ-102", "пн: 1-6 пара\nвт: 1-2 пара\nср: 1-6 пара",
                     OopTeacher1),
-                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
+                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт: 5-6 пара\nср: 3 пара\nчт: 1-6 пара",
                     OopTeacher1)
             });
 
@@ -80,9 +80,9 @@ namespace Testing.ScheduleLibTests
         {
             var requisitionWithAdjacentRequirement = new Requisition(new[]
             {
-                new RequisitionItem(OopLab, "ФИИТ-102", "пн 1-6 пара\nвт 1-2 пара\nср 1-6 пара",
+                new RequisitionItem(OopLab, "ФИИТ-102", "пн: 1-6 пара\nвт: 1-2 пара\nср: 1-6 пара",
                     OopTeacher1),
-                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт 5-6 пара\nср 3 пара\nчт 1-6 пара",
+                new RequisitionItem(OopSeminar, "ФИИТ-102", "вт: 5-6 пара\nср: 3 пара\nчт: 1-6 пара",
                     OopTeacher1)
             });
 
