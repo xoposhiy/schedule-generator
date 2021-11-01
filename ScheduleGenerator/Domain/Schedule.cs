@@ -225,8 +225,8 @@ namespace Domain
                 // var weekTypeDegree = 3 - meeting.Weight * 2;
                 // timeChoicesCount *= weekTypeDegree;
                 //TODO: Optimize possibleRooms
-                MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count;
-                //MeetingFreedomDegree[meeting] = timeChoicesCount;
+                // MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count;
+                MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }
 
