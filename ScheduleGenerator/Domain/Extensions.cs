@@ -198,8 +198,8 @@ namespace Domain
             var requisition = new Requisition(requisitions.ToArray());
             var estimator = GetDefaultCombinedEstimator();
 
-            //return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(42), 3));
+            // return new GreedySolver(estimator, requisition, classrooms, new(42));
+            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 5));
         }
     }
 }

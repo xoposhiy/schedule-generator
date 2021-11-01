@@ -36,10 +36,10 @@ namespace Domain.Algorithms.Solvers
                     .OrderByDescending(ms => ms.score)
                     .Select(ms => ms.meeting)
                     .ToList();
-                Console.WriteLine($"Possible meetings positions: {meetingsToAdd.Count}");
-                Console.WriteLine($"Not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
-                Console.WriteLine($"Placed meetings: {currentSchedule.Meetings.Count}");
-                Console.WriteLine();
+                // Console.WriteLine($"Possible meetings positions: {meetingsToAdd.Count}");
+                // Console.WriteLine($"Not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
+                // Console.WriteLine($"Placed meetings: {currentSchedule.Meetings.Count}");
+                // Console.WriteLine();
                 if (meetingsToAdd.Count == 0)
                 {
                     var notUsedMeetings = string.Join("\n", currentSchedule.NotUsedMeetings);
