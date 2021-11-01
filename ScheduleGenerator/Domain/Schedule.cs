@@ -280,7 +280,7 @@ namespace Domain
                      || TeacherHasMeetingAlreadyAtThisTime(meeting)
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting)
                      || !IsTimeAcceptableForTeacher(meeting)
-                // || IsTeacherIsExtraForGroup(meeting)
+                || IsTeacherIsExtraForGroup(meeting)
                 );
         }
 
@@ -353,26 +353,10 @@ namespace Domain
                 if (!F.TryGetValue(meetingGroup, out var byGroup)) continue;
                 if (!byGroup.TryGetValue(meetingToAdd.Discipline, out var byDiscipline)) continue;
                 if (!byDiscipline.TryGetValue(meetingToAdd.MeetingType, out var byType)) continue;
-                foreach (var teacher in byType)
-                {
-                    if (teacher.Value > 0 && teacher.Key != meetingToAdd.Teacher)
-                        return true;
-                }
-                // return false;
-                // if (!byType.TryGetValue(meetingToAdd.Teacher, out var byTeacher)) continue;
-                // if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
+                if (byType.Any(teacher => teacher.Value > 0 && teacher.Key != meetingToAdd.Teacher))
+                    return true;
             }
             return false;
-            // var planItem = meetingToAdd.PlanItem;
-            // var additionalWeight = meetingToAdd.Weight;
-            // foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
-            // {
-            //     if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, out var byGroup)) continue;
-            //     if (!byGroup.TryGetValue(planItem, out var weight)) continue;
-            //     if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
-            // }
-            //
-            // return false;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd)
@@ -386,13 +370,14 @@ namespace Domain
                 if (!F[meetingGroup].ContainsKey(meetingToAdd.Discipline))
                     F[meetingGroup].Add(meetingToAdd.Discipline, new());
                 
-                if (!F[meetingGroup][meetingToAdd.Discipline].ContainsKey(meetingToAdd.MeetingType))
-                    F[meetingGroup][meetingToAdd.Discipline].Add(meetingToAdd.MeetingType, new());
+                // if (!F[meetingGroup][meetingToAdd.Discipline].ContainsKey(meetingToAdd.MeetingType))
+                //     F[meetingGroup][meetingToAdd.Discipline].Add(meetingToAdd.MeetingType, new());
+                //
+                // if (!F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType].ContainsKey(meetingToAdd.Teacher))
+                //     F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType].Add(meetingToAdd.Teacher, 0);
+                F[meetingGroup][meetingToAdd.Discipline].SafeIncrement(meetingToAdd.MeetingType, meetingToAdd.Teacher, value);
                 
-                if (!F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType].ContainsKey(meetingToAdd.Teacher))
-                    F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType].Add(meetingToAdd.Teacher, 0);
-                
-                F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType][meetingToAdd.Teacher] += value;
+                // F[meetingGroup][meetingToAdd.Discipline][meetingToAdd.MeetingType][meetingToAdd.Teacher] += value;
             }
         }
 
@@ -406,7 +391,6 @@ namespace Domain
 
                 var value = meetingToRemove.Weight;
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
-                
                 F[meetingGroup][meetingToRemove.Discipline][meetingToRemove.MeetingType][meetingToRemove.Teacher] -= value;
             }
         }
