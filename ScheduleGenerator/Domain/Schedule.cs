@@ -36,7 +36,7 @@ namespace Domain
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public readonly Dictionary<MeetingGroup,
-                Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTEachersByDiscipline = new();
+                Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTeachersByDiscipline = new();
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
@@ -65,7 +65,7 @@ namespace Domain
 
             foreach (var group in groups)
             {
-                GroupTEachersByDiscipline[group] = new();
+                GroupTeachersByDiscipline[group] = new();
                 GroupMeetingsByTime[group] = new();
                 GroupLearningPlanItemsCount[group] = new();
             }
@@ -351,7 +351,7 @@ namespace Domain
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                if (!GroupTEachersByDiscipline.TryGetValue(meetingGroup,
+                if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup,
                     out var byGroup)) continue;
                 if (!byGroup.TryGetValue(meetingToAdd.Discipline,
                     out var byDiscipline)) continue;
@@ -375,10 +375,10 @@ namespace Domain
                 var discipline = meetingToAdd.Discipline;
                 var meetingType = meetingToAdd.MeetingType;
                 
-                if (!GroupTEachersByDiscipline[meetingGroup].ContainsKey(discipline))
-                    GroupTEachersByDiscipline[meetingGroup].Add(discipline, new());
+                if (!GroupTeachersByDiscipline[meetingGroup].ContainsKey(discipline))
+                    GroupTeachersByDiscipline[meetingGroup].Add(discipline, new());
                 
-                GroupTEachersByDiscipline[meetingGroup][discipline]
+                GroupTeachersByDiscipline[meetingGroup][discipline]
                     .SafeIncrement(meetingType, meetingToAdd.Teacher, value);
             }
         }
@@ -393,7 +393,7 @@ namespace Domain
 
                 var value = meetingToRemove.Weight;
                 GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
-                GroupTEachersByDiscipline[meetingGroup][meetingToRemove.Discipline][meetingToRemove.MeetingType][meetingToRemove.Teacher] -= value;
+                GroupTeachersByDiscipline[meetingGroup][meetingToRemove.Discipline][meetingToRemove.MeetingType][meetingToRemove.Teacher] -= value;
             }
         }
     }
