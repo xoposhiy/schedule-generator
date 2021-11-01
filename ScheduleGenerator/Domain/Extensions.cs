@@ -199,7 +199,7 @@ namespace Domain
             var estimator = GetDefaultCombinedEstimator();
 
             // return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 5));
+            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
         }
     }
 }
