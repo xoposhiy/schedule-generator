@@ -1,5 +1,6 @@
 using System;
 using Infrastructure;
+using static Domain.Extensions;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -16,8 +17,7 @@ namespace Domain.Algorithms.Estimators
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0d;
 
-            double maxPenalty =
-                schedule.GroupMeetingsByTime.Count * 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
+            double maxPenalty = schedule.GroupMeetingsByTime.Count * MaxSpaces;
 
             // foreach (var (group, weekType, day, byDay) in schedule.GroupMeetingsByTime.Enumerate())
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)

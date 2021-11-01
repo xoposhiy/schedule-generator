@@ -173,6 +173,8 @@ namespace Domain
 
     public static class Extensions
     {
+        public const int MaxSpaces = 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
+
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
             var basic = (new FreedomDegreeEstimator(), 100);
