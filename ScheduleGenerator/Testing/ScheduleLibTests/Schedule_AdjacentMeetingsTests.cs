@@ -99,7 +99,7 @@ namespace Testing.ScheduleLibTests
         private static void AssertAdjacentTimeSlots(Meeting meeting1, Meeting meeting2)
         {
             Assert.That(meeting1.MeetingTime!.Day, Is.EqualTo(meeting2.MeetingTime!.Day));
-            var timeDelta = meeting1.MeetingTime!.TimeSlotIndex - meeting2.MeetingTime!.TimeSlotIndex;
+            var timeDelta = meeting1.MeetingTime!.TimeSlot - meeting2.MeetingTime!.TimeSlot;
             Assert.That(timeDelta, Is.EqualTo(1).Or.EqualTo(-1));
         }
     }

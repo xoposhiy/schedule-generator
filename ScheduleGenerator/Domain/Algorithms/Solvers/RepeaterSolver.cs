@@ -19,10 +19,11 @@ namespace Domain.Algorithms.Solvers
             var repeats = 1;
             while (sw.Elapsed < timeBudget)
             {
-                var solution = solver.GetSolution(timeBudget - sw.Elapsed);
-                if (solution.Score > bestSolution.Score)
-                    bestSolution = solution;
                 repeats++;
+                var solution = solver.GetSolution(timeBudget - sw.Elapsed);
+                if (solution.Schedule.NotUsedMeetings.Count > bestSolution.Schedule.NotUsedMeetings.Count) continue;
+                if (!(solution.Score > bestSolution.Score)) continue;
+                bestSolution = solution;
             }
 
             sw.Stop();

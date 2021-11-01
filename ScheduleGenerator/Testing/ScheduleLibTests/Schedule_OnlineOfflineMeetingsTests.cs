@@ -29,14 +29,14 @@ namespace Testing.ScheduleLibTests
             var lecture = schedule
                 .GetMeetingsToAdd()
                 .Where(m => m.MeetingType == MeetingType.Lecture)
-                .First(m => m.MeetingTime!.TimeSlotIndex == 1);
+                .First(m => m.MeetingTime!.TimeSlot == 1);
             schedule.AddMeeting(lecture);
             Console.Error.WriteLine(lecture);
 
             foreach (var meeting in schedule.GetMeetingsToAdd().Where(m => m.MeetingType == MeetingType.Seminar))
             {
                 Console.Error.WriteLine(meeting);
-                Assert.Greater(meeting.MeetingTime!.TimeSlotIndex - lecture.MeetingTime!.TimeSlotIndex, 1);
+                Assert.Greater(meeting.MeetingTime!.TimeSlot - lecture.MeetingTime!.TimeSlot, 1);
             }
         }
     }

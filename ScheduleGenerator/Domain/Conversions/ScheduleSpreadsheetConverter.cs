@@ -133,7 +133,7 @@ namespace Domain.Conversions
             // TODO krutovsky: create string more careful
             if (meeting.Location == Location.PE)
             {
-                var timePeriod = PeClassStarts[meeting.MeetingTime!.TimeSlotIndex - 1];
+                var timePeriod = PeClassStarts[meeting.MeetingTime!.TimeSlot - 1];
                 return $"ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {timePeriod}";
             }
 
@@ -214,7 +214,7 @@ namespace Domain.Conversions
         private static int GetStartRow(Meeting meeting)
         {
             var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartsCount * WeekTypesCount;
-            var startRow = (meeting.MeetingTime.TimeSlotIndex - 1) * WeekTypesCount + rowNumOff;
+            var startRow = (meeting.MeetingTime.TimeSlot - 1) * WeekTypesCount + rowNumOff;
             var weekOffset = meeting.WeekType == WeekType.Even ? 1 : 0;
             return startRow + TimeBarRowOffset + weekOffset;
         }

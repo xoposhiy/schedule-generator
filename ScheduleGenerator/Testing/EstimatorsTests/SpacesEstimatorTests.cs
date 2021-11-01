@@ -19,7 +19,7 @@ namespace Testing.EstimatorsTests
         {
             var schedule = new Schedule(CalculusRequisition, ClassRooms);
             schedule.AddMeeting(schedule.GetMeetingsToAdd()
-                .First(m => m.WeekType == WeekType.All && m.MeetingTime!.TimeSlotIndex == 1));
+                .First(m => m.WeekType == WeekType.All && m.MeetingTime!.TimeSlot == 1));
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();

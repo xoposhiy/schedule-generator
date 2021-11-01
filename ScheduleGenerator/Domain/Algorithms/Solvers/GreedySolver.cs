@@ -42,9 +42,6 @@ namespace Domain.Algorithms.Solvers
                 // Console.WriteLine();
                 if (meetingsToAdd.Count == 0)
                 {
-                    var notUsedMeetings = string.Join("\n", currentSchedule.NotUsedMeetings);
-                    Console.WriteLine(notUsedMeetings);
-
                     break;
                 }
 
@@ -55,10 +52,10 @@ namespace Domain.Algorithms.Solvers
 
             sw.Stop();
 
+            Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}\n");
+            Console.WriteLine($"Greedy {sw.Elapsed}\n");
+
             var currentScore = estimator.Estimate(currentSchedule);
-            Console.WriteLine();
-            Console.WriteLine($"Greedy {sw.Elapsed}");
-            Console.WriteLine();
             return new(currentSchedule, currentScore);
         }
 

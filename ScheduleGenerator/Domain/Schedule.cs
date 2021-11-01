@@ -36,7 +36,8 @@ namespace Domain
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
         public readonly Dictionary<MeetingGroup,
-                Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTeachersByDiscipline = new();
+            Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTeachersByDiscipline =
+            new();
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
@@ -176,10 +177,10 @@ namespace Domain
                     if (meetingCopy == null) continue;
                     if (meetingCopy.RequiredAdjacentMeeting != null)
                     {
-                        if (meetingTimeChoice.TimeSlotIndex < 2)
+                        if (meetingTimeChoice.TimeSlot < 2)
                             continue;
                         var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                            meetingTimeChoice.TimeSlotIndex - 1);
+                            meetingTimeChoice.TimeSlot - 1);
                         var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
                             groupsChoice,
                             linkedMeetingTimeChoice);
@@ -252,20 +253,24 @@ namespace Domain
 
         private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime)
         {
+            var meetingCopy = baseMeeting.BasicCopy();
+            meetingCopy.Groups = groupsChoice.Groups;
+            meetingCopy.MeetingTime = meetingTime;
+
             WeekType[] weekTypes = baseMeeting.WeekType == WeekType.OddOrEven
                 ? new[] {WeekType.Odd, WeekType.Even}
                 : new[] {baseMeeting.WeekType};
+
             foreach (var weekType in weekTypes)
             {
-                var meetingCopy = baseMeeting.BasicCopy();
                 meetingCopy.WeekType = weekType;
                 string? room = null;
                 if (baseMeeting.IsRoomNeeded)
+                {
                     room = FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs);
-                if (room == null && baseMeeting.IsRoomNeeded) return null;
+                    if (room == null) return null;
+                }
 
-                meetingCopy.Groups = groupsChoice.Groups;
-                meetingCopy.MeetingTime = meetingTime;
                 meetingCopy.Classroom = room;
                 if (IsMeetingValid(meetingCopy)) return meetingCopy;
             }
@@ -295,12 +300,12 @@ namespace Domain
         private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meeting)
         {
             var teacher = meeting.Teacher;
-            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            var timeSlot = meeting.MeetingTime!.TimeSlot;
             return TeacherMeetingsByTime.GetDaysByMeeting(teacher, meeting)
-                .HasMeetingsAtTime(timeSlotIndex);
+                .HasMeetingsAtTime(timeSlot);
         }
 
-        private bool IsTimeAcceptableForTeacher(Meeting meeting)
+        private static bool IsTimeAcceptableForTeacher(Meeting meeting)
         {
             var meetingTime = meeting.MeetingTime;
             return meeting.RequisitionItem.MeetingTimePriorities
@@ -309,25 +314,27 @@ namespace Domain
 
         private bool HasMeetingAlreadyAtThisTime(Meeting meeting)
         {
-            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            var timeSlot = meeting.MeetingTime!.TimeSlot;
             return meeting.Groups!.GetGroupParts()
                 .SelectMany(g => GroupMeetingsByTime.GetDaysByMeeting(g, meeting))
-                .HasMeetingsAtTime(timeSlotIndex);
+                .HasMeetingsAtTime(timeSlot);
         }
 
         private bool IsNoSpaceBetweenDifferentLocatedMeetings(Meeting meeting)
         {
-            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlot;
+            var timeSlots = new[] {-1, 1}
+                .Select(dt => timeSlotIndex + dt)
+                .Where(ts => ts is > 0 and < 7)
+                .ToList();
             var location = meeting.Location;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(group, meeting))
-                for (var i = -1; i <= 1; i += 2)
-                {
-                    var timeSlot = timeSlotIndex + i;
-                    if (timeSlot is not (> 0 and < 7)) continue;
-                    if (day[timeSlot] == null) continue;
-                    if (day[timeSlot]!.Location != location) return true;
-                }
+            foreach (var timeSlot in timeSlots)
+            {
+                if (day[timeSlot] == null) continue;
+                if (day[timeSlot]!.Location != location) return true;
+            }
 
             return false;
         }
@@ -346,7 +353,7 @@ namespace Domain
 
             return false;
         }
-        
+
         private bool IsTeacherIsExtraForGroup(Meeting meetingToAdd)
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
@@ -357,43 +364,48 @@ namespace Domain
                     out var byDiscipline)) continue;
                 if (!byDiscipline.TryGetValue(meetingToAdd.MeetingType,
                     out var byType)) continue;
-                if (byType.Any(teacher => teacher.Value > 0 
+                if (byType.Any(teacher => teacher.Value > 0
                                           && teacher.Key != meetingToAdd.Teacher))
                     return true;
             }
+
             return false;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd)
         {
+            var discipline = meetingToAdd.Discipline;
+            var meetingType = meetingToAdd.MeetingType;
+            var teacher = meetingToAdd.Teacher;
+            var value = meetingToAdd.Weight;
+            var planItem = meetingToAdd.PlanItem;
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                var value = meetingToAdd.Weight;
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
-                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, meetingToAdd.PlanItem, value);
+                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem, value);
 
-                var discipline = meetingToAdd.Discipline;
-                var meetingType = meetingToAdd.MeetingType;
-                
                 if (!GroupTeachersByDiscipline[meetingGroup].ContainsKey(discipline))
                     GroupTeachersByDiscipline[meetingGroup].Add(discipline, new());
-                
-                GroupTeachersByDiscipline[meetingGroup][discipline]
-                    .SafeIncrement(meetingType, meetingToAdd.Teacher, value);
+
+                GroupTeachersByDiscipline[meetingGroup][discipline].SafeIncrement(meetingType, teacher, value);
             }
         }
 
         private void RemoveMeetingFromGroup(Meeting meetingToRemove)
         {
             var (day, timeSlot) = meetingToRemove.MeetingTime!;
+            var discipline = meetingToRemove.Discipline;
+            var meetingType = meetingToRemove.MeetingType;
+            var teacher = meetingToRemove.Teacher;
+            var value = meetingToRemove.Weight;
+            var planItem = meetingToRemove.PlanItem;
             foreach (var meetingGroup in meetingToRemove.Groups!.GetGroupParts())
             {
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlot] = null;
 
-                var value = meetingToRemove.Weight;
-                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, meetingToRemove.PlanItem, value);
-                GroupTeachersByDiscipline[meetingGroup][meetingToRemove.Discipline][meetingToRemove.MeetingType][meetingToRemove.Teacher] -= value;
+                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, planItem, value);
+                GroupTeachersByDiscipline[meetingGroup][discipline][meetingType][teacher] -= value;
             }
         }
     }

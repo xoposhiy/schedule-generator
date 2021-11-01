@@ -42,6 +42,9 @@ namespace ScheduleCLI
             var solver = GetSolver(config, Repository);
             var (schedule, _) = solver.GetSolution(new(0, 5, 0));
 
+            var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
+            Console.WriteLine(notUsedMeetings);
+
             ScheduleSpreadsheetConverter.Build(schedule, Repository, config.Schedule);
             var logger = new Logger("Combined");
 

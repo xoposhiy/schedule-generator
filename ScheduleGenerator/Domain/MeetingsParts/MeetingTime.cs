@@ -2,11 +2,11 @@
 
 namespace Domain.MeetingsParts
 {
-    public record MeetingTime(DayOfWeek Day, int TimeSlotIndex)
+    public record MeetingTime(DayOfWeek Day, int TimeSlot)
     {
         public override string ToString()
         {
-            return $"Day: {Day}, TimeSlotIndex: {TimeSlotIndex}";
+            return $"Day: {Day}, TimeSlotIndex: {TimeSlot}";
         }
     }
 }
