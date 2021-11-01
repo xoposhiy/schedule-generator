@@ -52,7 +52,7 @@ namespace Domain.Algorithms.Solvers
 
             sw.Stop();
 
-            Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}\n");
+            Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);

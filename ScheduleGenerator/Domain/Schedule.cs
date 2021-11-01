@@ -217,10 +217,10 @@ namespace Domain
         {
             foreach (var meeting in meetings)
             {
-                var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                if (meeting.IsRoomNeeded)
-                    foreach (var roomSpec in meeting.PlanItem.RoomSpecs)
-                        possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
+                // var possibleRooms = SpecsByRoom.Keys.ToHashSet();
+                // if (meeting.IsRoomNeeded)
+                //     foreach (var roomSpec in meeting.PlanItem.RoomSpecs)
+                //         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
 
                 var timeChoicesCount = FreeTimeSlotsCountByMeeting[meeting];
                 // var weekTypeDegree = 3 - meeting.Weight * 2;
@@ -257,6 +257,13 @@ namespace Domain
             meetingCopy.Groups = groupsChoice.Groups;
             meetingCopy.MeetingTime = meetingTime;
 
+            if (baseMeeting.IsRoomNeeded)
+            {
+                var room = FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs);
+                if (room == null) return null;
+                meetingCopy.Classroom = room;
+            }
+
             WeekType[] weekTypes = baseMeeting.WeekType == WeekType.OddOrEven
                 ? new[] {WeekType.Odd, WeekType.Even}
                 : new[] {baseMeeting.WeekType};
@@ -264,14 +271,7 @@ namespace Domain
             foreach (var weekType in weekTypes)
             {
                 meetingCopy.WeekType = weekType;
-                string? room = null;
-                if (baseMeeting.IsRoomNeeded)
-                {
-                    room = FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs);
-                    if (room == null) return null;
-                }
 
-                meetingCopy.Classroom = room;
                 if (IsMeetingValid(meetingCopy)) return meetingCopy;
             }
 
@@ -280,10 +280,10 @@ namespace Domain
 
         private bool IsMeetingValid(Meeting meeting)
         {
-            return !(HasMeetingAlreadyAtThisTime(meeting)
+            return !(HasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsMeetingIsExtraForGroup(meeting)
-                     || TeacherHasMeetingAlreadyAtThisTime(meeting)
-                     || IsNoSpaceBetweenDifferentLocatedMeetings(meeting)
+                     || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
+                     || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
                      || !IsTimeAcceptableForTeacher(meeting)
                      || IsTeacherIsExtraForGroup(meeting)
                 );
