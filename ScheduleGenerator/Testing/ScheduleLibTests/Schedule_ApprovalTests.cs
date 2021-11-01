@@ -9,6 +9,7 @@ using static Domain.Extensions;
 namespace Testing.ScheduleLibTests
 {
     [TestFixture]
+    [Explicit]
     [UseReporter(typeof(DiffReporter))]
     public class Schedule_ApprovalTests
     {

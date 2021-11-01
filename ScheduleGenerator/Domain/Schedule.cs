@@ -60,7 +60,7 @@ namespace Domain
             var groups = requisition.Items
                 .SelectMany(r => r.GroupPriorities)
                 .SelectMany(g => g.GroupsChoices)
-                .SelectMany(g => g.Groups)
+                .SelectMany(g => g.Groups.GetGroupParts())
                 .Distinct();
 
             foreach (var group in groups)
