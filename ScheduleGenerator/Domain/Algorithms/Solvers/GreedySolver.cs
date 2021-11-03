@@ -48,7 +48,7 @@ namespace Domain.Algorithms.Solvers
             Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);
-            return new Solution(currentSchedule, currentScore);
+            return new (currentSchedule, currentScore);
         }
 
         private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)

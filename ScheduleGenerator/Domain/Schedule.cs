@@ -162,12 +162,16 @@ namespace Domain
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
-            if (NotUsedMeetings.Count == 0)
+            var placeableMeetings = NotUsedMeetings.ToList();
+                /*.Where(m => MeetingFreedomDegree[m] > 0)
+                .ToList();*/
+            if (placeableMeetings.Count == 0)
                 yield break;
-            var maxPriority = NotUsedMeetings.Max(m => m.Priority);
-            var priorityMeetings = NotUsedMeetings.Where(m => m.Priority == maxPriority).ToList();
+            var maxPriority = placeableMeetings.Max(m => m.Priority);
+            var priorityMeetings = placeableMeetings
+                .Where(m => m.Priority == maxPriority)
+                .ToList();
             //var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
-
 
             foreach (var baseMeeting in priorityMeetings)//.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
             {
