@@ -37,11 +37,11 @@ namespace Domain
                 }
         }
 
-        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType)
+        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType, bool safe = false)
         {
-            if (weekType == WeekType.OddOrEven)
+            if (weekType == WeekType.OddOrEven && !safe)
                 throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split");
-            if (weekType == WeekType.All)
+            if (weekType is WeekType.All or WeekType.OddOrEven)
             {
                 yield return WeekType.Even;
                 yield return WeekType.Odd;
@@ -171,8 +171,7 @@ namespace Domain
         }
     }
 
-    //TODO pe плохое назчание у класса. Что за расширения?
-    public static class Extensions
+    public static class DomainExtensions
     {
         public const int MaxSpaces = 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
 

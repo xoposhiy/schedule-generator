@@ -7,6 +7,8 @@ using Domain.MeetingsParts;
 
 namespace Domain
 {
+    public record ScheduleTime(DayOfWeek Day, int TimeSlot, WeekType WeekType);
+
     public interface IReadonlySchedule
     {
         IReadOnlySet<Meeting> GetMeetings();
@@ -34,9 +36,7 @@ namespace Domain
 
         public readonly Dictionary<Meeting, int> FreeTimeSlotsCountByMeeting = new();
 
-        // [Group][MeetingTime][WeekType] -> HashSet<Meeting>
-        // TODO krutovksy: add WeekType key
-        private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, HashSet<Meeting>>>
+        private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
             timeConcurrentMeetings = new();
 
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
@@ -99,15 +99,21 @@ namespace Domain
                     .SelectMany(g => g.GroupsChoices)
                     .SelectMany(g => g.Groups.GetGroupParts())
                     .ToHashSet();
+                var weekTypes = meeting.WeekType.GetWeekTypes(true).ToList();
                 foreach (var group in groups)
                 foreach (var time in possibleTimeChoices)
+                foreach (var weekType in weekTypes)
                 {
-                    if (!timeConcurrentMeetings[@group].ContainsKey(time)) timeConcurrentMeetings[@group][time] = new();
+                    if (!timeConcurrentMeetings[group].ContainsKey(time)) timeConcurrentMeetings[@group][time] = new();
 
-                    timeConcurrentMeetings[@group][time].Add(meeting);
+                    if (!timeConcurrentMeetings[group][time].ContainsKey(weekType))
+                        timeConcurrentMeetings[@group][time][weekType] = new();
+
+                    timeConcurrentMeetings[group][time][weekType].Add(meeting);
                 }
 
-                FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count);
+                var weekTypeDegree = meeting.WeekType.GetWeekTypes(true).Count();
+                FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count * weekTypeDegree);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
                     if (!MeetingsByTimeSlot.ContainsKey(timeChoice))
@@ -126,8 +132,10 @@ namespace Domain
         {
             var time = meeting.MeetingTime!;
             foreach (var group in meeting.Groups!.GetGroupParts())
-            foreach (var concurrentMeeting in timeConcurrentMeetings[@group][time])
+            foreach (var weekType in meeting.WeekType.GetWeekTypes(true))
+            foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType])
                 FreeTimeSlotsCountByMeeting[concurrentMeeting] += dt;
+            // TODO krutovsky: (Un)subscribe meeting from/to dict
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -192,8 +200,8 @@ namespace Domain
             var priorityMeetings = placeableMeetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
-            var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
-            Console.WriteLine($"Min Freedom: {minFreedomDegree}");
+            // var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+            // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
 
             // foreach (var baseMeeting in priorityMeetings.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
             foreach (var baseMeeting in priorityMeetings)

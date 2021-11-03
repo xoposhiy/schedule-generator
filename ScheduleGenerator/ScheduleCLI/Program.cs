@@ -5,7 +5,7 @@ using Infrastructure;
 using Ninject;
 using Ninject.Extensions.Conventions;
 using static Infrastructure.SheetConstants;
-using static Domain.Extensions;
+using static Domain.DomainExtensions;
 
 namespace ScheduleCLI
 {
@@ -20,8 +20,8 @@ namespace ScheduleCLI
 
             SheetNamesConfig[] configs =
             {
-                SpringConfig,
-                //AutumnConfig
+                // SpringConfig,
+                AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);

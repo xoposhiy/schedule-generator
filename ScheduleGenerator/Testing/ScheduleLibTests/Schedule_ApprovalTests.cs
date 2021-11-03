@@ -4,7 +4,7 @@ using ApprovalTests;
 using ApprovalTests.Reporters;
 using NUnit.Framework;
 using static Infrastructure.SheetConstants;
-using static Domain.Extensions;
+using static Domain.DomainExtensions;
 
 namespace Testing.ScheduleLibTests
 {

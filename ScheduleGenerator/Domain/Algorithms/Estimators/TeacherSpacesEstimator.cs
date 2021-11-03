@@ -1,6 +1,6 @@
 using System;
 using Infrastructure;
-using static Domain.Extensions;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -17,7 +17,6 @@ namespace Domain.Algorithms.Estimators
 
             double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxSpaces;
 
-            // foreach (var (teacher, weekType, day, byDay) in schedule.TeacherMeetingsByTime.Enumerate())
             foreach (var (teacher, byGroup) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byGroup)
             foreach (var (day, byDay) in byWeekType)
