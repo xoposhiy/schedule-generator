@@ -25,8 +25,6 @@ namespace ScheduleCLI
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
-
-            // TODO все Estimators: нормализовать score во всех estimator-ах, чтобы масштаб чисел на выходе был схожий.
         }
 
         // ReSharper disable once UnusedMember.Local

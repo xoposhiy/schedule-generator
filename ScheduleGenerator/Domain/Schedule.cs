@@ -31,7 +31,13 @@ namespace Domain
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
 
         public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
+
         public readonly Dictionary<Meeting, int> FreeTimeSlotsCountByMeeting = new();
+
+        // [Group][MeetingTime][WeekType] -> HashSet<Meeting>
+        // TODO krutovksy: add WeekType key
+        private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, HashSet<Meeting>>>
+            timeConcurrentMeetings = new();
 
         public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
 
@@ -41,6 +47,9 @@ namespace Domain
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
+            FillTeachersKeys(requisition);
+            FillGroupsKeys(requisition);
+
             SpecsByRoom = specsByRoom;
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
@@ -51,9 +60,6 @@ namespace Domain
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
 
             FillMeetingFreedomDegree(NotUsedMeetings);
-
-            FillTeachersKeys(requisition);
-            FillGroupsKeys(requisition);
         }
 
         private void FillGroupsKeys(Requisition requisition)
@@ -69,6 +75,7 @@ namespace Domain
                 GroupTeachersByDiscipline[group] = new();
                 GroupMeetingsByTime[group] = new();
                 GroupLearningPlanItemsCount[group] = new();
+                timeConcurrentMeetings[group] = new();
             }
         }
 
@@ -87,7 +94,19 @@ namespace Domain
             {
                 var possibleTimeChoices = meeting.RequisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
-                    .ToList();
+                    .ToHashSet();
+                var groups = meeting.RequisitionItem.GroupPriorities
+                    .SelectMany(g => g.GroupsChoices)
+                    .SelectMany(g => g.Groups.GetGroupParts())
+                    .ToHashSet();
+                foreach (var group in groups)
+                foreach (var time in possibleTimeChoices)
+                {
+                    if (!timeConcurrentMeetings[@group].ContainsKey(time)) timeConcurrentMeetings[@group][time] = new();
+
+                    timeConcurrentMeetings[@group][time].Add(meeting);
+                }
+
                 FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
@@ -103,10 +122,12 @@ namespace Domain
             return Meetings;
         }
 
-        private void UpdateTimeToMeetingsDictionaries(MeetingTime time, int dt)
+        private void UpdateTimeToMeetingsDictionaries(Meeting meeting, int dt)
         {
-            foreach (var meeting in MeetingsByTimeSlot[time]) 
-                FreeTimeSlotsCountByMeeting[meeting] += dt;
+            var time = meeting.MeetingTime!;
+            foreach (var group in meeting.Groups!.GetGroupParts())
+            foreach (var concurrentMeeting in timeConcurrentMeetings[@group][time])
+                FreeTimeSlotsCountByMeeting[concurrentMeeting] += dt;
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -127,7 +148,7 @@ namespace Domain
 
                 if (isSure)
                 {
-                    UpdateTimeToMeetingsDictionaries(meetingTime, -1);
+                    UpdateTimeToMeetingsDictionaries(meetingToAdd, -1);
                 }
             }
 
@@ -153,7 +174,7 @@ namespace Domain
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
                 if (isSure)
                 {
-                    UpdateTimeToMeetingsDictionaries(meetingTime, 1);
+                    UpdateTimeToMeetingsDictionaries(meetingToRemove, 1);
                 }
             }
 
@@ -162,18 +183,20 @@ namespace Domain
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
-            var placeableMeetings = NotUsedMeetings.ToList();
-                /*.Where(m => MeetingFreedomDegree[m] > 0)
-                .ToList();*/
+            var placeableMeetings = NotUsedMeetings
+                // .Where(m => MeetingFreedomDegree[m] > 0)
+                .ToList();
             if (placeableMeetings.Count == 0)
                 yield break;
             var maxPriority = placeableMeetings.Max(m => m.Priority);
             var priorityMeetings = placeableMeetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
-            //var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+            var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+            Console.WriteLine($"Min Freedom: {minFreedomDegree}");
 
-            foreach (var baseMeeting in priorityMeetings)//.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
+            // foreach (var baseMeeting in priorityMeetings.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
+            foreach (var baseMeeting in priorityMeetings)
             {
                 var requisitionItem = baseMeeting.RequisitionItem;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
@@ -181,7 +204,7 @@ namespace Domain
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-                
+
                 foreach (var groupsChoice in possibleGroupsChoices)
                 foreach (var meetingTimeChoice in possibleTimeChoices)
                 {
