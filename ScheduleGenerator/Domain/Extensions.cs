@@ -171,6 +171,7 @@ namespace Domain
         }
     }
 
+    //TODO pe плохое назчание у класса. Что за расширения?
     public static class Extensions
     {
         public const int MaxSpaces = 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
@@ -198,7 +199,7 @@ namespace Domain
             var estimator = GetDefaultCombinedEstimator();
 
             // return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
+            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3, true));
         }
     }
 }

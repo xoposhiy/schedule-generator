@@ -16,24 +16,32 @@ namespace Domain.Algorithms.Solvers
         {
             var sw = Stopwatch.StartNew();
             Solution bestSolution = solver.GetSolution(timeBudget - sw.Elapsed);
-            var repeats = 1;
+            var iteration = 1;
+            var improvementsCount = 0;
+            var bestIteration = 0;
             while (sw.Elapsed < timeBudget)
             {
-                repeats++;
+                iteration++;
                 var solution = solver.GetSolution(timeBudget - sw.Elapsed);
-                if (solution.Schedule.NotUsedMeetings.Count > bestSolution.Schedule.NotUsedMeetings.Count) continue;
-                if (solution.Score < bestSolution.Score && solution.Schedule.NotUsedMeetings.Count == bestSolution.Schedule.NotUsedMeetings.Count) continue;
-                bestSolution = solution;
+                if (solution.Schedule.NotUsedMeetings.Count < bestSolution.Schedule.NotUsedMeetings.Count
+                    || solution.Schedule.NotUsedMeetings.Count == bestSolution.Schedule.NotUsedMeetings.Count &&
+                    solution.Score > bestSolution.Score)
+                {
+                    bestSolution = solution;
+                    improvementsCount++;
+                    bestIteration = iteration;
+                    Console.WriteLine($"{improvementsCount} of {iteration}. Not Placed: {solution.Schedule.NotUsedMeetings.Count} score: {solution.Score}");
+                }
             }
 
             sw.Stop();
 
-            Console.WriteLine(GetFinalMessage(sw, repeats, bestSolution));
+            Console.WriteLine(GetFinalMessage(sw, iteration, bestSolution, bestIteration, improvementsCount));
 
             return bestSolution;
         }
 
-        private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution)
+        private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution, int bestIteration, int improvementsCount)
         {
             var (schedule, score) = bestSolution;
             var lines = new[]
@@ -41,6 +49,8 @@ namespace Domain.Algorithms.Solvers
                 "",
                 $"Repeater: {sw.Elapsed}",
                 $"Total repeats: {repeats}",
+                $"Improvements count: {improvementsCount}",
+                $"Best solution iteration: {bestIteration}",
                 $"Mean elapsed: {sw.Elapsed / repeats}",
                 "",
                 $"Not placed meetings: {schedule.NotUsedMeetings.Count}",
