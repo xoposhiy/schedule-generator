@@ -87,7 +87,7 @@ namespace Domain
             {
                 var possibleTimeChoices = meeting.RequisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
-                    .ToHashSet();
+                    .ToList();
                 FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
@@ -105,7 +105,8 @@ namespace Domain
 
         private void UpdateTimeToMeetingsDictionaries(MeetingTime time, int dt)
         {
-            foreach (var meeting in MeetingsByTimeSlot[time]) FreeTimeSlotsCountByMeeting[meeting] += dt;
+            foreach (var meeting in MeetingsByTimeSlot[time]) 
+                FreeTimeSlotsCountByMeeting[meeting] += dt;
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -161,19 +162,26 @@ namespace Domain
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
-            foreach (var meeting in NotUsedMeetings.ToList())
+            if (NotUsedMeetings.Count == 0)
+                yield break;
+            var maxPriority = NotUsedMeetings.Max(m => m.Priority);
+            var priorityMeetings = NotUsedMeetings.Where(m => m.Priority == maxPriority).ToList();
+            //var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+
+
+            foreach (var baseMeeting in priorityMeetings)//.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
             {
-                var requisitionItem = meeting.RequisitionItem;
+                var requisitionItem = baseMeeting.RequisitionItem;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
                     .SelectMany(p => p.GroupsChoices);
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
-
+                
                 foreach (var groupsChoice in possibleGroupsChoices)
                 foreach (var meetingTimeChoice in possibleTimeChoices)
                 {
-                    var meetingCopy = TryCreateFilledMeeting(meeting, groupsChoice, meetingTimeChoice);
+                    var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice);
                     if (meetingCopy == null) continue;
                     if (meetingCopy.RequiredAdjacentMeeting != null)
                     {

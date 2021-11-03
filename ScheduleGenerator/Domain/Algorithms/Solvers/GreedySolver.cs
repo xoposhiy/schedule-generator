@@ -50,8 +50,6 @@ namespace Domain.Algorithms.Solvers
                 currentSchedule.AddMeeting(meetingToAdd, true);
             }
 
-            sw.Stop();
-
             Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             Console.WriteLine($"Greedy {sw.Elapsed}\n");
 

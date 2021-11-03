@@ -22,7 +22,7 @@ namespace Domain.Algorithms.Solvers
                 repeats++;
                 var solution = solver.GetSolution(timeBudget - sw.Elapsed);
                 if (solution.Schedule.NotUsedMeetings.Count > bestSolution.Schedule.NotUsedMeetings.Count) continue;
-                if (!(solution.Score > bestSolution.Score)) continue;
+                if (solution.Score < bestSolution.Score && solution.Schedule.NotUsedMeetings.Count == bestSolution.Schedule.NotUsedMeetings.Count) continue;
                 bestSolution = solution;
             }
 
