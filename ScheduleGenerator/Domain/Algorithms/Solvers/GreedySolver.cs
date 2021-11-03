@@ -9,20 +9,23 @@ namespace Domain.Algorithms.Solvers
 {
     public class GreedySolver : ISolver
     {
-        private readonly IEstimator estimator;
-        private readonly Requisition requisition;
-        private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
-        private readonly Random random;
         private readonly int choiceCount;
+        private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
+        private readonly IEstimator estimator;
+        private readonly Random random;
+        private readonly Requisition requisition;
+        private readonly bool selectWithBestScoreOnly;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
-            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random, int choiceCount = 1)
+            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random, int choiceCount = 1,
+            bool selectWithBestScoreOnly = true)
         {
             this.estimator = estimator;
             this.requisition = requisition;
             this.classroomsWithSpecs = classroomsWithSpecs;
             this.random = random;
             this.choiceCount = choiceCount;
+            this.selectWithBestScoreOnly = selectWithBestScoreOnly;
         }
 
         public Solution GetSolution(TimeSpan timeBudget)
@@ -34,20 +37,11 @@ namespace Domain.Algorithms.Solvers
                 var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
                     .Select(meeting => (meeting, score: EstimateResult(currentSchedule, meeting)))
                     .OrderByDescending(ms => ms.score)
-                    .Select(ms => ms.meeting)
                     .ToList();
-                // Console.WriteLine($"Possible meetings positions: {meetingsToAdd.Count}");
-                // Console.WriteLine($"Not placed meetings: {currentSchedule.NotUsedMeetings.Count}");
-                // Console.WriteLine($"Placed meetings: {currentSchedule.Meetings.Count}");
-                // Console.WriteLine();
-                if (meetingsToAdd.Count == 0)
-                {
-                    break;
-                }
+                if (meetingsToAdd.Count == 0) break;
 
-                var maxIndex = Math.Min(choiceCount, meetingsToAdd.Count);
-                var meetingToAdd = meetingsToAdd[random.Next(maxIndex)];
-                currentSchedule.AddMeeting(meetingToAdd, true);
+                var nextMeeting = SelectNextMeeting(meetingsToAdd);
+                currentSchedule.AddMeeting(nextMeeting, true);
             }
 
             sw.Stop();
@@ -56,7 +50,23 @@ namespace Domain.Algorithms.Solvers
             Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);
-            return new(currentSchedule, currentScore);
+            return new Solution(currentSchedule, currentScore);
+        }
+
+        private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
+        {
+            if (selectWithBestScoreOnly)
+            {
+                var bestScore = orderedMeetings[0].score;
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                var candidates = orderedMeetings.Where(m => m.score == bestScore).ToList();
+                return candidates[random.Next(candidates.Count)].meeting;
+            }
+            else
+            {
+                var maxIndex = Math.Min(choiceCount, orderedMeetings.Count);
+                return orderedMeetings[random.Next(maxIndex)].meeting;
+            }
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting)
