@@ -31,6 +31,7 @@ namespace Testing.EstimatorsTests
             Assert.Zero(score);
         }
 
+        [Explicit]
         [Test]
         public void ScoreDynamicWhenPlacingMeetings()
         {

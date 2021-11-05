@@ -95,7 +95,11 @@ namespace Domain
                     .SelectMany(g => g.GroupsChoices)
                     .SelectMany(g => g.Groups.GetGroupParts())
                     .ToHashSet();
-                var weekTypes = meeting.WeekType.GetWeekTypes(true).ToList();
+
+                WeekType[] weekTypes = meeting.WeekType is WeekType.All or WeekType.OddOrEven
+                    ? new[] {WeekType.Odd, WeekType.Even}
+                    : new[] {meeting.WeekType};
+
                 foreach (var group in groups)
                 foreach (var time in possibleTimeChoices)
                 foreach (var weekType in weekTypes)
@@ -103,8 +107,10 @@ namespace Domain
                     timeConcurrentMeetings.SafeAdd(group, time, weekType, meeting);
                 }
 
-                var weekTypeDegree = weekTypes.Count;
-                MeetingFreedomDegree.Add(meeting, possibleTimeChoices.Count * weekTypeDegree);
+                var weekTypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
+                var groupDegree = meeting.RequisitionItem.GroupPriorities.Sum(g => g.GroupsChoices.Length);
+                MeetingFreedomDegree.Add(meeting, possibleTimeChoices.Count * weekTypeDegree * groupDegree);
+
                 foreach (var timeChoice in possibleTimeChoices)
                 {
                     MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
@@ -122,9 +128,40 @@ namespace Domain
             var time = meeting.MeetingTime!;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
-            foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType])
-                MeetingFreedomDegree[concurrentMeeting] += dt;
+            foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType].ToList())
+                if (dt == -1)
+                {
+                    UnsubscribeMeetingFromCell(concurrentMeeting, @group, time, weekType);
+                }
+                else
+                {
+                    Console.WriteLine("Subscription needed");
+                    throw new NotImplementedException("Subscription needed");
+                    MeetingFreedomDegree[concurrentMeeting] += dt;
+                }
             // TODO krutovsky: (Un)subscribe meeting from/to dict
+        }
+
+        private void UnsubscribeMeetingFromCell(Meeting collidingMeeting, MeetingGroup meetingGroup, MeetingTime time,
+            WeekType weekType)
+        {
+            WeekType[] weekTypes = collidingMeeting.WeekType == WeekType.All
+                ? new[] {WeekType.Odd, WeekType.Even}
+                : new[] {weekType};
+            var groupsChoices = collidingMeeting.RequisitionItem.GroupPriorities
+                .SelectMany(g => g.GroupsChoices)
+                .Where(g => g.GetGroupParts().Contains(meetingGroup));
+
+            foreach (var groupsChoice in groupsChoices)
+            {
+                var removedAny = false;
+
+                foreach (var group in groupsChoice.GetGroupParts())
+                foreach (var week in weekTypes)
+                    removedAny |= timeConcurrentMeetings[@group][time][week].Remove(collidingMeeting);
+
+                if (removedAny) MeetingFreedomDegree[collidingMeeting] -= 1;
+            }
         }
 
         public void AddMeeting(Meeting meeting, bool isSure = false)
@@ -188,8 +225,8 @@ namespace Domain
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
             Console.WriteLine($"Min Freedom: {minFreedomDegree}");
 
-            // foreach (var baseMeeting in priorityMeetings.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
-            foreach (var baseMeeting in priorityMeetings)
+            foreach (var baseMeeting in priorityMeetings.Where(m => MeetingFreedomDegree[m] == minFreedomDegree))
+                // foreach (var baseMeeting in priorityMeetings)
             {
                 var requisitionItem = baseMeeting.RequisitionItem;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
