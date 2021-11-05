@@ -90,6 +90,34 @@ namespace Domain
                 dict.Add(key, new() {value});
         }
 
+        public static bool SafeAdd<TKey1, TValue>(this Dictionary<TKey1, HashSet<TValue>> dictionary, TKey1 key1,
+            TValue value)
+            where TKey1 : notnull
+        {
+            if (!dictionary.ContainsKey(key1)) dictionary.Add(key1, new());
+
+            var hashSet = dictionary[key1];
+            return hashSet.Add(value);
+        }
+
+        public static void SafeAdd<TKey1, TKey2, TKey3, TValue>(
+            this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, HashSet<TValue>>>> dictionary,
+            TKey1 key1, TKey2 key2, TKey3 key3, TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+            where TKey3 : notnull
+        {
+            if (!dictionary.ContainsKey(key1)) dictionary.Add(key1, new());
+
+            var byKey1 = dictionary[key1];
+
+            if (!byKey1.ContainsKey(key2)) byKey1.Add(key2, new());
+
+            var byKey2 = byKey1[key2];
+
+            byKey2.SafeAdd(key3, value);
+        }
+
         public static void SafeAdd<TKey1>(
             this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dict,
             TKey1 key1, Meeting meeting)
@@ -198,7 +226,7 @@ namespace Domain
             var estimator = GetDefaultCombinedEstimator();
 
             // return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3, true));
+            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
         }
     }
 }

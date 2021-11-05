@@ -20,7 +20,7 @@ namespace ScheduleCLI
 
             SheetNamesConfig[] configs =
             {
-                // SpringConfig,
+                SpringConfig,
                 AutumnConfig
             };
 

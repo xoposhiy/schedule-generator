@@ -104,21 +104,14 @@ namespace Domain
                 foreach (var time in possibleTimeChoices)
                 foreach (var weekType in weekTypes)
                 {
-                    if (!timeConcurrentMeetings[group].ContainsKey(time)) timeConcurrentMeetings[@group][time] = new();
-
-                    if (!timeConcurrentMeetings[group][time].ContainsKey(weekType))
-                        timeConcurrentMeetings[@group][time][weekType] = new();
-
-                    timeConcurrentMeetings[group][time][weekType].Add(meeting);
+                    timeConcurrentMeetings.SafeAdd(group, time, weekType, meeting);
                 }
 
-                var weekTypeDegree = meeting.WeekType.GetWeekTypes(true).Count();
+                var weekTypeDegree = weekTypes.Count;
                 FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count * weekTypeDegree);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
-                    if (!MeetingsByTimeSlot.ContainsKey(timeChoice))
-                        MeetingsByTimeSlot[timeChoice] = new();
-                    MeetingsByTimeSlot[timeChoice].Add(meeting);
+                    MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
                 }
             }
         }
@@ -132,7 +125,7 @@ namespace Domain
         {
             var time = meeting.MeetingTime!;
             foreach (var group in meeting.Groups!.GetGroupParts())
-            foreach (var weekType in meeting.WeekType.GetWeekTypes(true))
+            foreach (var weekType in meeting.WeekType.GetWeekTypes())
             foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType])
                 FreeTimeSlotsCountByMeeting[concurrentMeeting] += dt;
             // TODO krutovsky: (Un)subscribe meeting from/to dict
@@ -200,8 +193,8 @@ namespace Domain
             var priorityMeetings = placeableMeetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
-            // var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
-            // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
+            var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+            Console.WriteLine($"Min Freedom: {minFreedomDegree}");
 
             // foreach (var baseMeeting in priorityMeetings.Where(m=>MeetingFreedomDegree[m]==minFreedomDegree))
             foreach (var baseMeeting in priorityMeetings)
