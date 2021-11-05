@@ -18,6 +18,7 @@ namespace Domain
     {
         public readonly HashSet<Meeting> Meetings = new();
         public readonly HashSet<Meeting> NotUsedMeetings;
+        public readonly HashSet<Meeting> NonPlaceableMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
 
@@ -131,13 +132,13 @@ namespace Domain
             foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType].ToList())
                 if (dt == -1)
                 {
-                    UnsubscribeMeetingFromCell(concurrentMeeting, @group, time, weekType);
+                    UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
                 }
                 else
                 {
                     Console.WriteLine("Subscription needed");
                     throw new NotImplementedException("Subscription needed");
-                    MeetingFreedomDegree[concurrentMeeting] += dt;
+                    // MeetingFreedomDegree[concurrentMeeting] += dt;
                 }
             // TODO krutovsky: (Un)subscribe meeting from/to dict
         }
@@ -158,7 +159,7 @@ namespace Domain
 
                 foreach (var group in groupsChoice.GetGroupParts())
                 foreach (var week in weekTypes)
-                    removedAny |= timeConcurrentMeetings[@group][time][week].Remove(collidingMeeting);
+                    removedAny |= timeConcurrentMeetings[group][time][week].Remove(collidingMeeting);
 
                 if (removedAny) MeetingFreedomDegree[collidingMeeting] -= 1;
             }
@@ -214,6 +215,7 @@ namespace Domain
         public IEnumerable<Meeting> GetMeetingsToAdd()
         {
             var placeableMeetings = NotUsedMeetings
+                .Where(m => !NonPlaceableMeetings.Contains(m))
                 // .Where(m => MeetingFreedomDegree[m] > 0)
                 .ToList();
             if (placeableMeetings.Count == 0)
@@ -223,10 +225,11 @@ namespace Domain
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
-            Console.WriteLine($"Min Freedom: {minFreedomDegree}");
+            // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
+            var minFreedomMeetings = priorityMeetings.Where(m => MeetingFreedomDegree[m] == minFreedomDegree).ToList();
 
-            foreach (var baseMeeting in priorityMeetings.Where(m => MeetingFreedomDegree[m] == minFreedomDegree))
-                // foreach (var baseMeeting in priorityMeetings)
+            var placeableMeetingsCount = 0;
+            foreach (var baseMeeting in minFreedomMeetings)
             {
                 var requisitionItem = baseMeeting.RequisitionItem;
                 var possibleGroupsChoices = requisitionItem.GroupPriorities
@@ -234,6 +237,8 @@ namespace Domain
                 var possibleTimeChoices = requisitionItem.MeetingTimePriorities
                     .SelectMany(p => p.MeetingTimeChoices)
                     .ToHashSet();
+
+                var meetingVariants = 0;
 
                 foreach (var groupsChoice in possibleGroupsChoices)
                 foreach (var meetingTimeChoice in possibleTimeChoices)
@@ -255,9 +260,18 @@ namespace Domain
                         linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
                     }
 
+                    meetingVariants++;
+                    placeableMeetingsCount++;
                     yield return meetingCopy;
                 }
+
+                if (meetingVariants == 0)
+                    NonPlaceableMeetings.Add(baseMeeting);
+                // NotUsedMeetings.Remove(baseMeeting);
             }
+
+            if (placeableMeetingsCount != 0) yield break;
+            foreach (var meeting in GetMeetingsToAdd()) yield return meeting;
         }
 
         private static void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)

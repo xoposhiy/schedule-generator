@@ -205,13 +205,12 @@ namespace Domain
 
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
-            var basic = (new FreedomDegreeEstimator(), 100);
             var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
             var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
             var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var teacherPriorityEstimator = (new TeacherPriorityEstimator(), 1);
-            var estimator = new CombinedEstimator(basic, groupsSpacesEstimator,
+            var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator);
             return estimator;
         }
