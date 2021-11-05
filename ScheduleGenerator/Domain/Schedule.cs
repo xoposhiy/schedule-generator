@@ -105,6 +105,8 @@ namespace Domain
                 foreach (var time in possibleTimeChoices)
                 foreach (var weekType in weekTypes)
                 {
+                    // check whole place free
+                    // subscribe for whole place
                     timeConcurrentMeetings.SafeAdd(group, time, weekType, meeting);
                 }
 
@@ -124,23 +126,24 @@ namespace Domain
             return Meetings;
         }
 
-        private void UpdateTimeToMeetingsDictionaries(Meeting meeting, int dt)
+        private void UnsubscribeCollidingMeetings(Meeting meeting)
         {
             var time = meeting.MeetingTime!;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType].ToList())
-                if (dt == -1)
-                {
-                    UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
-                }
-                else
-                {
-                    Console.WriteLine("Subscription needed");
-                    throw new NotImplementedException("Subscription needed");
-                    // MeetingFreedomDegree[concurrentMeeting] += dt;
-                }
-            // TODO krutovsky: (Un)subscribe meeting from/to dict
+                UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
+        }
+
+        private void ResetMeetingsSubscriptions()
+        {
+            // var busyCells = GetAllBusyCells();
+            // if (timeConcurrentMeetings[group][time][weekType].Count == 0) <- Placed
+
+            throw new NotImplementedException("Subscription needed");
+
+            // TODO krutovsky: Subscribe meeting to dict
+            // Copy paste FillTimeToMeetingsDictionaries
         }
 
         private void UnsubscribeMeetingFromCell(Meeting collidingMeeting, MeetingGroup meetingGroup, MeetingTime time,
@@ -183,7 +186,7 @@ namespace Domain
 
                 if (isSure)
                 {
-                    UpdateTimeToMeetingsDictionaries(meetingToAdd, -1);
+                    UnsubscribeCollidingMeetings(meetingToAdd);
                 }
             }
         }
@@ -207,7 +210,7 @@ namespace Domain
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
                 if (isSure)
                 {
-                    UpdateTimeToMeetingsDictionaries(meetingToRemove, 1);
+                    ResetMeetingsSubscriptions();
                 }
             }
         }
