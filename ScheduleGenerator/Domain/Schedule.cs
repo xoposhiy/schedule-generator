@@ -34,8 +34,6 @@ namespace Domain
 
         public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
 
-        public readonly Dictionary<Meeting, int> FreeTimeSlotsCountByMeeting = new();
-
         private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
             timeConcurrentMeetings = new();
 
@@ -58,8 +56,6 @@ namespace Domain
                 .ToHashSet();
             LinkBasicMeetings(NotUsedMeetings);
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
-
-            FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
         private void FillGroupsKeys(Requisition requisition)
@@ -108,7 +104,7 @@ namespace Domain
                 }
 
                 var weekTypeDegree = weekTypes.Count;
-                FreeTimeSlotsCountByMeeting.Add(meeting, possibleTimeChoices.Count * weekTypeDegree);
+                MeetingFreedomDegree.Add(meeting, possibleTimeChoices.Count * weekTypeDegree);
                 foreach (var timeChoice in possibleTimeChoices)
                 {
                     MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
@@ -127,7 +123,7 @@ namespace Domain
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType])
-                FreeTimeSlotsCountByMeeting[concurrentMeeting] += dt;
+                MeetingFreedomDegree[concurrentMeeting] += dt;
             // TODO krutovsky: (Un)subscribe meeting from/to dict
         }
 
@@ -152,8 +148,6 @@ namespace Domain
                     UpdateTimeToMeetingsDictionaries(meetingToAdd, -1);
                 }
             }
-
-            if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
         public void RemoveMeeting(Meeting meeting, bool isSure = false)
@@ -178,8 +172,6 @@ namespace Domain
                     UpdateTimeToMeetingsDictionaries(meetingToRemove, 1);
                 }
             }
-
-            if (isSure) FillMeetingFreedomDegree(NotUsedMeetings);
         }
 
         public IEnumerable<Meeting> GetMeetingsToAdd()
@@ -246,24 +238,6 @@ namespace Domain
                     throw new ArgumentException(meeting.ToString());
                 meeting.RequiredAdjacentMeeting = linkedMeeting;
                 linkedMeeting.RequiredAdjacentMeeting = meeting;
-            }
-        }
-
-        private void FillMeetingFreedomDegree(IEnumerable<Meeting> meetings)
-        {
-            foreach (var meeting in meetings)
-            {
-                // var possibleRooms = SpecsByRoom.Keys.ToHashSet();
-                // if (meeting.IsRoomNeeded)
-                //     foreach (var roomSpec in meeting.PlanItem.RoomSpecs)
-                //         possibleRooms.IntersectWith(RoomsBySpec[roomSpec]);
-
-                var timeChoicesCount = FreeTimeSlotsCountByMeeting[meeting];
-                // var weekTypeDegree = 3 - meeting.Weight * 2;
-                // timeChoicesCount *= weekTypeDegree;
-                //TODO: Optimize possibleRooms
-                // MeetingFreedomDegree[meeting] = timeChoicesCount * possibleRooms.Count;
-                MeetingFreedomDegree[meeting] = timeChoicesCount;
             }
         }
 
