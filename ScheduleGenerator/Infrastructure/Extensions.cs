@@ -31,5 +31,23 @@ namespace Infrastructure
             cellData.UserEnteredFormat.TextFormat.Bold = true;
             return cellData;
         }
+
+        public static CellData CommonBoolCellData(bool value = false)
+        {
+            return new()
+            {
+                UserEnteredValue = new()
+                {
+                    BoolValue = value
+                },
+                DataValidation = new()
+                {
+                    Condition = new()
+                    {
+                        Type = "BOOLEAN"
+                    }
+                }
+            };
+        }
     }
 }

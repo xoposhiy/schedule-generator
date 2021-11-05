@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
-using Domain.MeetingsParts;
 using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 using static Infrastructure.Extensions;
@@ -235,7 +234,10 @@ namespace Domain.Conversions
 
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
-            var rows = schedule.GetMeetings().Select(meeting => GetRowMeetingRaw(meeting)).ToList();
+            var rows = schedule.GetMeetings()
+                .OrderBy(m => (m.MeetingTime!.Day, m.MeetingTime!.TimeSlot))
+                .Select(GetRowMeetingRaw)
+                .ToList();
 
             repository
                 .ModifySpreadSheet(sheetName)
@@ -245,15 +247,60 @@ namespace Domain.Conversions
 
         private static List<CellData> GetRowMeetingRaw(Meeting meeting)
         {
+            var groups = meeting.Groups!.Select(g => g.GroupName[^1]).Distinct();
+            var groupParts = meeting.Groups!.Select(g => GroupPartToString(g.GroupPart)).Distinct();
             return new()
             {
-                CommonCellData(meeting.MeetingTime!.Day.ToString()),
+                CommonCellData(DayToString(meeting.MeetingTime!.Day)),
                 CommonCellData(meeting.MeetingTime.TimeSlot.ToString()),
                 CommonCellData(meeting.Discipline.Name),
-                CommonCellData(string.Join<MeetingGroup>("\n", meeting.Groups!)),
-                CommonCellData(""),
+                CommonCellData(string.Join(",", groups)),
+                CommonCellData(string.Join(",", groupParts)),
                 CommonCellData(meeting.Classroom ?? ""),
-                CommonCellData(meeting.WeekType.ToString())
+                CommonCellData(meeting.Teacher.Name),
+                CommonCellData(WeekToString(meeting.WeekType)),
+                CommonCellData(""),
+                CommonCellData(""),
+                CommonBoolCellData(),
+                CommonBoolCellData(),
+                CommonBoolCellData(true)
+            };
+        }
+
+        private static string DayToString(DayOfWeek dayOfWeek)
+        {
+            return dayOfWeek switch
+            {
+                DayOfWeek.Monday => "Понедельник",
+                DayOfWeek.Tuesday => "Вторник",
+                DayOfWeek.Wednesday => "Среда",
+                DayOfWeek.Thursday => "Четверг",
+                DayOfWeek.Friday => "Пятница",
+                DayOfWeek.Sunday => "Суббота",
+                DayOfWeek.Saturday => "Воскресенье",
+                _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
+            };
+        }
+
+        private static string GroupPartToString(GroupPart groupPart)
+        {
+            return groupPart switch
+            {
+                GroupPart.FullGroup => "",
+                GroupPart.Part1 => "1",
+                GroupPart.Part2 => "2",
+                _ => throw new ArgumentOutOfRangeException(nameof(groupPart), groupPart, null)
+            };
+        }
+
+        private static string WeekToString(WeekType weekType)
+        {
+            return weekType switch
+            {
+                WeekType.All => "",
+                WeekType.Even => "четная",
+                WeekType.Odd => "нечетная",
+                _ => throw new ArgumentOutOfRangeException(nameof(weekType), weekType, "Untranslatable")
             };
         }
     }
