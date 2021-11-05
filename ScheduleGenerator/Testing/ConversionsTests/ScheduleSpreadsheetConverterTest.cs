@@ -25,7 +25,7 @@ namespace Testing.ConversionsTests
 
             Repository.ClearCellRange(SheetName, 0, 0, 100, 100);
 
-            ScheduleSpreadsheetConverter.Build(testSchedule, Repository, SheetName);
+            ScheduleSpreadsheetConverter.BuildSchedule(testSchedule, Repository, SheetName);
 
             //TODO: проверок бы добавить
         }

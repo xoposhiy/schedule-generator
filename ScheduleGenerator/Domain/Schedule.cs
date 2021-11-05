@@ -4,10 +4,13 @@ using System.Linq;
 using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using static Domain.DomainExtensions;
 
 namespace Domain
 {
     public record ScheduleTime(DayOfWeek Day, int TimeSlot, WeekType WeekType);
+
+    public record ScheduleDay(DayOfWeek Day, WeekType Week);
 
     public interface IReadonlySchedule
     {
@@ -105,8 +108,6 @@ namespace Domain
                 foreach (var time in possibleTimeChoices)
                 foreach (var weekType in weekTypes)
                 {
-                    // check whole place free
-                    // subscribe for whole place
                     timeConcurrentMeetings.SafeAdd(group, time, weekType, meeting);
                 }
 
@@ -229,7 +230,9 @@ namespace Domain
                 .ToList();
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
             // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
-            var minFreedomMeetings = priorityMeetings.Where(m => MeetingFreedomDegree[m] == minFreedomDegree).ToList();
+            var minFreedomMeetings = priorityMeetings
+                .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
+                .ToList();
 
             var placeableMeetingsCount = 0;
             foreach (var baseMeeting in minFreedomMeetings)
@@ -259,8 +262,7 @@ namespace Domain
                             linkedMeetingTimeChoice);
 
                         if (linkedMeeting == null) continue;
-                        meetingCopy.RequiredAdjacentMeeting = linkedMeeting;
-                        linkedMeeting.RequiredAdjacentMeeting = meetingCopy;
+                        LinkMeetings(meetingCopy, linkedMeeting);
                     }
 
                     meetingVariants++;
@@ -290,8 +292,7 @@ namespace Domain
                                          && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
                     throw new ArgumentException(meeting.ToString());
-                meeting.RequiredAdjacentMeeting = linkedMeeting;
-                linkedMeeting.RequiredAdjacentMeeting = meeting;
+                LinkMeetings(meeting, linkedMeeting);
             }
         }
 

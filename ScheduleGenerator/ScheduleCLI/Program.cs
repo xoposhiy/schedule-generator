@@ -21,7 +21,7 @@ namespace ScheduleCLI
             SheetNamesConfig[] configs =
             {
                 SpringConfig,
-                AutumnConfig
+                // AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
@@ -43,7 +43,8 @@ namespace ScheduleCLI
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             Console.WriteLine(notUsedMeetings);
 
-            ScheduleSpreadsheetConverter.Build(schedule, Repository, config.Schedule);
+            ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
+            ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();

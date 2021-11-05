@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
+using Domain.MeetingsParts;
 using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 using static Infrastructure.Extensions;
@@ -38,7 +39,7 @@ namespace Domain.Conversions
         private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
         private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
-        public static void Build(IReadonlySchedule schedule, GsRepository repository, string sheetName)
+        public static void BuildSchedule(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var groupNamesSet = new HashSet<string>();
             var meetingSet = new HashSet<Meeting>();
@@ -102,7 +103,7 @@ namespace Domain.Conversions
             var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
-                var subGroupsRow = new List<List<CellData>>()
+                var subGroupsRow = new List<List<CellData>>
                     {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}};
                 modifier
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
@@ -230,6 +231,30 @@ namespace Domain.Conversions
         {
             if (groupPart != GroupPart.FullGroup) return 1;
             return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
+        }
+
+        public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
+        {
+            var rows = schedule.GetMeetings().Select(meeting => GetRowMeetingRaw(meeting)).ToList();
+
+            repository
+                .ModifySpreadSheet(sheetName)
+                .WriteRange(2, 0, rows)
+                .Execute();
+        }
+
+        private static List<CellData> GetRowMeetingRaw(Meeting meeting)
+        {
+            return new()
+            {
+                CommonCellData(meeting.MeetingTime!.Day.ToString()),
+                CommonCellData(meeting.MeetingTime.TimeSlot.ToString()),
+                CommonCellData(meeting.Discipline.Name),
+                CommonCellData(string.Join<MeetingGroup>("\n", meeting.Groups!)),
+                CommonCellData(""),
+                CommonCellData(meeting.Classroom ?? ""),
+                CommonCellData(meeting.WeekType.ToString())
+            };
         }
     }
 }

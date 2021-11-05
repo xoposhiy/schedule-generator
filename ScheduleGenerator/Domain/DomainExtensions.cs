@@ -37,11 +37,11 @@ namespace Domain
                 }
         }
 
-        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType, bool safe = false)
+        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType)
         {
-            if (weekType == WeekType.OddOrEven && !safe)
+            if (weekType == WeekType.OddOrEven)
                 throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split");
-            if (weekType is WeekType.All or WeekType.OddOrEven)
+            if (weekType is WeekType.All)
             {
                 yield return WeekType.Even;
                 yield return WeekType.Odd;
@@ -226,6 +226,12 @@ namespace Domain
 
             // return new GreedySolver(estimator, requisition, classrooms, new(42));
             return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
+        }
+
+        public static void LinkMeetings(Meeting first, Meeting second)
+        {
+            first.RequiredAdjacentMeeting = second;
+            second.RequiredAdjacentMeeting = first;
         }
     }
 }

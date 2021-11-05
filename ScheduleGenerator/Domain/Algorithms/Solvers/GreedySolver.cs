@@ -48,23 +48,23 @@ namespace Domain.Algorithms.Solvers
             Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);
-            return new (currentSchedule, currentScore);
+            return new(currentSchedule, currentScore);
         }
 
         private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
         {
+            int maxIndex;
             if (selectWithBestScoreOnly)
             {
                 var bestScore = orderedMeetings[0].score;
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                var candidates = orderedMeetings.Where(m => m.score == bestScore).ToList();
-                return candidates[random.Next(candidates.Count)].meeting;
+                maxIndex = orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.01);
             }
             else
             {
-                var maxIndex = Math.Min(choiceCount, orderedMeetings.Count);
-                return orderedMeetings[random.Next(maxIndex)].meeting;
+                maxIndex = Math.Min(choiceCount, orderedMeetings.Count);
             }
+
+            return orderedMeetings[random.Next(maxIndex)].meeting;
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting)

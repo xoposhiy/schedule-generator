@@ -32,5 +32,10 @@ namespace Infrastructure
             ScheduleSheetName2);
 
         public static readonly GsRepository Repository = new("test", CredentialPath, Url);
+
+        public const string RowMeetingsUrl =
+            "https://docs.google.com/spreadsheets/d/1HbiSlAkAI6yWxQpbeSsO6iBSrl45NIaw9sPCn4KXU1I/edit#gid=";
+
+        public static readonly GsRepository RowMeetingsRepository = new("RowMeetings", CredentialPath, RowMeetingsUrl);
     }
 }
