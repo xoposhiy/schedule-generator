@@ -233,5 +233,20 @@ namespace Domain
             first.RequiredAdjacentMeeting = second;
             second.RequiredAdjacentMeeting = first;
         }
+
+        public static IEnumerable<MeetingGroup> GetAllGroupParts(this RequisitionItem requisitionItem)
+        {
+            return requisitionItem.GroupPriorities
+                .SelectMany(g => g.GroupsChoices)
+                .SelectMany(g => g.Groups.GetGroupParts())
+                .Distinct();
+        }
+
+        public static HashSet<MeetingTime> GetAllMeetingTimes(this RequisitionItem requisitionItem)
+        {
+            return requisitionItem.MeetingTimePriorities
+                .SelectMany(p => p.MeetingTimeChoices)
+                .ToHashSet();
+        }
     }
 }

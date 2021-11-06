@@ -64,11 +64,7 @@ namespace Domain
 
         private void FillGroupsKeys(Requisition requisition)
         {
-            var groups = requisition.Items
-                .SelectMany(r => r.GroupPriorities)
-                .SelectMany(g => g.GroupsChoices)
-                .SelectMany(g => g.Groups.GetGroupParts())
-                .Distinct();
+            var groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts);
 
             foreach (var group in groups)
             {
@@ -92,13 +88,8 @@ namespace Domain
         {
             foreach (var meeting in meetings)
             {
-                var possibleTimeChoices = meeting.RequisitionItem.MeetingTimePriorities
-                    .SelectMany(p => p.MeetingTimeChoices)
-                    .ToHashSet();
-                var groups = meeting.RequisitionItem.GroupPriorities
-                    .SelectMany(g => g.GroupsChoices)
-                    .SelectMany(g => g.Groups.GetGroupParts())
-                    .ToHashSet();
+                var possibleTimeChoices = meeting.RequisitionItem.GetAllMeetingTimes();
+                var groups = meeting.RequisitionItem.GetAllGroupParts();
 
                 WeekType[] weekTypes = meeting.WeekType is WeekType.All or WeekType.OddOrEven
                     ? new[] {WeekType.Odd, WeekType.Even}
@@ -185,10 +176,7 @@ namespace Domain
 
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
 
-                if (isSure)
-                {
-                    UnsubscribeCollidingMeetings(meetingToAdd);
-                }
+                if (isSure) UnsubscribeCollidingMeetings(meetingToAdd);
             }
         }
 
@@ -209,10 +197,8 @@ namespace Domain
                 RemoveMeetingFromGroup(meetingToRemove);
 
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
-                if (isSure)
-                {
-                    ResetMeetingsSubscriptions();
-                }
+
+                if (isSure) ResetMeetingsSubscriptions();
             }
         }
 
@@ -223,9 +209,28 @@ namespace Domain
                 // .Where(m => MeetingFreedomDegree[m] > 0)
                 .ToList();
             if (placeableMeetings.Count == 0)
-                yield break;
-            var maxPriority = placeableMeetings.Max(m => m.Priority);
-            var priorityMeetings = placeableMeetings
+                return Enumerable.Empty<Meeting>();
+            var minFreedomMeetings = GetMostNeededMeetings(placeableMeetings);
+
+            var meetingsCopies = new List<Meeting>();
+            foreach (var baseMeeting in minFreedomMeetings)
+            {
+                var filledMeetings = GetFilledMeetings(baseMeeting).ToList();
+                meetingsCopies.AddRange(filledMeetings);
+
+                if (filledMeetings.Count == 0)
+                    NonPlaceableMeetings.Add(baseMeeting);
+                // NotUsedMeetings.Remove(baseMeeting);
+            }
+
+            if (meetingsCopies.Count != 0) return meetingsCopies;
+            return GetMeetingsToAdd();
+        }
+
+        private List<Meeting> GetMostNeededMeetings(List<Meeting> meetings)
+        {
+            var maxPriority = meetings.Max(m => m.Priority);
+            var priorityMeetings = meetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
@@ -233,50 +238,37 @@ namespace Domain
             var minFreedomMeetings = priorityMeetings
                 .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
                 .ToList();
+            return minFreedomMeetings;
+        }
 
-            var placeableMeetingsCount = 0;
-            foreach (var baseMeeting in minFreedomMeetings)
+        private IEnumerable<Meeting> GetFilledMeetings(Meeting baseMeeting)
+        {
+            var requisitionItem = baseMeeting.RequisitionItem;
+            var possibleGroupsChoices = requisitionItem.GroupPriorities
+                .SelectMany(p => p.GroupsChoices);
+            var possibleTimeChoices = requisitionItem.GetAllMeetingTimes();
+
+            foreach (var groupsChoice in possibleGroupsChoices)
+            foreach (var meetingTimeChoice in possibleTimeChoices)
             {
-                var requisitionItem = baseMeeting.RequisitionItem;
-                var possibleGroupsChoices = requisitionItem.GroupPriorities
-                    .SelectMany(p => p.GroupsChoices);
-                var possibleTimeChoices = requisitionItem.MeetingTimePriorities
-                    .SelectMany(p => p.MeetingTimeChoices)
-                    .ToHashSet();
-
-                var meetingVariants = 0;
-
-                foreach (var groupsChoice in possibleGroupsChoices)
-                foreach (var meetingTimeChoice in possibleTimeChoices)
+                var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice);
+                if (meetingCopy == null) continue;
+                if (meetingCopy.RequiredAdjacentMeeting != null)
                 {
-                    var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice);
-                    if (meetingCopy == null) continue;
-                    if (meetingCopy.RequiredAdjacentMeeting != null)
-                    {
-                        if (meetingTimeChoice.TimeSlot < 2)
-                            continue;
-                        var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                            meetingTimeChoice.TimeSlot - 1);
-                        var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
-                            groupsChoice,
-                            linkedMeetingTimeChoice);
+                    if (meetingTimeChoice.TimeSlot < 2)
+                        continue;
+                    var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
+                        meetingTimeChoice.TimeSlot - 1);
+                    var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
+                        groupsChoice,
+                        linkedMeetingTimeChoice);
 
-                        if (linkedMeeting == null) continue;
-                        LinkMeetings(meetingCopy, linkedMeeting);
-                    }
-
-                    meetingVariants++;
-                    placeableMeetingsCount++;
-                    yield return meetingCopy;
+                    if (linkedMeeting == null) continue;
+                    LinkMeetings(meetingCopy, linkedMeeting);
                 }
 
-                if (meetingVariants == 0)
-                    NonPlaceableMeetings.Add(baseMeeting);
-                // NotUsedMeetings.Remove(baseMeeting);
+                yield return meetingCopy;
             }
-
-            if (placeableMeetingsCount != 0) yield break;
-            foreach (var meeting in GetMeetingsToAdd()) yield return meeting;
         }
 
         private static void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)

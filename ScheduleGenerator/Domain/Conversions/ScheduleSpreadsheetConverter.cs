@@ -70,7 +70,7 @@ namespace Domain.Conversions
 
             modifier.BuildSchedulePattern(groupNames);
 
-            FillScheduleData(modifier, meetingSet, groupNames);
+            modifier.FillScheduleData(meetingSet, groupNames);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
