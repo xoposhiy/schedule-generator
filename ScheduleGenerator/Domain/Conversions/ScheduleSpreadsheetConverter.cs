@@ -24,13 +24,27 @@ namespace Domain.Conversions
         private static readonly string[] ClassStarts =
         {
             "I 9:00", "II 10:40", "III 12:50",
-            "IV 14:30", "V 16:40", "VI 17:50"
+            "IV 14:30", "V 16:10", "VI 17:50"
         };
 
-        private static readonly string[] PeClassStarts =
+        private static readonly string[] MeetingStartTimes =
         {
-            "8:30 - 10:00", "10:15 - 11:45", "12:00 - 13:30",
-            "14:15 - 15:45", "16:00 - 15:30", "слишком поздно"
+            "9:00", "10:40", "12:50", "14:30", "16:10", "17:50"
+        };
+
+        private static readonly string[] MeetingEndTimes =
+        {
+            "10:30", "12:10", "14:20", "16:00", "17:40", "19:20"
+        };
+
+        private static readonly string[] PeClassStartTimes =
+        {
+            "8:30", "10:15", "12:00", "14:15", "16:00", "слишком"
+        };
+
+        private static readonly string[] PeClassEndTimes =
+        {
+            "10:00", "11:45", "13:30", "15:45", "17:30", "поздно"
         };
 
         private static readonly int StartsCount = ClassStarts.Length;
@@ -131,10 +145,12 @@ namespace Domain.Conversions
         private static string MeetingToString(Meeting meeting)
         {
             // TODO krutovsky: create string more careful
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlot - 1;
             if (meeting.Location == Location.PE)
             {
-                var timePeriod = PeClassStarts[meeting.MeetingTime!.TimeSlot - 1];
-                return $"ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {timePeriod}";
+                var start = PeClassStartTimes[timeSlotIndex];
+                var end = PeClassEndTimes[timeSlotIndex];
+                return $"ПРИКЛАДНАЯ ФИЗИЧЕСКАЯ КУЛЬТУРА c {start} - {end}";
             }
 
             var classroom = FillLocation(meeting);
@@ -247,23 +263,27 @@ namespace Domain.Conversions
 
         private static List<CellData> GetRowMeetingRaw(Meeting meeting)
         {
+            var timeSlot = meeting.MeetingTime!.TimeSlot;
+            var timeSlotIndex = timeSlot - 1;
             var groups = meeting.Groups!.Select(g => g.GroupName[^1]).Distinct();
             var groupParts = meeting.Groups!.Select(g => GroupPartToString(g.GroupPart)).Distinct();
+            var timeStart = meeting.Location == Location.PE ? PeClassStartTimes : MeetingStartTimes;
+            var timeEnd = meeting.Location == Location.PE ? PeClassEndTimes : MeetingEndTimes;
             return new()
             {
                 CommonCellData(DayToString(meeting.MeetingTime!.Day)),
-                CommonCellData(meeting.MeetingTime.TimeSlot.ToString()),
+                CommonCellData(timeSlot.ToString()),
                 CommonCellData(meeting.Discipline.Name),
                 CommonCellData(string.Join(",", groups)),
                 CommonCellData(string.Join(",", groupParts)),
                 CommonCellData(meeting.Classroom ?? ""),
                 CommonCellData(meeting.Teacher.Name),
                 CommonCellData(WeekToString(meeting.WeekType)),
-                CommonCellData(""),
-                CommonCellData(""),
+                CommonCellData(timeStart[timeSlotIndex]),
+                CommonCellData(timeEnd[timeSlotIndex]),
                 CommonBoolCellData(),
                 CommonBoolCellData(),
-                CommonBoolCellData(true)
+                CommonBoolCellData()
             };
         }
 
