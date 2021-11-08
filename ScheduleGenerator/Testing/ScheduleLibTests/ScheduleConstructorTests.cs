@@ -18,7 +18,8 @@ namespace Testing.ScheduleLibTests
             });
 
             // ReSharper disable once ObjectCreationAsStatement
-            Assert.Throws(Is.InstanceOf<ArgumentException>(), () => new Schedule(brokenRequisition, ClassRooms));
+            Assert.Throws(Is.InstanceOf<ArgumentException>(), 
+                () => new Schedule(brokenRequisition, ClassRooms));
         }
     }
 }

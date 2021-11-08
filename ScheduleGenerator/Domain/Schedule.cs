@@ -248,11 +248,13 @@ namespace Domain
             var priorityMeetings = meetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
+            
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
             // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
             var minFreedomMeetings = priorityMeetings
                 .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
                 .ToList();
+            
             return minFreedomMeetings;
         }
 
@@ -279,7 +281,7 @@ namespace Domain
                         linkedMeetingTimeChoice);
 
                     if (linkedMeeting == null) continue;
-                    LinkMeetings(meetingCopy, linkedMeeting);
+                    meetingCopy.Link(linkedMeeting);
                 }
 
                 yield return meetingCopy;
@@ -299,7 +301,7 @@ namespace Domain
                                          && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
                     throw new ArgumentException(meeting.ToString());
-                LinkMeetings(meeting, linkedMeeting);
+                meeting.Link(linkedMeeting);
             }
         }
 

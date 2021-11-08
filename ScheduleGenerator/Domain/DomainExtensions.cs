@@ -235,7 +235,7 @@ namespace Domain
             return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
         }
 
-        public static void LinkMeetings(Meeting first, Meeting second)
+        public static void Link(this Meeting first, Meeting second)
         {
             first.RequiredAdjacentMeeting = second;
             second.RequiredAdjacentMeeting = first;

@@ -18,10 +18,10 @@ namespace Testing.DomainTests
         [TestCase(WeekType.Odd, 1)]
         [TestCase(WeekType.Even, 1)]
         [TestCase(WeekType.All, 2)]
-        public void GetWeekTypesTest(WeekType weekType, int partsCount)
+        public void GetWeekTypesTest(WeekType weekType, int expectedPartsCount)
         {
-            var actualCount = weekType.GetWeekTypes().Count();
-            Assert.AreEqual(partsCount, actualCount);
+            var actualPartsCount = weekType.GetWeekTypes().Count();
+            Assert.AreEqual(expectedPartsCount, actualPartsCount);
         }
     }
 }
