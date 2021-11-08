@@ -296,8 +296,8 @@ namespace Domain.Conversions
                 DayOfWeek.Wednesday => "Среда",
                 DayOfWeek.Thursday => "Четверг",
                 DayOfWeek.Friday => "Пятница",
-                DayOfWeek.Sunday => "Суббота",
-                DayOfWeek.Saturday => "Воскресенье",
+                DayOfWeek.Saturday => "Суббота",
+                DayOfWeek.Sunday => "Воскресенье",
                 _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
             };
         }

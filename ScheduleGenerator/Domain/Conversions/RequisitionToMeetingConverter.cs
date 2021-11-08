@@ -6,7 +6,7 @@ namespace Domain.Conversions
 {
     public static class RequisitionToMeetingConverter
     {
-        public static List<Meeting> ConvertRequisitionToBasicMeeting(RequisitionItem requisitionItem)
+        public static List<Meeting> ConvertRequisitionToBaseMeeting(RequisitionItem requisitionItem)
         {
             var meetings = new List<Meeting>();
 

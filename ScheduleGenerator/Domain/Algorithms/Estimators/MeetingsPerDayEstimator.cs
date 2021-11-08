@@ -22,11 +22,9 @@ namespace Domain.Algorithms.Estimators
             {
                 var count = byDay.MeetingsCount();
 
-                if (count is not (>= 2 and <= 4 or 0))
-                {
-                    logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / maxPenalty);
-                    penalty++;
-                }
+                if (count is >= 2 and <= 4 or 0) continue;
+                logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / maxPenalty);
+                penalty++;
             }
 
             return -penalty / maxPenalty;

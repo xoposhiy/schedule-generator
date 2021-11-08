@@ -56,9 +56,9 @@ namespace Domain
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
             NotUsedMeetings = requisition.Items
-                .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBasicMeeting)
+                .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBaseMeeting)
                 .ToHashSet();
-            LinkBasicMeetings(NotUsedMeetings);
+            LinkBaseMeetings(NotUsedMeetings);
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
 
@@ -142,12 +142,11 @@ namespace Domain
             var baseMeeting = filledMeeting.BaseMeeting!;
 
             var weekTypes = filledMeeting.WeekType.GetWeekTypes().ToArray();
-            var groups = filledMeeting.Groups!.GetGroupParts();
             var time = filledMeeting.MeetingTime!;
 
             var addAny = false;
 
-            foreach (var group in groups)
+            foreach (var group in filledMeeting.Groups!.GetGroupParts())
             foreach (var week in weekTypes)
                 addAny |= timeConcurrentMeetings.SafeAdd(group, time, week, baseMeeting);
 
@@ -287,7 +286,7 @@ namespace Domain
             }
         }
 
-        private static void LinkBasicMeetings(HashSet<Meeting> notUsedMeetings)
+        private static void LinkBaseMeetings(HashSet<Meeting> notUsedMeetings)
         {
             foreach (var meeting in notUsedMeetings)
             {

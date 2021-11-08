@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
-using Domain.Conversions;
 using Infrastructure;
 using Ninject;
 using Ninject.Extensions.Conventions;
+using static Domain.Conversions.ScheduleSpreadsheetConverter;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
 
@@ -43,8 +43,8 @@ namespace ScheduleCLI
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             Console.WriteLine(notUsedMeetings);
 
-            ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
-            ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
+            BuildSchedule(schedule, Repository, config.Schedule);
+            // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();
