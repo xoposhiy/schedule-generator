@@ -18,11 +18,11 @@ namespace Testing.ScheduleLibTests
             for (var i = 0; i < 3; i++)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();
-                schedule.AddMeeting(meeting);
+                schedule.AddMeeting(meeting, true);
                 addedMeetings.Add(meeting);
             }
 
-            schedule.RemoveMeeting(addedMeetings[1]);
+            schedule.RemoveMeeting(addedMeetings[1], true);
             var missingMeeting = schedule.GetMeetingsToAdd().First();
             Assert.AreEqual(addedMeetings[1].ToString(), missingMeeting.ToString());
         }

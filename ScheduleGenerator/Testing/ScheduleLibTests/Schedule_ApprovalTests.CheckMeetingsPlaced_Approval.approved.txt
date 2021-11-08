@@ -1,4 +1,5 @@
-Placed:91 Left:3, Placed:
+Placed:94 Left:0, Placed:
+Алгем Lecture Волков Михаил
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
 Алгем Seminar Белов
@@ -67,6 +68,7 @@ Placed:91 Left:3, Placed:
 ОП ComputerLab Маценко
 ОП ComputerLab Петряшов
 ОП ComputerLab Политов
+ОП ComputerLab Романюк
 ОП ComputerLab Федоров
 ОП ComputerLab Хапов
 ОП Seminar Ермаков
@@ -74,6 +76,7 @@ Placed:91 Left:3, Placed:
 ОП Seminar Маценко
 ОП Seminar Петряшов
 ОП Seminar Политов
+ОП Seminar Романюк
 ОП Seminar Федоров
 ОП Seminar Хапов
 Питон ComputerLab Анкудинов Александр
@@ -91,6 +94,4 @@ Placed:91 Left:3, Placed:
 ФП ComputerLab Кирпичников Алексей
 ФП ComputerLab Неволин Роман Андреевич
 Not placed:
-Алгем Lecture Волков Михаил
-ОП ComputerLab Романюк
-ОП Seminar Романюк
+

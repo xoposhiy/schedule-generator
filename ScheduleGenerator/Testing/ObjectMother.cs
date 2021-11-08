@@ -76,7 +76,7 @@ namespace Testing
             new RequisitionItem(CalculusSeminar, "ФИИТ-101", "пн: 3-6 пара", CalculusTeacher),
             new RequisitionItem(OsLecture, "ФИИТ-101", "пн: 4-6 пара", OsTeacher),
             new RequisitionItem(OopLab, "ФИИТ-101", "пн: 5-6 пара", OopTeacher2),
-            new RequisitionItem(OopSeminar, "ФИИТ-101", "пн: 6 пара", OopTeacher2),
+            new RequisitionItem(OopSeminar, "ФИИТ-101", "пн: 6 пара", OopTeacher2)
         });
 
         public static readonly Requisition NecessaryMeetings = new(new[]

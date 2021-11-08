@@ -3,7 +3,6 @@ using System.Linq;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using Domain.Conversions;
-using Domain.MeetingsParts;
 using Infrastructure.SheetPatterns;
 using NUnit.Framework;
 using static Infrastructure.SheetConstants;
@@ -28,11 +27,13 @@ namespace Testing.ConversionsTests
                 var meetingTimesRaw = requisitionRow[5];
                 var meetingTimeRequisitions =
                     SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimesRaw);
-                var a = meetingTimeRequisitions.Select(r => string.Join('\n',r.MeetingTimeChoices.Select(m=>m.ToString())));
-                var checkString = 
+                var a = meetingTimeRequisitions.Select(r =>
+                    string.Join('\n', r.MeetingTimeChoices.Select(m => m.ToString())));
+                var checkString =
                     $"{meetingTimesRaw}\n{string.Join("\n\n", a)}";
                 checkStrings.Add(checkString);
             }
+
             var unifiedString = string.Join("\n------\n", checkStrings);
             Approvals.Verify(unifiedString);
         }

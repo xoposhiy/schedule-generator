@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using ApprovalTests;
 using Domain.Conversions;
 using Infrastructure.SheetPatterns;
 using NUnit.Framework;
@@ -26,7 +24,7 @@ namespace Testing.ConversionsTests
             Assert.AreEqual(23, learningPlan.Items.Length);
             Assert.AreEqual(25, classrooms.Count);
         }
-        
+
         [Test]
         public void WrongTimeRequisitionFormatShouldNotWork()
         {
@@ -36,7 +34,8 @@ namespace Testing.ConversionsTests
             foreach (var requisitionRow in requisitionData)
             {
                 var meetingTimesRaw = requisitionRow[5];
-                Assert.Throws(Is.InstanceOf<Exception>(), ()=>SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimesRaw));
+                Assert.Throws(Is.InstanceOf<Exception>(),
+                    () => SheetToRequisitionConverter.ParseMeetingTimeRequisitions(meetingTimesRaw));
             }
         }
     }
