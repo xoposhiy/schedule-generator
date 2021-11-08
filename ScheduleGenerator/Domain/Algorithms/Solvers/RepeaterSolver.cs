@@ -15,22 +15,23 @@ namespace Domain.Algorithms.Solvers
         public Solution GetSolution(TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
+
             Solution bestSolution = solver.GetSolution(timeBudget - sw.Elapsed);
+
             var iteration = 1;
             var improvementsCount = 0;
             var bestIteration = 0;
+
             while (sw.Elapsed < timeBudget)
             {
                 iteration++;
                 var solution = solver.GetSolution(timeBudget - sw.Elapsed);
-                if (solution.Schedule.NotUsedMeetings.Count < bestSolution.Schedule.NotUsedMeetings.Count
-                    || solution.Schedule.NotUsedMeetings.Count == bestSolution.Schedule.NotUsedMeetings.Count &&
-                    solution.Score > bestSolution.Score)
+                if (IsSolutionBetter(solution, bestSolution))
                 {
                     bestSolution = solution;
                     improvementsCount++;
                     bestIteration = iteration;
-                    Console.WriteLine($"{improvementsCount} of {iteration}. Not Placed: {solution.Schedule.NotUsedMeetings.Count} score: {solution.Score}");
+                    Console.WriteLine(GetImprovementMessage(improvementsCount, iteration, solution));
                 }
             }
 
@@ -41,7 +42,24 @@ namespace Domain.Algorithms.Solvers
             return bestSolution;
         }
 
-        private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution, int bestIteration, int improvementsCount)
+        private static bool IsSolutionBetter(Solution solution, Solution bestSolution)
+        {
+            var (schedule, score) = solution;
+            var (bestSchedule, bestScore) = bestSolution;
+            return schedule.NotUsedMeetings.Count < bestSchedule.NotUsedMeetings.Count
+                   || schedule.NotUsedMeetings.Count == bestSchedule.NotUsedMeetings.Count &&
+                   score > bestScore;
+        }
+
+        private static string GetImprovementMessage(int improvements, int iteration, Solution solution)
+        {
+            var (schedule, score) = solution;
+            return $"{improvements} improvement in {iteration} iteration. " +
+                   $"Not Placed: {schedule.NotUsedMeetings.Count} score: {score}";
+        }
+
+        private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution, int bestIteration,
+            int improvementsCount)
         {
             var (schedule, score) = bestSolution;
             var lines = new[]

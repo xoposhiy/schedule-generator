@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
@@ -30,7 +29,6 @@ namespace Domain.Algorithms.Solvers
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
-            var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
             while (true)
             {
@@ -45,7 +43,7 @@ namespace Domain.Algorithms.Solvers
             }
 
             Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
-            Console.WriteLine($"Greedy {sw.Elapsed}\n");
+            // Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);
             return new(currentSchedule, currentScore);
@@ -53,16 +51,11 @@ namespace Domain.Algorithms.Solvers
 
         private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
         {
-            int maxIndex;
-            if (selectWithBestScoreOnly)
-            {
-                var bestScore = orderedMeetings[0].score;
-                maxIndex = orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.01);
-            }
-            else
-            {
-                maxIndex = Math.Min(choiceCount, orderedMeetings.Count);
-            }
+            var bestScore = orderedMeetings[0].score;
+
+            var maxIndex = selectWithBestScoreOnly
+                ? orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.01)
+                : Math.Min(choiceCount, orderedMeetings.Count);
 
             return orderedMeetings[random.Next(maxIndex)].meeting;
         }

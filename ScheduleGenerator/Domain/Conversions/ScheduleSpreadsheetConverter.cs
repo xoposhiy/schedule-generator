@@ -18,13 +18,16 @@ namespace Domain.Conversions
         private const int WeekTypesCount = 2;
         private const int SubGroupsCount = 2;
 
+
+        private const int TimeStartColumn = TimeBarColumnOffset + 1;
+        private const int SubgroupRowOffset = HeadersRowOffset + 1;
+
         private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
         private static readonly int WeekDayCount = WeekDays.Length;
 
-        private static readonly string[] ClassStarts =
+        private static readonly string[] RomeNumbers =
         {
-            "I 9:00", "II 10:40", "III 12:50",
-            "IV 14:30", "V 16:10", "VI 17:50"
+            "I", "II", "III", "IV", "V", "VI"
         };
 
         private static readonly string[] MeetingStartTimes =
@@ -47,23 +50,22 @@ namespace Domain.Conversions
             "10:00", "11:45", "13:30", "15:45", "17:30", "поздно"
         };
 
-        private static readonly int StartsCount = ClassStarts.Length;
+        private static readonly int StartsCount = MeetingStartTimes.Length;
 
         private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
         private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
         public static void BuildSchedule(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
-            var groupNamesSet = new HashSet<string>();
-            var meetingSet = new HashSet<Meeting>();
-            foreach (var meeting in schedule.GetMeetings())
-            {
-                foreach (var group in meeting.Groups!) groupNamesSet.Add(group.GroupName);
-                meetingSet.Add(meeting);
-            }
+            var meetingSet = schedule.GetMeetings();
+            var groupNames = meetingSet
+                .SelectMany(m => m.Groups!)
+                .Select(g => g.GroupName)
+                .Distinct()
+                .OrderBy(gn => gn)
+                .ToList();
 
             Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
-            var groupNames = groupNamesSet.OrderBy(gn => gn).ToList();
 
             repository.ClearSheet(sheetName);
             var modifier = repository.ModifySpreadSheet(sheetName);
@@ -90,20 +92,22 @@ namespace Domain.Conversions
 
         private static SheetModifier BuildTimeBar(this SheetModifier modifier)
         {
+            var classStarts = RomeNumbers.Select((n, i) => $"{n} {MeetingStartTimes[i]}").ToList();
             var height = StartsCount * WeekTypesCount;
             var rowStart = TimeBarRowOffset;
+
             foreach (var weekDay in WeekDays.Select(HeaderCellData))
             {
                 modifier
                     .WriteRange(rowStart, TimeBarColumnOffset, new() {new() {weekDay}})
                     .AddBorders(rowStart, TimeBarColumnOffset)
                     .MergeCell(rowStart, TimeBarColumnOffset, height, 1);
-                foreach (var classStart in ClassStarts.Select(HeaderCellData))
+                foreach (var classStart in classStarts.Select(HeaderCellData))
                 {
                     modifier
-                        .WriteRange(rowStart, TimeBarColumnOffset + 1, new() {new() {classStart}})
-                        .AddBorders(rowStart, TimeBarColumnOffset + 1)
-                        .MergeCell(rowStart, TimeBarColumnOffset + 1, WeekTypesCount, 1);
+                        .WriteRange(rowStart, TimeStartColumn, new() {new() {classStart}})
+                        .AddBorders(rowStart, TimeStartColumn)
+                        .MergeCell(rowStart, TimeStartColumn, WeekTypesCount, 1);
                     rowStart += WeekTypesCount;
                 }
             }
@@ -122,16 +126,16 @@ namespace Domain.Conversions
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
                     .AddBorders(HeadersRowOffset, startColumn)
                     .MergeCell(HeadersRowOffset, startColumn, 1, SubGroupsCount)
-                    .WriteRange(HeadersRowOffset + 1, startColumn, subGroupsRow)
-                    .AddBorders(HeadersRowOffset + 1, startColumn)
-                    .AddBorders(HeadersRowOffset + 1, startColumn + 1);
+                    .WriteRange(SubgroupRowOffset, startColumn, subGroupsRow)
+                    .AddBorders(SubgroupRowOffset, startColumn)
+                    .AddBorders(SubgroupRowOffset, startColumn + 1);
                 startColumn += SubGroupsCount;
             }
 
             return modifier;
         }
 
-        private static void FillScheduleData(this SheetModifier modifier, HashSet<Meeting> meetings,
+        private static void FillScheduleData(this SheetModifier modifier, IEnumerable<Meeting> meetings,
             List<string> groups)
         {
             var groupIndexDict = groups
@@ -144,7 +148,6 @@ namespace Domain.Conversions
 
         private static string MeetingToString(Meeting meeting)
         {
-            // TODO krutovsky: create string more careful
             var timeSlotIndex = meeting.MeetingTime!.TimeSlot - 1;
             if (meeting.Location == Location.PE)
             {
@@ -158,9 +161,7 @@ namespace Domain.Conversions
 
             return $"{meeting.Discipline}, " +
                    $"{classroom}, " +
-                   $"{meeting.Teacher.Name}"
-                // + $", {meeting.MeetingType}"
-                ;
+                   $"{meeting.Teacher.Name}";
         }
 
         private static CellData MeetingCellData(Meeting meeting)

@@ -97,8 +97,7 @@ namespace Domain.Conversions
             var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, 1, 0, 7);
             var requisitions = ParseRequisitions(requisitionData, learningPlan);
             var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, 1, 0, 4);
-            var classrooms = ParseClassrooms(classroomsData)
-                .ToDictionary(e => e.Item1, e => e.Item2);
+            var classrooms = ParseClassrooms(classroomsData);
             return (requisitions, learningPlan, classrooms);
         }
 
@@ -138,9 +137,12 @@ namespace Domain.Conversions
                     .Select(GetRoomSpec).ToArray();
         }
 
-        private static IEnumerable<(string, List<RoomSpec>)> ParseClassrooms(List<List<string>> sheetData)
+        private static Dictionary<string, List<RoomSpec>> ParseClassrooms(List<List<string>> sheetData)
         {
-            return sheetData.Select(ParseClassroom);
+            var dictionary = new Dictionary<string, List<RoomSpec>>();
+            foreach (var (number, specs) in sheetData.Select(ParseClassroom)) dictionary[number] = specs;
+
+            return dictionary;
         }
 
         private static (string, List<RoomSpec>) ParseClassroom(List<string> row)
@@ -339,7 +341,7 @@ namespace Domain.Conversions
                 foreach (var block in blocks)
                 {
                     var parts = block.Replace(" ", "").Split(':');
-                    
+
                     var days = new List<DayOfWeek>();
                     var dayString = parts[0];
                     var dayReqs = dayString.Split(',');
@@ -367,7 +369,7 @@ namespace Domain.Conversions
 
                     foreach (var day in days)
                     foreach (var slot in slots)
-                        meetingTimes.Add(new (day, slot));
+                        meetingTimes.Add(new(day, slot));
                 }
 
                 var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());

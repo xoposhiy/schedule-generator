@@ -21,7 +21,7 @@ namespace ScheduleCLI
             SheetNamesConfig[] configs =
             {
                 SpringConfig,
-                // AutumnConfig
+                AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
