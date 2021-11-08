@@ -157,7 +157,11 @@ namespace Domain
 
         public static bool HasMeetingsAtTime(this IEnumerable<Meeting?[]> days, int timeSlot)
         {
-            return days.Select(d => d[timeSlot]).Any(m => m != null);
+            foreach (var day in days)
+                if (day[timeSlot] != null)
+                    return true;
+
+            return false;
         }
 
         public static IEnumerable<(TKey1, WeekType, DayOfWeek, Meeting?[])> Enumerate<TKey1>(

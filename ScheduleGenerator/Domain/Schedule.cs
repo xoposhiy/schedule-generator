@@ -365,9 +365,9 @@ namespace Domain
 
         private string? FindFreeRoom(MeetingTime meetingTime, IEnumerable<RoomSpec> roomRequirement)
         {
-            var possibleRooms = FreeRoomsByDay[meetingTime].ToHashSet();
+            var possibleRooms = (IEnumerable<string>)FreeRoomsByDay[meetingTime];
             foreach (var rs in roomRequirement)
-                possibleRooms.IntersectWith(RoomsBySpec[rs]);
+                possibleRooms = possibleRooms.Intersect(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
         }
 
