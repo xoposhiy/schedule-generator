@@ -129,13 +129,29 @@ namespace Domain
 
         private void ResetMeetingsSubscriptions()
         {
-            // var busyCells = GetAllBusyCells();
-            // if (timeConcurrentMeetings[group][time][weekType].Count == 0) <- Placed
+            timeConcurrentMeetings.Clear();
+            MeetingFreedomDegree.Clear();
 
-            throw new NotImplementedException("Subscription needed");
+            foreach (var baseMeeting in NotUsedMeetings)
+            foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
+                SubscribeMeetingToCells(filledMeeting);
+        }
 
-            // TODO krutovsky: Subscribe meeting to dict
-            // Copy paste FillTimeToMeetingsDictionaries
+        private void SubscribeMeetingToCells(Meeting filledMeeting)
+        {
+            var baseMeeting = filledMeeting.BaseMeeting!;
+
+            var weekTypes = filledMeeting.WeekType.GetWeekTypes().ToArray();
+            var groups = filledMeeting.Groups!.GetGroupParts();
+            var time = filledMeeting.MeetingTime!;
+
+            var addAny = false;
+
+            foreach (var group in groups)
+            foreach (var week in weekTypes)
+                addAny |= timeConcurrentMeetings.SafeAdd(group, time, week, baseMeeting);
+
+            if (addAny) MeetingFreedomDegree.SafeIncrement(baseMeeting);
         }
 
         private void UnsubscribeMeetingFromCell(Meeting collidingMeeting, MeetingGroup meetingGroup, MeetingTime time,

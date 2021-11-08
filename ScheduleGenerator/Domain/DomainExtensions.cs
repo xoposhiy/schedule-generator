@@ -100,7 +100,7 @@ namespace Domain
             return hashSet.Add(value);
         }
 
-        public static void SafeAdd<TKey1, TKey2, TKey3, TValue>(
+        public static bool SafeAdd<TKey1, TKey2, TKey3, TValue>(
             this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, HashSet<TValue>>>> dictionary,
             TKey1 key1, TKey2 key2, TKey3 key3, TValue value)
             where TKey1 : notnull
@@ -115,7 +115,7 @@ namespace Domain
 
             var byKey2 = byKey1[key2];
 
-            byKey2.SafeAdd(key3, value);
+            return byKey2.SafeAdd(key3, value);
         }
 
         public static void SafeAdd<TKey1>(
@@ -168,6 +168,13 @@ namespace Domain
             foreach (var (weekType, byWeekType) in byGroup)
             foreach (var (day, byDay) in byWeekType)
                 yield return (key1, weekType, day, byDay);
+        }
+
+        public static void SafeIncrement<TKey>(this Dictionary<TKey, int> dictionary, TKey key)
+            where TKey : notnull
+        {
+            if (!dictionary.ContainsKey(key)) dictionary.Add(key, 0);
+            dictionary[key]++;
         }
 
         public static void SafeIncrement<TKey1, TKey2>(
