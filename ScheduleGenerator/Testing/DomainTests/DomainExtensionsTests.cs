@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Domain;
 using Domain.Enums;
 using NUnit.Framework;
@@ -20,7 +19,7 @@ namespace Testing.DomainTests
         [TestCase(WeekType.All, 2)]
         public void GetWeekTypesTest(WeekType weekType, int expectedPartsCount)
         {
-            var actualPartsCount = weekType.GetWeekTypes().Count();
+            var actualPartsCount = weekType.GetWeekTypes().Length;
             Assert.AreEqual(expectedPartsCount, actualPartsCount);
         }
     }

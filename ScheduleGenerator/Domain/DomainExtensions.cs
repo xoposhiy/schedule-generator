@@ -4,11 +4,11 @@ using System.Linq;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
 using Domain.Algorithms.Solvers;
-using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
+using static Domain.Conversions.SheetToRequisitionConverter;
 using static Infrastructure.SheetConstants;
 
 namespace Domain
@@ -25,6 +25,7 @@ namespace Domain
 
         public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
+            // TODO krutovsky: optimize memory allocation
             foreach (var group in groups)
                 if (group.GroupPart == GroupPart.FullGroup)
                 {
@@ -37,19 +38,20 @@ namespace Domain
                 }
         }
 
-        public static IEnumerable<WeekType> GetWeekTypes(this WeekType weekType)
+        public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};
+        public static readonly WeekType[] Odd = {WeekType.Odd};
+        public static readonly WeekType[] Even = {WeekType.Even};
+
+        public static WeekType[] GetWeekTypes(this WeekType weekType)
         {
-            if (weekType == WeekType.OddOrEven)
-                throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split");
-            if (weekType is WeekType.All)
+            return weekType switch
             {
-                yield return WeekType.Even;
-                yield return WeekType.Odd;
-            }
-            else
-            {
-                yield return weekType;
-            }
+                WeekType.All => OddAndEven,
+                WeekType.Odd => Odd,
+                WeekType.Even => Even,
+                WeekType.OddOrEven => throw new ArgumentException($"{WeekType.OddOrEven} is undetermined to split"),
+                _ => throw new ArgumentOutOfRangeException(nameof(weekType), weekType, null)
+            };
         }
 
         public static int GetMeetingsSpacesCount(this Meeting?[] byDay)
@@ -231,7 +233,7 @@ namespace Domain
         public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
             var (requirements, learningPlan, _) = sheetNamesConfig;
-            var (requisitions, _, classrooms) = SheetToRequisitionConverter.ConvertToRequisitions(
+            var (requisitions, _, classrooms) = ConvertToRequisitions(
                 repo, requirements, learningPlan, ClassroomsSheetName);
 
             var requisition = new Requisition(requisitions.ToArray());

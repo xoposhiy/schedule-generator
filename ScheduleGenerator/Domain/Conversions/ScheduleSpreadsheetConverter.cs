@@ -77,16 +77,15 @@ namespace Domain.Conversions
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
         {
-            modifier.ColorField(groups.Count)
+            modifier.ColorField(groups.Count * SubGroupsCount)
                 .BuildTimeBar()
                 .BuildGroupHeaders(groups)
                 .Execute();
         }
 
-        private static SheetModifier ColorField(this SheetModifier modifier, int groupsCount)
+        private static SheetModifier ColorField(this SheetModifier modifier, int width)
         {
             var height = WeekDayCount * StartsCount * WeekTypesCount;
-            var width = groupsCount * SubGroupsCount;
             return modifier.ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, BackgroundColor);
         }
 
@@ -149,7 +148,7 @@ namespace Domain.Conversions
         private static string MeetingToString(Meeting meeting)
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlot - 1;
-            if (meeting.Location == Location.PE)
+            if (meeting.Location == Location.Pe)
             {
                 var start = PeClassStartTimes[timeSlotIndex];
                 var end = PeClassEndTimes[timeSlotIndex];
@@ -179,7 +178,7 @@ namespace Domain.Conversions
             return meeting.Location switch
             {
                 Location.Kontur => "Контур",
-                Location.PE => "ФОК",
+                Location.Pe => "ФОК",
                 Location.Online => "Онлайн",
                 Location.MathMeh => meeting.Classroom ?? "",
                 _ => throw new FormatException("Неизвестная Локация")
@@ -249,6 +248,7 @@ namespace Domain.Conversions
             return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var rows = schedule.GetMeetings()
@@ -268,8 +268,8 @@ namespace Domain.Conversions
             var timeSlotIndex = timeSlot - 1;
             var groups = meeting.Groups!.Select(g => g.GroupName[^1]).Distinct();
             var groupParts = meeting.Groups!.Select(g => GroupPartToString(g.GroupPart)).Distinct();
-            var timeStart = meeting.Location == Location.PE ? PeClassStartTimes : MeetingStartTimes;
-            var timeEnd = meeting.Location == Location.PE ? PeClassEndTimes : MeetingEndTimes;
+            var timeStart = meeting.Location == Location.Pe ? PeClassStartTimes : MeetingStartTimes;
+            var timeEnd = meeting.Location == Location.Pe ? PeClassEndTimes : MeetingEndTimes;
             return new()
             {
                 CommonCellData(DayToString(meeting.MeetingTime!.Day)),
@@ -323,6 +323,46 @@ namespace Domain.Conversions
                 WeekType.Odd => "нечетная",
                 _ => throw new ArgumentOutOfRangeException(nameof(weekType), weekType, "Untranslatable")
             };
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public static void BuildScheduleByTeacher(IReadonlySchedule schedule, GsRepository repository, string sheetName)
+        {
+            var meetingSet = schedule.GetMeetings();
+            var teachers = meetingSet.Select(m => m.Teacher.Name)
+                .Distinct()
+                .OrderBy(t => t)
+                .ToList();
+
+            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
+
+            repository.ClearSheet(sheetName);
+            var modifier = repository.ModifySpreadSheet(sheetName);
+
+            modifier.BuildSchedulePatternByTeacher(teachers);
+
+            // modifier.FillScheduleData(meetingSet, groupNames);
+        }
+
+        private static void BuildSchedulePatternByTeacher(this SheetModifier modifier, List<string> teachers)
+        {
+            modifier.ColorField(teachers.Count).Execute();
+            modifier.BuildTimeBar().Execute();
+            modifier.BuildTeachersHeaders(teachers)
+                .Execute();
+        }
+
+        private static SheetModifier BuildTeachersHeaders(this SheetModifier modifier, List<string> teachers)
+        {
+            var startColumn = HeadersColumnOffset;
+            foreach (var teacher in teachers.Select(HeaderCellData))
+            {
+                modifier.WriteRange(HeadersRowOffset, startColumn, new() {new() {teacher}})
+                    .AddBorders(HeadersRowOffset, startColumn);
+                startColumn++;
+            }
+
+            return modifier;
         }
     }
 }

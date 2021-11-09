@@ -7,6 +7,7 @@ using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
+using static Domain.DomainExtensions;
 
 namespace Domain.Conversions
 {
@@ -80,7 +81,7 @@ namespace Domain.Conversions
             return rowMeetingLocation switch
             {
                 "Тургенева 4" => Location.MathMeh,
-                "Физра" => Location.PE,
+                "Физра" => Location.Pe,
                 "Контур" => Location.Kontur,
                 "Онлайн" => Location.Online,
                 _ => throw new FormatException($"Некорректная локация занятия: {rowMeetingLocation}")
@@ -234,20 +235,19 @@ namespace Domain.Conversions
 
         public static List<GroupRequisition> ParseGroupRequisitions(string rawGroupRequisitions)
         {
-            var groupPriorityLines = rawGroupRequisitions.Split('\n').Where(x => !string.IsNullOrEmpty(x.Trim()));
+            var groupPriorityLines = rawGroupRequisitions.Split('\n')
+                .Select(g => g.Trim())
+                .Where(x => !string.IsNullOrEmpty(x));
+
             var groupRequisitions = new List<GroupRequisition>();
 
             foreach (var priorityLine in groupPriorityLines)
             {
-                var groupChoices = new List<GroupsChoice>();
-                var meetingGroupsStrings = priorityLine.Split(',').Select(mgs => mgs.Trim());
-                foreach (var meetingGroupsString in meetingGroupsStrings)
-                {
-                    var groupChoice = CreateGroupChoices(meetingGroupsString);
-                    groupChoices.Add(groupChoice);
-                }
-
-                groupRequisitions.Add(new(groupChoices.ToArray()));
+                var groupChoices = priorityLine.Split(',')
+                    .Select(mgs => mgs.Trim())
+                    .Select(CreateGroupChoices)
+                    .ToArray();
+                groupRequisitions.Add(new(groupChoices));
             }
 
             return groupRequisitions;
@@ -289,47 +289,15 @@ namespace Domain.Conversions
             return partMatch.Groups[0].Value;
         }
 
-        // ReSharper disable once UnusedMember.Local
-        private static HashSet<string> FindAllMatchingGroups(string group, HashSet<string> groups, bool isLecture)
-        {
-            var regexedString = group.Replace(" ", "").Replace("-", @"\s?-\s?").Replace("*", @"(?:\d+)");
-            regexedString += "$";
-            var refex = new Regex(regexedString);
-            var matchedGroups = new HashSet<string>();
-            foreach (var suspectGroup in groups)
-            {
-                var isMatch = refex.IsMatch(suspectGroup);
-                if (isMatch)
-                {
-                    if (!isLecture)
-                    {
-                        matchedGroups.Add($"{suspectGroup}-1");
-                        matchedGroups.Add($"{suspectGroup}-2");
-                    }
-                    else
-                    {
-                        matchedGroups.Add(suspectGroup);
-                    }
-                }
-            }
-
-            return matchedGroups;
-        }
-
         public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
-            var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
-
             if (string.IsNullOrWhiteSpace(rawMeetingTime))
             {
-                var meetingTimes = new HashSet<MeetingTime>();
-                foreach (var day in WeekDaysDict.Values)
-                    for (var index = 1; index <= 6; index++)
-                        meetingTimes.Add(new(day, index));
-                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes);
-                meetingTimeRequisitions.Add(meetingTimeRequisition);
-                return meetingTimeRequisitions;
+                var meetingTimes = GetAllPossibleMeetingTimes().ToHashSet();
+                return new() {new(meetingTimes)};
             }
+
+            var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
             var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
@@ -342,41 +310,50 @@ namespace Domain.Conversions
                 {
                     var parts = block.Replace(" ", "").Split(':');
 
-                    var days = new List<DayOfWeek>();
-                    var dayString = parts[0];
-                    var dayReqs = dayString.Split(',');
-                    foreach (var req in dayReqs)
-                    {
-                        var tmp = req.Split('-');
-                        var firstDay = WeekDaysDict[tmp[0]];
-                        var lastDay = tmp.Length == 1 ? firstDay : WeekDaysDict[tmp[1]];
-                        for (var day = firstDay; day <= lastDay; day++)
-                            days.Add(day);
-                    }
-
-                    var slots = new List<int>();
-                    var slotString = parts[1];
-                    var slotReqs = slotString.Split(',');
-                    foreach (var req in slotReqs)
-                    {
-                        //пн-пт: 3,4 пара
-                        var tmp = req.Split('-');
-                        var firstSlot = int.Parse(tmp[0][0].ToString());
-                        var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
-                        for (var slot = firstSlot; slot <= lastSlot; slot++)
-                            slots.Add(slot);
-                    }
+                    var days = GetDays(parts[0]);
+                    var slots = GetSlots(parts[1]);
 
                     foreach (var day in days)
                     foreach (var slot in slots)
                         meetingTimes.Add(new(day, slot));
                 }
-
-                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes);
-                meetingTimeRequisitions.Add(meetingTimeRequisition);
+                meetingTimeRequisitions.Add(new MeetingTimeRequisition(meetingTimes));
             }
 
             return meetingTimeRequisitions;
+        }
+
+        private static List<DayOfWeek> GetDays(string dayString)
+        {
+            var days = new List<DayOfWeek>();
+            var dayReqs = dayString.Split(',');
+            foreach (var req in dayReqs)
+            {
+                var tmp = req.Split('-');
+                var firstDay = WeekDaysDict[tmp[0]];
+                var lastDay = WeekDaysDict[tmp[^1]];
+                for (var day = firstDay; day <= lastDay; day++)
+                    days.Add(day);
+            }
+
+            return days;
+        }
+
+        private static List<int> GetSlots(string slotString)
+        {
+            var slots = new List<int>();
+            var slotReqs = slotString.Split(',');
+            foreach (var req in slotReqs)
+            {
+                //пн-пт: 3,4 пара
+                var tmp = req.Split('-');
+                var firstSlot = int.Parse(tmp[0][0].ToString());
+                var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
+                for (var slot = firstSlot; slot <= lastSlot; slot++)
+                    slots.Add(slot);
+            }
+
+            return slots;
         }
     }
 }

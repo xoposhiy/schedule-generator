@@ -92,7 +92,7 @@ namespace Domain
                 var groups = meeting.RequisitionItem.GetAllGroupParts();
 
                 WeekType[] weekTypes = meeting.WeekType is WeekType.All or WeekType.OddOrEven
-                    ? new[] {WeekType.Odd, WeekType.Even}
+                    ? ArrayExtensions.OddAndEven
                     : new[] {meeting.WeekType};
 
                 foreach (var group in groups)
@@ -118,8 +118,12 @@ namespace Domain
             var time = meeting.MeetingTime!;
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
-            foreach (var concurrentMeeting in timeConcurrentMeetings[group][time][weekType].ToList())
-                UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
+            {
+                if (!timeConcurrentMeetings[group].TryGetValue(time, out var byTime)) continue;
+                if (!byTime.TryGetValue(weekType, out var concurrentMeetings)) continue;
+                foreach (var concurrentMeeting in concurrentMeetings.ToList())
+                    UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
+            }
         }
 
         private void ResetMeetingsSubscriptions()
@@ -128,7 +132,7 @@ namespace Domain
             MeetingFreedomDegree.Clear();
 
             foreach (var baseMeeting in NotUsedMeetings)
-            foreach (var filledMeeting in GetFilledMeetings(baseMeeting, false))
+            foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
                 SubscribeMeetingToCells(filledMeeting);
         }
 
@@ -136,7 +140,7 @@ namespace Domain
         {
             var baseMeeting = filledMeeting.BaseMeeting!;
 
-            var weekTypes = filledMeeting.WeekType.GetWeekTypes().ToArray();
+            var weekTypes = filledMeeting.WeekType.GetWeekTypes();
             var time = filledMeeting.MeetingTime!;
 
             var addAny = false;
@@ -152,7 +156,7 @@ namespace Domain
             WeekType weekType)
         {
             WeekType[] weekTypes = collidingMeeting.WeekType == WeekType.All
-                ? new[] {WeekType.Odd, WeekType.Even}
+                ? ArrayExtensions.OddAndEven
                 : new[] {weekType};
             var groupsChoices = collidingMeeting.RequisitionItem.GroupPriorities
                 .SelectMany(g => g.GroupsChoices)
@@ -233,7 +237,7 @@ namespace Domain
             var meetingsCopies = new List<Meeting>();
             foreach (var baseMeeting in minFreedomMeetings)
             {
-                var filledMeetings = GetFilledMeetings(baseMeeting, false).ToList();
+                var filledMeetings = GetFilledMeetings(baseMeeting).ToList();
                 meetingsCopies.AddRange(filledMeetings);
 
                 if (filledMeetings.Count == 0)
@@ -261,7 +265,7 @@ namespace Domain
             return minFreedomMeetings;
         }
 
-        private IEnumerable<Meeting> GetFilledMeetings(Meeting baseMeeting, bool ignoreTimePriorities)
+        private IEnumerable<Meeting> GetFilledMeetings(Meeting baseMeeting, bool ignoreTimePriorities = false)
         {
             var requisitionItem = baseMeeting.RequisitionItem;
             var possibleGroupsChoices = requisitionItem.GroupPriorities
