@@ -322,11 +322,11 @@ namespace Domain.Conversions
 
             if (string.IsNullOrWhiteSpace(rawMeetingTime))
             {
-                var meetingTimes = new List<MeetingTime>();
+                var meetingTimes = new HashSet<MeetingTime>();
                 foreach (var day in WeekDaysDict.Values)
                     for (var index = 1; index <= 6; index++)
                         meetingTimes.Add(new(day, index));
-                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
+                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes);
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
                 return meetingTimeRequisitions;
             }
@@ -335,7 +335,7 @@ namespace Domain.Conversions
 
             foreach (var record in records)
             {
-                var meetingTimes = new List<MeetingTime>();
+                var meetingTimes = new HashSet<MeetingTime>();
 
                 var blocks = record.Split(';', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var block in blocks)
@@ -372,7 +372,7 @@ namespace Domain.Conversions
                         meetingTimes.Add(new(day, slot));
                 }
 
-                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes.ToArray());
+                var meetingTimeRequisition = new MeetingTimeRequisition(meetingTimes);
                 meetingTimeRequisitions.Add(meetingTimeRequisition);
             }
 

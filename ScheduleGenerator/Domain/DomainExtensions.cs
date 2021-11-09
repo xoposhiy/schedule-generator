@@ -57,7 +57,7 @@ namespace Domain
             var count = 0;
             var prev = -1;
 
-            for (var i = 0; i < 7; i++)
+            for (var i = 1; i < 7; i++)         //index 0 is always null. meetings at 1..6
                 if (byDay[i] != null)
                 {
                     if (prev != -1) count += i - prev - 1;
@@ -70,8 +70,10 @@ namespace Domain
 
         public static int MeetingsCount(this Meeting?[] byDay)
         {
+            if (byDay[0] != null)
+                throw new Exception();
             var count = 0;
-            for (var i = 0; i < 7; i++)
+            for (var i = 1; i < 7; i++)     //meetings at 1..6  always null at 0
                 if (byDay[i] != null)
                     count++;
 

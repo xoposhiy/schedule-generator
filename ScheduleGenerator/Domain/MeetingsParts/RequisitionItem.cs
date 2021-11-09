@@ -62,7 +62,7 @@ namespace Domain.MeetingsParts
         }
     }
 
-    public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
+    public record MeetingTimeRequisition(HashSet<MeetingTime> MeetingTimeChoices);
 
     public sealed record GroupsChoice(MeetingGroup[] Groups)
     {
