@@ -50,26 +50,4 @@ namespace Domain.MeetingsParts
                 MeetingTimePriorities, Teacher, Location, WeekType);
         }
     }
-    public record GroupRequisition(GroupsChoice[] GroupsChoices)
-    {
-        public override string ToString()
-        {
-            return string.Join("; ", GroupsChoices.ToList());
-        }
-    }
-
-    public record MeetingTimeRequisition(HashSet<MeetingTime> MeetingTimeChoices);
-
-    public sealed record GroupsChoice(MeetingGroup[] Groups)
-    {
-        public IEnumerable<MeetingGroup> GetGroupParts()
-        {
-            return Groups.GetGroupParts();
-        }
-
-        public override string ToString()
-        {
-            return string.Join(" ", Groups.ToList());
-        }
-    }
 }

@@ -1,4 +1,6 @@
-﻿namespace Domain.MeetingsParts
+﻿using System.Collections.Generic;
+
+namespace Domain.MeetingsParts
 {
-    public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
+    public record MeetingTimeRequisition(HashSet<MeetingTime> MeetingTimeChoices);
 }

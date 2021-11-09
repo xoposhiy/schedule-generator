@@ -72,8 +72,6 @@ namespace Domain
 
         public static int MeetingsCount(this Meeting?[] byDay)
         {
-            if (byDay[0] != null)
-                throw new Exception();
             var count = 0;
             for (var i = 1; i < 7; i++)     //meetings at 1..6  always null at 0
                 if (byDay[i] != null)
