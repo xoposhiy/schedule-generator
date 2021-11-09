@@ -35,7 +35,7 @@ namespace ScheduleCLI
             return container;
         }
 
-        public static void MakeAndWriteSchedule(SheetNamesConfig config)
+        private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
             var (schedule, _) = solver.GetSolution(new(0, 1, 0));
@@ -44,6 +44,7 @@ namespace ScheduleCLI
             Console.WriteLine(notUsedMeetings);
 
             BuildSchedule(schedule, Repository, config.Schedule);
+            // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             var logger = new Logger("Combined");
 

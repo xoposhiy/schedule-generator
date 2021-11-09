@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Domain.Conversions;
+﻿using Domain.Conversions;
 using Domain.Enums;
 
 namespace Domain.MeetingsParts
 {
-    public class RequisitionItem
+    public class RequisitionItem // TODO krutovsky: to record?
     {
         public readonly LearningPlanItem PlanItem;
         public readonly GroupRequisition[] GroupPriorities;
@@ -41,39 +39,15 @@ namespace Domain.MeetingsParts
             Location = location;
         }
 
-
         public override string ToString()
         {
-            return $"{string.Join<GroupRequisition>(" ", GroupPriorities)}, {Teacher}"; //, {}, {}, {}";
+            return $"{string.Join<GroupRequisition>(" ", GroupPriorities)}, {Teacher}";
         }
 
         public RequisitionItem Copy()
         {
             return new(PlanItem, GroupPriorities, RepetitionsCount,
                 MeetingTimePriorities, Teacher, Location, WeekType);
-        }
-    }
-
-    public record GroupRequisition(GroupsChoice[] GroupsChoices)
-    {
-        public override string ToString()
-        {
-            return string.Join("; ", GroupsChoices.ToList());
-        }
-    }
-
-    public record MeetingTimeRequisition(MeetingTime[] MeetingTimeChoices);
-
-    public sealed record GroupsChoice(MeetingGroup[] Groups)
-    {
-        public IEnumerable<MeetingGroup> GetGroupParts()
-        {
-            return Groups.GetGroupParts();
-        }
-
-        public override string ToString()
-        {
-            return string.Join(" ", Groups.ToList());
         }
     }
 }
