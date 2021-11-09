@@ -182,8 +182,8 @@ namespace Domain.Conversions
                     var groupRequisitions =
                         ParseGroupRequisitions(groupPriorities);
                     var groupSets = groupRequisitions
-                        .SelectMany(s => s.GroupsChoices
-                            .SelectMany(c => c.Groups))
+                        .SelectMany(s => s.GroupsChoices)
+                        .SelectMany(c => c.Groups)
                         .Select(g => g.GetGroupSet()).ToHashSet();
                     if (groupSets.Count != 1)
                         throw new FormatException($"Некорректное описание приоритета групп: {groupPriorities}");

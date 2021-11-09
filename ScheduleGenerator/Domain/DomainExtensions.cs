@@ -259,5 +259,14 @@ namespace Domain
                 .SelectMany(p => p.MeetingTimeChoices)
                 .ToHashSet();
         }
+
+        public static IEnumerable<MeetingTime> GetAllPossibleMeetingTimes()
+        {
+            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                if (day == DayOfWeek.Sunday) continue;
+                for (var i = 1; i < 7; i++) yield return new(day, i);
+            }
+        }
     }
 }

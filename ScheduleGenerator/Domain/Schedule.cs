@@ -98,18 +98,13 @@ namespace Domain
                 foreach (var group in groups)
                 foreach (var time in possibleTimeChoices)
                 foreach (var weekType in weekTypes)
-                {
                     timeConcurrentMeetings.SafeAdd(group, time, weekType, meeting);
-                }
 
                 var weekTypeDegree = meeting.WeekType == WeekType.OddOrEven ? 2 : 1;
                 var groupDegree = meeting.RequisitionItem.GroupPriorities.Sum(g => g.GroupsChoices.Length);
                 MeetingFreedomDegree.Add(meeting, possibleTimeChoices.Count * weekTypeDegree * groupDegree);
 
-                foreach (var timeChoice in possibleTimeChoices)
-                {
-                    MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
-                }
+                foreach (var timeChoice in possibleTimeChoices) MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
             }
         }
 
@@ -133,7 +128,7 @@ namespace Domain
             MeetingFreedomDegree.Clear();
 
             foreach (var baseMeeting in NotUsedMeetings)
-            foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
+            foreach (var filledMeeting in GetFilledMeetings(baseMeeting, false))
                 SubscribeMeetingToCells(filledMeeting);
         }
 
@@ -224,13 +219,21 @@ namespace Domain
                 // .Where(m => MeetingFreedomDegree[m] > 0)
                 .ToList();
             if (placeableMeetings.Count == 0)
-                return Enumerable.Empty<Meeting>();
+            {
+                var ignoredPriorityMeetings = new List<Meeting>();
+                foreach (var baseMeeting in NonPlaceableMeetings)
+                    ignoredPriorityMeetings.AddRange(GetFilledMeetings(baseMeeting, true));
+
+                return ignoredPriorityMeetings;
+                // return Enumerable.Empty<Meeting>();
+            }
+
             var minFreedomMeetings = GetMostNeededMeetings(placeableMeetings);
 
             var meetingsCopies = new List<Meeting>();
             foreach (var baseMeeting in minFreedomMeetings)
             {
-                var filledMeetings = GetFilledMeetings(baseMeeting).ToList();
+                var filledMeetings = GetFilledMeetings(baseMeeting, false).ToList();
                 meetingsCopies.AddRange(filledMeetings);
 
                 if (filledMeetings.Count == 0)
@@ -248,27 +251,30 @@ namespace Domain
             var priorityMeetings = meetings
                 .Where(m => m.Priority == maxPriority)
                 .ToList();
-            
+
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
             // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
             var minFreedomMeetings = priorityMeetings
                 .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
                 .ToList();
-            
+
             return minFreedomMeetings;
         }
 
-        private IEnumerable<Meeting> GetFilledMeetings(Meeting baseMeeting)
+        private IEnumerable<Meeting> GetFilledMeetings(Meeting baseMeeting, bool ignoreTimePriorities)
         {
             var requisitionItem = baseMeeting.RequisitionItem;
             var possibleGroupsChoices = requisitionItem.GroupPriorities
                 .SelectMany(p => p.GroupsChoices);
-            var possibleTimeChoices = requisitionItem.GetAllMeetingTimes();
+            HashSet<MeetingTime> possibleTimeChoices = ignoreTimePriorities
+                ? GetAllPossibleMeetingTimes().ToHashSet()
+                : requisitionItem.GetAllMeetingTimes();
 
             foreach (var groupsChoice in possibleGroupsChoices)
             foreach (var meetingTimeChoice in possibleTimeChoices)
             {
-                var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice);
+                var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice,
+                    ignoreTimePriorities);
                 if (meetingCopy == null) continue;
                 if (meetingCopy.RequiredAdjacentMeeting != null)
                 {
@@ -277,8 +283,7 @@ namespace Domain
                     var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
                         meetingTimeChoice.TimeSlot - 1);
                     var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
-                        groupsChoice,
-                        linkedMeetingTimeChoice);
+                        groupsChoice, linkedMeetingTimeChoice, ignoreTimePriorities);
 
                     if (linkedMeeting == null) continue;
                     meetingCopy.Link(linkedMeeting);
@@ -314,18 +319,11 @@ namespace Domain
 
         private void FillRoomPool(IReadOnlyCollection<string> rooms)
         {
-            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
-            {
-                if (day == DayOfWeek.Sunday) continue;
-                for (var i = 1; i < 7; i++)
-                {
-                    var time = new MeetingTime(day, i);
-                    FreeRoomsByDay.Add(time, rooms.ToHashSet());
-                }
-            }
+            foreach (var time in GetAllPossibleMeetingTimes()) FreeRoomsByDay.Add(time, rooms.ToHashSet());
         }
 
-        private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime)
+        private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime,
+            bool ignoreTimePriorities)
         {
             var meetingCopy = baseMeeting.BasicCopy();
             meetingCopy.Groups = groupsChoice.Groups;
@@ -346,26 +344,26 @@ namespace Domain
             {
                 meetingCopy.WeekType = weekType;
 
-                if (IsMeetingValid(meetingCopy)) return meetingCopy;
+                if (IsMeetingValid(meetingCopy, ignoreTimePriorities)) return meetingCopy;
             }
 
             return null;
         }
 
-        private bool IsMeetingValid(Meeting meeting)
+        private bool IsMeetingValid(Meeting meeting, bool ignoreTimePriorities)
         {
             return !(HasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsMeetingIsExtraForGroup(meeting)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
-                     || !IsTimeAcceptableForTeacher(meeting)
+                     || !(ignoreTimePriorities || IsTimeAcceptableForTeacher(meeting))
                      || IsTeacherIsExtraForGroup(meeting)
                 );
         }
 
         private string? FindFreeRoom(MeetingTime meetingTime, IEnumerable<RoomSpec> roomRequirement)
         {
-            var possibleRooms = (IEnumerable<string>)FreeRoomsByDay[meetingTime];
+            var possibleRooms = (IEnumerable<string>) FreeRoomsByDay[meetingTime];
             foreach (var rs in roomRequirement)
                 possibleRooms = possibleRooms.Intersect(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
