@@ -359,8 +359,8 @@ namespace Domain
                      || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
                      || !timeAcceptableForTeacher
-                     || IsTeacherIsExtraForGroup(meeting)
-                     || IsGroupIsExtraForTeacher(meeting)
+                     || IsTeacherExtraForGroup(meeting)
+                     || IsGroupExtraForTeacher(meeting)
                 );
         }
 
@@ -429,7 +429,7 @@ namespace Domain
             return false;
         }
 
-        private bool IsTeacherIsExtraForGroup(Meeting meetingToAdd)
+        private bool IsTeacherExtraForGroup(Meeting meetingToAdd)
         {
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
@@ -447,10 +447,35 @@ namespace Domain
             return false;
         }
 
-        private bool IsGroupIsExtraForTeacher(Meeting meeting)
+        private bool IsGroupExtraForTeacher(Meeting meeting)
         {
-            // TODO: Implement
-            return false;
+            var allGroups = meeting.RequisitionItem.GetAllGroupParts();
+            var usedGroups = new HashSet<MeetingGroup>();
+            foreach (var group in allGroups)
+            {
+                if (!GroupTeachersByDiscipline.TryGetValue(group, out var byGroup))
+                    continue;
+                if (!byGroup.TryGetValue(meeting.Discipline, out var byDiscipline))
+                    continue;
+                if (!byDiscipline.TryGetValue(meeting.MeetingType, out var byMeetingType))
+                    continue;
+                if (!byMeetingType.TryGetValue(meeting.Teacher, out var meetingCount))
+                    continue;
+                if (meetingCount > 0)
+                    usedGroups.Add(group);
+            }
+            
+            usedGroups.UnionWith(meeting.Groups!.GetGroupParts());
+            foreach (var gr in meeting.RequisitionItem.GroupPriorities)
+            {
+                var possibleGroups = gr.GroupsChoices
+                    .SelectMany(c => c.Groups.GetGroupParts())
+                    .ToHashSet();
+                if (possibleGroups.IsSupersetOf(usedGroups))
+                    return false;
+            }
+            
+            return true;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd)
