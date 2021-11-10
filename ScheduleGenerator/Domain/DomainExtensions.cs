@@ -275,9 +275,8 @@ namespace Domain
 
         public static IEnumerable<MeetingTime> GetAllPossibleMeetingTimes()
         {
-            foreach (var day in WeekDayToIntDict.Keys)
+            foreach (var day in WeekDayToIntDict.Keys.Where(day => day != DayOfWeek.Sunday))
             {
-                if (day == DayOfWeek.Sunday) continue;
                 for (var i = 1; i < 7; i++) yield return new(day, i);
             }
         }

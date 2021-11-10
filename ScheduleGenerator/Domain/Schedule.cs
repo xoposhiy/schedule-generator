@@ -132,12 +132,8 @@ namespace Domain
 
             foreach (var baseMeeting in NotUsedMeetings)
             {
-                var freedomDegree = 0;
-                foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
-                    if (SubscribeMeetingToCells(filledMeeting))
-                        freedomDegree++;
-
-                MeetingFreedomDegree[baseMeeting] = freedomDegree;
+                MeetingFreedomDegree[baseMeeting] = GetFilledMeetings(baseMeeting)
+                    .Count(SubscribeMeetingToCells);
             }
         }
 
@@ -193,9 +189,7 @@ namespace Domain
                     FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Classroom);
                 AddMeetingToGroup(meetingToAdd);
 
-                if (!NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!))
-                    Console.WriteLine($"Cannot remove {meetingToAdd}");
-                // throw new Exception($"Cannot remove {meetingToAdd}");
+                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
 
                 if (isSure) UnsubscribeCollidingMeetings(meetingToAdd);
             }
@@ -259,7 +253,6 @@ namespace Domain
                 .ToList();
 
             var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
-            // Console.WriteLine($"Min Freedom: {minFreedomDegree}");
             var minFreedomMeetings = priorityMeetings
                 .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
                 .ToList();
@@ -367,6 +360,7 @@ namespace Domain
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
                      || !timeAcceptableForTeacher
                      || IsTeacherIsExtraForGroup(meeting)
+                     || IsGroupIsExtraForTeacher(meeting)
                 );
         }
 
@@ -450,6 +444,12 @@ namespace Domain
                     return true;
             }
 
+            return false;
+        }
+
+        private bool IsGroupIsExtraForTeacher(Meeting meeting)
+        {
+            // TODO: Implement
             return false;
         }
 
