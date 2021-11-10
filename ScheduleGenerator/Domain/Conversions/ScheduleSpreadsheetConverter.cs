@@ -4,6 +4,7 @@ using System.Linq;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
+using static Domain.DomainExtensions;
 using static Infrastructure.Extensions;
 
 namespace Domain.Conversions
@@ -184,17 +185,6 @@ namespace Domain.Conversions
                 _ => throw new FormatException("Неизвестная Локация")
             };
         }
-
-        private static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
-        {
-            {DayOfWeek.Monday, 0},
-            {DayOfWeek.Tuesday, 1},
-            {DayOfWeek.Wednesday, 2},
-            {DayOfWeek.Thursday, 3},
-            {DayOfWeek.Friday, 4},
-            {DayOfWeek.Saturday, 5}
-            // { DayOfWeek.Sunday, 6}
-        };
 
         private static void WriteMeeting(Meeting meeting, Dictionary<string, int> groupIndexDict,
             SheetModifier modifier)

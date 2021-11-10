@@ -8,7 +8,6 @@ namespace Domain.Conversions
     {
         public static List<Meeting> ConvertRequisitionToBaseMeeting(RequisitionItem requisitionItem)
         {
-            // TODO krutovsky: fix this evil method [three same for-loop - puke]
             var meetings = new List<Meeting>();
 
             var meetingCount = requisitionItem.RepetitionsCount * (int) requisitionItem.PlanItem.MeetingsPerWeek;

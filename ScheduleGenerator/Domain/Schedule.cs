@@ -129,14 +129,19 @@ namespace Domain
         private void ResetMeetingsSubscriptions()
         {
             timeConcurrentMeetings.Clear();
-            MeetingFreedomDegree.Clear();
 
             foreach (var baseMeeting in NotUsedMeetings)
-            foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
-                SubscribeMeetingToCells(filledMeeting);
+            {
+                var freedomDegree = 0;
+                foreach (var filledMeeting in GetFilledMeetings(baseMeeting))
+                    if (SubscribeMeetingToCells(filledMeeting))
+                        freedomDegree++;
+
+                MeetingFreedomDegree[baseMeeting] = freedomDegree;
+            }
         }
 
-        private void SubscribeMeetingToCells(Meeting filledMeeting)
+        private bool SubscribeMeetingToCells(Meeting filledMeeting)
         {
             var baseMeeting = filledMeeting.BaseMeeting!;
 
@@ -149,7 +154,7 @@ namespace Domain
             foreach (var week in weekTypes)
                 addAny |= timeConcurrentMeetings.SafeAdd(group, time, week, baseMeeting);
 
-            if (addAny) MeetingFreedomDegree.SafeIncrement(baseMeeting);
+            return addAny;
         }
 
         private void UnsubscribeMeetingFromCell(Meeting collidingMeeting, MeetingGroup meetingGroup, MeetingTime time,
@@ -188,7 +193,9 @@ namespace Domain
                     FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Classroom);
                 AddMeetingToGroup(meetingToAdd);
 
-                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+                if (!NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!))
+                    Console.WriteLine($"Cannot remove {meetingToAdd}");
+                // throw new Exception($"Cannot remove {meetingToAdd}");
 
                 if (isSure) UnsubscribeCollidingMeetings(meetingToAdd);
             }
@@ -210,7 +217,8 @@ namespace Domain
 
                 RemoveMeetingFromGroup(meetingToRemove);
 
-                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
+                if (!NotUsedMeetings.Add(meetingToRemove.BaseMeeting!))
+                    Console.WriteLine($"Cannot add {meetingToRemove}");
 
                 if (isSure) ResetMeetingsSubscriptions();
             }
@@ -220,16 +228,11 @@ namespace Domain
         {
             var placeableMeetings = NotUsedMeetings
                 .Where(m => !NonPlaceableMeetings.Contains(m))
-                // .Where(m => MeetingFreedomDegree[m] > 0)
                 .ToList();
             if (placeableMeetings.Count == 0)
             {
-                var ignoredPriorityMeetings = new List<Meeting>();
-                foreach (var baseMeeting in NonPlaceableMeetings)
-                    ignoredPriorityMeetings.AddRange(GetFilledMeetings(baseMeeting, true));
-
-                return ignoredPriorityMeetings;
-                // return Enumerable.Empty<Meeting>();
+                return NotUsedMeetings.ToList()
+                    .SelectMany(b => GetFilledMeetings(b, true));
             }
 
             var minFreedomMeetings = GetMostNeededMeetings(placeableMeetings);
@@ -242,7 +245,6 @@ namespace Domain
 
                 if (filledMeetings.Count == 0)
                     NonPlaceableMeetings.Add(baseMeeting);
-                // NotUsedMeetings.Remove(baseMeeting);
             }
 
             if (meetingsCopies.Count != 0) return meetingsCopies;
@@ -280,13 +282,13 @@ namespace Domain
                 var meetingCopy = TryCreateFilledMeeting(baseMeeting, groupsChoice, meetingTimeChoice,
                     ignoreTimePriorities);
                 if (meetingCopy == null) continue;
-                if (meetingCopy.RequiredAdjacentMeeting != null)
+                if (baseMeeting.RequiredAdjacentMeeting != null)
                 {
                     if (meetingTimeChoice.TimeSlot < 2)
                         continue;
                     var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
                         meetingTimeChoice.TimeSlot - 1);
-                    var linkedMeeting = TryCreateFilledMeeting(meetingCopy.RequiredAdjacentMeeting,
+                    var linkedMeeting = TryCreateFilledMeeting(baseMeeting.RequiredAdjacentMeeting,
                         groupsChoice, linkedMeetingTimeChoice, ignoreTimePriorities);
 
                     if (linkedMeeting == null) continue;
@@ -303,9 +305,11 @@ namespace Domain
             {
                 var requiredAdjacentMeetingType = meeting.PlanItem.RequiredAdjacentMeetingType;
                 if (requiredAdjacentMeetingType == null) continue;
+                if (meeting.RequiredAdjacentMeeting != null) continue;
                 var linkedMeeting = notUsedMeetings
+                    .Where(m => m.RequiredAdjacentMeeting == null)
+                    .Where(m => m.Teacher.Equals(meeting.Teacher))
                     .FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
-                                         && e.Teacher.Equals(meeting.Teacher)
                                          && e.MeetingType.Equals(requiredAdjacentMeetingType)
                                          && !ReferenceEquals(e, meeting));
                 if (linkedMeeting == null)
@@ -356,11 +360,12 @@ namespace Domain
 
         private bool IsMeetingValid(Meeting meeting, bool ignoreTimePriorities)
         {
+            var timeAcceptableForTeacher = ignoreTimePriorities || IsTimeAcceptableForTeacher(meeting);
             return !(HasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsMeetingIsExtraForGroup(meeting)
                      || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
-                     || !(ignoreTimePriorities || IsTimeAcceptableForTeacher(meeting))
+                     || !timeAcceptableForTeacher
                      || IsTeacherIsExtraForGroup(meeting)
                 );
         }

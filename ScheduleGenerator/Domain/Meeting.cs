@@ -16,11 +16,11 @@ namespace Domain
         public bool IsRoomNeeded => Location == Location.MathMeh && Discipline.Name != English;
         public double Weight => WeekType == WeekType.All ? 1 : 0.5;
 
-
         public WeekType WeekType;
         public MeetingGroup[]? Groups;
         public string? Classroom;
         public MeetingTime? MeetingTime;
+        
         public Meeting? BaseMeeting;
         public Meeting? RequiredAdjacentMeeting;
 
@@ -35,7 +35,7 @@ namespace Domain
             return new(WeekType, RequisitionItem)
             {
                 BaseMeeting = this,
-                RequiredAdjacentMeeting = RequiredAdjacentMeeting
+                // RequiredAdjacentMeeting = RequiredAdjacentMeeting
             };
         }
 

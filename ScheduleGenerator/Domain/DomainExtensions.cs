@@ -262,9 +262,20 @@ namespace Domain
                 .ToHashSet();
         }
 
+        public static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
+        {
+            {DayOfWeek.Monday, 0},
+            {DayOfWeek.Tuesday, 1},
+            {DayOfWeek.Wednesday, 2},
+            {DayOfWeek.Thursday, 3},
+            {DayOfWeek.Friday, 4},
+            {DayOfWeek.Saturday, 5}
+            // { DayOfWeek.Sunday, 6}
+        };
+
         public static IEnumerable<MeetingTime> GetAllPossibleMeetingTimes()
         {
-            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+            foreach (var day in WeekDayToIntDict.Keys)
             {
                 if (day == DayOfWeek.Sunday) continue;
                 for (var i = 1; i < 7; i++) yield return new(day, i);
