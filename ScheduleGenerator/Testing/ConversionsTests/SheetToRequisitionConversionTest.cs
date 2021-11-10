@@ -26,6 +26,8 @@ namespace Testing.ConversionsTests
 
         [TestCase("пн,вт: 1,4 пары",
             "Monday 1\nMonday 4\nTuesday 1\nTuesday 4")]
+        [TestCase("пн,вт: 1,4",
+            "Monday 1\nMonday 4\nTuesday 1\nTuesday 4")]
         [TestCase("вт: 1-5 пара\nпт: 3-6 пара",
             "Tuesday 1\nTuesday 2\nTuesday 3\nTuesday 4\nTuesday 5\n\nFriday 3\nFriday 4\nFriday 5\nFriday 6")]
         [TestCase("",

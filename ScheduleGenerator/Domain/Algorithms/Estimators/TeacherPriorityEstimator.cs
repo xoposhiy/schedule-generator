@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Domain.MeetingsParts;
 using Infrastructure;
 
@@ -44,7 +43,7 @@ namespace Domain.Algorithms.Estimators
             var prioritiesLength = priorities.Length;
             for (var i = 0; i < prioritiesLength; i++)
                 if (priorities[i].MeetingTimeChoices.Contains(meetingTime))
-                    return (double) i / prioritiesLength;
+                    return (double) i / prioritiesLength / 2;
 
             return 1;
         }

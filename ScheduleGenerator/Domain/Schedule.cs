@@ -383,7 +383,7 @@ namespace Domain
 
         private static bool IsTimeAcceptableForTeacher(Meeting meeting)
         {
-            var meetingTime = meeting.MeetingTime;
+            var meetingTime = meeting.MeetingTime!;
             return meeting.RequisitionItem.MeetingTimePriorities
                 .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
         }

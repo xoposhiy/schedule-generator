@@ -12,16 +12,12 @@ namespace Domain.Conversions
             var meetings = new List<Meeting>();
 
             var meetingCount = requisitionItem.RepetitionsCount * (int) requisitionItem.PlanItem.MeetingsPerWeek;
-            if (requisitionItem.PlanItem.MeetingsPerWeek % 1 == 0)
-            {
-                for (var i = 0; i < meetingCount; i++)
-                    meetings.Add(new(requisitionItem.WeekType, requisitionItem));
-            }
-            else
-            {
-                for (var i = 0; i < meetingCount; i++)
-                    meetings.Add(new(WeekType.All, requisitionItem));
 
+            for (var i = 0; i < meetingCount; i++)
+                meetings.Add(new(WeekType.All, requisitionItem));
+
+            if (requisitionItem.PlanItem.MeetingsPerWeek % 1 != 0)
+            {
                 var weekType = requisitionItem.WeekType != WeekType.All
                     ? requisitionItem.WeekType
                     : WeekType.OddOrEven;
