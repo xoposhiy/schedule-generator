@@ -43,7 +43,7 @@ namespace Domain.Algorithms.Solvers
                 currentSchedule.AddMeeting(nextMeeting, true);
             }
 
-            Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
+            // Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             // Console.WriteLine($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);

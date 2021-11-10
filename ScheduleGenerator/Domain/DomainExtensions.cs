@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
@@ -54,6 +55,11 @@ namespace Domain
             };
         }
 
+        public static WeekType[] GetPossibleWeekTypes(this WeekType weekType)
+        {
+            return weekType == WeekType.OddOrEven ? OddAndEven : GetWeekTypes(weekType);
+        }
+
         public static int GetMeetingsSpacesCount(this Meeting?[] byDay)
         {
             var count = 0;
@@ -83,6 +89,7 @@ namespace Domain
 
     public static class DictionaryExtensions
     {
+        // TODO krutovksy: List -> ICollection?
         public static void SafeAdd<TKey, TValue>(this Dictionary<TKey, List<TValue>> dict, TKey key, TValue value)
             where TKey : notnull
         {
@@ -140,6 +147,17 @@ namespace Domain
 
                 byDay[timeSlot] = meeting;
             }
+        }
+
+        public static bool TryGetValue<TKey1, TKey2, TValue>(
+            this Dictionary<TKey1, Dictionary<TKey2, TValue>> dictionary,
+            TKey1 key1, TKey2 key2, [MaybeNullWhen(false)] out TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+        {
+            value = default;
+            if (!dictionary.TryGetValue(key1, out var byKey1)) return false;
+            return byKey1.TryGetValue(key2, out value);
         }
 
         public static IEnumerable<Meeting?[]> GetDaysByMeeting<TKey1>(

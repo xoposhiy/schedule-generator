@@ -338,9 +338,9 @@ namespace Domain.Conversions
 
         private static void BuildSchedulePatternByTeacher(this SheetModifier modifier, List<string> teachers)
         {
-            modifier.ColorField(teachers.Count).Execute();
-            modifier.BuildTimeBar().Execute();
-            modifier.BuildTeachersHeaders(teachers)
+            modifier.ColorField(teachers.Count)
+                .BuildTimeBar()
+                .BuildTeachersHeaders(teachers)
                 .Execute();
         }
 
@@ -350,7 +350,8 @@ namespace Domain.Conversions
             foreach (var teacher in teachers.Select(HeaderCellData))
             {
                 modifier.WriteRange(HeadersRowOffset, startColumn, new() {new() {teacher}})
-                    .AddBorders(HeadersRowOffset, startColumn);
+                    .AddBorders(HeadersRowOffset, startColumn)
+                    .MergeCell(HeadersRowOffset, startColumn, 2, 1);
                 startColumn++;
             }
 

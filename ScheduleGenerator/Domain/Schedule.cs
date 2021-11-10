@@ -91,9 +91,7 @@ namespace Domain
                 var possibleTimeChoices = meeting.RequisitionItem.GetAllMeetingTimes();
                 var groups = meeting.RequisitionItem.GetAllGroupParts();
 
-                WeekType[] weekTypes = meeting.WeekType is WeekType.All or WeekType.OddOrEven
-                    ? ArrayExtensions.OddAndEven
-                    : new[] {meeting.WeekType};
+                WeekType[] weekTypes = meeting.WeekType.GetPossibleWeekTypes();
 
                 foreach (var group in groups)
                 foreach (var time in possibleTimeChoices)
@@ -119,8 +117,7 @@ namespace Domain
             foreach (var group in meeting.Groups!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!timeConcurrentMeetings[group].TryGetValue(time, out var byTime)) continue;
-                if (!byTime.TryGetValue(weekType, out var concurrentMeetings)) continue;
+                if (!timeConcurrentMeetings[group].TryGetValue(time, weekType, out var concurrentMeetings)) continue;
                 foreach (var concurrentMeeting in concurrentMeetings.ToList())
                     UnsubscribeMeetingFromCell(concurrentMeeting, group, time, weekType);
             }
@@ -211,8 +208,7 @@ namespace Domain
 
                 RemoveMeetingFromGroup(meetingToRemove);
 
-                if (!NotUsedMeetings.Add(meetingToRemove.BaseMeeting!))
-                    Console.WriteLine($"Cannot add {meetingToRemove}");
+                NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
 
                 if (isSure) ResetMeetingsSubscriptions();
             }
@@ -247,14 +243,14 @@ namespace Domain
 
         private List<Meeting> GetMostNeededMeetings(List<Meeting> meetings)
         {
-            var maxPriority = meetings.Max(m => m.Priority);
+            var priority = meetings.Max(m => m.Priority);
             var priorityMeetings = meetings
-                .Where(m => m.Priority == maxPriority)
+                .Where(m => m.Priority == priority)
                 .ToList();
 
-            var minFreedomDegree = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
+            var minFreedom = priorityMeetings.Min(m => MeetingFreedomDegree[m]);
             var minFreedomMeetings = priorityMeetings
-                .Where(m => MeetingFreedomDegree[m] == minFreedomDegree)
+                .Where(m => MeetingFreedomDegree[m] == minFreedom)
                 .ToList();
 
             return minFreedomMeetings;
@@ -338,7 +334,7 @@ namespace Domain
             }
 
             WeekType[] weekTypes = baseMeeting.WeekType == WeekType.OddOrEven
-                ? new[] {WeekType.Odd, WeekType.Even}
+                ? ArrayExtensions.OddAndEven
                 : new[] {baseMeeting.WeekType};
 
             foreach (var weekType in weekTypes)
@@ -420,9 +416,7 @@ namespace Domain
             var additionalWeight = meetingToAdd.Weight;
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup,
-                    out var byGroup)) continue;
-                if (!byGroup.TryGetValue(planItem, out var weight)) continue;
+                if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, planItem, out var weight)) continue;
                 if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
             }
 
@@ -431,11 +425,11 @@ namespace Domain
 
         private bool IsTeacherExtraForGroup(Meeting meetingToAdd)
         {
+            var discipline = meetingToAdd.Discipline;
+            
             foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
             {
-                if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup,
-                    out var byGroup)) continue;
-                if (!byGroup.TryGetValue(meetingToAdd.Discipline,
+                if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup, discipline,
                     out var byDiscipline)) continue;
                 if (!byDiscipline.TryGetValue(meetingToAdd.MeetingType,
                     out var byType)) continue;
@@ -449,26 +443,24 @@ namespace Domain
 
         private bool IsGroupExtraForTeacher(Meeting meeting)
         {
+            var discipline = meeting.Discipline;
+            var meetingType = meeting.MeetingType;
+            var teacher = meeting.Teacher;
             var allGroups = meeting.RequisitionItem.GetAllGroupParts();
             var usedGroups = new HashSet<MeetingGroup>();
             foreach (var group in allGroups)
             {
-                if (!GroupTeachersByDiscipline.TryGetValue(group, out var byGroup))
+                if (!GroupTeachersByDiscipline.TryGetValue(group, discipline, out var byDiscipline))
                     continue;
-                if (!byGroup.TryGetValue(meeting.Discipline, out var byDiscipline))
-                    continue;
-                if (!byDiscipline.TryGetValue(meeting.MeetingType, out var byMeetingType))
-                    continue;
-                if (!byMeetingType.TryGetValue(meeting.Teacher, out var meetingCount))
-                    continue;
+                if (!byDiscipline.TryGetValue(meetingType, teacher, out var meetingCount)) continue;
                 if (meetingCount > 0)
                     usedGroups.Add(group);
             }
             
             usedGroups.UnionWith(meeting.Groups!.GetGroupParts());
-            foreach (var gr in meeting.RequisitionItem.GroupPriorities)
+            foreach (var groupRequisition in meeting.RequisitionItem.GroupPriorities)
             {
-                var possibleGroups = gr.GroupsChoices
+                var possibleGroups = groupRequisition.GroupsChoices
                     .SelectMany(c => c.Groups.GetGroupParts())
                     .ToHashSet();
                 if (possibleGroups.IsSupersetOf(usedGroups))
@@ -490,6 +482,7 @@ namespace Domain
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem, value);
 
+                // TODO krutovsky: more SafeAdd
                 if (!GroupTeachersByDiscipline[meetingGroup].ContainsKey(discipline))
                     GroupTeachersByDiscipline[meetingGroup].Add(discipline, new());
 
@@ -510,8 +503,8 @@ namespace Domain
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlot] = null;
 
-                GroupLearningPlanItemsCount.SafeDecrement(meetingGroup, planItem, value);
-                GroupTeachersByDiscipline[meetingGroup][discipline][meetingType][teacher] -= value;
+                GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem, -value);
+                GroupTeachersByDiscipline[meetingGroup][discipline].SafeIncrement(meetingType, teacher, -value);
             }
         }
     }
