@@ -241,17 +241,15 @@ namespace Domain.Conversions
         // ReSharper disable once UnusedMember.Global
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
-            // TODO krutovsky: generate header
             var rows = schedule.GetMeetings()
                 .OrderBy(m => (m.MeetingTime!.Day, m.MeetingTime!.TimeSlot))
                 .Select(GetRowMeetingRaw)
                 .ToList();
 
-            repository.ClearCellRange(sheetName, 2, 0, 200, 20);
+            repository.ClearCellRange(sheetName, 2, 0, rows.Count * 2, rows[0].Count);
 
             repository
                 .ModifySpreadSheet(sheetName)
-                // .ClearAll()
                 .WriteRange(2, 0, rows)
                 .Execute();
         }

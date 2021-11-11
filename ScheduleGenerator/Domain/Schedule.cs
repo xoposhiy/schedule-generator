@@ -23,7 +23,7 @@ namespace Domain
         public readonly HashSet<Meeting> NotUsedMeetings;
         public readonly HashSet<Meeting> NonPlaceableMeetings = new();
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
-        public readonly Dictionary<RoomSpec, List<string>> RoomsBySpec = new();
+        public readonly Dictionary<RoomSpec, HashSet<string>> RoomsBySpec = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
             GroupMeetingsByTime = new();
@@ -91,7 +91,7 @@ namespace Domain
                 var possibleTimeChoices = meeting.RequisitionItem.GetAllMeetingTimes();
                 var groups = meeting.RequisitionItem.GetAllGroupParts();
 
-                WeekType[] weekTypes = meeting.WeekType.GetPossibleWeekTypes();
+                var weekTypes = meeting.WeekType.GetPossibleWeekTypes();
 
                 foreach (var group in groups)
                 foreach (var time in possibleTimeChoices)
@@ -261,7 +261,7 @@ namespace Domain
             var requisitionItem = baseMeeting.RequisitionItem;
             var possibleGroupsChoices = requisitionItem.GroupPriorities
                 .SelectMany(p => p.GroupsChoices);
-            HashSet<MeetingTime> possibleTimeChoices = ignoreTimePriorities
+            var possibleTimeChoices = ignoreTimePriorities
                 ? GetAllPossibleMeetingTimes().ToHashSet()
                 : requisitionItem.GetAllMeetingTimes();
 
@@ -297,7 +297,7 @@ namespace Domain
                 if (meeting.RequiredAdjacentMeeting != null) continue;
                 var linkedMeeting = notUsedMeetings
                     .Where(m => m.RequiredAdjacentMeeting == null)
-                    .Where(m => m.Teacher.Equals(meeting.Teacher))
+                    .Where(m => m.Teacher == meeting.Teacher)
                     .FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
                                          && e.MeetingType.Equals(requiredAdjacentMeetingType)
                                          && !ReferenceEquals(e, meeting));
@@ -333,9 +333,9 @@ namespace Domain
                 meetingCopy.Classroom = room;
             }
 
-            WeekType[] weekTypes = baseMeeting.WeekType == WeekType.OddOrEven
-                ? ArrayExtensions.OddAndEven
-                : new[] {baseMeeting.WeekType};
+            WeekType[] weekTypes = baseMeeting.WeekType == WeekType.All
+                ? ArrayExtensions.All
+                : baseMeeting.WeekType.GetPossibleWeekTypes();
 
             foreach (var weekType in weekTypes)
             {
@@ -379,8 +379,7 @@ namespace Domain
         private static bool IsTimeAcceptableForTeacher(Meeting meeting)
         {
             var meetingTime = meeting.MeetingTime!;
-            return meeting.RequisitionItem.MeetingTimePriorities
-                .Any(timePriority => timePriority.MeetingTimeChoices.Contains(meetingTime));
+            return meeting.RequisitionItem.GetAllMeetingTimes().Contains(meetingTime);
         }
 
         private bool HasMeetingAlreadyAtThisTime(Meeting meeting)

@@ -42,13 +42,13 @@ namespace Domain
                     cache.Add(group);
                 }
 
-            MeetingGroupsCache[groups] = cache;
-            return cache;
+            return MeetingGroupsCache[groups] = cache;
         }
 
         public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};
         public static readonly WeekType[] Odd = {WeekType.Odd};
         public static readonly WeekType[] Even = {WeekType.Even};
+        public static readonly WeekType[] All = {WeekType.All};
 
         public static WeekType[] GetWeekTypes(this WeekType weekType)
         {
@@ -96,7 +96,6 @@ namespace Domain
 
     public static class DictionaryExtensions
     {
-        // TODO krutovksy: List -> ICollection?
         public static void SafeAdd<TKey, TValue>(this Dictionary<TKey, List<TValue>> dict, TKey key, TValue value)
             where TKey : notnull
         {
@@ -280,11 +279,19 @@ namespace Domain
                 .Distinct();
         }
 
-        public static HashSet<MeetingTime> GetAllMeetingTimes(this RequisitionItem requisitionItem)
+        private static readonly Dictionary<RequisitionItem, HashSet<MeetingTime>>
+            RequisitionToMeetingTimesCache = new();
+
+        public static IReadOnlyCollection<MeetingTime> GetAllMeetingTimes(this RequisitionItem requisitionItem)
         {
-            return requisitionItem.MeetingTimePriorities
+            if (RequisitionToMeetingTimesCache.ContainsKey(requisitionItem))
+                return RequisitionToMeetingTimesCache[requisitionItem];
+
+            var meetingTimes = requisitionItem.MeetingTimePriorities
                 .SelectMany(p => p.MeetingTimeChoices)
                 .ToHashSet();
+
+            return RequisitionToMeetingTimesCache[requisitionItem] = meetingTimes;
         }
 
         public static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
