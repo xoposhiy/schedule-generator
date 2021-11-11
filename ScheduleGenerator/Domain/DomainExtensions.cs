@@ -46,8 +46,8 @@ namespace Domain
         }
 
         public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};
-        public static readonly WeekType[] Odd = {WeekType.Odd};
-        public static readonly WeekType[] Even = {WeekType.Even};
+        private static readonly WeekType[] Odd = {WeekType.Odd};
+        private static readonly WeekType[] Even = {WeekType.Even};
         public static readonly WeekType[] All = {WeekType.All};
 
         public static WeekType[] GetWeekTypes(this WeekType weekType)
@@ -275,7 +275,7 @@ namespace Domain
         {
             return requisitionItem.GroupPriorities
                 .SelectMany(g => g.GroupsChoices)
-                .SelectMany(g => g.Groups.GetGroupParts())
+                .SelectMany(g => g.GetGroupParts())
                 .Distinct();
         }
 

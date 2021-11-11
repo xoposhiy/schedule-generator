@@ -17,10 +17,7 @@ namespace Domain
         public double Weight => WeekType == WeekType.All ? 1 : 0.5;
 
         public WeekType WeekType;
-
-        // TODO krutovsky: To GroupChoice?
-        public MeetingGroup[]? Groups;
-        
+        public GroupsChoice? GroupsChoice;
         public string? Classroom;
         public MeetingTime? MeetingTime;
         
@@ -37,14 +34,13 @@ namespace Domain
         {
             return new(WeekType, RequisitionItem)
             {
-                BaseMeeting = this,
-                // RequiredAdjacentMeeting = RequiredAdjacentMeeting
+                BaseMeeting = this
             };
         }
 
         public override string ToString()
         {
-            var groupsString = Groups == null ? null : string.Join<MeetingGroup>(" ", Groups);
+            var groupsString = GroupsChoice?.ToString();
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }

@@ -48,13 +48,13 @@ namespace ScheduleCLI
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[1]);
+            var (schedule, _) = solver.GetSolution(TimeSpans[0]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             Console.WriteLine(notUsedMeetings);
 
-            BuildSchedule(schedule, Repository, config.Schedule);
-            // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
+            // BuildSchedule(schedule, Repository, config.Schedule);
+            BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             var logger = new Logger("Combined");
 

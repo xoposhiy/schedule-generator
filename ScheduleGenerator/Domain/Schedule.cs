@@ -114,7 +114,7 @@ namespace Domain
         private void UnsubscribeCollidingMeetings(Meeting meeting)
         {
             var time = meeting.MeetingTime!;
-            foreach (var group in meeting.Groups!.GetGroupParts())
+            foreach (var group in meeting.GroupsChoice!.GetGroupParts())
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 if (!timeConcurrentMeetings[group].TryGetValue(time, weekType, out var concurrentMeetings)) continue;
@@ -143,7 +143,7 @@ namespace Domain
 
             var addAny = false;
 
-            foreach (var group in filledMeeting.Groups!.GetGroupParts())
+            foreach (var group in filledMeeting.GroupsChoice!.GetGroupParts())
             foreach (var week in weekTypes)
                 addAny |= timeConcurrentMeetings.SafeAdd(group, time, week, baseMeeting);
 
@@ -323,7 +323,7 @@ namespace Domain
             bool ignoreTimePriorities)
         {
             var meetingCopy = baseMeeting.BasicCopy();
-            meetingCopy.Groups = groupsChoice.Groups;
+            meetingCopy.GroupsChoice = groupsChoice;
             meetingCopy.MeetingTime = meetingTime;
 
             if (baseMeeting.IsRoomNeeded)
@@ -385,7 +385,7 @@ namespace Domain
         private bool HasMeetingAlreadyAtThisTime(Meeting meeting)
         {
             var timeSlot = meeting.MeetingTime!.TimeSlot;
-            return meeting.Groups!.GetGroupParts()
+            return meeting.GroupsChoice!.GetGroupParts()
                 .SelectMany(g => GroupMeetingsByTime.GetDaysByMeeting(g, meeting))
                 .HasMeetingsAtTime(timeSlot);
         }
@@ -398,7 +398,7 @@ namespace Domain
                 .Where(ts => ts is > 0 and < 7)
                 .ToList();
             var location = meeting.Location;
-            foreach (var group in meeting.Groups!.GetGroupParts())
+            foreach (var group in meeting.GroupsChoice!.GetGroupParts())
             foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(group, meeting))
             foreach (var timeSlot in timeSlots)
             {
@@ -413,7 +413,7 @@ namespace Domain
         {
             var planItem = meetingToAdd.PlanItem;
             var additionalWeight = meetingToAdd.Weight;
-            foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
+            foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             {
                 if (!GroupLearningPlanItemsCount.TryGetValue(meetingGroup, planItem, out var weight)) continue;
                 if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
@@ -425,8 +425,8 @@ namespace Domain
         private bool IsTeacherExtraForGroup(Meeting meetingToAdd)
         {
             var discipline = meetingToAdd.Discipline;
-            
-            foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
+
+            foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             {
                 if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup, discipline,
                     out var byDiscipline)) continue;
@@ -455,8 +455,8 @@ namespace Domain
                 if (meetingCount > 0)
                     usedGroups.Add(group);
             }
-            
-            usedGroups.UnionWith(meeting.Groups!.GetGroupParts());
+
+            usedGroups.UnionWith(meeting.GroupsChoice!.GetGroupParts());
             foreach (var groupRequisition in meeting.RequisitionItem.GroupPriorities)
             {
                 var possibleGroups = groupRequisition.GroupsChoices
@@ -476,7 +476,7 @@ namespace Domain
             var teacher = meetingToAdd.Teacher;
             var value = meetingToAdd.Weight;
             var planItem = meetingToAdd.PlanItem;
-            foreach (var meetingGroup in meetingToAdd.Groups!.GetGroupParts())
+            foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             {
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem, value);
@@ -497,7 +497,7 @@ namespace Domain
             var teacher = meetingToRemove.Teacher;
             var value = meetingToRemove.Weight;
             var planItem = meetingToRemove.PlanItem;
-            foreach (var meetingGroup in meetingToRemove.Groups!.GetGroupParts())
+            foreach (var meetingGroup in meetingToRemove.GroupsChoice!.GetGroupParts())
             {
                 foreach (var weekType in meetingToRemove.WeekType.GetWeekTypes())
                     GroupMeetingsByTime[meetingGroup][weekType][day][timeSlot] = null;

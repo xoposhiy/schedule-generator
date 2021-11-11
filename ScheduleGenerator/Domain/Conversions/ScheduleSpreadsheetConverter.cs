@@ -60,7 +60,7 @@ namespace Domain.Conversions
         {
             var meetingSet = schedule.GetMeetings();
             var groupNames = meetingSet
-                .SelectMany(m => m.Groups!)
+                .SelectMany(m => m.GroupsChoice!.Groups)
                 .Select(g => g.GroupName)
                 .Distinct()
                 .OrderBy(gn => gn)
@@ -195,7 +195,7 @@ namespace Domain.Conversions
             var startRow = GetStartRow(meeting);
             var height = (int) (meeting.Weight * WeekTypesCount);
 
-            var groups = meeting.Groups!.OrderBy(m => m.GroupName).ToList();
+            var groups = meeting.GroupsChoice!.Groups.OrderBy(m => m.GroupName).ToList();
             var firstMeetingPos = groupIndexDict[groups[0].GroupName];
             for (var i = 0; i < groups.Count; i++)
             {
@@ -258,8 +258,8 @@ namespace Domain.Conversions
         {
             var timeSlot = meeting.MeetingTime!.TimeSlot;
             var timeSlotIndex = timeSlot - 1;
-            var groups = meeting.Groups!.Select(g => g.GroupName[^1]).Distinct();
-            var groupParts = meeting.Groups!.Select(g => GroupPartToString(g.GroupPart)).Distinct();
+            var groups = meeting.GroupsChoice!.Groups.Select(g => g.GroupName[^1]).Distinct();
+            var groupParts = meeting.GroupsChoice!.Groups.Select(g => GroupPartToString(g.GroupPart)).Distinct();
             var timeStart = meeting.Location == Location.Pe ? PeClassStartTimes : MeetingStartTimes;
             var timeEnd = meeting.Location == Location.Pe ? PeClassEndTimes : MeetingEndTimes;
             return new()
@@ -333,7 +333,7 @@ namespace Domain.Conversions
 
             modifier.BuildSchedulePatternByTeacher(teachers);
 
-            // modifier.FillScheduleData(meetingSet, groupNames);
+            modifier.FillScheduleDataByTeacher(meetingSet, teachers);
         }
 
         private static void BuildSchedulePatternByTeacher(this SheetModifier modifier, List<string> teachers)
@@ -356,6 +356,28 @@ namespace Domain.Conversions
             }
 
             return modifier;
+        }
+
+        private static void FillScheduleDataByTeacher(this SheetModifier modifier, IEnumerable<Meeting> meetings,
+            List<string> teachers)
+        {
+            foreach (var meeting in meetings)
+            {
+                var data = MeetingCellData(meeting);
+                var payload = new List<List<CellData>> {new() {data}};
+
+                var startRow = GetStartRow(meeting);
+                var height = (int) (meeting.Weight * WeekTypesCount);
+
+                var startColumn = teachers.FindIndex(t => t == meeting.Teacher.Name) + HeadersColumnOffset;
+
+                modifier
+                    .WriteRange(startRow, startColumn, payload)
+                    .AddBorders(startRow, startColumn, height)
+                    .MergeCell(startRow, startColumn, height, 1);
+            }
+
+            modifier.Execute();
         }
     }
 }

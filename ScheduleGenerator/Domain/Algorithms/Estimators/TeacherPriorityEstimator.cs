@@ -1,5 +1,4 @@
 using System;
-using Domain.MeetingsParts;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
@@ -33,7 +32,7 @@ namespace Domain.Algorithms.Estimators
             return $"{meeting.Discipline} " +
                    $"{meeting.Teacher} " +
                    $"{meeting.MeetingType} has {(int) priority}-th time priority ({meeting.MeetingTime}) for " +
-                   $"[{string.Join<MeetingGroup>(" ", meeting.Groups!)}]";
+                   $"[{meeting.GroupsChoice}]";
         }
 
         private static double FindPriorityPenalty(Meeting meeting)
