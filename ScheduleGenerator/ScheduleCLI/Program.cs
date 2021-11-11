@@ -53,8 +53,8 @@ namespace ScheduleCLI
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             Console.WriteLine(notUsedMeetings);
 
-            // BuildSchedule(schedule, Repository, config.Schedule);
-            BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
+            BuildSchedule(schedule, Repository, config.Schedule);
+            // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             var logger = new Logger("Combined");
 

@@ -111,8 +111,7 @@ namespace Domain
         {
             if (!dictionary.ContainsKey(key1)) dictionary.Add(key1, new());
 
-            var hashSet = dictionary[key1];
-            return hashSet.Add(value);
+            return dictionary[key1].Add(value);
         }
 
         public static bool SafeAdd<TKey1, TKey2, TKey3, TValue>(
@@ -122,13 +121,7 @@ namespace Domain
             where TKey2 : notnull
             where TKey3 : notnull
         {
-            if (!dictionary.ContainsKey(key1)) dictionary.Add(key1, new());
-
-            var byKey1 = dictionary[key1];
-
-            if (!byKey1.ContainsKey(key2)) byKey1.Add(key2, new());
-
-            var byKey2 = byKey1[key2];
+            var byKey2 = dictionary.SafeAddAndReturn(key1, key2, new());
 
             return byKey2.SafeAdd(key3, value);
         }
@@ -145,14 +138,24 @@ namespace Domain
 
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!byKey1.ContainsKey(weekType)) byKey1[weekType] = new();
-                var byWeekType = byKey1[weekType];
-
-                if (!byWeekType.ContainsKey(day)) byWeekType[day] = new Meeting[7];
-                var byDay = byWeekType[day];
-
+                var byDay = byKey1.SafeAddAndReturn(weekType, day, new Meeting[7]);
+                
                 byDay[timeSlot] = meeting;
             }
+        }
+
+        public static TValue SafeAddAndReturn<TKey1, TKey2, TValue>(
+            this Dictionary<TKey1, Dictionary<TKey2, TValue>> dictionary, TKey1 key1, TKey2 key2, TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+        {
+            if (!dictionary.ContainsKey(key1)) dictionary.Add(key1, new());
+
+            var byKey1 = dictionary[key1];
+
+            if (!byKey1.ContainsKey(key2)) byKey1.Add(key2, value);
+
+            return byKey1[key2];
         }
 
         public static bool TryGetValue<TKey1, TKey2, TValue>(
@@ -174,8 +177,7 @@ namespace Domain
             var day = meeting.MeetingTime!.Day;
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!dictionary.TryGetValue(key1, out var byKey1)) continue;
-                if (!byKey1.TryGetValue(weekType, out var byWeekType)) continue;
+                if (!dictionary.TryGetValue(key1, weekType, out var byWeekType)) continue;
                 if (!byWeekType.TryGetValue(day, out var byDay)) continue;
                 yield return byDay;
             }
@@ -190,6 +192,7 @@ namespace Domain
             return false;
         }
 
+/*
         public static IEnumerable<(TKey1, WeekType, DayOfWeek, Meeting?[])> Enumerate<TKey1>(
             this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary)
             where TKey1 : notnull
@@ -199,6 +202,7 @@ namespace Domain
             foreach (var (day, byDay) in byWeekType)
                 yield return (key1, weekType, day, byDay);
         }
+*/
 
         public static void SafeIncrement<TKey>(this Dictionary<TKey, int> dictionary, TKey key)
             where TKey : notnull

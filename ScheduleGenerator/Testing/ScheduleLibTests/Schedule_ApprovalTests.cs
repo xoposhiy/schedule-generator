@@ -11,7 +11,6 @@ using static Domain.DomainExtensions;
 namespace Testing.ScheduleLibTests
 {
     [TestFixture]
-    [Explicit]
     [UseReporter(typeof(DiffReporter))]
     public class Schedule_ApprovalTests
     {

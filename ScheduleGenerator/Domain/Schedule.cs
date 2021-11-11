@@ -481,11 +481,9 @@ namespace Domain
                 GroupMeetingsByTime.SafeAdd(meetingGroup, meetingToAdd);
                 GroupLearningPlanItemsCount.SafeIncrement(meetingGroup, planItem, value);
 
-                // TODO krutovsky: more SafeAdd
-                if (!GroupTeachersByDiscipline[meetingGroup].ContainsKey(discipline))
-                    GroupTeachersByDiscipline[meetingGroup].Add(discipline, new());
+                var byDiscipline = GroupTeachersByDiscipline.SafeAddAndReturn(meetingGroup, discipline, new());
 
-                GroupTeachersByDiscipline[meetingGroup][discipline].SafeIncrement(meetingType, teacher, value);
+                byDiscipline.SafeIncrement(meetingType, teacher, value);
             }
         }
 
