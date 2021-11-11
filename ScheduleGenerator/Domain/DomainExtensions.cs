@@ -24,19 +24,26 @@ namespace Domain
             return meetings;
         }
 
-        public static IEnumerable<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
+        private static readonly Dictionary<MeetingGroup[], HashSet<MeetingGroup>> MeetingGroupsCache = new();
+
+        public static HashSet<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
-            // TODO krutovsky: optimize memory allocation
+            if (MeetingGroupsCache.ContainsKey(groups)) return MeetingGroupsCache[groups];
+
+            var cache = new HashSet<MeetingGroup>();
             foreach (var group in groups)
                 if (group.GroupPart == GroupPart.FullGroup)
                 {
-                    yield return group with {GroupPart = GroupPart.Part1};
-                    yield return group with {GroupPart = GroupPart.Part2};
+                    cache.Add(group with {GroupPart = GroupPart.Part1});
+                    cache.Add(group with {GroupPart = GroupPart.Part2});
                 }
                 else
                 {
-                    yield return group;
+                    cache.Add(group);
                 }
+
+            MeetingGroupsCache[groups] = cache;
+            return cache;
         }
 
         public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};

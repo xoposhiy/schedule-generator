@@ -17,7 +17,10 @@ namespace Domain
         public double Weight => WeekType == WeekType.All ? 1 : 0.5;
 
         public WeekType WeekType;
+
+        // TODO krutovsky: To GroupChoice?
         public MeetingGroup[]? Groups;
+        
         public string? Classroom;
         public MeetingTime? MeetingTime;
         
