@@ -192,7 +192,6 @@ namespace Domain
             return false;
         }
 
-/*
         public static IEnumerable<(TKey1, WeekType, DayOfWeek, Meeting?[])> Enumerate<TKey1>(
             this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary)
             where TKey1 : notnull
@@ -202,7 +201,6 @@ namespace Domain
             foreach (var (day, byDay) in byWeekType)
                 yield return (key1, weekType, day, byDay);
         }
-*/
 
         public static void SafeIncrement<TKey>(this Dictionary<TKey, int> dictionary, TKey key)
             where TKey : notnull
@@ -315,6 +313,17 @@ namespace Domain
             {
                 for (var i = 1; i < 7; i++) yield return new(day, i);
             }
+        }
+
+        public static ScheduleTime ToSchedule(this MeetingTime time, WeekType weekType)
+        {
+            var (dayOfWeek, timeSlot) = time;
+            return new(dayOfWeek, timeSlot, weekType);
+        }
+
+        public static ScheduleDay ToSchedule(this DayOfWeek dayOfWeek, WeekType weekType)
+        {
+            return new(dayOfWeek, weekType);
         }
     }
 }

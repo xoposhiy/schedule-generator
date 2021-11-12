@@ -40,7 +40,8 @@ namespace Domain
 
         public override string ToString()
         {
-            var groupsString = GroupsChoice?.ToString();
+            var groupsString = GroupsChoice?.ToString() ?? RequisitionItem.GroupPriorities.ToString();
+
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
