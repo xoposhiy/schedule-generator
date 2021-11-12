@@ -13,7 +13,7 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-            var meetingsCount = schedule.Meetings.Count;
+            var meetingsCount = schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
             foreach (var meeting in schedule.Meetings)
             {
                 var priorityPenalty = FindPriorityPenalty(meeting);

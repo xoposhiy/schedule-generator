@@ -12,14 +12,23 @@ namespace Testing.EstimatorsTests
     {
         private readonly MeetingsPerDayEstimator estimator = new();
 
+        private static void AssertBetweenZeroAndNegativeOne(double score)
+        {
+            Assert.GreaterOrEqual(0, score);
+            Assert.GreaterOrEqual(score, -1);
+        }
+
         [Test]
         public void SingleMeetingSingleDayTest()
         {
             var schedule = new Schedule(OsRequisition, ClassRooms);
             var osLecture = schedule.GetMeetingsToAdd().First();
+            var meetingScore = estimator.Estimate(schedule, osLecture);
+            AssertBetweenZeroAndNegativeOne(meetingScore);
+            
             schedule.AddMeeting(osLecture);
-            var score = estimator.Estimate(schedule);
-            Assert.Negative(score);
+            var scheduleScore = estimator.Estimate(schedule);
+            AssertBetweenZeroAndNegativeOne(scheduleScore);
         }
 
         [Test]
@@ -28,9 +37,12 @@ namespace Testing.EstimatorsTests
             var schedule = new Schedule(CalculusRequisition, ClassRooms);
             while (schedule.NotUsedMeetings.Count != 0)
             {
-                var score = estimator.Estimate(schedule);
-                Assert.GreaterOrEqual(0, score);
+                var scheduleScore = estimator.Estimate(schedule);
+                AssertBetweenZeroAndNegativeOne(scheduleScore);
+
                 var meeting = schedule.GetMeetingsToAdd().First();
+                var meetingScore = estimator.Estimate(schedule, meeting);
+                AssertBetweenZeroAndNegativeOne(meetingScore);
                 schedule.AddMeeting(meeting);
             }
 

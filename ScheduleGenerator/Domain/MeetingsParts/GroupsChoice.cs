@@ -5,7 +5,7 @@ namespace Domain.MeetingsParts
 {
     public sealed record GroupsChoice(MeetingGroup[] Groups)
     {
-        public IEnumerable<MeetingGroup> GetGroupParts()
+        public HashSet<MeetingGroup> GetGroupParts()
         {
             return Groups.GetGroupParts();
         }

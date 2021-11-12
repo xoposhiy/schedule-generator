@@ -1,4 +1,3 @@
-using System;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
@@ -7,7 +6,26 @@ namespace Domain.Algorithms.Estimators
     {
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
-            throw new NotImplementedException();
+            var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
+            var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
+
+            var penalty = 0;
+            var maxPenalty = (double) groups.Count * weekTypes.Length;
+
+            var dayOfWeek = meetingToAdd.MeetingTime!.Day;
+
+            foreach (var meetingGroup in groups)
+            foreach (var weekType in weekTypes)
+            {
+                var count = 1;
+                if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var day))
+                    count += day.MeetingsCount();
+
+                if (count is >= 2 and <= 4 or 0) continue;
+                penalty++;
+            }
+
+            return -penalty / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

@@ -169,6 +169,18 @@ namespace Domain
             return byKey1.TryGetValue(key2, out value);
         }
 
+        public static bool TryGetValue<TKey1, TKey2, TKey3, TValue>(
+            this Dictionary<TKey1, Dictionary<TKey2, Dictionary<TKey3, TValue>>> dictionary,
+            TKey1 key1, TKey2 key2, TKey3 key3, [MaybeNullWhen(false)] out TValue value)
+            where TKey1 : notnull
+            where TKey2 : notnull
+            where TKey3 : notnull
+        {
+            value = default;
+            if (!dictionary.TryGetValue(key1, key2, out var byKey1)) return false;
+            return byKey1.TryGetValue(key3, out value);
+        }
+
         public static IEnumerable<Meeting?[]> GetDaysByMeeting<TKey1>(
             this Dictionary<TKey1, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary,
             TKey1 key1, Meeting meeting)
