@@ -1,4 +1,3 @@
-using System;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -8,7 +7,11 @@ namespace Domain.Algorithms.Estimators
     {
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
-            throw new NotImplementedException();
+            var teacher = meetingToAdd.Teacher;
+
+            var penalty = GetSpacesPenalty(meetingToAdd, teacher, schedule.TeacherMeetingsByTime);
+
+            return -penalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

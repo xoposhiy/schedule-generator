@@ -1,3 +1,4 @@
+using System;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
@@ -12,14 +13,19 @@ namespace Domain.Algorithms.Estimators
             var penalty = 0;
             var maxPenalty = (double) groups.Count * weekTypes.Length;
 
-            var dayOfWeek = meetingToAdd.MeetingTime!.Day;
+            var (dayOfWeek, timeSlot) = meetingToAdd.MeetingTime!;
 
             foreach (var meetingGroup in groups)
             foreach (var weekType in weekTypes)
             {
                 var count = 1;
                 if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var day))
+                {
+                    if (day[timeSlot] != null)
+                        throw new AggregateException("Placing meeting in taken place");
+                    
                     count += day.MeetingsCount();
+                }
 
                 if (count is >= 2 and <= 4 or 0) continue;
                 penalty++;

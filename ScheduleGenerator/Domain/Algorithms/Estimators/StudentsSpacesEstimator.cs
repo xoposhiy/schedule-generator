@@ -1,4 +1,3 @@
-using System;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -8,7 +7,16 @@ namespace Domain.Algorithms.Estimators
     {
         public double Estimate(Schedule schedule, Meeting meetingToAdd)
         {
-            throw new NotImplementedException();
+            var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
+
+            var penalty = 0d;
+
+            foreach (var meetingGroup in groups)
+                penalty += GetSpacesPenalty(meetingToAdd, meetingGroup, schedule.GroupMeetingsByTime);
+
+            var maxPenalty = groups.Count;
+
+            return -penalty / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

@@ -337,5 +337,33 @@ namespace Domain
         {
             return new(dayOfWeek, weekType);
         }
+
+        public static double GetSpacesPenalty<TKey>(Meeting meetingToAdd, TKey key,
+            Dictionary<TKey, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary) where TKey : notnull
+        {
+            var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
+
+            var penalty = 0;
+            var maxPenalty = 4d * weekTypes.Length; // maxSpaces
+
+            var (dayOfWeek, timeSlot) = meetingToAdd.MeetingTime!;
+
+            foreach (var weekType in weekTypes)
+            {
+                if (!dictionary.TryGetValue(key, weekType, dayOfWeek, out var byDay))
+                    continue;
+
+                if (byDay[timeSlot] != null)
+                    throw new ArgumentException("Placing meeting in taken place");
+
+                byDay[timeSlot] = meetingToAdd;
+                var count = byDay.GetMeetingsSpacesCount();
+                byDay[timeSlot] = null;
+
+                penalty += count;
+            }
+
+            return penalty / maxPenalty;
+        }
     }
 }
