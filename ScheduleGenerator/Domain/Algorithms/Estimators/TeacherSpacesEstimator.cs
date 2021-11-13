@@ -8,10 +8,12 @@ namespace Domain.Algorithms.Estimators
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
+            
+            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxSpaces;
 
-            var penalty = GetSpacesPenalty(meetingToAdd, teacher, schedule.TeacherMeetingsByTime);
+            var penalty = GetSpacesCountDelta(meetingToAdd, teacher, schedule.TeacherMeetingsByTime);
 
-            return -penalty;
+            return -penalty / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

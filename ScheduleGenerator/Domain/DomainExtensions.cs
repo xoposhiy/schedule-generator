@@ -338,14 +338,12 @@ namespace Domain
             return new(dayOfWeek, weekType);
         }
 
-        public static double GetSpacesPenalty<TKey>(Meeting meetingToAdd, TKey key,
+        public static double GetSpacesCountDelta<TKey>(Meeting meetingToAdd, TKey key,
             Dictionary<TKey, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary) where TKey : notnull
         {
             var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
 
-            var penalty = 0;
-            var maxPenalty = 4d * weekTypes.Length; // maxSpaces
-
+            var countDelta = 0;
             var (dayOfWeek, timeSlot) = meetingToAdd.MeetingTime!;
 
             foreach (var weekType in weekTypes)
@@ -356,14 +354,15 @@ namespace Domain
                 if (byDay[timeSlot] != null)
                     throw new ArgumentException("Placing meeting in taken place");
 
+                var before = byDay.GetMeetingsSpacesCount();
                 byDay[timeSlot] = meetingToAdd;
-                var count = byDay.GetMeetingsSpacesCount();
+                var after = byDay.GetMeetingsSpacesCount();
                 byDay[timeSlot] = null;
-
-                penalty += count;
+                
+                countDelta += after - before;
             }
 
-            return penalty / maxPenalty;
+            return countDelta;
         }
     }
 }

@@ -9,14 +9,14 @@ namespace Domain.Algorithms.Estimators
         {
             var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
 
-            var penalty = 0d;
+            var penaltyDelta = 0d;
 
             foreach (var meetingGroup in groups)
-                penalty += GetSpacesPenalty(meetingToAdd, meetingGroup, schedule.GroupMeetingsByTime);
+                penaltyDelta += GetSpacesCountDelta(meetingToAdd, meetingGroup, schedule.GroupMeetingsByTime);
 
-            var maxPenalty = groups.Count;
+            double maxPenalty = schedule.GroupMeetingsByTime.Count * MaxSpaces;
 
-            return -penalty / maxPenalty;
+            return -penaltyDelta / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

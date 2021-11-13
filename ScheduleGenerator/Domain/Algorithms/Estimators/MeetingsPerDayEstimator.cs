@@ -5,20 +5,21 @@ namespace Domain.Algorithms.Estimators
 {
     public class MeetingsPerDayEstimator : IEstimator
     {
+        
+        
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
             var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
 
-            var penalty = 0;
-            var maxPenalty = (double) groups.Count * weekTypes.Length;
+            var penaltyDelta = 0;
 
             var (dayOfWeek, timeSlot) = meetingToAdd.MeetingTime!;
 
             foreach (var meetingGroup in groups)
             foreach (var weekType in weekTypes)
             {
-                var count = 1;
+                var count = 0;
                 if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var day))
                 {
                     if (day[timeSlot] != null)
@@ -27,18 +28,18 @@ namespace Domain.Algorithms.Estimators
                     count += day.MeetingsCount();
                 }
 
-                if (count is >= 2 and <= 4 or 0) continue;
-                penalty++;
+                if (count == 1)
+                    penaltyDelta--;
+                if (count == 0 || count == 4)
+                    penaltyDelta++;
             }
 
-            return -penalty / maxPenalty;
+            return -penaltyDelta / GetMaxPenalty(schedule);
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-
-            double maxPenalty = schedule.GroupMeetingsByTime.Count * 2 * 6; // weekTypes * daysOfWeek
 
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
             foreach (var (weekType, byWeekType) in byGroup)
@@ -47,11 +48,16 @@ namespace Domain.Algorithms.Estimators
                 var count = byDay.MeetingsCount();
 
                 if (count is >= 2 and <= 4 or 0) continue;
-                logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / maxPenalty);
+                logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / GetMaxPenalty(schedule));
                 penalty++;
             }
 
-            return -penalty / maxPenalty;
+            return -penalty / GetMaxPenalty(schedule);
+        }
+
+        private double GetMaxPenalty(Schedule schedule)
+        {
+            return schedule.GroupMeetingsByTime.Count * 2 * 6;
         }
     }
 }
