@@ -247,7 +247,7 @@ namespace Domain.Conversions
                 .Select(GetRowMeetingRaw)
                 .ToList();
 
-            repository.ClearCellRange(sheetName, 2, 0, rows.Count * 2, rows[0].Count);
+            repository.ClearCellRange(sheetName, 2, 0, rows.Count + 2, rows[0].Count);
 
             repository
                 .ModifySpreadSheet(sheetName)
