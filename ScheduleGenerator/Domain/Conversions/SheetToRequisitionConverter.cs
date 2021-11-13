@@ -349,6 +349,8 @@ namespace Domain.Conversions
                 var tmp = req.Split('-');
                 var firstSlot = int.Parse(tmp[0][0].ToString());
                 var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
+                if (firstSlot < 1 || lastSlot > 6)
+                    throw new FormatException("meeting slots must be between 1 and 6");
                 for (var slot = firstSlot; slot <= lastSlot; slot++)
                     slots.Add(slot);
             }

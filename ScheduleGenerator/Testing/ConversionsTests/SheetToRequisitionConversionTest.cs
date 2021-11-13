@@ -24,39 +24,40 @@ namespace Testing.ConversionsTests
             Assert.AreEqual(25, classrooms.Count);
         }
 
-        [TestCase("пн,вт: 1,4 пары",
-            "Monday 1\nMonday 4\nTuesday 1\nTuesday 4")]
-        [TestCase("пн,вт: 1,4",
-            "Monday 1\nMonday 4\nTuesday 1\nTuesday 4")]
-        [TestCase("вт: 1-5 пара\nпт: 3-6 пара",
-            "Tuesday 1\nTuesday 2\nTuesday 3\nTuesday 4\nTuesday 5\n\nFriday 3\nFriday 4\nFriday 5\nFriday 6")]
-        [TestCase("",
-            "Monday 1\nMonday 2\nMonday 3\nMonday 4\nMonday 5\nMonday 6\nTuesday 1\nTuesday 2\nTuesday 3\nTuesday 4\nTuesday 5\nTuesday 6\nWednesday 1\nWednesday 2\nWednesday 3\nWednesday 4\nWednesday 5\nWednesday 6\nThursday 1\nThursday 2\nThursday 3\nThursday 4\nThursday 5\nThursday 6\nFriday 1\nFriday 2\nFriday 3\nFriday 4\nFriday 5\nFriday 6\nSaturday 1\nSaturday 2\nSaturday 3\nSaturday 4\nSaturday 5\nSaturday 6")]
-        [TestCase("пн: 1-3 пара \nпт: 4,6 пара",
-            "Monday 1\nMonday 2\nMonday 3\n\nFriday 4\nFriday 6")]
-        [TestCase("пн,пт: 3-4 пра; вт:2 арап",
-            "Monday 3\nMonday 4\nFriday 3\nFriday 4\nTuesday 2")]
-        [TestCase("пн, ср, пт: 2-5 пара",
-            "Monday 2\nMonday 3\nMonday 4\nMonday 5\nWednesday 2\nWednesday 3\nWednesday 4\nWednesday 5\nFriday 2\nFriday 3\nFriday 4\nFriday 5")]
-        [TestCase("пн-пт: 3,4 пара",
-            "Monday 3\nMonday 4\nTuesday 3\nTuesday 4\nWednesday 3\nWednesday 4\nThursday 3\nThursday 4\nFriday 3\nFriday 4")]
-        [TestCase("вт,ср,пт: 1-4 пара",
-            "Tuesday 1\nTuesday 2\nTuesday 3\nTuesday 4\nWednesday 1\nWednesday 2\nWednesday 3\nWednesday 4\nFriday 1\nFriday 2\nFriday 3\nFriday 4")]
+        
         [TestCase("пн, ср, пт-сб: 2-5 абвгдеёж",
-            "Monday 2\nMonday 3\nMonday 4\nMonday 5\nWednesday 2\nWednesday 3\nWednesday 4\nWednesday 5\nFriday 2\nFriday 3\nFriday 4\nFriday 5\nSaturday 2\nSaturday 3\nSaturday 4\nSaturday 5")]
-        [TestCase("пн: 1-3 пара\nпт: 4-6 пара",
-            "Monday 1\nMonday 2\nMonday 3\n\nFriday 4\nFriday 5\nFriday 6")]
+            "Mo2, Mo3, Mo4, Mo5, We2, We3, We4, We5, Fr2, Fr3, Fr4, Fr5, Sa2, Sa3, Sa4, Sa5")]
+        [TestCase("пн: 1-3 пара\nпт: 4-6 пара", "Mo1, Mo2, Mo3;Fr4, Fr5, Fr6")]
+        [TestCase("пн:1\nвт:5", "Mo1;Tu5")]
+        [TestCase("пн:5;вт:3", "Mo5, Tu3")]
+        [TestCase("пт-сб: 5-6", "Fr5, Fr6, Sa5, Sa6")]
+        [TestCase("пн: 1-2,4-5", "Mo1, Mo2, Mo4, Mo5")]
+        [TestCase("чт: 1,2,3", "Th1, Th2, Th3")]
+        [TestCase("пн,вт,ср:1 парам", "Mo1, Tu1, We1")]
+        [TestCase("ср: 2, 3-5", "We2, We3, We4, We5")]
+        [TestCase("чт: 2-4", "Th2, Th3, Th4")]
+        [TestCase("сб: 2, 3", "Sa2, Sa3")]
+        [TestCase("пн, ср-чт: 6", "Mo6, We6, Th6")]
+        [TestCase("чт-сб: 4 абгдеёж", "Th4, Fr4, Sa4")]
+        [TestCase("пн, вт: 3 пра", "Mo3, Tu3")]
+        [TestCase("пн:1 пара", "Mo1")]
+        [TestCase("",
+            "Mo1, Mo2, Mo3, Mo4, Mo5, Mo6, Tu1, Tu2, Tu3, Tu4, Tu5, Tu6, We1, We2, We3, We4, We5, We6, Th1, Th2, Th3, Th4, Th5, Th6, Fr1, Fr2, Fr3, Fr4, Fr5, Fr6, Sa1, Sa2, Sa3, Sa4, Sa5, Sa6")]
         public void TimeRequisitionsParseTest(string rawTimeRequisition, string expected)
         {
             var meetingTimeRequisitions = ParseMeetingTimeRequisitions(rawTimeRequisition)
                 .Select(r => r.MeetingTimeChoices)
                 .Select(t =>
-                    string.Join('\n', t.Select(m => $"{m.Day} {m.TimeSlot}")));
-            var actual = string.Join("\n\n", meetingTimeRequisitions);
-            //Console.WriteLine(actual.Replace("\n", "\\n"));
+                    string.Join(", ", t.Select(m => $"{String.Concat(m.Day.ToString().Take(2))}{m.TimeSlot}")));
+            var actual = string.Join(";", meetingTimeRequisitions);
+            Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
         }
 
+        
+        [TestCase("вт: 7")]
+        [TestCase("пн: 0")]
+        [TestCase("erdtcyvbnm")]
         [TestCase("пг, сб: 2 пара")]
         [TestCase("1-2 пара")]
         [TestCase("вт, 1-5 пара\nпт, 3-6 пара")]
