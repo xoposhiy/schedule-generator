@@ -4,6 +4,7 @@ using System.Linq;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using Domain;
+using Infrastructure;
 using NUnit.Framework;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
@@ -15,21 +16,34 @@ namespace Testing.ScheduleLibTests
     public class Schedule_ApprovalTests
     {
         [Test]
-        public void CheckMeetingsPlaced_Approval()
+        public void CheckMeetingsPlacedSpring_Approval()
         {
-            var solver = GetSolver(SpringConfig, Repository);
+            var unifiedString = GenerateApprovalString(SpringConfig);
+            Approvals.Verify(unifiedString);
+        }
+        
+        [Test]
+        public void CheckMeetingsPlacedAutumn_Approval()
+        {
+            var unifiedString = GenerateApprovalString(AutumnConfig);
+            Approvals.Verify(unifiedString);
+        }
+
+        private static string GenerateApprovalString(SheetNamesConfig config)
+        {
+            var solver = GetSolver(config, Repository);
             var schedule = solver
-                .GetSolution(new(0, 0, 0, 0, 100))
+                .GetSolution(new(0, 0, 0, 0, 1))
                 .Schedule;
 
             var placedMeetings = GetOrderedMeetings(schedule.Meetings);
             var notePlacedMeetings = GetOrderedMeetings(schedule.NotUsedMeetings);
             var unifiedString =
-                $"Placed:{placedMeetings.Count} Left:{schedule.NotUsedMeetings.Count}, Placed:{Environment.NewLine}" +
+                $"Placed:{placedMeetings.Count} Left:{schedule.NotUsedMeetings.Count}{Environment.NewLine}Placed:{Environment.NewLine}" +
                 $"{string.Join(Environment.NewLine, placedMeetings)}{Environment.NewLine}" +
                 $"Not placed:{Environment.NewLine}" +
                 $"{string.Join(Environment.NewLine, notePlacedMeetings)}{Environment.NewLine}";
-            Approvals.Verify(unifiedString);
+            return unifiedString;
         }
 
         private static List<string> GetOrderedMeetings(IEnumerable<Meeting> meetings)

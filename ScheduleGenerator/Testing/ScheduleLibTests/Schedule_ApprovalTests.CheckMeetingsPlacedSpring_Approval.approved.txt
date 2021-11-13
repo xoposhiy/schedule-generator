@@ -1,4 +1,5 @@
-Placed:94 Left:0, Placed:
+﻿Placed:94 Left:0
+Placed:
 Алгем Lecture Волков Михаил
 Алгем Lecture Волков Михаил
 Алгем Seminar Белов
