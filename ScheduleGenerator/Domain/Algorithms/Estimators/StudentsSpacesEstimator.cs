@@ -5,7 +5,7 @@ namespace Domain.Algorithms.Estimators
 {
     public class StudentsSpacesEstimator : IEstimator
     {
-        public double Estimate(Schedule schedule, Meeting meetingToAdd)
+        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
 

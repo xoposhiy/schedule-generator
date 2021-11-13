@@ -5,7 +5,7 @@ namespace Domain.Algorithms.Estimators
 {
     public class TeacherSpacesEstimator : IEstimator
     {
-        public double Estimate(Schedule schedule, Meeting meetingToAdd)
+        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
 

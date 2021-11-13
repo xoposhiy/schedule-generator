@@ -23,8 +23,8 @@ namespace Testing.EstimatorsTests
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var meeting = schedule.GetMeetingsToAdd().First();
-                Assert.GreaterOrEqual(0, studentEstimator.Estimate(schedule, meeting));
-                Assert.GreaterOrEqual(0, teacherEstimator.Estimate(schedule, meeting));
+                Assert.GreaterOrEqual(0, studentEstimator.EstimateMeetingToAdd(schedule, meeting));
+                Assert.GreaterOrEqual(0, teacherEstimator.EstimateMeetingToAdd(schedule, meeting));
                 schedule.AddMeeting(meeting);
             }
 

@@ -14,9 +14,9 @@ namespace Domain.Algorithms.Estimators
         }
 
 
-        public double Estimate(Schedule schedule, Meeting meetingToAdd)
+        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
-            return childEstimators.Sum(e => e.Item1.Estimate(schedule, meetingToAdd));
+            return childEstimators.Sum(e => e.Item1.EstimateMeetingToAdd(schedule, meetingToAdd) * e.Item2);
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
