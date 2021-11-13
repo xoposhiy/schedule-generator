@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Domain;
 using Domain.Algorithms.Estimators;
 using Domain.MeetingsParts;
@@ -42,7 +43,7 @@ namespace Testing.EstimatorsTests
 
                 var meeting = schedule.GetMeetingsToAdd().First();
                 var meetingScore = estimator.EstimateMeetingToAdd(schedule, meeting);
-                AssertBetweenZeroAndNegativeOne(meetingScore);
+                Assert.LessOrEqual(Math.Abs(meetingScore), 1);
                 schedule.AddMeeting(meeting);
             }
 
