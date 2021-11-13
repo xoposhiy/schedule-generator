@@ -1,4 +1,3 @@
-using System;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
@@ -7,7 +6,8 @@ namespace Domain.Algorithms.Estimators
     {
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
-            throw new NotImplementedException();
+            var penalty = FindPriorityPenalty(meetingToAdd);
+            return -penalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)

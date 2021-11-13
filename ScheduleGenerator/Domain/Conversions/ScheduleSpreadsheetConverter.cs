@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
@@ -258,7 +259,7 @@ namespace Domain.Conversions
         {
             var timeSlot = meeting.MeetingTime!.TimeSlot;
             var timeSlotIndex = timeSlot - 1;
-            var groups = meeting.GroupsChoice!.Groups.Select(g => g.GroupName[^1]).Distinct();
+            var groups = meeting.GroupsChoice!.Groups.Select(g => g.GroupName.Replace("ФИИТ", "ФТ"));
             var groupParts = meeting.GroupsChoice!.Groups.Select(g => GroupPartToString(g.GroupPart)).Distinct();
             var timeStart = meeting.Location == Location.Pe ? PeClassStartTimes : MeetingStartTimes;
             var timeEnd = meeting.Location == Location.Pe ? PeClassEndTimes : MeetingEndTimes;
@@ -274,9 +275,7 @@ namespace Domain.Conversions
                 CommonCellData(WeekToString(meeting.WeekType)),
                 CommonCellData(timeStart[timeSlotIndex]),
                 CommonCellData(timeEnd[timeSlotIndex]),
-                CommonBoolCellData(),
-                CommonBoolCellData(),
-                CommonBoolCellData()
+                CommonCellData(DateTime.Now.ToString(CultureInfo.CurrentCulture))
             };
         }
 

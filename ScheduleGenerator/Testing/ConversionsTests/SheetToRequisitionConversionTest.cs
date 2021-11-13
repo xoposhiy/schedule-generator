@@ -48,7 +48,7 @@ namespace Testing.ConversionsTests
             var meetingTimeRequisitions = ParseMeetingTimeRequisitions(rawTimeRequisition)
                 .Select(r => r.MeetingTimeChoices)
                 .Select(t =>
-                    string.Join(", ", t.Select(m => $"{String.Concat(m.Day.ToString().Take(2))}{m.TimeSlot}")));
+                    string.Join(", ", t.Select(m => $"{m.Day.ToString()[..2]}{m.TimeSlot}")));
             var actual = string.Join(";", meetingTimeRequisitions);
             Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
