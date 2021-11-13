@@ -6,39 +6,55 @@ namespace Domain.Algorithms.Estimators
     public class TeacherUsedDaysEstimator : IEstimator
     {
         private const int MaxTeacherDays = 2;
-        private const int MaxWeekTypesSpaces = 2 * 4; // weekTypes * maxExtraDays
+        private const int MaxTeacherPenalty = 2 * 4; // weekTypes * maxExtraDays
         
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
             var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
-            var dayOfWeek = meetingToAdd.MeetingTime!.Day;
-
-            var daysCount = 0;
-
-            if (!schedule.TeacherMeetingsByTime.TryGetValue(teacher, out var byTeacher)) return 0;
+            var affectedDay = meetingToAdd.MeetingTime!.Day;
+            
+            if (!schedule.TeacherMeetingsByTime.TryGetValue(teacher, out var byTeacher)) 
+                return 0;
+            
+            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty;
+            var penaltyDelta = 0;
+            
             foreach (var weekType in weekTypes)
             {
+                var daysCountBefore = 0;
+                var daysCountAfter = 0;
+                
                 if (!byTeacher.TryGetValue(weekType, out var byWeekType))
-                {
-                    daysCount++;
                     continue;
-                }
 
-                if (!byWeekType.TryGetValue(dayOfWeek, out var day)) continue;
-                if (day.MeetingsCount() == 0) continue;
-                daysCount++;
+                foreach (var (dayOfWeek, day) in byWeekType)
+                {
+                    if (day.MeetingsCount() != 0)
+                    {
+                        daysCountBefore++;
+                    }
+                    else
+                    {
+                        if (dayOfWeek == affectedDay)
+                            daysCountAfter++;
+                    }
+                }
+                daysCountAfter += daysCountBefore;
+
+                var extraDaysBefore = Math.Max(0, daysCountBefore - MaxTeacherDays);
+                var extraDaysAfter = Math.Max(0, daysCountAfter - MaxTeacherDays);
+
+                penaltyDelta += extraDaysAfter - extraDaysBefore;
             }
 
-            var extraDays = Math.Max(0, daysCount - MaxTeacherDays);
-
-            return -(double) extraDays / MaxWeekTypesSpaces;
+            return -(double) penaltyDelta / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxWeekTypesSpaces; 
+            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty; 
 
             foreach (var (teacher, byTeacher) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byTeacher)

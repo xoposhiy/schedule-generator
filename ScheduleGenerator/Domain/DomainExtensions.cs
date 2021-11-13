@@ -260,7 +260,7 @@ namespace Domain
             var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
             var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
-            var teacherPriorityEstimator = (new TeacherPriorityEstimator(), 1);
+            var teacherPriorityEstimator = (new TeacherPriorityEstimator(), 5);
             var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator);
             return estimator;
