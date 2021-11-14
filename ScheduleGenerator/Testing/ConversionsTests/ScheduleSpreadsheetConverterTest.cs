@@ -1,5 +1,6 @@
 using System.Linq;
 using Domain;
+using Infrastructure;
 using NUnit.Framework;
 using static Domain.Conversions.ScheduleSpreadsheetConverter;
 using static Testing.ObjectMother;
@@ -26,6 +27,9 @@ namespace Testing.ConversionsTests
             Repository.ClearCellRange(SheetName, 0, 0, 100, 100);
 
             BuildSchedule(testSchedule, Repository, SheetName);
+            BuildScheduleByTeacher(testSchedule, Repository, SheetName);
+
+            WriteRowMeetings(testSchedule, Repository, SheetConstants.SheetName);
         }
     }
 }

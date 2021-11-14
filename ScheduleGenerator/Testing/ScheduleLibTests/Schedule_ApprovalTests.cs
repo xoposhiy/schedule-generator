@@ -8,7 +8,6 @@ using Infrastructure;
 using NUnit.Framework;
 using ScheduleCLI;
 using static Infrastructure.SheetConstants;
-using static Domain.DomainExtensions;
 
 namespace Testing.ScheduleLibTests
 {

@@ -76,9 +76,7 @@ namespace Domain.Conversions
 
             modifier.FillScheduleData(meetingSet, groupNames);
 
-            modifier.BuildThickBorders(groupNames.Count * 2 + 2).Execute();
-
-            // var modifier = repository.ModifySpreadSheet(sheetName);
+            modifier.BuildThickBorders(groupNames.Count * 2 + 2);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
@@ -86,7 +84,6 @@ namespace Domain.Conversions
             modifier.ColorField(groups.Count * SubGroupsCount)
                 .BuildTimeBar()
                 .BuildGroupHeaders(groups);
-            // .Execute();
         }
 
         private static SheetModifier ColorField(this SheetModifier modifier, int width)
@@ -122,12 +119,11 @@ namespace Domain.Conversions
 
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
-            const int startColumn = 0;
-            var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * RomeNumbers.Length * 2;
-            var height = RomeNumbers.Length * 2;
+            var height = RomeNumbers.Length * WeekTypesCount;
+            var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * height;
             for (var i = 0; i < WeekDayCount; i++)
             {
-                modifier.AddBorders(currentRow, startColumn, height, width, new(0, 2, 0, 2));
+                modifier.AddBorders(currentRow, TimeBarColumnOffset, height, width, new(0, 2, 0, 2));
                 currentRow -= height;
             }
 
@@ -255,8 +251,7 @@ namespace Domain.Conversions
             if (groupPart != GroupPart.FullGroup) return 1;
             return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
         }
-
-        // ReSharper disable once UnusedMember.Global
+        
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var rows = schedule.GetMeetings()
@@ -266,10 +261,8 @@ namespace Domain.Conversions
 
             repository.ClearCellRange(sheetName, 2, 0, rows.Count + 2, rows[0].Count);
 
-            repository
-                .ModifySpreadSheet(sheetName)
-                .WriteRange(2, 0, rows);
-            // .Execute();
+            using var modifier = repository.ModifySpreadSheet(sheetName);
+            modifier.WriteRange(2, 0, rows);
         }
 
         private static List<CellData> GetRowMeetingRaw(Meeting meeting)

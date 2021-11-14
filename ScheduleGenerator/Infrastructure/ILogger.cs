@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Threading;
 
 namespace Infrastructure
 {
@@ -64,6 +66,8 @@ namespace Infrastructure
                 lines.Add(child.ToString(level + 1));
                 score += child.totalScore;
             }
+
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
             lines.Add($"{offset}Total: {score * weight} (BasicScore: {score}, Weight: {weight})");
             return string.Join(Environment.NewLine, lines);

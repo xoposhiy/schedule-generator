@@ -7,7 +7,7 @@ namespace Domain.Algorithms.Estimators
     public class GroupPriorityEstimator : IEstimator
     {
         private const double AndreyConstant = 5;
-        private const double DanyaConstant = Math.E * 100;
+        // private const double DanyaConstant = Math.E * 100;
 
 
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
