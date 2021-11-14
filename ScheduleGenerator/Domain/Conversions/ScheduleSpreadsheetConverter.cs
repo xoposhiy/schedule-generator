@@ -70,19 +70,23 @@ namespace Domain.Conversions
             Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
 
             repository.ClearSheet(sheetName);
-            var modifier = repository.ModifySpreadSheet(sheetName);
 
+            using var modifier = repository.ModifySpreadSheet(sheetName);
             modifier.BuildSchedulePattern(groupNames);
 
             modifier.FillScheduleData(meetingSet, groupNames);
+
+            modifier.BuildThickBorders(groupNames.Count * 2 + 2).Execute();
+
+            // var modifier = repository.ModifySpreadSheet(sheetName);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
         {
             modifier.ColorField(groups.Count * SubGroupsCount)
                 .BuildTimeBar()
-                .BuildGroupHeaders(groups)
-                .Execute();
+                .BuildGroupHeaders(groups);
+            // .Execute();
         }
 
         private static SheetModifier ColorField(this SheetModifier modifier, int width)
@@ -116,6 +120,20 @@ namespace Domain.Conversions
             return modifier;
         }
 
+        private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
+        {
+            const int startColumn = 0;
+            var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * RomeNumbers.Length * 2;
+            var height = RomeNumbers.Length * 2;
+            for (var i = 0; i < WeekDayCount; i++)
+            {
+                modifier.AddBorders(currentRow, startColumn, height, width, new(0, 3, 0, 0));
+                currentRow -= height;
+            }
+
+            return modifier;
+        }
+
         private static SheetModifier BuildGroupHeaders(this SheetModifier modifier, List<string> groups)
         {
             var startColumn = HeadersColumnOffset;
@@ -144,7 +162,7 @@ namespace Domain.Conversions
                 .ToDictionary(gi => gi.g, gi => gi.i);
 
             foreach (var meeting in meetings) WriteMeeting(meeting, groupIndexDict, modifier);
-            modifier.Execute();
+            // modifier.Execute();
         }
 
         private static string MeetingToString(Meeting meeting)
@@ -251,8 +269,8 @@ namespace Domain.Conversions
 
             repository
                 .ModifySpreadSheet(sheetName)
-                .WriteRange(2, 0, rows)
-                .Execute();
+                .WriteRange(2, 0, rows);
+            // .Execute();
         }
 
         private static List<CellData> GetRowMeetingRaw(Meeting meeting)
@@ -339,8 +357,8 @@ namespace Domain.Conversions
         {
             modifier.ColorField(teachers.Count)
                 .BuildTimeBar()
-                .BuildTeachersHeaders(teachers)
-                .Execute();
+                .BuildTeachersHeaders(teachers);
+            // .Execute();
         }
 
         private static SheetModifier BuildTeachersHeaders(this SheetModifier modifier, List<string> teachers)
@@ -375,8 +393,7 @@ namespace Domain.Conversions
                     .AddBorders(startRow, startColumn, height)
                     .MergeCell(startRow, startColumn, height, 1);
             }
-
-            modifier.Execute();
+            // modifier.Execute();
         }
     }
 }

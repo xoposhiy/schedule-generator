@@ -151,7 +151,7 @@ namespace Infrastructure.GoogleSheetsRepository
         }
     }
 
-    public class SheetModifier
+    public class SheetModifier : IDisposable
     {
         private readonly List<Request> requests;
         private readonly SheetsService service;
@@ -248,18 +248,21 @@ namespace Infrastructure.GoogleSheetsRepository
             return this;
         }
 
+        public record BordersWidths(int Top, int Bottom, int Left, int Right);
 
-        public SheetModifier AddBorders(int startRow, int startColumn, int height = 1, int width = 1)
+        public SheetModifier AddBorders(int startRow, int startColumn, int height = 1, int width = 1,
+            BordersWidths? bordersWidths = null)
         {
+            bordersWidths ??= new(1, 1, 1, 1);
             requests.Add(new()
             {
                 UpdateBorders = new()
                 {
                     Range = GetRange(startRow, startColumn, height, width),
-                    Top = new() {Style = "SOLID"},
-                    Bottom = new() {Style = "SOLID"},
-                    Left = new() {Style = "SOLID"},
-                    Right = new() {Style = "SOLID"}
+                    Top = new() {Style = "SOLID", Width = bordersWidths.Top},
+                    Bottom = new() {Style = "SOLID", Width = bordersWidths.Bottom},
+                    Left = new() {Style = "SOLID", Width = bordersWidths.Left},
+                    Right = new() {Style = "SOLID", Width = bordersWidths.Right}
                 }
             });
             return this;
@@ -352,6 +355,11 @@ namespace Infrastructure.GoogleSheetsRepository
                 EndRowIndex = startRow + height,
                 EndColumnIndex = startColumn + width
             };
+        }
+
+        public void Dispose()
+        {
+            Execute();
         }
     }
 
