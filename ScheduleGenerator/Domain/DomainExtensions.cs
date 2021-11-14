@@ -333,17 +333,6 @@ namespace Domain
             }
         }
 
-        public static ScheduleTime ToSchedule(this MeetingTime time, WeekType weekType)
-        {
-            var (dayOfWeek, timeSlot) = time;
-            return new(dayOfWeek, timeSlot, weekType);
-        }
-
-        public static ScheduleDay ToSchedule(this DayOfWeek dayOfWeek, WeekType weekType)
-        {
-            return new(dayOfWeek, weekType);
-        }
-
         public static double GetSpacesCountDelta<TKey>(Meeting meetingToAdd, TKey key,
             Dictionary<TKey, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>> dictionary) where TKey : notnull
         {

@@ -63,9 +63,10 @@ namespace Domain.Algorithms.Solvers
 
         private double EstimateResult(Schedule schedule, Meeting meeting)
         {
-            schedule.AddMeeting(meeting);
-            var score = estimator.Estimate(schedule);
-            schedule.RemoveMeeting(meeting);
+            // schedule.AddMeeting(meeting);
+            // var score = estimator.Estimate(schedule);
+            // schedule.RemoveMeeting(meeting);
+            var score = estimator.EstimateMeetingToAdd(schedule, meeting);
             return score;
         }
     }

@@ -8,10 +8,6 @@ using static Domain.DomainExtensions;
 
 namespace Domain
 {
-    public record ScheduleTime(DayOfWeek Day, int TimeSlot, WeekType WeekType);
-
-    public record ScheduleDay(DayOfWeek Day, WeekType Week);
-
     public interface IReadonlySchedule
     {
         IReadOnlySet<Meeting> GetMeetings();
