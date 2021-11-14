@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
+using System.Threading;
 using Infrastructure;
 using Ninject;
 using Ninject.Extensions.Conventions;
@@ -15,9 +17,11 @@ namespace ScheduleCLI
         {
             Console.OutputEncoding = Encoding.UTF8;
             //var container = ConfigureContainer();
-
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            
             Console.WriteLine("Starting...");
 
+            
             SheetNamesConfig[] configs =
             {
                 SpringConfig,
