@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using Domain.Algorithms;
@@ -22,20 +23,22 @@ namespace Testing.EstimatorsTests
             (Requisition, ClassRooms) = GetRequisition(AutumnConfig, Repository);
         }
 
-        [Test]
-        public static void EstimatorsSameDeltaTest()
+        [TestCase(typeof(MeetingsPerDayEstimator))]
+        [TestCase(typeof(StudentsSpacesEstimator))]
+        [TestCase(typeof(TeacherPriorityEstimator))]
+        [TestCase(typeof(TeacherSpacesEstimator))]
+        [TestCase(typeof(TeacherUsedDaysEstimator))]
+        public static void EstimatorSameDeltaTest(Type estimatorType)
         {
-            IEstimator[] estimators =
-            {
-                new MeetingsPerDayEstimator()
-                // new StudentsSpacesEstimator(),
-                // new TeacherPriorityEstimator(),
-                // new TeacherSpacesEstimator(),
-                // new TeacherUsedDaysEstimator(),
-                // GetDefaultCombinedEstimator(),
-            };
+            var estimator = Activator.CreateInstance(estimatorType) as IEstimator;
+            AssertSameScoreDelta(estimator!);
+        }
 
-            foreach (var estimator in estimators) AssertSameScoreDelta(estimator);
+        [Test]
+        public static void CombinedEstimatorSameDeltaTest()
+        {
+            var estimator = GetDefaultCombinedEstimator();
+            AssertSameScoreDelta(estimator);
         }
 
         private static void AssertSameScoreDelta(IEstimator estimator)
@@ -51,7 +54,7 @@ namespace Testing.EstimatorsTests
                 schedule.AddMeeting(meetingToAdd);
                 var currentScheduleScore = estimator.Estimate(schedule);
                 var scheduleScoreDelta = currentScheduleScore - previousScheduleScore;
-                Assert.AreEqual(meetingScoreDelta, scheduleScoreDelta, 1d / 1024);
+                Assert.AreEqual(scheduleScoreDelta, meetingScoreDelta, 1d / 1024);
                 previousScheduleScore = currentScheduleScore;
             }
         }

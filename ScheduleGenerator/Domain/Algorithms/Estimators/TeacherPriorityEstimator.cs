@@ -8,8 +8,11 @@ namespace Domain.Algorithms.Estimators
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var maxPenalty = schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
-            
-            var penaltyDelta = FindPriorityPenalty(meetingToAdd);
+            var penaltyDelta = 0d;
+
+            foreach (var linkedMeeting in meetingToAdd.GetLinkedMeetings())
+                penaltyDelta += FindPriorityPenalty(linkedMeeting);
+
             return -penaltyDelta / maxPenalty;
         }
 

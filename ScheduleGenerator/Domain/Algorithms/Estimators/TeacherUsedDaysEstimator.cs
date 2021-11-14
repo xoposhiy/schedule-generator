@@ -18,7 +18,7 @@ namespace Domain.Algorithms.Estimators
                 return 0;
             
             double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty;
-            var penaltyDelta = 0;
+            var penaltyDelta = 0d;
             
             foreach (var weekType in weekTypes)
             {
@@ -40,6 +40,9 @@ namespace Domain.Algorithms.Estimators
                             daysCountAfter++;
                     }
                 }
+
+                if (!byWeekType.ContainsKey(affectedDay)) daysCountAfter++;
+
                 daysCountAfter += daysCountBefore;
 
                 var extraDaysBefore = Math.Max(0, daysCountBefore - MaxTeacherDays);
@@ -48,7 +51,7 @@ namespace Domain.Algorithms.Estimators
                 penaltyDelta += extraDaysAfter - extraDaysBefore;
             }
 
-            return -(double) penaltyDelta / maxPenalty;
+            return -penaltyDelta / maxPenalty;
         }
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
