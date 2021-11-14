@@ -7,7 +7,7 @@ namespace Infrastructure
     {
         public void Log(string message, double score);
 
-        public ILogger GetChild(string childName = "Child", int childTopN = 10);
+        public ILogger GetChild(string childName = "Child", double weight = 1, int childTopN = 10);
     }
 
     public record LogRecord(string Message, double Score);
@@ -16,15 +16,17 @@ namespace Infrastructure
     {
         private readonly int topN;
         private readonly string name;
+        private readonly double weight;
         private const string Tab = "\t";
 
         private double totalScore;
         private readonly List<LogRecord> records = new();
         private readonly List<Logger> children = new();
 
-        public Logger(string name, int topN = 100)
+        public Logger(string name, double weight = 1, int topN = 100)
         {
             this.name = name;
+            this.weight = weight;
             this.topN = topN;
         }
 
@@ -34,9 +36,9 @@ namespace Infrastructure
             totalScore += score;
         }
 
-        public ILogger GetChild(string childName, int childTopN = 10)
+        public ILogger GetChild(string childName, double childWeight = 1, int childTopN = 10)
         {
-            var child = new Logger(childName, childTopN);
+            var child = new Logger(childName, childWeight, childTopN);
             children.Add(child);
             return child;
         }
@@ -62,7 +64,7 @@ namespace Infrastructure
                 score += child.totalScore;
             }
 
-            lines.Add($"{offset}Total: {score}");
+            lines.Add($"{offset}Total: {score * weight} (BasicScore: {score}, Weight: {weight})");
             return string.Join("\n", lines);
         }
     }
