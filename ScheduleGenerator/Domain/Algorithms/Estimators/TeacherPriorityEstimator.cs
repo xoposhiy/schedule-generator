@@ -24,9 +24,8 @@ namespace Domain.Algorithms.Estimators
             {
                 var priorityPenalty = FindPriorityPenalty(meeting);
                 if (priorityPenalty == 0) continue;
-                var penaltyPart = priorityPenalty;
-                logger?.Log(GetLogMessage(meeting, priorityPenalty), -penaltyPart / maxPenalty);
-                penalty += penaltyPart;
+                logger?.Log(GetLogMessage(meeting, priorityPenalty), -priorityPenalty / maxPenalty);
+                penalty += priorityPenalty;
             }
 
             return -penalty / maxPenalty;

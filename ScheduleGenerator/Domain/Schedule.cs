@@ -18,6 +18,8 @@ namespace Domain
         public readonly HashSet<Meeting> Meetings = new();
         public readonly HashSet<Meeting> NotUsedMeetings;
         public readonly HashSet<Meeting> NonPlaceableMeetings = new();
+
+        public readonly Requisition Requisition;
         public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
         public readonly Dictionary<RoomSpec, HashSet<string>> RoomsBySpec = new();
 
@@ -48,6 +50,7 @@ namespace Domain
             FillTeachersKeys(requisition);
             FillGroupsKeys(requisition);
 
+            Requisition = requisition;
             SpecsByRoom = specsByRoom;
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
@@ -56,6 +59,19 @@ namespace Domain
                 .ToHashSet();
             LinkBaseMeetings(NotUsedMeetings);
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
+        }
+
+        public Schedule Copy()
+        {
+            // TODO: optimize
+            var copy = new Schedule(Requisition, SpecsByRoom);
+            foreach (var meeting in Meetings)
+            {
+                if (copy.Meetings.Contains(meeting)) continue;
+                copy.AddMeeting(meeting, true);
+            }
+
+            return copy;
         }
 
         private void FillGroupsKeys(Requisition requisition)
