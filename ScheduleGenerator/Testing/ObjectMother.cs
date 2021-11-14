@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using static Domain.DomainExtensions;
+using static Infrastructure.SheetConstants;
 
 namespace Testing
 {
     public static class ObjectMother
     {
-        public static readonly Dictionary<string, List<RoomSpec>> ClassRooms = new()
-        {
-            ["632"] = new() {RoomSpec.Big, RoomSpec.Projector},
-            ["605"] = new() {RoomSpec.ForGroup},
-            ["514"] = new() {RoomSpec.Computer, RoomSpec.ForGroup}
-        };
+        public static readonly Requisition AutumnRequisition;
+        public static readonly Dictionary<string, List<RoomSpec>> ClassRooms;
 
+        static ObjectMother()
+        {
+            (AutumnRequisition, ClassRooms) = GetRequisition(AutumnConfig, Repository);
+        }
 
         public static readonly MeetingGroup Group1 = new("ФИИТ-101", GroupPart.FullGroup);
         public static readonly MeetingGroup Group11 = new("ФИИТ-101-1", GroupPart.Part1);

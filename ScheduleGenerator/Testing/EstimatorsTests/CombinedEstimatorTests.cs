@@ -1,28 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
-using Domain.Enums;
-using Domain.MeetingsParts;
 using NUnit.Framework;
 using static Domain.DomainExtensions;
-using static Infrastructure.SheetConstants;
+using static Testing.ObjectMother;
 
 namespace Testing.EstimatorsTests
 {
     [TestFixture]
     public static class CombinedEstimatorTests
     {
-        private static readonly Requisition Requisition;
-        private static readonly Dictionary<string, List<RoomSpec>> ClassRooms;
-
-        static CombinedEstimatorTests()
-        {
-            (Requisition, ClassRooms) = GetRequisition(AutumnConfig, Repository);
-        }
-
         [TestCase(typeof(MeetingsPerDayEstimator))]
         [TestCase(typeof(StudentsSpacesEstimator))]
         [TestCase(typeof(TeacherPriorityEstimator))]
@@ -44,7 +33,7 @@ namespace Testing.EstimatorsTests
 
         private static void AssertSameScoreDelta(IEstimator estimator)
         {
-            var schedule = new Schedule(Requisition, ClassRooms);
+            var schedule = new Schedule(AutumnRequisition, ClassRooms);
             var previousScheduleScore = estimator.Estimate(schedule);
 
             while (true)

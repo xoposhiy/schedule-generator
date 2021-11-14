@@ -17,7 +17,7 @@ namespace Testing.ScheduleLibTests
 
             var meeting = schedule.GetMeetingsToAdd().Single();
 
-            Assert.That(meeting.Classroom, Is.EqualTo("632"));
+            Assert.That(meeting.Classroom, Is.EqualTo("622"));
             Assert.That(meeting.GroupsChoice!.Groups, Is.EqualTo(new[] {Group1, Group2}));
             Assert.That(meeting.MeetingTime, Is.EqualTo(new MeetingTime(DayOfWeek.Tuesday, 3)));
         }

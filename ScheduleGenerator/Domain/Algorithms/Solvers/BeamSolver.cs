@@ -52,29 +52,28 @@ namespace Domain.Algorithms.Solvers
         }
 
         private static List<Solution> GetIteratedSolutions(
-            List<IGrouping<Schedule, (Schedule, Meeting, double score)>> bestMeetings, out int copyCount)
+            Dictionary<Schedule, List<(Schedule, Meeting, double score)>> bestMeetings, out int copyCount)
         {
             copyCount = 0;
             var newSchedules = new List<Solution>();
-            foreach (var scheduleGroup in bestMeetings)
+            foreach (var (schedule, variants) in bestMeetings)
             {
-                var variants = scheduleGroup.ToList();
                 for (var i = 0; i < variants.Count - 1; i++)
                 {
                     copyCount++;
-                    var copy = scheduleGroup.Key.Copy();
+                    var copy = schedule.Copy();
                     copy.AddMeeting(variants[i].Item2, true);
                     newSchedules.Add(new(copy, variants[i].score));
                 }
 
-                scheduleGroup.Key.AddMeeting(variants[^1].Item2, true);
-                newSchedules.Add(new(scheduleGroup.Key, variants[^1].score));
+                schedule.AddMeeting(variants[^1].Item2, true);
+                newSchedules.Add(new(schedule, variants[^1].score));
             }
 
             return newSchedules;
         }
 
-        private List<IGrouping<Schedule, (Schedule, Meeting, double score)>> GetBestMeetings(
+        private Dictionary<Schedule, List<(Schedule, Meeting, double score)>> GetBestMeetings(
             List<Solution> currentSchedules)
         {
             var meetingsToAdd = new List<(Schedule, Meeting, double score)>();
@@ -86,7 +85,7 @@ namespace Domain.Algorithms.Solvers
                 .OrderByDescending(t => t.score)
                 .Take(choiceCount)
                 .GroupBy(t => t.Item1)
-                .ToList();
+                .ToDictionary(g => g.Key, g => g.ToList());
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting, double baseScore)
