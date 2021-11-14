@@ -177,7 +177,6 @@ namespace Domain.Conversions
 
             var classroom = FillLocation(meeting);
             if (string.IsNullOrEmpty(classroom)) return meeting.Discipline.Name;
-
             return $"{meeting.Discipline}, " +
                    $"{classroom}, " +
                    $"{meeting.Teacher.Name}";
@@ -338,19 +337,27 @@ namespace Domain.Conversions
         public static void BuildScheduleByTeacher(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var meetingSet = schedule.GetMeetings();
-            var teachers = meetingSet.Select(m => m.Teacher.Name)
-                .Distinct()
-                .OrderBy(t => t)
-                .ToList();
+            // var teachers = meetingSet.Select(m => m.Teacher.Name)
+            //     .Distinct()
+            //     .OrderBy(t => t)
+            //     .ToList();
 
+            var teachers = meetingSet
+                .OrderBy(t => t.MeetingTime!.Day)
+                .Select(t => t.Teacher.Name)
+                .Distinct()
+                .ToList();
+            
             Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
 
             repository.ClearSheet(sheetName);
-            var modifier = repository.ModifySpreadSheet(sheetName);
+            using var modifier = repository.ModifySpreadSheet(sheetName);
 
             modifier.BuildSchedulePatternByTeacher(teachers);
 
             modifier.FillScheduleDataByTeacher(meetingSet, teachers);
+
+            modifier.BuildThickBorders(teachers.Count + 2);
         }
 
         private static void BuildSchedulePatternByTeacher(this SheetModifier modifier, List<string> teachers)
@@ -381,6 +388,7 @@ namespace Domain.Conversions
             foreach (var meeting in meetings)
             {
                 var data = MeetingCellData(meeting);
+                data.UserEnteredValue.StringValue = $"{meeting.Discipline}, {FillLocation(meeting)}";
                 var payload = new List<List<CellData>> {new() {data}};
 
                 var startRow = GetStartRow(meeting);
