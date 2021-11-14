@@ -6,8 +6,13 @@ namespace Domain.Conversions
 {
     public static class RequisitionToMeetingConverter
     {
+        private static readonly Dictionary<RequisitionItem, List<Meeting>> Cached = new();
+        
         public static List<Meeting> ConvertRequisitionToBaseMeeting(RequisitionItem requisitionItem)
         {
+            if (Cached.ContainsKey(requisitionItem))
+                return Cached[requisitionItem];
+                
             var meetings = new List<Meeting>();
 
             var meetingCount = requisitionItem.RepetitionsCount * (int) requisitionItem.PlanItem.MeetingsPerWeek;
@@ -24,6 +29,7 @@ namespace Domain.Conversions
                     meetings.Add(new(weekType, requisitionItem));
             }
 
+            Cached[requisitionItem] = meetings;
             return meetings;
         }
     }

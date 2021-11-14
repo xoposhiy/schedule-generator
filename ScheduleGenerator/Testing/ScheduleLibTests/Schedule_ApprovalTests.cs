@@ -6,6 +6,7 @@ using ApprovalTests.Reporters;
 using Domain;
 using Infrastructure;
 using NUnit.Framework;
+using ScheduleCLI;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
 
@@ -31,7 +32,7 @@ namespace Testing.ScheduleLibTests
 
         private static string GenerateApprovalString(SheetNamesConfig config)
         {
-            var solver = GetSolver(config, Repository);
+            var solver = Program.GetSolver(config, Repository);
             var schedule = solver
                 .GetSolution(new(0, 0, 0, 0, 1))
                 .Schedule;

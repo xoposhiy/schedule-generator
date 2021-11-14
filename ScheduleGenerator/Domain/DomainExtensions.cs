@@ -278,15 +278,6 @@ namespace Domain
             return (new(requisitions.ToArray()), classrooms);
         }
 
-        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
-        {
-            var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
-            var estimator = GetDefaultCombinedEstimator();
-
-            // return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
-        }
-
         public static void Link(this Meeting first, Meeting second)
         {
             first.RequiredAdjacentMeeting = second;

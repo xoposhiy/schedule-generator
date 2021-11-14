@@ -2,7 +2,10 @@
 using System.Globalization;
 using System.Text;
 using System.Threading;
+using Domain.Algorithms;
+using Domain.Algorithms.Solvers;
 using Infrastructure;
+using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;
 using static Domain.Conversions.ScheduleSpreadsheetConverter;
@@ -24,8 +27,8 @@ namespace ScheduleCLI
             
             SheetNamesConfig[] configs =
             {
-                SpringConfig,
-                // AutumnConfig
+                //SpringConfig,
+                AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
@@ -52,7 +55,7 @@ namespace ScheduleCLI
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[0]);
+            var (schedule, _) = solver.GetSolution(TimeSpans[1]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             Console.WriteLine(notUsedMeetings);
@@ -65,6 +68,17 @@ namespace ScheduleCLI
             var estimator = GetDefaultCombinedEstimator();
             estimator.Estimate(schedule, logger);
             Console.WriteLine(logger);
+        }
+
+        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
+            var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
+            var estimator = GetDefaultCombinedEstimator();
+
+            //return new GreedySolver(estimator, requisition, classrooms, new(42));
+            //return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
+            return new BeamSolver(estimator, requisition, classrooms, new(42), 20);
+            //return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }
 }

@@ -34,8 +34,8 @@ namespace Domain.Algorithms.Solvers
             while (true)
             {
                 var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
-                    .Select(meeting => (meeting, score: EstimateResult(currentSchedule, meeting)))
-                    .OrderByDescending(ms => ms.score)
+                    .Select(meeting => (meeting, scoreDelta: EstimateResult(currentSchedule, meeting)))
+                    .OrderByDescending(ms => ms.scoreDelta)
                     .ToList();
                 if (meetingsToAdd.Count == 0) break;
 
