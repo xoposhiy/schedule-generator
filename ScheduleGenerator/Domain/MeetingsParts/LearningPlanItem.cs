@@ -1,4 +1,5 @@
-﻿using Domain.Enums;
+﻿using System.Globalization;
+using Domain.Enums;
 
 namespace Domain.MeetingsParts
 {
@@ -8,7 +9,8 @@ namespace Domain.MeetingsParts
     {
         public override string ToString()
         {
-            return $"{GroupSet}, {Discipline}, {MeetingType}, {GroupSize}, {MeetingsPerWeek}, {Priority}";
+            var perWeek = MeetingsPerWeek.ToString(CultureInfo.InvariantCulture);
+            return $"{GroupSet}, {Discipline}, {MeetingType}, {GroupSize}, {perWeek}, {Priority}";
         }
     }
 }
