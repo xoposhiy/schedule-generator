@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Infrastructure
@@ -65,7 +66,7 @@ namespace Infrastructure
             }
 
             lines.Add($"{offset}Total: {score * weight} (BasicScore: {score}, Weight: {weight})");
-            return string.Join("\n", lines);
+            return string.Join(Environment.NewLine, lines);
         }
     }
 }

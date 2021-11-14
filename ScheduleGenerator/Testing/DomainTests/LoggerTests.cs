@@ -3,6 +3,8 @@ using ApprovalTests;
 using ApprovalTests.Reporters;
 using Domain;
 using NUnit.Framework;
+using static Domain.DomainExtensions;
+using static Testing.ObjectMother;
 
 namespace Testing.DomainTests
 {
@@ -13,8 +15,8 @@ namespace Testing.DomainTests
         [Test]
         public void CheckLogger()
         {
-            var estimator = DomainExtensions.GetDefaultCombinedEstimator();
-            var schedule = new Schedule(ObjectMother.FullMondayRequisition, ObjectMother.ClassRooms);
+            var estimator = GetDefaultCombinedEstimator();
+            var schedule = new Schedule(FullMondayRequisition, ClassRooms);
 
             while (true)
             {
