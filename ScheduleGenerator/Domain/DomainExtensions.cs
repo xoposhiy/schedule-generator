@@ -266,13 +266,19 @@ namespace Domain
             return estimator;
         }
 
-        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        public static (Requisition, Dictionary<string, List<RoomSpec>>) GetRequisition(
+            SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
             var (requirements, learningPlan, _) = sheetNamesConfig;
             var (requisitions, _, classrooms) = ConvertToRequisitions(
                 repo, requirements, learningPlan, ClassroomsSheetName);
 
-            var requisition = new Requisition(requisitions.ToArray());
+            return (new(requisitions.ToArray()), classrooms);
+        }
+
+        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
+            var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
 
             // return new GreedySolver(estimator, requisition, classrooms, new(42));
@@ -344,21 +350,31 @@ namespace Domain
             var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
 
             var countDelta = 0;
-            var (dayOfWeek, timeSlot) = meetingToAdd.MeetingTime!;
+            var dayOfWeek = meetingToAdd.MeetingTime!.Day;
 
             foreach (var weekType in weekTypes)
             {
                 if (!dictionary.TryGetValue(key, weekType, dayOfWeek, out var byDay))
                     continue;
-
-                if (byDay[timeSlot] != null)
-                    throw new ArgumentException("Placing meeting in taken place");
-
                 var before = byDay.GetMeetingsSpacesCount();
-                byDay[timeSlot] = meetingToAdd;
-                var after = byDay.GetMeetingsSpacesCount();
-                byDay[timeSlot] = null;
+
+                foreach (var linkedMeeting in meetingToAdd.GetLinkedMeetings())
+                {
+                    var timeSlot = linkedMeeting.MeetingTime!.TimeSlot;
+                    if (byDay[timeSlot] != null)
+                        throw new ArgumentException("Placing meeting in taken place");
+
+                    byDay[timeSlot] = meetingToAdd;
+                }
                 
+                var after = byDay.GetMeetingsSpacesCount();
+
+                foreach (var linkedMeeting in meetingToAdd.GetLinkedMeetings())
+                {
+                    var timeSlot = linkedMeeting.MeetingTime!.TimeSlot;
+                    byDay[timeSlot] = null;
+                }
+
                 countDelta += after - before;
             }
 
