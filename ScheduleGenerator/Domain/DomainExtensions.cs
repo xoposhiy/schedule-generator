@@ -261,8 +261,10 @@ namespace Domain
             var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var teacherPriorityEstimator = (new TeacherPriorityEstimator(), 5);
+            var groupPriorityEstimator = (new GroupPriorityEstimator(), 5);
             var estimator = new CombinedEstimator(groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator);
+                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator,
+                groupPriorityEstimator);
             return estimator;
         }
 

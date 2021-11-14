@@ -127,7 +127,7 @@ namespace Domain.Conversions
             var height = RomeNumbers.Length * 2;
             for (var i = 0; i < WeekDayCount; i++)
             {
-                modifier.AddBorders(currentRow, startColumn, height, width, new(0, 3, 0, 0));
+                modifier.AddBorders(currentRow, startColumn, height, width, new(0, 2, 0, 2));
                 currentRow -= height;
             }
 

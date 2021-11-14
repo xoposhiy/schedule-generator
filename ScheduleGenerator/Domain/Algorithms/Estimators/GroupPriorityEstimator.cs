@@ -1,11 +1,13 @@
 using System;
+using System.Linq;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
 {
-    public class TeacherPriorityEstimator : IEstimator
+    public class GroupPriorityEstimator : IEstimator
     {
         private const double AndreyConstant = 5;
+
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var maxPenalty = schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
@@ -34,23 +36,22 @@ namespace Domain.Algorithms.Estimators
 
         private static string GetLogMessage(Meeting meeting, double priorityPenalty)
         {
-            var priority = priorityPenalty * meeting.RequisitionItem.MeetingTimePriorities.Length * AndreyConstant + 1;
+            var priority = priorityPenalty * meeting.RequisitionItem.GroupPriorities.Length * AndreyConstant + 1;
             var priorityText = Math.Abs(priorityPenalty - 1) < 0.01 ? "IGNORED" : $"{(int) priority}-th";
             return $"{meeting.Discipline} " +
                    $"{meeting.Teacher} " +
-                   $"{meeting.MeetingType} has {priorityText} time priority ({meeting.MeetingTime}) for " +
+                   $"{meeting.MeetingType} has {priorityText} group priority ({meeting.GroupsChoice}) for " +
                    $"[{meeting.GroupsChoice}]";
         }
 
         private static double FindPriorityPenalty(Meeting meeting)
         {
-            var meetingTime = meeting.MeetingTime!;
-            var priorities = meeting.RequisitionItem.MeetingTimePriorities;
+            var basicMeeting = meeting.BaseMeeting;
+            var priorities = basicMeeting!.RequisitionItem.GroupPriorities;
             var prioritiesLength = priorities.Length;
             for (var i = 0; i < prioritiesLength; i++)
-                if (priorities[i].MeetingTimeChoices.Contains(meetingTime))
+                if (priorities[i].GroupsChoices.Any(gc => meeting.GroupsChoice!.Groups.SequenceEqual(gc.Groups)))
                     return (double) i / prioritiesLength / AndreyConstant;
-
             return 1;
         }
     }
