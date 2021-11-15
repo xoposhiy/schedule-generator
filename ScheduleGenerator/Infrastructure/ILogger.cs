@@ -64,7 +64,7 @@ namespace Infrastructure
             {
                 lines.Add($"{offset}{child.name}:");
                 lines.Add(child.ToString(level + 1));
-                score += child.totalScore;
+                score += child.totalScore * child.weight;
             }
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
