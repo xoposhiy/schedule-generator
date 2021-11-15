@@ -14,7 +14,7 @@ namespace Testing.EstimatorsTests
     {
         [TestCase(typeof(MeetingsPerDayEstimator))]
         [TestCase(typeof(StudentsSpacesEstimator))]
-        [TestCase(typeof(TeacherPriorityEstimator))]
+        [TestCase(typeof(TimePriorityEstimator))]
         [TestCase(typeof(TeacherSpacesEstimator))]
         [TestCase(typeof(TeacherUsedDaysEstimator))]
         [TestCase(typeof(GroupPriorityEstimator))]
