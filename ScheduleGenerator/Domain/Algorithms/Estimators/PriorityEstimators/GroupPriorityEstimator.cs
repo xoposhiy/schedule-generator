@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 
-namespace Domain.Algorithms.Estimators
+namespace Domain.Algorithms.Estimators.PriorityEstimators
 {
     public class GroupPriorityEstimator : PriorityEstimator
     {
-        public override string GetLogMessage(Meeting meeting, double priorityPenalty)
+        protected override string GetLogMessage(Meeting meeting, double priorityPenalty)
         {
             var priority = priorityPenalty * meeting.RequisitionItem.GroupPriorities.Length * AndreyConstant + 1;
             var priorityText = Math.Abs(priorityPenalty - 1) < 0.01 ? "IGNORED" : $"{(int) priority}-th";
@@ -15,7 +15,7 @@ namespace Domain.Algorithms.Estimators
                    $"[{meeting.GroupsChoice}]";
         }
 
-        public override double FindPriorityPenalty(Meeting meeting)
+        protected override double FindPriorityPenalty(Meeting meeting)
         {
             var basicMeeting = meeting.BaseMeeting;
             var priorities = basicMeeting!.RequisitionItem.GroupPriorities;

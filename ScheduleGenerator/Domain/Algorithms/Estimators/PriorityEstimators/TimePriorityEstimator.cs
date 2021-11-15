@@ -1,10 +1,10 @@
 using System;
 
-namespace Domain.Algorithms.Estimators
+namespace Domain.Algorithms.Estimators.PriorityEstimators
 {
     public class TimePriorityEstimator : PriorityEstimator
     {
-        public override string GetLogMessage(Meeting meeting, double priorityPenalty)
+        protected override string GetLogMessage(Meeting meeting, double priorityPenalty)
         {
             var priority = priorityPenalty * meeting.RequisitionItem.MeetingTimePriorities.Length * AndreyConstant + 1;
             var priorityText = Math.Abs(priorityPenalty - 1) < 0.01 ? "IGNORED" : $"{(int) priority}-th";
@@ -14,7 +14,7 @@ namespace Domain.Algorithms.Estimators
                    $"[{meeting.GroupsChoice}]";
         }
 
-        public override double FindPriorityPenalty(Meeting meeting)
+        protected override double FindPriorityPenalty(Meeting meeting)
         {
             var meetingTime = meeting.MeetingTime!;
             var priorities = meeting.RequisitionItem.MeetingTimePriorities;
@@ -22,7 +22,6 @@ namespace Domain.Algorithms.Estimators
             for (var i = 0; i < prioritiesLength; i++)
                 if (priorities[i].MeetingTimeChoices.Contains(meetingTime))
                     return (double) i / prioritiesLength / AndreyConstant;
-
             return 1;
         }
     }

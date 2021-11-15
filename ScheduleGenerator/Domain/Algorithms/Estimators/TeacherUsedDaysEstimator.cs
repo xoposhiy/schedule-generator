@@ -17,8 +17,8 @@ namespace Domain.Algorithms.Estimators
             if (!schedule.TeacherMeetingsByTime.TryGetValue(teacher, out var byTeacher)) 
                 return 0;
             
-            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty;
             var penaltyDelta = 0d;
+            var maxPenalty = GetMaxPenalty(schedule);
             
             foreach (var weekType in weekTypes)
             {
@@ -57,7 +57,7 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty; 
+            var maxPenalty = GetMaxPenalty(schedule); 
 
             foreach (var (teacher, byTeacher) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byTeacher)
@@ -74,6 +74,11 @@ namespace Domain.Algorithms.Estimators
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static double GetMaxPenalty(Schedule schedule)
+        {
+            return schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty;
         }
     }
 }

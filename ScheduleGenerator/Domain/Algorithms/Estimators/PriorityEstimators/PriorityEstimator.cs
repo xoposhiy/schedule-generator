@@ -1,16 +1,16 @@
 ﻿using Infrastructure;
 
-namespace Domain.Algorithms.Estimators
+namespace Domain.Algorithms.Estimators.PriorityEstimators
 {
     public abstract class PriorityEstimator : IEstimator
     {
-        public const double AndreyConstant = 5;
+        protected const double AndreyConstant = 5;
         // private const double DanyaConstant = Math.E * 100;
 
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
-            var maxPenalty = schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
             var penaltyDelta = 0d;
+            var maxPenalty = GetMaxPenalty(schedule);
 
             foreach (var linkedMeeting in meetingToAdd.GetLinkedMeetings())
                 penaltyDelta += FindPriorityPenalty(linkedMeeting);
@@ -21,7 +21,7 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-            var maxPenalty = schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
+            var maxPenalty = GetMaxPenalty(schedule);
             foreach (var meeting in schedule.Meetings)
             {
                 var priorityPenalty = FindPriorityPenalty(meeting);
@@ -33,7 +33,12 @@ namespace Domain.Algorithms.Estimators
             return -penalty / maxPenalty;
         }
 
-        public abstract double FindPriorityPenalty(Meeting meeting);
-        public abstract string GetLogMessage(Meeting meeting, double priorityPenalty);
+        private static double GetMaxPenalty(Schedule schedule)
+        {
+            return schedule.Meetings.Count + schedule.NotUsedMeetings.Count;
+        }
+
+        protected abstract double FindPriorityPenalty(Meeting meeting);
+        protected abstract string GetLogMessage(Meeting meeting, double priorityPenalty);
     }
 }

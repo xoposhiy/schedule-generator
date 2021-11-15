@@ -35,6 +35,7 @@ namespace Infrastructure
 
         public void Log(string message, double score)
         {
+            if (score == 0) return;
             records.Add(new(message, score));
             totalScore += score;
         }

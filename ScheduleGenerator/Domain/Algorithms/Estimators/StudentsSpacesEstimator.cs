@@ -10,11 +10,10 @@ namespace Domain.Algorithms.Estimators
             var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
 
             var penaltyDelta = 0d;
+            var maxPenalty = GetMaxPenalty(schedule);
 
             foreach (var meetingGroup in groups)
                 penaltyDelta += GetSpacesCountDelta(meetingToAdd, meetingGroup, schedule.GroupMeetingsByTime);
-
-            double maxPenalty = schedule.GroupMeetingsByTime.Count * MaxSpaces;
 
             return -penaltyDelta / maxPenalty;
         }
@@ -24,8 +23,7 @@ namespace Domain.Algorithms.Estimators
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
             var penalty = 0d;
-
-            double maxPenalty = schedule.GroupMeetingsByTime.Count * MaxSpaces;
+            var maxPenalty = GetMaxPenalty(schedule);
 
             foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
             foreach (var (weekType, byWeekType) in byGroup)
@@ -38,6 +36,11 @@ namespace Domain.Algorithms.Estimators
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static double GetMaxPenalty(Schedule schedule)
+        {
+            return schedule.GroupMeetingsByTime.Count * MaxSpaces;
         }
     }
 }

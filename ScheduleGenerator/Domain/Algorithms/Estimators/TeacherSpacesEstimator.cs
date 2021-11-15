@@ -8,8 +8,8 @@ namespace Domain.Algorithms.Estimators
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
-            
-            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxSpaces;
+
+            var maxPenalty = GetMaxPenalty(schedule);
 
             var penaltyDelta = GetSpacesCountDelta(meetingToAdd, teacher, schedule.TeacherMeetingsByTime);
 
@@ -19,8 +19,7 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-
-            double maxPenalty = schedule.TeacherMeetingsByTime.Count * MaxSpaces;
+            var maxPenalty = GetMaxPenalty(schedule);
 
             foreach (var (teacher, byGroup) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byGroup)
@@ -33,6 +32,11 @@ namespace Domain.Algorithms.Estimators
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static double GetMaxPenalty(Schedule schedule)
+        {
+            return schedule.TeacherMeetingsByTime.Count * MaxSpaces;
         }
     }
 }
