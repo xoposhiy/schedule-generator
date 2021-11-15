@@ -3,5 +3,6 @@ obj/
 .vs/
 .idea/
 Credentials/
+LoggerInfo/**
 
 /ScheduleGenerator/ScheduleGenerator.sln.DotSettings.user
