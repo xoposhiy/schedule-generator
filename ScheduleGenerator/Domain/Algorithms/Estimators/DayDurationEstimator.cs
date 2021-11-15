@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Infrastructure;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -64,7 +65,7 @@ namespace Domain.Algorithms.Estimators
 
         private static double GetMaxPenalty(Schedule schedule)
         {
-            return schedule.GroupMeetingsByTime.Count * 2 * 6;
+            return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount;
         }
 
         private static int GetPenalty(IList<int> meetingsTimeSlots)

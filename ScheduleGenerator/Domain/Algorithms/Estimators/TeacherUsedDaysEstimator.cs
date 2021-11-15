@@ -1,12 +1,13 @@
 using System;
 using Infrastructure;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators
 {
     public class TeacherUsedDaysEstimator : IEstimator
     {
         private const int MaxTeacherDays = 2;
-        private const int MaxTeacherPenalty = 2 * 4; // weekTypes * maxExtraDays
+        private const int MaxTeacherPenalty = WeekTypesCount * 4; // maxExtraDays
         
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
@@ -45,8 +46,8 @@ namespace Domain.Algorithms.Estimators
 
                 daysCountAfter += daysCountBefore;
 
-                var extraDaysBefore = Math.Max(0, daysCountBefore - MaxTeacherDays);
-                var extraDaysAfter = Math.Max(0, daysCountAfter - MaxTeacherDays);
+                var extraDaysBefore = GetPenalty(daysCountBefore);
+                var extraDaysAfter = GetPenalty(daysCountAfter);
 
                 penaltyDelta += extraDaysAfter - extraDaysBefore;
             }
@@ -67,7 +68,7 @@ namespace Domain.Algorithms.Estimators
                     if (day.MeetingsCount() != 0)
                         days++;
 
-                var extraDays = Math.Max(0, days - MaxTeacherDays);
+                var extraDays = GetPenalty(days);
                 if (extraDays == 0) continue;
                 logger?.Log($"{teacher} has {extraDays} extra days at {weekType} week", -extraDays / maxPenalty);
                 penalty += extraDays;
@@ -79,6 +80,11 @@ namespace Domain.Algorithms.Estimators
         private static double GetMaxPenalty(Schedule schedule)
         {
             return schedule.TeacherMeetingsByTime.Count * MaxTeacherPenalty;
+        }
+
+        private static int GetPenalty(int days)
+        {
+            return Math.Max(0, days - MaxTeacherDays);
         }
     }
 }

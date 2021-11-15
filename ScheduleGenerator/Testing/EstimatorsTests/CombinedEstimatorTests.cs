@@ -13,14 +13,14 @@ namespace Testing.EstimatorsTests
     [TestFixture]
     public static class CombinedEstimatorTests
     {
+        [TestCase(typeof(DayDurationEstimator))]
+        [TestCase(typeof(LocationPerDayEstimator))]
         [TestCase(typeof(MeetingsPerDayEstimator))]
         [TestCase(typeof(StudentsSpacesEstimator))]
-        [TestCase(typeof(TimePriorityEstimator))]
         [TestCase(typeof(TeacherSpacesEstimator))]
         [TestCase(typeof(TeacherUsedDaysEstimator))]
         [TestCase(typeof(GroupPriorityEstimator))]
-        [TestCase(typeof(DayDurationEstimator))]
-        [TestCase(typeof(LocationPerDayEstimator))]
+        [TestCase(typeof(TimePriorityEstimator))]
         public static void EstimatorSameDeltaTest(Type estimatorType)
         {
             var estimator = Activator.CreateInstance(estimatorType) as IEstimator;

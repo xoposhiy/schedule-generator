@@ -17,9 +17,7 @@ namespace Domain.Conversions
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 0;
 
-        private const int WeekTypesCount = 2;
         private const int SubGroupsCount = 2;
-
 
         private const int TimeStartColumn = TimeBarColumnOffset + 1;
         private const int SubgroupRowOffset = HeadersRowOffset + 1;
@@ -76,7 +74,7 @@ namespace Domain.Conversions
 
             modifier.FillScheduleData(meetingSet, groupNames);
 
-            modifier.BuildThickBorders(groupNames.Count * 2 + 2);
+            modifier.BuildThickBorders(groupNames.Count * SubGroupsCount + HeadersColumnOffset);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
@@ -117,13 +115,15 @@ namespace Domain.Conversions
             return modifier;
         }
 
+        private static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 0, 2);
+
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
             var height = RomeNumbers.Length * WeekTypesCount;
             var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * height;
             for (var i = 0; i < WeekDayCount; i++)
             {
-                modifier.AddBorders(currentRow, TimeBarColumnOffset, height, width, new(0, 2, 0, 2));
+                modifier.AddBorders(currentRow, TimeBarColumnOffset, height, width, ThickBorders);
                 currentRow -= height;
             }
 

@@ -50,7 +50,6 @@ namespace Testing.ConversionsTests
                 .Select(t =>
                     string.Join(", ", t.Select(m => $"{m.Day.ToString()[..2]}{m.TimeSlot}")));
             var actual = string.Join(";", meetingTimeRequisitions);
-            Console.WriteLine(actual);
             Assert.AreEqual(expected, actual);
         }
 

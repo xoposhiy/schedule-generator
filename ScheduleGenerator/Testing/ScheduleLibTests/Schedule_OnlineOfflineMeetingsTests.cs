@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Domain;
 using Domain.Enums;
@@ -31,11 +30,9 @@ namespace Testing.ScheduleLibTests
                 .Where(m => m.MeetingType == MeetingType.Lecture)
                 .First(m => m.MeetingTime!.TimeSlot == 1);
             schedule.AddMeeting(lecture);
-            Console.Error.WriteLine(lecture);
 
             foreach (var meeting in schedule.GetMeetingsToAdd().Where(m => m.MeetingType == MeetingType.Seminar))
             {
-                Console.Error.WriteLine(meeting);
                 Assert.Greater(meeting.MeetingTime!.TimeSlot - lecture.MeetingTime!.TimeSlot, 1);
             }
         }

@@ -260,7 +260,10 @@ namespace Domain
 
     public static class DomainExtensions
     {
-        public const int MaxSpaces = 2 * 6 * 4; // weekTypes * daysOfWeek * maxSpaceCount
+        public const int WeekTypesCount = 2;
+        public const int MaxDaysCount = 6;
+        private const int MaxSpacesCount = 4;
+        public const int MaxSpaces = WeekTypesCount * MaxDaysCount * MaxSpacesCount;
 
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
