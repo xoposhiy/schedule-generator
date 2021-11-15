@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using static Infrastructure.LoggerConstants;
 
 namespace Domain.Algorithms.Solvers
 {
@@ -21,7 +23,7 @@ namespace Domain.Algorithms.Solvers
             var iteration = 1;
             var improvementsCount = 0;
             var bestIteration = 0;
-
+            using StreamWriter streamWriter = new(string.Join("\\", LoggerInfoPath, "RepeaterSolverInfo.txt"));
             while (sw.Elapsed < timeBudget)
             {
                 iteration++;
@@ -31,14 +33,19 @@ namespace Domain.Algorithms.Solvers
                     bestSolution = solution;
                     improvementsCount++;
                     bestIteration = iteration;
-                    Console.WriteLine(GetImprovementMessage(improvementsCount, iteration, solution));
+                    var message = GetImprovementMessage(improvementsCount, iteration, solution);
+                    if (WriteToFiles)
+                        streamWriter.WriteLine(message);
+                    else
+                        Console.WriteLine(message);
                 }
             }
 
             sw.Stop();
 
-            Console.WriteLine(GetFinalMessage(sw, iteration, bestSolution, bestIteration, improvementsCount));
-
+            var finalMessage = GetFinalMessage(sw, iteration, bestSolution, bestIteration, improvementsCount);
+            // Console.WriteLine(finalMessage);
+            streamWriter.WriteLine(finalMessage);
             return bestSolution;
         }
 

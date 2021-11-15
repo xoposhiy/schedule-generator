@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using static Infrastructure.LoggerConstants;
 
 namespace Domain.Algorithms.Solvers
 {
@@ -48,11 +50,22 @@ namespace Domain.Algorithms.Solvers
                 currentSchedules = iteratedSolutions;
             }
 
-            Console.WriteLine($"Beam width: {beamWidth}");
-            Console.WriteLine($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
-            Console.WriteLine($"Elapsed: {sw.Elapsed}");
             var bestSolution = currentSchedules.OrderByDescending(s => s.Score).First();
-            Console.WriteLine($"Best score: {bestSolution.Score}");
+            if (WriteToFiles)
+            {
+                using StreamWriter streamWriter = new(string.Join("\\", LoggerInfoPath, "BeamSolverInfo.txt"));
+                streamWriter.WriteLine($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
+                streamWriter.WriteLine($"Beam width: {beamWidth}");
+                streamWriter.WriteLine($"Elapsed: {sw.Elapsed}");
+                streamWriter.WriteLine($"Best score: {bestSolution.Score}");
+            }
+            else
+            {
+                Console.WriteLine($"Beam width: {beamWidth}");
+                Console.WriteLine($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
+                Console.WriteLine($"Elapsed: {sw.Elapsed}");
+                Console.WriteLine($"Best score: {bestSolution.Score}");
+            }
             return bestSolution;
         }
 

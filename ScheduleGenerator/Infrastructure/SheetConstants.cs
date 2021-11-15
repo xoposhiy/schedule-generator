@@ -38,4 +38,10 @@ namespace Infrastructure
 
         public static readonly GsRepository RowMeetingsRepository = new("RowMeetings", CredentialPath, RowMeetingsUrl);
     }
+
+    public static class LoggerConstants
+    {
+        public const string LoggerInfoPath = "..\\..\\..\\..\\LoggerInfo";
+        public static readonly bool WriteToFiles = false;
+    }
 }

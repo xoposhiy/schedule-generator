@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Enums;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
 {
-    public class DayDurationEstimator : IEstimator
+    public class LocationPerDayEstimator : IEstimator
     {
+        private const int OptimalLocationsCount = 1;
+        private const int PossibleMaximumLocationsCount = 4;
+
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var penaltyDelta = 0;
@@ -20,23 +24,17 @@ namespace Domain.Algorithms.Estimators
             foreach (var meetingGroup in groups)
             foreach (var weekType in weekTypes)
             {
-                var meetingsTimeSlots = new List<int>();
+                var locations = new List<Location>();
                 if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var byDay))
                 {
                     if (byDay[timeSlot] != null)
                         throw new AggregateException("Placing meeting in taken place");
-
-                    meetingsTimeSlots = byDay.MeetingsTimeSlots();
+                    locations = byDay.Where(m => m != null).Select(m => m!.Location).ToList();
                 }
 
-                var beforePenalty = GetPenalty(meetingsTimeSlots);
-                
-                if (meetingToAdd.RequiredAdjacentMeeting != null)
-                    meetingsTimeSlots.Add(meetingToAdd.RequiredAdjacentMeeting!.MeetingTime!.TimeSlot);
-                meetingsTimeSlots.Add(timeSlot);
-                meetingsTimeSlots.Sort();
-
-                var afterPenalty = GetPenalty(meetingsTimeSlots);
+                var beforePenalty = GetPenalty(locations);
+                locations.Add(meetingToAdd.Location);
+                var afterPenalty = GetPenalty(locations);
 
                 penaltyDelta += afterPenalty - beforePenalty;
             }
@@ -53,12 +51,11 @@ namespace Domain.Algorithms.Estimators
             foreach (var (weekType, byWeekType) in byGroup)
             foreach (var (day, byDay) in byWeekType)
             {
-                var meetingsTimeSlots = byDay.MeetingsTimeSlots();
-                var last = meetingsTimeSlots.LastOrDefault();
-                var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
-                if (count is >= 2 and <= 4 || last == default) continue;
-                logger?.Log($"{group} has bad {weekType} {day} with {count} day duration", -1 / maxPenalty);
-                penalty++;
+                var count = byDay.Where(m => m != null).Select(m => m!.Location).Distinct().Count();
+                penalty += count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
+                if (count > 1)
+                    logger?.Log($"{group} has bad {weekType} with {count} locations on {day}",
+                        -1 / maxPenalty);
             }
 
             return -penalty / maxPenalty;
@@ -66,16 +63,13 @@ namespace Domain.Algorithms.Estimators
 
         private static double GetMaxPenalty(Schedule schedule)
         {
-            return schedule.GroupMeetingsByTime.Count * 2 * 6;
+            return schedule.GroupMeetingsByTime.Count * 2 * 6 * PossibleMaximumLocationsCount;
         }
 
-        private static int GetPenalty(IList<int> meetingsTimeSlots)
+        private static int GetPenalty(IEnumerable<Location> meetingsLocations)
         {
-            var last = meetingsTimeSlots.LastOrDefault();
-            var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
-            if (count is >= 2 and <= 4 || last == default)
-                return 0;
-            return 1;
+            var count = meetingsLocations.Distinct().Count();
+            return count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
         }
     }
 }
