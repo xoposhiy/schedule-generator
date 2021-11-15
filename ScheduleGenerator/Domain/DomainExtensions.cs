@@ -90,6 +90,15 @@ namespace Domain
 
             return count;
         }
+
+        public static List<int> MeetingsTimeSlots(this Meeting?[] byDay)
+        {
+            var res = new List<int>();
+            for (var i = 1; i < 7; i++) //meetings at 1..6  always null at 0
+                if (byDay[i] != null)
+                    res.Add(i);
+            return res;
+        }
     }
 
     public static class DictionaryExtensions
@@ -260,9 +269,10 @@ namespace Domain
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var teacherPriorityEstimator = (new TimePriorityEstimator(), 5);
             var groupPriorityEstimator = (new GroupPriorityEstimator(), 5);
+            var dayDurationEstimator = (new DayDurationEstimator(), 1);
             var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator,
-                groupPriorityEstimator);
+                groupPriorityEstimator, dayDurationEstimator);
             return estimator;
         }
 

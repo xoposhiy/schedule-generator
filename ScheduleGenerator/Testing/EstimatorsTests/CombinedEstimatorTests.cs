@@ -18,6 +18,7 @@ namespace Testing.EstimatorsTests
         [TestCase(typeof(TeacherSpacesEstimator))]
         [TestCase(typeof(TeacherUsedDaysEstimator))]
         [TestCase(typeof(GroupPriorityEstimator))]
+        [TestCase(typeof(DayDurationEstimator))]
         public static void EstimatorSameDeltaTest(Type estimatorType)
         {
             var estimator = Activator.CreateInstance(estimatorType) as IEstimator;
