@@ -61,6 +61,11 @@ namespace Domain
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
 
+        public override string ToString()
+        {
+            return string.Join("\n", Meetings.Select(m => m.ToString()).OrderBy(s => s));
+        }
+
         public Schedule Copy()
         {
             // TODO: optimize

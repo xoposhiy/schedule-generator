@@ -26,14 +26,12 @@ namespace Domain.Algorithms.Estimators
                     if (byDay[timeSlot] != null)
                         throw new AggregateException("Placing meeting in taken place");
 
-                    meetingsTimeSlots = byDay.MeetingsTimeSlots();
+                    meetingsTimeSlots.AddRange(byDay.MeetingsTimeSlots());
                 }
 
                 var beforePenalty = GetPenalty(meetingsTimeSlots);
-                
-                if (meetingToAdd.RequiredAdjacentMeeting != null)
-                    meetingsTimeSlots.Add(meetingToAdd.RequiredAdjacentMeeting!.MeetingTime!.TimeSlot);
-                meetingsTimeSlots.Add(timeSlot);
+
+                meetingsTimeSlots.AddRange(meetingToAdd.GetLinkedMeetings().Select(m => m.MeetingTime!.TimeSlot));
                 meetingsTimeSlots.Sort();
 
                 var afterPenalty = GetPenalty(meetingsTimeSlots);
