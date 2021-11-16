@@ -81,8 +81,8 @@ namespace Domain.Algorithms.Estimators
 
         private static string GetLogMessage(Teacher? teacher, int extraDays, WeekType weekType)
         {
-            var weekTypeString = weekType.ToString().PadRight(4);
-            // var dayString = day.ToString().PadRight(8);
+            var weekTypeString = weekType.GetPrettyString();
+            // var dayString = day.GetPrettyString();
             return $"{teacher} has {extraDays} extra days at {weekTypeString} week";
         }
 

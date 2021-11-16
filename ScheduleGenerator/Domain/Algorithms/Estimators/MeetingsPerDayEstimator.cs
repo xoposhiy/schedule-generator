@@ -2,6 +2,7 @@ using System;
 using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators
 {
@@ -62,14 +63,14 @@ namespace Domain.Algorithms.Estimators
 
         private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
         {
-            var weekTypeString = weekType.ToString().PadRight(4);
-            var dayString = day.ToString().PadRight(8);
+            var weekTypeString = weekType.GetPrettyString();
+            var dayString = day.GetPrettyString();
             return $"{group} has bad {weekTypeString} {dayString} with {count} meetings";
         }
 
         private static double GetMaxPenalty(Schedule schedule)
         {
-            return schedule.GroupMeetingsByTime.Count * 2 * 6;
+            return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount;
         }
 
         private static int GetPenalty(int meetingsCount)

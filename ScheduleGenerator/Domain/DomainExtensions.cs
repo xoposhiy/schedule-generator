@@ -281,6 +281,16 @@ namespace Domain
             return estimator;
         }
 
+        public static string GetPrettyString(this WeekType weekType)
+        {
+            return weekType.ToString().PadRight(4);
+        }
+
+        public static string GetPrettyString(this DayOfWeek dayOfWeek)
+        {
+            return dayOfWeek.ToString().PadRight(8);
+        }
+
         public static (Requisition, Dictionary<string, List<RoomSpec>>) GetRequisition(
             SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {

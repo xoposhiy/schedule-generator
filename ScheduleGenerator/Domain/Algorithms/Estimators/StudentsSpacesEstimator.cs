@@ -43,8 +43,8 @@ namespace Domain.Algorithms.Estimators
 
         private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int spacesCount)
         {
-            var weekTypeString = weekType.ToString().PadRight(4);
-            var dayString = day.ToString().PadRight(8);
+            var weekTypeString = weekType.GetPrettyString();
+            var dayString = day.GetPrettyString();
             return $"{group} has {spacesCount} spaces on {weekTypeString} {dayString}";
         }
 
