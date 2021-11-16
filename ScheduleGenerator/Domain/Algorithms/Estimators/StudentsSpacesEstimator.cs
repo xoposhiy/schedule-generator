@@ -1,3 +1,6 @@
+using System;
+using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -31,11 +34,18 @@ namespace Domain.Algorithms.Estimators
             {
                 var spacesCount = byDay.GetMeetingsSpacesCount();
                 if (spacesCount == 0) continue;
-                logger?.Log($"{group} has {spacesCount} spaces on {weekType} {day}", -spacesCount / maxPenalty);
+                logger?.Log(GetLogMessage(group, weekType, day, spacesCount), -spacesCount / maxPenalty);
                 penalty += spacesCount;
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int spacesCount)
+        {
+            var weekTypeString = weekType.ToString().PadRight(4);
+            var dayString = day.ToString().PadRight(8);
+            return $"{group} has {spacesCount} spaces on {weekTypeString} {dayString}";
         }
 
         private static double GetMaxPenalty(Schedule schedule)

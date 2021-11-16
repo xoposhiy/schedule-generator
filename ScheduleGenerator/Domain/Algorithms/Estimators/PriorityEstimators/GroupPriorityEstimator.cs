@@ -11,7 +11,7 @@ namespace Domain.Algorithms.Estimators.PriorityEstimators
             var priorityText = Math.Abs(priorityPenalty - 1) < 0.01 ? "IGNORED" : $"{(int) priority}-th";
             return $"{meeting.Discipline} " +
                    $"{meeting.Teacher} " +
-                   $"{meeting.MeetingType} has {priorityText} group priority ({meeting.GroupsChoice}) for " +
+                   $"{meeting.MeetingType} has {priorityText} group priority " +
                    $"[{meeting.GroupsChoice}]";
         }
 

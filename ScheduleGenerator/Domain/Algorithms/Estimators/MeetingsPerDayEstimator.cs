@@ -1,4 +1,6 @@
 using System;
+using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure;
 
 namespace Domain.Algorithms.Estimators
@@ -51,11 +53,18 @@ namespace Domain.Algorithms.Estimators
                 var count = byDay.MeetingsCount();
 
                 if (count is >= 2 and <= 4 or 0) continue;
-                logger?.Log($"{group} has bad {weekType} {day} with {count} meetings", -1 / maxPenalty);
+                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
                 penalty++;
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
+        {
+            var weekTypeString = weekType.ToString().PadRight(4);
+            var dayString = day.ToString().PadRight(8);
+            return $"{group} has bad {weekTypeString} {dayString} with {count} meetings";
         }
 
         private static double GetMaxPenalty(Schedule schedule)

@@ -1,4 +1,6 @@
 using System;
+using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -70,11 +72,18 @@ namespace Domain.Algorithms.Estimators
 
                 var extraDays = GetPenalty(days);
                 if (extraDays == 0) continue;
-                logger?.Log($"{teacher} has {extraDays} extra days at {weekType} week", -extraDays / maxPenalty);
+                logger?.Log(GetLogMessage(teacher, extraDays, weekType), -extraDays / maxPenalty);
                 penalty += extraDays;
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static string GetLogMessage(Teacher? teacher, int extraDays, WeekType weekType)
+        {
+            var weekTypeString = weekType.ToString().PadRight(4);
+            // var dayString = day.ToString().PadRight(8);
+            return $"{teacher} has {extraDays} extra days at {weekTypeString} week";
         }
 
         private static double GetMaxPenalty(Schedule schedule)

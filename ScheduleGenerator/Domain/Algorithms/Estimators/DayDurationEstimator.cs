@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -56,11 +58,18 @@ namespace Domain.Algorithms.Estimators
                 var last = meetingsTimeSlots.LastOrDefault();
                 var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
                 if (count is >= 2 and <= 4 || last == default) continue;
-                logger?.Log($"{group} has bad {weekType} {day} with {count} day duration", -1 / maxPenalty);
+                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
                 penalty++;
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
+        {
+            var weekTypeString = weekType.ToString().PadRight(4);
+            var dayString = day.ToString().PadRight(8);
+            return $"{group} has bad {weekTypeString} {dayString} with {count} day duration";
         }
 
         private static double GetMaxPenalty(Schedule schedule)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
+using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -55,10 +56,17 @@ namespace Domain.Algorithms.Estimators
                 var count = byDay.Where(m => m != null).Select(m => m!.Location).Distinct().Count();
                 penalty += count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
                 if (count <= 1) continue;
-                logger?.Log($"{group} has bad {weekType} with {count} locations on {day}", -1 / maxPenalty);
+                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
             }
 
             return -penalty / maxPenalty;
+        }
+
+        private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
+        {
+            var weekTypeString = weekType.ToString().PadRight(4);
+            var dayString = day.ToString().PadRight(8);
+            return $"{group} has bad {weekTypeString} with {count} locations on {dayString}";
         }
 
         private static double GetMaxPenalty(Schedule schedule)
