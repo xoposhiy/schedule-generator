@@ -8,7 +8,7 @@ namespace Domain.Algorithms.Estimators.PriorityEstimators
         {
             var priority = priorityPenalty * meeting.RequisitionItem.MeetingTimePriorities.Length * AndreyConstant + 1;
             var priorityText = Math.Abs(priorityPenalty - 1) < 0.01 ? "IGNORED" : $"{(int) priority}-th";
-            return $"{priorityText} time priority ({meeting.MeetingTime}) for " +
+            return $"{priorityText} time priority [{meeting.MeetingTime}] for " +
                    $"{meeting.Discipline} " +
                    $"{meeting.Teacher} " +
                    $"{meeting.MeetingType} " +

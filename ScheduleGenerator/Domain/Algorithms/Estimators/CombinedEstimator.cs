@@ -24,7 +24,7 @@ namespace Domain.Algorithms.Estimators
             var score = 0d;
             foreach (var (estimator, weight) in childEstimators)
             {
-                var childLogger = logger?.GetChild(estimator.GetType().Name, weight);
+                using var childLogger = logger?.GetChild(estimator.GetType().Name, weight);
                 var estimatedScore = weight * estimator.Estimate(schedule, childLogger);
                 score += estimatedScore;
             }

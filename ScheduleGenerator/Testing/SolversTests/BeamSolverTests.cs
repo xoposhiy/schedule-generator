@@ -10,6 +10,7 @@ namespace Testing.SolversTests
     public class BeamSolverTests
     {
         [Test]
+        [Explicit]
         public void BeamBetterThanGreedy()
         {
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();

@@ -63,11 +63,10 @@ namespace ScheduleCLI
             BuildSchedule(schedule, Repository, config.Schedule);
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
-            var logger = new Logger("Combined");
+            using var logger = new Logger("Combined");
 
             var estimator = GetDefaultCombinedEstimator();
             estimator.Estimate(schedule, logger);
-            WriteLog(logger);
         }
 
         public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)

@@ -1,20 +1,21 @@
-﻿StudentsSpacesEstimator:
-	ФИИТ-101 Part1 has 1 spaces on Even Monday  
-	ФИИТ-101 Part2 has 1 spaces on Even Monday  
-	Total: -0.020833333333333332 (BasicScore: -0.020833333333333332, Weight: 1)
-MeetingsPerDayEstimator:
-	ФИИТ-101 Part1 has bad Odd  Monday   with 6 meetings
-	ФИИТ-101 Part1 has bad Even Monday   with 5 meetings
-	ФИИТ-101 Part2 has bad Odd  Monday   with 6 meetings
-	ФИИТ-101 Part2 has bad Even Monday   with 5 meetings
-	Total: -0.16666666666666666 (BasicScore: -0.16666666666666666, Weight: 1)
-TeacherSpacesEstimator:
-	Филатова has 1 spaces on Even Monday  
-	Total: -0.006944444444444444 (BasicScore: -0.006944444444444444, Weight: 1)
+﻿TestLogger:
 DayDurationEstimator:
-	ФИИТ-101 Part1 has bad Odd  Monday   with 6 day duration
-	ФИИТ-101 Part1 has bad Even Monday   with 6 day duration
-	ФИИТ-101 Part2 has bad Odd  Monday   with 6 day duration
-	ФИИТ-101 Part2 has bad Even Monday   with 6 day duration
+	ФИИТ-101 Part1 has bad Odd  Monday     with 6 day duration
+	ФИИТ-101 Part1 has bad Even Monday     with 6 day duration
+	ФИИТ-101 Part2 has bad Odd  Monday     with 6 day duration
+	ФИИТ-101 Part2 has bad Even Monday     with 6 day duration
 	Total: -0.5 (BasicScore: -0.16666666666666666, Weight: 3)
+MeetingsPerDayEstimator:
+	ФИИТ-101 Part1 has bad Odd  Monday     with 6 meetings
+	ФИИТ-101 Part1 has bad Even Monday     with 5 meetings
+	ФИИТ-101 Part2 has bad Odd  Monday     with 6 meetings
+	ФИИТ-101 Part2 has bad Even Monday     with 5 meetings
+	Total: -0.16666666666666666 (BasicScore: -0.16666666666666666, Weight: 1)
+StudentsSpacesEstimator:
+	ФИИТ-101 Part1 has 1 spaces on Even Monday    
+	ФИИТ-101 Part2 has 1 spaces on Even Monday    
+	Total: -0.020833333333333332 (BasicScore: -0.020833333333333332, Weight: 1)
+TeacherSpacesEstimator:
+	Филатова has 1 spaces on Even Monday    
+	Total: -0.006944444444444444 (BasicScore: -0.006944444444444444, Weight: 1)
 Total: -0.6944444444444444 (BasicScore: -0.6944444444444444, Weight: 1)

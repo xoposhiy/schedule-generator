@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Infrastructure
 {
-    public interface ILogger
+    public interface ILogger : IDisposable
     {
         public void Log(string message, double score);
 
@@ -25,13 +25,22 @@ namespace Infrastructure
 
         private double totalScore;
         private readonly List<LogRecord> records = new();
-        private readonly List<Logger> children = new();
+
+        private readonly Logger? parent;
+        private readonly int level;
 
         public Logger(string name, double weight = 1, int topN = 100)
         {
             this.name = name;
             this.weight = weight;
             this.topN = topN;
+            parent = null;
+        }
+
+        private Logger(string name, double weight, int topN, Logger parent) : this(name, weight, topN)
+        {
+            this.parent = parent;
+            level = parent.level + 1;
         }
 
         public void Log(string message, double score)
@@ -43,36 +52,36 @@ namespace Infrastructure
 
         public ILogger GetChild(string childName, double childWeight = 1, int childTopN = 10)
         {
-            var child = new Logger(childName, childWeight, childTopN);
-            children.Add(child);
+            var child = new Logger(childName, childWeight, childTopN, this);
             return child;
         }
 
         public override string ToString()
         {
-            return ToString(0);
-        }
-
-        private string ToString(int level)
-        {
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             var offset = string.Join("", Enumerable.Repeat(Tab, level));
-            var score = totalScore;
             var lines = records
                 .OrderBy(r => r.Score)
                 .Take(topN)
                 .Select(m => offset + m.Message)
-                .ToList();
-            foreach (var child in children.Where(c => c.totalScore != 0))
-            {
-                lines.Add($"{offset}{child.name}:");
-                lines.Add(child.ToString(level + 1));
-                score += child.totalScore * child.weight;
-            }
+                .Append($"{offset}Total: {totalScore * weight} (BasicScore: {totalScore}, Weight: {weight})")
+                .Prepend($"{name}:");
 
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-
-            lines.Add($"{offset}Total: {score * weight} (BasicScore: {score}, Weight: {weight})");
             return string.Join(Environment.NewLine, lines);
+        }
+
+        public void Dispose()
+        {
+            var message = ToString();
+            if (parent == null)
+                LoggerExtension.WriteLog(message);
+            else
+                parent.Log(message, totalScore * weight);
+        }
+
+        ~Logger()
+        {
+            Dispose();
         }
     }
 

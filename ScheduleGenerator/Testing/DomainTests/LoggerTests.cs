@@ -25,7 +25,7 @@ namespace Testing.DomainTests
                 schedule.AddMeeting(meetingToAdd);
             }
 
-            var logger = new Infrastructure.Logger("TestLogger");
+            using var logger = new Infrastructure.Logger("TestLogger");
             estimator.Estimate(schedule, logger);
             var loggerString = logger.ToString();
             Approvals.Verify(loggerString);
