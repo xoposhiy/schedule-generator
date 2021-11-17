@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
-using static Infrastructure.LoggerConstants;
+using static Infrastructure.LoggerExtension;
 
 namespace Domain.Algorithms.Solvers
 {
@@ -43,7 +42,7 @@ namespace Domain.Algorithms.Solvers
                 var iteratedSolutions = GetIteratedSolutions(bestMeetings, out var copyCount);
                 totalCopiesCount += copyCount;
 
-                // Console.WriteLine(iteratedSolutions.Count);
+                // WriteLog(iteratedSolutions.Count);
                 if (iteratedSolutions.Count == 0)
                     break;
 
@@ -51,21 +50,10 @@ namespace Domain.Algorithms.Solvers
             }
 
             var bestSolution = currentSchedules.OrderByDescending(s => s.Score).First();
-            if (WriteToFiles)
-            {
-                using StreamWriter streamWriter = new(string.Join("\\", LoggerInfoPath, "BeamSolverInfo.txt"));
-                streamWriter.WriteLine($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
-                streamWriter.WriteLine($"Beam width: {beamWidth}");
-                streamWriter.WriteLine($"Elapsed: {sw.Elapsed}");
-                streamWriter.WriteLine($"Best score: {bestSolution.Score}");
-            }
-            else
-            {
-                Console.WriteLine($"Beam width: {beamWidth}");
-                Console.WriteLine($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
-                Console.WriteLine($"Elapsed: {sw.Elapsed}");
-                Console.WriteLine($"Best score: {bestSolution.Score}");
-            }
+            WriteLog($"Beam width: {beamWidth}");
+            WriteLog($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
+            WriteLog($"Elapsed: {sw.Elapsed}");
+            WriteLog($"Best score: {bestSolution.Score}");
             return bestSolution;
         }
 
@@ -112,10 +100,6 @@ namespace Domain.Algorithms.Solvers
             // var score = estimator.Estimate(schedule);
             // schedule.RemoveMeeting(meeting);
             var scoreDelta = estimator.EstimateMeetingToAdd(schedule, meeting);
-            // if (Math.Abs(score - (baseScore + scoreDelta)) > 1e-5)
-            // {
-            //     throw new Exception("Schedule score not equals to baseScore + scoreDelta");
-            // }
             return baseScore + scoreDelta;
         }
     }

@@ -288,7 +288,7 @@ namespace Domain
 
         public static string GetPrettyString(this DayOfWeek dayOfWeek)
         {
-            return dayOfWeek.ToString().PadRight(8);
+            return dayOfWeek.ToString().PadRight(10);
         }
 
         public static (Requisition, Dictionary<string, List<RoomSpec>>) GetRequisition(

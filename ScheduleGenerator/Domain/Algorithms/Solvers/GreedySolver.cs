@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
-using static Infrastructure.LoggerConstants;
 
 namespace Domain.Algorithms.Solvers
 {
@@ -32,7 +29,7 @@ namespace Domain.Algorithms.Solvers
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
-            var sw = Stopwatch.StartNew();
+            // var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
             while (true)
             {
@@ -46,14 +43,8 @@ namespace Domain.Algorithms.Solvers
                 currentSchedule.AddMeeting(nextMeeting, true);
             }
 
-            if (WriteToFiles)
-            {
-                using StreamWriter streamWriter = new(string.Join("\\", LoggerInfoPath, "BeamSolverInfo.txt"));
-                streamWriter.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
-                streamWriter.WriteLine($"Greedy {sw.Elapsed}\n");
-            }
-            // Console.WriteLine($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
-            // Console.WriteLine($"Greedy {sw.Elapsed}\n");
+            // WriteLog($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
+            // WriteLog($"Greedy {sw.Elapsed}\n");
 
             var currentScore = estimator.Estimate(currentSchedule);
             return new(currentSchedule, currentScore);

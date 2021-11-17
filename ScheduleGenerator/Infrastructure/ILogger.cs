@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -72,6 +73,25 @@ namespace Infrastructure
 
             lines.Add($"{offset}Total: {score * weight} (BasicScore: {score}, Weight: {weight})");
             return string.Join(Environment.NewLine, lines);
+        }
+    }
+
+    public static class LoggerExtension
+    {
+        private const string LoggerInfoPath = "..\\..\\..\\..\\LoggerInfo";
+        private static readonly StreamWriter StreamWriter;
+
+        static LoggerExtension()
+        {
+            var date = $"{DateTime.Now:s}".Replace(':', '-');
+            var fileName = $"Log_{date}.txt";
+            StreamWriter = new(string.Join("\\", LoggerInfoPath, fileName));
+        }
+
+        public static void WriteLog(object message)
+        {
+            Console.WriteLine(message);
+            StreamWriter.WriteLine(message);
         }
     }
 }

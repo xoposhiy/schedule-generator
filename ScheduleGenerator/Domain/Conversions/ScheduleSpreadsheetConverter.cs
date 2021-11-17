@@ -7,6 +7,7 @@ using Google.Apis.Sheets.v4.Data;
 using Infrastructure.GoogleSheetsRepository;
 using static Domain.DomainExtensions;
 using static Infrastructure.Extensions;
+using static Infrastructure.LoggerExtension;
 
 namespace Domain.Conversions
 {
@@ -65,7 +66,7 @@ namespace Domain.Conversions
                 .OrderBy(gn => gn)
                 .ToList();
 
-            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
+            WriteLog($"Прокинется дальше: {meetingSet.Count}");
 
             repository.ClearSheet(sheetName);
 
@@ -340,8 +341,8 @@ namespace Domain.Conversions
                 .Select(t => t.Teacher.Name)
                 .Distinct()
                 .ToList();
-            
-            Console.WriteLine($"Прокинется дальше: {meetingSet.Count}");
+
+            WriteLog($"Прокинется дальше: {meetingSet.Count}");
 
             repository.ClearSheet(sheetName);
             using var modifier = repository.ModifySpreadSheet(sheetName);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading;
 using Domain.Algorithms;
@@ -12,7 +11,7 @@ using Ninject.Extensions.Conventions;
 using static Domain.Conversions.ScheduleSpreadsheetConverter;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
-using static Infrastructure.LoggerConstants;
+using static Infrastructure.LoggerExtension;
 
 namespace ScheduleCLI
 {
@@ -24,7 +23,7 @@ namespace ScheduleCLI
             //var container = ConfigureContainer();
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
-            Console.WriteLine("Starting...");
+            WriteLog("Starting...");
 
             SheetNamesConfig[] configs =
             {
@@ -59,7 +58,7 @@ namespace ScheduleCLI
             var (schedule, _) = solver.GetSolution(TimeSpans[0]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
-            Console.WriteLine(notUsedMeetings);
+            WriteLog(notUsedMeetings);
 
             BuildSchedule(schedule, Repository, config.Schedule);
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
@@ -68,15 +67,7 @@ namespace ScheduleCLI
 
             var estimator = GetDefaultCombinedEstimator();
             estimator.Estimate(schedule, logger);
-            if (WriteToFiles)
-            {
-                using StreamWriter streamWriter = new(string.Join("\\", LoggerInfoPath, "LoggerInfo.txt"));
-                streamWriter.WriteLine(logger);
-            }
-            else
-            {
-                Console.WriteLine(logger);
-            }
+            WriteLog(logger);
         }
 
         public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)

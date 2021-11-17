@@ -6,7 +6,7 @@ namespace Domain.MeetingsParts
     {
         public override string ToString()
         {
-            return $"Day: {Day}, TimeSlotIndex: {TimeSlot}";
+            return $"{Day.GetPrettyString()} {TimeSlot}";
         }
     }
 }
