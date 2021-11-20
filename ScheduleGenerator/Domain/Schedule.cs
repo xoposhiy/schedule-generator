@@ -476,14 +476,15 @@ namespace Domain
             usedGroups.UnionWith(meeting.GroupsChoice!.GetGroupParts());
             foreach (var groupRequisition in meeting.RequisitionItem.GroupPriorities)
             {
-                var possibleGroups = groupRequisition.GroupsChoices
-                    .SelectMany(c => c.Groups.GetGroupParts())
-                    .ToHashSet();
-                if (possibleGroups.IsSupersetOf(usedGroups))
-                    return false;
+                var repetitionCount = 0;
+                foreach (var groupsChoice in groupRequisition.GroupsChoices)
+                    if (groupsChoice.GetGroupParts().IsSubsetOf(usedGroups))
+                        repetitionCount++;
+
+                if (repetitionCount > meeting.RequisitionItem.RepetitionsCount) return true;
             }
-            
-            return true;
+
+            return false;
         }
 
         private void AddMeetingToGroup(Meeting meetingToAdd)

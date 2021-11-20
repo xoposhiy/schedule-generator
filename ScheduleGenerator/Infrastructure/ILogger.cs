@@ -72,6 +72,7 @@ namespace Infrastructure
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             var message = ToString();
             if (parent == null)
                 LoggerExtension.WriteLog(message);

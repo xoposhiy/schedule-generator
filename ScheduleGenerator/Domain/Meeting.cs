@@ -20,7 +20,7 @@ namespace Domain
         public GroupsChoice? GroupsChoice;
         public string? Classroom;
         public MeetingTime? MeetingTime;
-        
+
         public Meeting? BaseMeeting;
         public Meeting? RequiredAdjacentMeeting;
 
@@ -40,7 +40,8 @@ namespace Domain
 
         public override string ToString()
         {
-            var groupsString = GroupsChoice?.ToString() ?? RequisitionItem.GroupPriorities.ToString();
+            var groupsString = GroupsChoice?.ToString() ??
+                               string.Join<GroupRequisition>("><", RequisitionItem.GroupPriorities);
 
             return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
