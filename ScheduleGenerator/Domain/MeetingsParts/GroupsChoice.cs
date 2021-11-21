@@ -12,7 +12,8 @@ namespace Domain.MeetingsParts
 
         public override string ToString()
         {
-            return string.Join(" ", Groups.ToList());
+            var groupStrings = Groups.Select(g => g.ToString()).OrderBy(s => s);
+            return string.Join(" ", groupStrings);
         }
     }
 }

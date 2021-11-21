@@ -42,10 +42,12 @@ namespace Domain.Algorithms.Solvers
                 var iteratedSolutions = GetIteratedSolutions(bestMeetings, out var copyCount);
                 totalCopiesCount += copyCount;
 
-                // WriteLog(iteratedSolutions.Count);
+                WriteLog($"total: {iteratedSolutions.Count}");
                 if (iteratedSolutions.Count == 0)
                     break;
-
+                WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule.ToString()).Distinct().Count()}");
+                WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule).Distinct().Count()}");
+                
                 currentSchedules = iteratedSolutions;
             }
 

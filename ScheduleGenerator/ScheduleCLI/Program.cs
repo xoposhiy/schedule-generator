@@ -59,6 +59,8 @@ namespace ScheduleCLI
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
+            
+            //WriteLog(schedule.ToString());
 
             BuildSchedule(schedule, Repository, config.Schedule);
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
@@ -75,8 +77,8 @@ namespace ScheduleCLI
             var estimator = GetDefaultCombinedEstimator();
 
             //return new GreedySolver(estimator, requisition, classrooms, new(42));
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
-            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 20);
+            //return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
+            return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 20);
             //return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

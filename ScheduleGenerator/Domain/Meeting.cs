@@ -43,7 +43,7 @@ namespace Domain
             var groupsString = GroupsChoice?.ToString() ??
                                string.Join<GroupRequisition>("><", RequisitionItem.GroupPriorities);
 
-            return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType}]," +
+            return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType.GetPrettyString()}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
     }

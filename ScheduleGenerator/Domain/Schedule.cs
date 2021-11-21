@@ -61,10 +61,22 @@ namespace Domain
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return this.ToString().Equals(obj?.ToString());
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
         public override string ToString()
         {
             return string.Join("\n", Meetings.Select(m => m.ToString()).OrderBy(s => s));
         }
+
+        
 
         public Schedule Copy()
         {

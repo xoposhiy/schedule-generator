@@ -6,3 +6,4 @@ Credentials/
 LoggerInfo/**
 
 /ScheduleGenerator/ScheduleGenerator.sln.DotSettings.user
+ScheduleGenerator/LoggerInfo/**
