@@ -59,7 +59,8 @@ namespace Domain.Algorithms.Solvers
 
             var maxIndex = selectWithBestScoreOnly
                 ? orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.001)
-                : Math.Min(choiceCount, orderedMeetings.Count);
+                : orderedMeetings.Count;
+            maxIndex = Math.Min(maxIndex, choiceCount);
 
             return orderedMeetings[random.Next(maxIndex)].meeting;
         }
