@@ -8,6 +8,35 @@ using static Infrastructure.LoggerExtension;
 
 namespace Domain.Algorithms.Solvers
 {
+    public record BeamNode(Schedule Schedule, Meeting MeetingToAdd, double Score)
+    {
+        public virtual bool Equals(BeamNode? other)
+        {
+            if (other is null)
+                return false;
+            if (Math.Abs(this.Score - other.Score) > 0.00001)
+                return false;
+            var s1 = this.GetMeetings()
+                .ToHashSet();
+            var s2 = other.GetMeetings();
+            return s1.SetEquals(s2);
+        }
+
+        private IEnumerable<string> GetMeetings()
+        {
+            return this.Schedule.Meetings
+                .Select(m => m.ToString())
+                .Concat(this.MeetingToAdd.GetLinkedMeetings().Select(m=>m.ToString()));
+        }
+
+        public override int GetHashCode()
+        {
+            //TODO make it better
+            //return 1;
+            return (int) (Score * 100000);
+        }
+    }
+    
     public class BeamSolver : ISolver
     {
         private readonly int beamWidth;
@@ -42,11 +71,12 @@ namespace Domain.Algorithms.Solvers
                 var iteratedSolutions = GetIteratedSolutions(bestMeetings, out var copyCount);
                 totalCopiesCount += copyCount;
 
-                WriteLog($"total: {iteratedSolutions.Count}");
+                //WriteLog($"total: {iteratedSolutions.Count}");
                 if (iteratedSolutions.Count == 0)
                     break;
-                WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule.ToString()).Distinct().Count()}");
-                WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule).Distinct().Count()}");
+                //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule.ToString()).Distinct().Count()}");
+                //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule).Distinct().Count()}");
+                WriteLog($"{iteratedSolutions.OrderByDescending(s => s.Score).First().Score}");
                 
                 currentSchedules = iteratedSolutions;
             }
@@ -60,7 +90,7 @@ namespace Domain.Algorithms.Solvers
         }
 
         private static List<Solution> GetIteratedSolutions(
-            Dictionary<Schedule, List<(Schedule, Meeting, double score)>> bestMeetings, out int copyCount)
+            Dictionary<Schedule, List<BeamNode>> bestMeetings, out int copyCount)
         {
             copyCount = 0;
             var newSchedules = new List<Solution>();
@@ -70,29 +100,30 @@ namespace Domain.Algorithms.Solvers
                 {
                     copyCount++;
                     var copy = schedule.Copy();
-                    copy.AddMeeting(variants[i].Item2, true);
-                    newSchedules.Add(new(copy, variants[i].score));
+                    copy.AddMeeting(variants[i].MeetingToAdd, true);
+                    newSchedules.Add(new(copy, variants[i].Score));
                 }
 
-                schedule.AddMeeting(variants[^1].Item2, true);
-                newSchedules.Add(new(schedule, variants[^1].score));
+                schedule.AddMeeting(variants[^1].MeetingToAdd, true);
+                newSchedules.Add(new(schedule, variants[^1].Score));
             }
 
             return newSchedules;
         }
 
-        private Dictionary<Schedule, List<(Schedule, Meeting, double score)>> GetBestMeetings(
+        private Dictionary<Schedule, List<BeamNode>> GetBestMeetings(
             List<Solution> currentSchedules)
         {
-            var meetingsToAdd = new List<(Schedule, Meeting, double score)>();
+            var meetingsToAdd = new List<BeamNode>();
             foreach (var (schedule, score) in currentSchedules)
                 meetingsToAdd.AddRange(schedule.GetMeetingsToAdd()
-                    .Select(meeting => (schedule, meeting, score: EstimateResult(schedule, meeting, score))));
+                    .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
 
             return meetingsToAdd
-                .OrderByDescending(t => t.score)
+                .Distinct()
+                .OrderByDescending(t => t.Score)
                 .Take(beamWidth)
-                .GroupBy(t => t.Item1)
+                .GroupBy(t => t.Schedule)
                 .ToDictionary(g => g.Key, g => g.ToList());
         }
 

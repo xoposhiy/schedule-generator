@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using static Infrastructure.LoggerExtension;
+
 
 namespace Domain.Algorithms.Solvers
 {
@@ -41,6 +43,7 @@ namespace Domain.Algorithms.Solvers
 
                 var nextMeeting = SelectNextMeeting(meetingsToAdd);
                 currentSchedule.AddMeeting(nextMeeting, true);
+                //WriteLog($"{estimator.Estimate(currentSchedule)}");
             }
 
             // WriteLog($"Not placed: {currentSchedule.NotUsedMeetings.Count}");

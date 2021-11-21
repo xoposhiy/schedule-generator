@@ -1,3 +1,4 @@
+using System;
 using Domain.Enums;
 using Domain.MeetingsParts;
 
@@ -37,13 +38,17 @@ namespace Domain
                 BaseMeeting = this
             };
         }
+        
+        private string? stringValue;
 
         public override string ToString()
         {
+            if (stringValue != null)
+                return stringValue;
             var groupsString = GroupsChoice?.ToString() ??
-                               string.Join<GroupRequisition>("><", RequisitionItem.GroupPriorities);
-
-            return $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType.GetPrettyString()}]," +
+                               string.Join<GroupRequisition>("|", RequisitionItem.GroupPriorities);
+            
+            return stringValue = $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType.GetPrettyString()}]," +
                    $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
     }

@@ -55,7 +55,7 @@ namespace ScheduleCLI
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[0]);
+            var (schedule, _) = solver.GetSolution(TimeSpans[1]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
@@ -76,10 +76,10 @@ namespace ScheduleCLI
             var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
 
-            //return new GreedySolver(estimator, requisition, classrooms, new(42));
+            // return new GreedySolver(estimator, requisition, classrooms, new(228322), 3);
             return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
-            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 20);
-            //return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
+            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 50);
+            // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }
 }
