@@ -17,14 +17,14 @@ namespace Testing.DomainTests
         public void RequisitionToString()
         {
             var requisitionString = NecessaryMeetings.Items[0].ToString();
-            Assert.AreEqual("ФИИТ-202 FullGroup ФИИТ-201 FullGroup, Физрук", requisitionString);
+            Assert.AreEqual("ФИИТ-201 FullGroup ФИИТ-202 FullGroup, Физрук", requisitionString);
         }
 
         [Test]
         public void GroupRequisitionToString()
         {
             var groupRequisition = NecessaryMeetings.Items[0].GroupPriorities[0].ToString();
-            Assert.AreEqual("ФИИТ-202 FullGroup ФИИТ-201 FullGroup", groupRequisition);
+            Assert.AreEqual("ФИИТ-201 FullGroup ФИИТ-202 FullGroup", groupRequisition);
         }
     }
 }
