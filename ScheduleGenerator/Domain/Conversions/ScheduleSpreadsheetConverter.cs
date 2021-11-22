@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
@@ -286,7 +285,7 @@ namespace Domain.Conversions
                 CommonCellData(WeekToString(meeting.WeekType)),
                 CommonCellData(timeStart[timeSlotIndex]),
                 CommonCellData(timeEnd[timeSlotIndex]),
-                CommonCellData(DateTime.Now.ToString(CultureInfo.CurrentCulture))
+                CommonTimeCellData(DateTime.Now)
             };
         }
 

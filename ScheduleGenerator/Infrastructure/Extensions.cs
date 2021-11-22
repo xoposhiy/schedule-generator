@@ -1,4 +1,5 @@
-﻿using Google.Apis.Sheets.v4.Data;
+﻿using System;
+using Google.Apis.Sheets.v4.Data;
 
 namespace Infrastructure
 {
@@ -46,6 +47,27 @@ namespace Infrastructure
                     {
                         Type = "BOOLEAN"
                     }
+                }
+            };
+        }
+
+        private static readonly DateTime Beginning = new(1899, 12, 30);
+
+        public static CellData CommonTimeCellData(DateTime dateTime)
+        {
+            return new()
+            {
+                UserEnteredFormat = new()
+                {
+                    NumberFormat = new()
+                    {
+                        Type = "DATE_TIME",
+                        Pattern = "dd.mm.yyyy hh:mm:ss"
+                    }
+                },
+                UserEnteredValue = new()
+                {
+                    NumberValue = (dateTime - Beginning).TotalDays
                 }
             };
         }
