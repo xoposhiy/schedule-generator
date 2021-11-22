@@ -42,6 +42,7 @@ namespace Domain.Algorithms.Solvers
                 if (meetingsToAdd.Count == 0) break;
 
                 var nextMeeting = SelectNextMeeting(meetingsToAdd);
+                //WriteLog(nextMeeting);
                 currentSchedule.AddMeeting(nextMeeting, true);
                 //WriteLog($"{estimator.Estimate(currentSchedule)}");
             }

@@ -19,6 +19,7 @@ namespace Domain.Algorithms.Solvers
 
             Solution bestSolution = solver.GetSolution(timeBudget - sw.Elapsed);
 
+            var scoreSum = bestSolution.Score;
             var iteration = 1;
             var improvementsCount = 0;
             var bestIteration = 0;
@@ -26,6 +27,7 @@ namespace Domain.Algorithms.Solvers
             {
                 iteration++;
                 var solution = solver.GetSolution(timeBudget - sw.Elapsed);
+                scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution))
                 {
                     bestSolution = solution;
@@ -38,7 +40,7 @@ namespace Domain.Algorithms.Solvers
 
             sw.Stop();
 
-            var finalMessage = GetFinalMessage(sw, iteration, bestSolution, bestIteration, improvementsCount);
+            var finalMessage = GetFinalMessage(sw, iteration, bestSolution, bestIteration, improvementsCount, scoreSum);
             WriteLog(finalMessage);
             return bestSolution;
         }
@@ -60,7 +62,7 @@ namespace Domain.Algorithms.Solvers
         }
 
         private static string GetFinalMessage(Stopwatch sw, int repeats, Solution bestSolution, int bestIteration,
-            int improvementsCount)
+            int improvementsCount, double scoreSum)
         {
             var (schedule, score) = bestSolution;
             var lines = new[]
@@ -71,6 +73,7 @@ namespace Domain.Algorithms.Solvers
                 $"Improvements count: {improvementsCount}",
                 $"Best solution iteration: {bestIteration}",
                 $"Mean elapsed: {sw.Elapsed / repeats}",
+                $"Mean Score: {scoreSum / repeats}",
                 "",
                 $"Not placed meetings: {schedule.NotUsedMeetings.Count}",
                 $"Placed meetings: {schedule.Meetings.Count}",

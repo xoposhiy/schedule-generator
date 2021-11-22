@@ -27,8 +27,8 @@ namespace ScheduleCLI
 
             SheetNamesConfig[] configs =
             {
-                SpringConfig
-                // AutumnConfig
+                //SpringConfig
+                AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
@@ -47,6 +47,7 @@ namespace ScheduleCLI
             new(0, 0, 15),
             new(0, 1, 0),
             new(0, 10, 0),
+            new(1, 0, 0),
             new(8, 0, 0),
             TimeSpan.MaxValue
         };
