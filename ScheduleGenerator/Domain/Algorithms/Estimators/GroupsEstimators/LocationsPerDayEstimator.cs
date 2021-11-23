@@ -8,6 +8,7 @@ using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
+    //TODO count location changes instead of locations
     public class LocationPerDayEstimator : GroupEstimator
     {
         private const int OptimalLocationsCount = 1;

@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+using Domain.Algorithms.Estimators;
 using static Infrastructure.LoggerExtension;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Solvers
 {
@@ -23,6 +25,7 @@ namespace Domain.Algorithms.Solvers
             var iteration = 1;
             var improvementsCount = 0;
             var bestIteration = 0;
+            var justiceEstimator = GetDefaultJusticeEstimator();
             while (sw.Elapsed < timeBudget)
             {
                 iteration++;
@@ -30,6 +33,7 @@ namespace Domain.Algorithms.Solvers
                 scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution))
                 {
+                    WriteLog($"justice: {justiceEstimator.Estimate(solution.Schedule)}");
                     bestSolution = solution;
                     improvementsCount++;
                     bestIteration = iteration;

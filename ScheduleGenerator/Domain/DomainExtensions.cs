@@ -274,11 +274,22 @@ namespace Domain
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var teacherPriorityEstimator = (new TimePriorityEstimator(), 5);
             var groupPriorityEstimator = (new GroupPriorityEstimator(), 5);
-            var dayDurationEstimator = (new DayDurationEstimator(), 3);
+            var dayDurationEstimator = (new DayDurationEstimator(), 2);
             var locationPerDayEstimator = (new LocationPerDayEstimator(), 1);
             var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator,
                 groupPriorityEstimator, dayDurationEstimator, locationPerDayEstimator);
+            return estimator;
+        }
+        
+        public static JusticeEstimator GetDefaultJusticeEstimator()
+        {
+            var groupsSpacesEstimator = new StudentsSpacesEstimator();
+            var meetingsPerDayEstimator = new MeetingsPerDayEstimator();
+            var dayDurationEstimator = new DayDurationEstimator();
+            var locationPerDayEstimator = new LocationPerDayEstimator();
+            var estimator = new JusticeEstimator(groupsSpacesEstimator,
+                meetingsPerDayEstimator, dayDurationEstimator, locationPerDayEstimator);
             return estimator;
         }
 

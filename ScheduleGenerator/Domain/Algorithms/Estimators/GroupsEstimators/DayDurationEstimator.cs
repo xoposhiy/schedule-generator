@@ -61,7 +61,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
         {
             var last = meetingsTimeSlots.LastOrDefault();
             var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
-            if (count is >= 2 and <= 4 || last == default)
+            if (count is >= 2 and <= 5 || last == default)
                 return 0;
             return 1;
         }
@@ -77,7 +77,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
                 var meetingsTimeSlots = byDay.MeetingsTimeSlots();
                 var last = meetingsTimeSlots.LastOrDefault();
                 var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
-                if (count is >= 2 and <= 4 || last == default) continue;
+                if (count is >= 2 and <= 5 || last == default) continue;
                 logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
                 groupPenalty++;
             }
