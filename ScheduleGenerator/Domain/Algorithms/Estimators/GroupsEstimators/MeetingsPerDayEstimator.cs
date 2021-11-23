@@ -6,9 +6,28 @@ using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
-    public class MeetingsPerDayEstimator : IEstimator
+    public class MeetingsPerDayEstimator : GroupEstimator
     {
-        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
+        public override double GetPenaltyByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        {
+            var byGroup = schedule.GroupMeetingsByTime[group];
+            var penalty = 0;
+            var scorePart = -1 / GetMaxPenalty(schedule);
+
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
+            {
+                var count = byDay.MeetingsCount();
+
+                if (count is >= 2 and <= 4 or 0) continue;
+                logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
+                penalty++;
+            }
+
+            return penalty;
+        }
+
+        public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var penaltyDelta = 0;
             var maxPenalty = GetMaxPenalty(schedule);
@@ -42,25 +61,6 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return -penaltyDelta / maxPenalty;
         }
 
-        public double Estimate(Schedule schedule, ILogger? logger = null)
-        {
-            var penalty = 0;
-            var maxPenalty = GetMaxPenalty(schedule);
-
-            foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
-            foreach (var (weekType, byWeekType) in byGroup)
-            foreach (var (day, byDay) in byWeekType)
-            {
-                var count = byDay.MeetingsCount();
-
-                if (count is >= 2 and <= 4 or 0) continue;
-                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
-                penalty++;
-            }
-
-            return -penalty / maxPenalty;
-        }
-
         private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
         {
             var weekTypeString = weekType.GetPrettyString();
@@ -68,7 +68,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return $"{group} has bad {weekTypeString} {dayString} with {count} meetings";
         }
 
-        private static double GetMaxPenalty(Schedule schedule)
+        public override double GetMaxPenalty(Schedule schedule)
         {
             return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount;
         }

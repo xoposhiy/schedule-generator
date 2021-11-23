@@ -62,17 +62,6 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return -penaltyDelta / maxPenalty;
         }
 
-        public override double Estimate(Schedule schedule, ILogger? logger = null)
-        {
-            var penalty = 0d;
-            var maxPenalty = GetMaxPenalty(schedule);
-
-            foreach (var group in schedule.Groups)
-                penalty += GetPenaltyByGroup(group, schedule, logger);
-
-            return -penalty / maxPenalty;
-        }
-
         private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, int count)
         {
             var weekTypeString = weekType.GetPrettyString();
