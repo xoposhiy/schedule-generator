@@ -12,7 +12,7 @@ namespace Testing.SolversTests
         [Test]
         public void BetterThanInnerSolver()
         {
-            var timeBudget = TimeSpan.FromSeconds(1);
+            var timeBudget = TimeSpan.FromSeconds(15);
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();
 
             var greedy = new GreedySolver(estimator, AutumnRequisition, ClassRooms, new(42), 5);
