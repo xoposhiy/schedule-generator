@@ -27,8 +27,8 @@ namespace ScheduleCLI
 
             SheetNamesConfig[] configs =
             {
-                SpringConfig
-                //AutumnConfig
+                // SpringConfig
+                AutumnConfig
             };
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
@@ -67,12 +67,12 @@ namespace ScheduleCLI
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             using var logger = new Logger("Combined");
-
             var combinedEstimator = GetDefaultCombinedEstimator();
             combinedEstimator.Estimate(schedule, logger);
-                
+
+            using var justiceLogger = new Logger("Justice");
             var justiceEstimator = GetDefaultJusticeEstimator();
-            justiceEstimator.Estimate(schedule);
+            justiceEstimator.Estimate(schedule, justiceLogger);
         }
 
         public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)

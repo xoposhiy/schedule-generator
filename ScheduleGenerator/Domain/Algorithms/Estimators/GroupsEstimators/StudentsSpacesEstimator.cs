@@ -8,7 +8,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public class StudentsSpacesEstimator : GroupEstimator
     {
-        public override double GetPenaltyByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
@@ -25,7 +25,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
                 penalty += spacesCount;
             }
 
-            return penalty;
+            return penalty * scorePart;
         }
 
         public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)

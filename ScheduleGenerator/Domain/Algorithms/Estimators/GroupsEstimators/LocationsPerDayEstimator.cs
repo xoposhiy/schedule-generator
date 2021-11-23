@@ -14,7 +14,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
         private const int OptimalLocationsCount = 1;
         private const int PossibleMaximumLocationsCount = 4;
 
-        public override double GetPenaltyByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
         {
             var byGroup = schedule.GroupMeetingsByTime[group];
             var penalty = 0;
@@ -29,7 +29,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
                 logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
             }
 
-            return penalty;
+            return penalty * scorePart;
         }
 
         public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)

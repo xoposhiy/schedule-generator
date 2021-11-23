@@ -274,7 +274,7 @@ namespace Domain
             var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
             var teacherPriorityEstimator = (new TimePriorityEstimator(), 5);
             var groupPriorityEstimator = (new GroupPriorityEstimator(), 5);
-            var dayDurationEstimator = (new DayDurationEstimator(), 2);
+            var dayDurationEstimator = (new DayDurationEstimator(), 1);
             var locationPerDayEstimator = (new LocationPerDayEstimator(), 1);
             var estimator = new CombinedEstimator(groupsSpacesEstimator,
                 meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator,

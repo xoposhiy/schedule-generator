@@ -66,7 +66,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return 1;
         }
 
-        public override double GetPenaltyByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
         {
             var groupPenalty = 0;
             var scorePart = -1 / GetMaxPenalty(schedule);
@@ -82,7 +82,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
                 groupPenalty++;
             }
 
-            return groupPenalty;
+            return groupPenalty * scorePart;
         }
     }
 }

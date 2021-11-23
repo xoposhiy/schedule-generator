@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Domain.Algorithms.Estimators;
 using static Infrastructure.LoggerExtension;
 using static Domain.DomainExtensions;
 
@@ -29,16 +28,20 @@ namespace Domain.Algorithms.Solvers
             while (sw.Elapsed < timeBudget)
             {
                 iteration++;
-                var solution = solver.GetSolution(timeBudget - sw.Elapsed);
+                var (schedule, score) = solver.GetSolution(timeBudget - sw.Elapsed);
+                var justice = justiceEstimator.Estimate(schedule);
+                score += justice;
+                var solution = new Solution(schedule, score);
                 scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution))
                 {
-                    WriteLog($"justice: {justiceEstimator.Estimate(solution.Schedule)}");
+                    WriteLog($"justice: {justice}");
                     bestSolution = solution;
                     improvementsCount++;
                     bestIteration = iteration;
                     var message = GetImprovementMessage(improvementsCount, iteration, solution);
                     WriteLog(message);
+                    // WriteLog($"Score + Justice = {solution.Score + justice}");
                 }
             }
 

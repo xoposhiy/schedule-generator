@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Domain.Algorithms.Estimators.GroupsEstimators;
 using Domain.MeetingsParts;
@@ -15,7 +14,7 @@ namespace Domain.Algorithms.Estimators
         {
             subEstimators = estimators;
         }
-        
+
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             throw new System.NotImplementedException();
@@ -27,17 +26,24 @@ namespace Domain.Algorithms.Estimators
             foreach (var estimator in subEstimators)
             {
                 var penalties = new Dictionary<MeetingGroup, double>();
+                using var subLogger = logger?.GetChild(estimator.Name, childTopN: schedule.Groups.Count);
                 foreach (var meetingGroup in schedule.Groups)
                 {
-                    var penalty = estimator.GetPenaltyByGroup(meetingGroup, schedule);
-                    penalties[meetingGroup] = penalty;
-                    //logger?.Log($"{meetingGroup} has {penalty} penalty with {estimator}", -penalty);
+                    var scoreByGroup = estimator.GetScoreByGroup(meetingGroup, schedule);
+                    penalties[meetingGroup] = scoreByGroup;
+                    subLogger?.Log($"{meetingGroup} has {scoreByGroup:F3} score", scoreByGroup);
                 }
 
-                var justice = penalties.Max(p => p.Value) -
-                              penalties.Min(p => p.Value);
-                LoggerExtension.WriteLog($"{estimator} has {-justice} injustice");
-                totalInjustice -= justice;
+                foreach (var byGroupSet in penalties.GroupBy(p => p.Key.GetGroupSet()))
+                {
+                    var groupSetPenalties = byGroupSet.Select(p => p.Value).ToList();
+                    var min = groupSetPenalties.Min();
+                    var max = groupSetPenalties.Max();
+                    // var justice = max - min;
+                    var justice = groupSetPenalties.Sum(p => max - p);
+                    logger?.Log($"{estimator.Name} has {-justice} injustice in {byGroupSet.Key}", -justice);
+                    totalInjustice -= justice;
+                }
             }
 
             return totalInjustice;

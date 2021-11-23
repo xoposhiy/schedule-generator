@@ -5,20 +5,19 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public abstract class GroupEstimator : IEstimator
     {
+        public string Name => GetType().Name;
         public abstract double GetMaxPenalty(Schedule schedule);
-        public abstract double GetPenaltyByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null);
+        public abstract double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null);
         public abstract double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd);
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
-            var penalty = 0d;
-            var maxPenalty = GetMaxPenalty(schedule);
+            var score = 0d;
 
             foreach (var group in schedule.Groups)
-                penalty += GetPenaltyByGroup(group, schedule, logger);
+                score += GetScoreByGroup(group, schedule, logger);
 
-            return -penalty / maxPenalty;
-            ;
+            return score;
         }
     }
 }
