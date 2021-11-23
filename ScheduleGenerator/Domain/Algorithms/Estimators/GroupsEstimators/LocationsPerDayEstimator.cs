@@ -8,12 +8,30 @@ using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
-    public class LocationPerDayEstimator : IEstimator
+    public class LocationPerDayEstimator : GroupEstimator
     {
         private const int OptimalLocationsCount = 1;
         private const int PossibleMaximumLocationsCount = 4;
 
-        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
+        public override double GetPenaltyByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        {
+            var byGroup = schedule.GroupMeetingsByTime[group];
+            var penalty = 0;
+            var scorePart = -1 / GetMaxPenalty(schedule);
+
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
+            {
+                var count = byDay.Where(m => m != null).Select(m => m!.Location).Distinct().Count();
+                penalty += count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
+                if (count <= OptimalLocationsCount) continue;
+                logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
+            }
+
+            return penalty;
+        }
+
+        public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var penaltyDelta = 0;
             var maxPenalty = GetMaxPenalty(schedule);
@@ -44,20 +62,13 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return -penaltyDelta / maxPenalty;
         }
 
-        public double Estimate(Schedule schedule, ILogger? logger = null)
+        public override double Estimate(Schedule schedule, ILogger? logger = null)
         {
-            var penalty = 0;
+            var penalty = 0d;
             var maxPenalty = GetMaxPenalty(schedule);
 
-            foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
-            foreach (var (weekType, byWeekType) in byGroup)
-            foreach (var (day, byDay) in byWeekType)
-            {
-                var count = byDay.Where(m => m != null).Select(m => m!.Location).Distinct().Count();
-                penalty += count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
-                if (count <= 1) continue;
-                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
-            }
+            foreach (var group in schedule.Groups)
+                penalty += GetPenaltyByGroup(group, schedule, logger);
 
             return -penalty / maxPenalty;
         }
@@ -69,7 +80,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return $"{group} has bad {weekTypeString} with {count} locations on {dayString}";
         }
 
-        private static double GetMaxPenalty(Schedule schedule)
+        public override double GetMaxPenalty(Schedule schedule)
         {
             return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount * PossibleMaximumLocationsCount;
         }
