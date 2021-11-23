@@ -6,11 +6,11 @@ using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
-namespace Domain.Algorithms.Estimators
+namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
-    public class DayDurationEstimator : IEstimator
+    public class DayDurationEstimator : GroupEstimator
     {
-        public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
+        public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var penaltyDelta = 0;
             var maxPenalty = GetMaxPenalty(schedule);
@@ -45,22 +45,13 @@ namespace Domain.Algorithms.Estimators
             return -penaltyDelta / maxPenalty;
         }
 
-        public double Estimate(Schedule schedule, ILogger? logger = null)
+        public override double Estimate(Schedule schedule, ILogger? logger = null)
         {
-            var penalty = 0;
+            var penalty = 0d;
             var maxPenalty = GetMaxPenalty(schedule);
 
-            foreach (var (group, byGroup) in schedule.GroupMeetingsByTime)
-            foreach (var (weekType, byWeekType) in byGroup)
-            foreach (var (day, byDay) in byWeekType)
-            {
-                var meetingsTimeSlots = byDay.MeetingsTimeSlots();
-                var last = meetingsTimeSlots.LastOrDefault();
-                var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
-                if (count is >= 2 and <= 4 || last == default) continue;
-                logger?.Log(GetLogMessage(group, weekType, day, count), -1 / maxPenalty);
-                penalty++;
-            }
+            foreach (var group in schedule.Groups)
+                penalty += GetPenaltyByGroup(group, schedule, logger);
 
             return -penalty / maxPenalty;
         }
@@ -72,7 +63,7 @@ namespace Domain.Algorithms.Estimators
             return $"{group} has bad {weekTypeString} {dayString} with {count} day duration";
         }
 
-        private static double GetMaxPenalty(Schedule schedule)
+        public override double GetMaxPenalty(Schedule schedule)
         {
             return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount;
         }
@@ -84,6 +75,25 @@ namespace Domain.Algorithms.Estimators
             if (count is >= 2 and <= 4 || last == default)
                 return 0;
             return 1;
+        }
+
+        public override double GetPenaltyByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
+        {
+            var groupPenalty = 0;
+            var scorePart = -1 / GetMaxPenalty(schedule);
+            var byGroup = schedule.GroupMeetingsByTime[group];
+            foreach (var (weekType, byWeekType) in byGroup)
+            foreach (var (day, byDay) in byWeekType)
+            {
+                var meetingsTimeSlots = byDay.MeetingsTimeSlots();
+                var last = meetingsTimeSlots.LastOrDefault();
+                var count = last - meetingsTimeSlots.FirstOrDefault() + 1;
+                if (count is >= 2 and <= 4 || last == default) continue;
+                logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
+                groupPenalty++;
+            }
+
+            return groupPenalty;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Domain;
-using Domain.Algorithms.Estimators;
+using Domain.Algorithms.Estimators.GroupsEstimators;
 using Domain.MeetingsParts;
 using NUnit.Framework;
 using static Testing.ObjectMother;

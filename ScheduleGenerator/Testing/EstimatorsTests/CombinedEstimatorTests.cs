@@ -3,6 +3,7 @@ using System.Linq;
 using Domain;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
+using Domain.Algorithms.Estimators.GroupsEstimators;
 using Domain.Algorithms.Estimators.PriorityEstimators;
 using NUnit.Framework;
 using static Domain.DomainExtensions;

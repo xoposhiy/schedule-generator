@@ -45,10 +45,14 @@ namespace Domain
             Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTeachersByDiscipline =
             new();
 
+        public readonly HashSet<MeetingGroup> Groups;
+
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
+            Groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts).ToHashSet();
+            
             FillTeachersKeys(requisition);
-            FillGroupsKeys(requisition);
+            FillGroupsKeys();
 
             Requisition = requisition;
             SpecsByRoom = specsByRoom;
@@ -76,8 +80,6 @@ namespace Domain
             return string.Join("\n", Meetings.Select(m => m.ToString()).OrderBy(s => s));
         }
 
-        
-
         public Schedule Copy()
         {
             // TODO: optimize
@@ -91,11 +93,9 @@ namespace Domain
             return copy;
         }
 
-        private void FillGroupsKeys(Requisition requisition)
+        private void FillGroupsKeys()
         {
-            var groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts);
-
-            foreach (var group in groups)
+            foreach (var group in Groups)
             {
                 GroupTeachersByDiscipline[group] = new();
                 GroupMeetingsByTime[group] = new();

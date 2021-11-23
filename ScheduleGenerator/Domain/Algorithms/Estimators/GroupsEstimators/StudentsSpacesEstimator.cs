@@ -4,7 +4,7 @@ using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
-namespace Domain.Algorithms.Estimators
+namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public class StudentsSpacesEstimator : IEstimator
     {
