@@ -82,7 +82,7 @@ namespace ScheduleCLI
 
             // return new GreedySolver(estimator, requisition, classrooms, new(228322), 3);
             return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
-            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 50);
+            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 5);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

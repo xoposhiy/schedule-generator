@@ -22,6 +22,8 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
+            //TODO считать скоры по всем эстиматорам, а потом выводить justice
+            //TODO считать от худшего а не от лучшего
             var totalInjustice = 0d;
             foreach (var estimator in subEstimators)
             {
@@ -40,7 +42,7 @@ namespace Domain.Algorithms.Estimators
                     var min = groupSetPenalties.Min();
                     var max = groupSetPenalties.Max();
                     // var justice = max - min;
-                    var justice = groupSetPenalties.Sum(p => max - p);
+                    var justice = groupSetPenalties.Sum(p => p - min);
                     logger?.Log($"{estimator.Name} has {-justice} injustice in {byGroupSet.Key}", -justice);
                     totalInjustice -= justice;
                 }

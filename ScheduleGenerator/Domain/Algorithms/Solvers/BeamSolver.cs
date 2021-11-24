@@ -114,12 +114,12 @@ namespace Domain.Algorithms.Solvers
         private Dictionary<Schedule, List<BeamNode>> GetBestMeetings(
             List<Solution> currentSchedules)
         {
-            var meetingsToAdd = new List<BeamNode>();
+            var newNodes = new List<BeamNode>();
             foreach (var (schedule, score) in currentSchedules)
-                meetingsToAdd.AddRange(schedule.GetMeetingsToAdd()
+                newNodes.AddRange(schedule.GetMeetingsToAdd()
                     .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
 
-            return meetingsToAdd
+            return newNodes
                 .Distinct()
                 .OrderByDescending(t => t.Score)
                 .Take(beamWidth)
