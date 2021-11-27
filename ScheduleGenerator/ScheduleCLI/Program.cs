@@ -56,7 +56,7 @@ namespace ScheduleCLI
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[0]);
+            var (schedule, _) = solver.GetSolution(TimeSpans[2]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);

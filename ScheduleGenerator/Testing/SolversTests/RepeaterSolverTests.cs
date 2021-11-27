@@ -10,6 +10,7 @@ namespace Testing.SolversTests
     public class RepeaterSolverTests
     {
         [Test]
+        [Explicit]
         public void BetterThanInnerSolver()
         {
             var timeBudget = TimeSpan.FromSeconds(15);

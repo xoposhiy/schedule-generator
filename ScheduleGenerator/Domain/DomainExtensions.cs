@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
 using Domain.Algorithms.Estimators.GroupsEstimators;
 using Domain.Algorithms.Estimators.PriorityEstimators;
@@ -223,11 +224,11 @@ namespace Domain
                 yield return (key1, weekType, day, byDay);
         }
 
-        public static void SafeIncrement<TKey>(this Dictionary<TKey, int> dictionary, TKey key)
+        public static void SafeIncrement<TKey>(this Dictionary<TKey, double> dictionary, TKey key, double value)
             where TKey : notnull
         {
             if (!dictionary.ContainsKey(key)) dictionary.Add(key, 0);
-            dictionary[key]++;
+            dictionary[key] += value;
         }
 
         public static void SafeIncrement<TKey1, TKey2>(
@@ -237,10 +238,7 @@ namespace Domain
             where TKey2 : notnull
         {
             if (!dict.ContainsKey(key1)) dict[key1] = new();
-
-            if (!dict[key1].ContainsKey(key2)) dict[key1][key2] = 0;
-
-            dict[key1][key2] += value;
+            dict[key1].SafeIncrement(key2, value);
         }
 
         public static void SafeDecrement<TKey1, TKey2>(
@@ -266,30 +264,32 @@ namespace Domain
         private const int MaxSpacesCount = 4;
         public const int MaxSpaces = WeekTypesCount * MaxDaysCount * MaxSpacesCount;
 
+        private static readonly (GroupEstimator, double)[] GroupEstimators =
+        {
+            (new StudentsSpacesEstimator(), 1),
+            (new MeetingsPerDayEstimator(), 1),
+            (new DayDurationEstimator(), 1),
+            (new LocationPerDayEstimator(), 1)
+        };
+
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
-            var groupsSpacesEstimator = (new StudentsSpacesEstimator(), 1);
-            var teacherSpacesEstimator = (new TeacherSpacesEstimator(), 1);
-            var meetingsPerDayEstimator = (new MeetingsPerDayEstimator(), 1);
-            var teacherUsedDaysEstimator = (new TeacherUsedDaysEstimator(), 1);
-            var teacherPriorityEstimator = (new TimePriorityEstimator(), 5);
-            var groupPriorityEstimator = (new GroupPriorityEstimator(), 5);
-            var dayDurationEstimator = (new DayDurationEstimator(), 1);
-            var locationPerDayEstimator = (new LocationPerDayEstimator(), 1);
-            var estimator = new CombinedEstimator(groupsSpacesEstimator,
-                meetingsPerDayEstimator, teacherSpacesEstimator, teacherUsedDaysEstimator, teacherPriorityEstimator,
-                groupPriorityEstimator, dayDurationEstimator, locationPerDayEstimator);
-            return estimator;
+            var weightedEstimators = new List<(IEstimator, double)>
+            {
+                (new TeacherSpacesEstimator(), 1),
+                (new TeacherUsedDaysEstimator(), 1),
+                (new TimePriorityEstimator(), 5),
+                (new GroupPriorityEstimator(), 5)
+            };
+            weightedEstimators
+                .AddRange(GroupEstimators.Select(tuple => ((IEstimator) tuple.Item1, tuple.Item2)));
+            return new(weightedEstimators.ToArray());
         }
         
         public static JusticeEstimator GetDefaultJusticeEstimator()
         {
-            var groupsSpacesEstimator = new StudentsSpacesEstimator();
-            var meetingsPerDayEstimator = new MeetingsPerDayEstimator();
-            var dayDurationEstimator = new DayDurationEstimator();
-            var locationPerDayEstimator = new LocationPerDayEstimator();
-            var estimator = new JusticeEstimator(groupsSpacesEstimator,
-                meetingsPerDayEstimator, dayDurationEstimator, locationPerDayEstimator);
+            var estimator = new JusticeEstimator(GroupEstimators);
+            ;
             return estimator;
         }
 

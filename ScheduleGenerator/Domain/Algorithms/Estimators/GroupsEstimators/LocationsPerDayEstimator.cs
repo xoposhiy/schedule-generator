@@ -16,6 +16,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 
         public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
         {
+            // count location changes
             var byGroup = schedule.GroupMeetingsByTime[group];
             var penalty = 0;
             var scorePart = -1 / GetMaxPenalty(schedule);

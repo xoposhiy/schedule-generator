@@ -26,4 +26,4 @@ GroupPriorityEstimator:
 	Total: 0 (BasicScore: 0, Weight: 5)
 LocationPerDayEstimator:
 	Total: 0 (BasicScore: 0, Weight: 1)
-Total: -0.3611111111111111 (BasicScore: -0.3611111111111111, Weight: 1)
+Total: -0.36111111111111105 (BasicScore: -0.36111111111111105, Weight: 1)

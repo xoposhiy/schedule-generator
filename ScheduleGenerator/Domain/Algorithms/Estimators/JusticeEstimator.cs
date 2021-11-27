@@ -8,9 +8,9 @@ namespace Domain.Algorithms.Estimators
 {
     public class JusticeEstimator : IEstimator
     {
-        private readonly GroupEstimator[] subEstimators;
+        private readonly (GroupEstimator, double)[] subEstimators;
 
-        public JusticeEstimator(params GroupEstimator[] estimators)
+        public JusticeEstimator(params (GroupEstimator, double)[] estimators)
         {
             subEstimators = estimators;
         }
@@ -22,30 +22,27 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
-            //TODO считать скоры по всем эстиматорам, а потом выводить justice
-            //TODO считать от худшего а не от лучшего
             var totalInjustice = 0d;
-            foreach (var estimator in subEstimators)
+            var penalties = new Dictionary<MeetingGroup, double>();
+            foreach (var (estimator, weight) in subEstimators)
             {
-                var penalties = new Dictionary<MeetingGroup, double>();
-                using var subLogger = logger?.GetChild(estimator.Name, childTopN: schedule.Groups.Count);
+                // using var subLogger = logger?.GetChild(estimator.Name, childTopN: schedule.Groups.Count);
                 foreach (var meetingGroup in schedule.Groups)
                 {
-                    var scoreByGroup = estimator.GetScoreByGroup(meetingGroup, schedule);
-                    penalties[meetingGroup] = scoreByGroup;
-                    subLogger?.Log($"{meetingGroup} has {scoreByGroup:F3} score", scoreByGroup);
+                    var scoreByGroup = weight * estimator.GetScoreByGroup(meetingGroup, schedule);
+                    penalties.SafeIncrement(meetingGroup, scoreByGroup);
+                    // subLogger?.Log($"{meetingGroup} has {scoreByGroup:F3} score", scoreByGroup);
                 }
+            }
 
-                foreach (var byGroupSet in penalties.GroupBy(p => p.Key.GetGroupSet()))
-                {
-                    var groupSetPenalties = byGroupSet.Select(p => p.Value).ToList();
-                    var min = groupSetPenalties.Min();
-                    var max = groupSetPenalties.Max();
-                    // var justice = max - min;
-                    var justice = groupSetPenalties.Sum(p => p - min);
-                    logger?.Log($"{estimator.Name} has {-justice} injustice in {byGroupSet.Key}", -justice);
-                    totalInjustice -= justice;
-                }
+            foreach (var byGroupSet in penalties.GroupBy(p => p.Key.GetGroupSet()))
+            {
+                var groupSetPenalties = byGroupSet.Select(p => p.Value).ToList();
+                var min = groupSetPenalties.Min();
+                // var max = groupSetPenalties.Max();
+                var justice = groupSetPenalties.Sum(p => p - min);
+                logger?.Log($"{-justice} injustice in {byGroupSet.Key}", -justice);
+                totalInjustice -= justice;
             }
 
             return totalInjustice;
