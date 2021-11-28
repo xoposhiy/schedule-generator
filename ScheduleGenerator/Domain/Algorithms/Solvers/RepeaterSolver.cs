@@ -34,7 +34,7 @@ namespace Domain.Algorithms.Solvers
                 iteration++;
                 var solution = solver.GetSolution(timeBudget - sw.Elapsed);
                 var justice = justiceEstimator.Estimate(solution.Schedule);
-                // score += 00 * justice;
+                solution = solution with {Score = solution.Score + 0.5 * justice};
                 // var solution = new Solution(schedule, score);
                 scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution, bestJustice, justice))
@@ -76,11 +76,11 @@ namespace Domain.Algorithms.Solvers
                 return true;
             }
 
-            if (justice > bestJustice)
-            {
-                WriteLog($"Improvement reason: Justice better {bestJustice} -> {justice}");
-                return true;
-            }
+            // if (justice > bestJustice)
+            // {
+            //     WriteLog($"Improvement reason: Justice better {bestJustice} -> {justice}");
+            //     return true;
+            // }
 
             return false;
         }

@@ -1,3 +1,4 @@
+using System;
 using Domain.Enums;
 using Domain.MeetingsParts;
 
@@ -5,10 +6,33 @@ namespace Domain
 {
     public class Meeting
     {
+        private bool Equals(Meeting other)
+        {
+            if (BaseMeeting == null)
+                return false;
+            return RequisitionItem.Equals(other.RequisitionItem) 
+                   && WeekType == other.WeekType 
+                   && Equals(GroupsChoice, other.GroupsChoice) 
+                   && Classroom == other.Classroom 
+                   && Equals(MeetingTime, other.MeetingTime);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Meeting) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(RequisitionItem, WeekType, GroupsChoice, Classroom, MeetingTime);
+        }
+
         public const string English = "ИнЯз";
         public readonly RequisitionItem RequisitionItem;
 
-        private int hashcode;
         public Meeting? RequiredAdjacentMeeting;
 
         private string? stringValue;
@@ -58,10 +82,5 @@ namespace Domain
                 $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
 
-        public override int GetHashCode()
-        {
-            if (hashcode != 0) return hashcode;
-            return hashcode = ToString().GetHashCode();
-        }
     }
 }

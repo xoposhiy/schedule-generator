@@ -4,6 +4,7 @@ using System.Linq;
 using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
+using Infrastructure;
 using static Domain.DomainExtensions;
 
 namespace Domain
@@ -215,7 +216,11 @@ namespace Domain
                     FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Classroom);
                 AddMeetingToGroup(meetingToAdd);
 
-                NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
+                if (!NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!))
+                {
+                    LoggerExtension.WriteLog($"Not removed {meetingToAdd}");
+                }
+                    
 
                 if (isSure) UnsubscribeCollidingMeetings(meetingToAdd);
                 hashCode ^= meetingToAdd.GetHashCode();
@@ -252,6 +257,9 @@ namespace Domain
                 .ToList();
             if (placeableMeetings.Count == 0)
             {
+                // LoggerExtension.WriteLog("reached non placeable meetings");
+                // LoggerExtension.WriteLog($"a total of {NotUsedMeetings.Count} not used meetings");
+                // LoggerExtension.WriteLog($"a total of {Meetings.Count} used meetings");
                 return NotUsedMeetings.ToList()
                     .SelectMany(b => GetFilledMeetings(b, true));
             }
