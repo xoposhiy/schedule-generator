@@ -15,6 +15,8 @@ namespace Domain
 
     public class Schedule : IReadonlySchedule
     {
+        private int hashCode;
+
         public readonly HashSet<Meeting> Meetings = new();
         public readonly HashSet<Meeting> NotUsedMeetings;
         public readonly HashSet<Meeting> NonPlaceableMeetings = new();
@@ -50,7 +52,7 @@ namespace Domain
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
             Groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts).ToHashSet();
-            
+
             FillTeachersKeys(requisition);
             FillGroupsKeys();
 
@@ -58,21 +60,19 @@ namespace Domain
             SpecsByRoom = specsByRoom;
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
-            NotUsedMeetings = requisition.Items
-                .SelectMany(RequisitionToMeetingConverter.ConvertRequisitionToBaseMeeting)
-                .ToHashSet();
-            LinkBaseMeetings(NotUsedMeetings);
+            NotUsedMeetings = requisition.ConvertRequisitionToBaseMeeting().ToHashSet();
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
 
         public override bool Equals(object? obj)
         {
-            return this.ToString().Equals(obj?.ToString());
+            if (obj is not Schedule schedule) return false;
+            return schedule.GetHashCode() == hashCode && ToString().Equals(obj.ToString());
         }
 
         public override int GetHashCode()
         {
-            return this.ToString().GetHashCode();
+            return hashCode;
         }
 
         public override string ToString()
@@ -218,6 +218,7 @@ namespace Domain
                 NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!);
 
                 if (isSure) UnsubscribeCollidingMeetings(meetingToAdd);
+                hashCode ^= meetingToAdd.GetHashCode();
             }
         }
 
@@ -240,6 +241,7 @@ namespace Domain
                 NotUsedMeetings.Add(meetingToRemove.BaseMeeting!);
 
                 if (isSure) ResetMeetingsSubscriptions();
+                hashCode ^= meetingToRemove.GetHashCode();
             }
         }
 
@@ -317,25 +319,6 @@ namespace Domain
             }
         }
 
-        private static void LinkBaseMeetings(HashSet<Meeting> notUsedMeetings)
-        {
-            foreach (var meeting in notUsedMeetings)
-            {
-                var requiredAdjacentMeetingType = meeting.PlanItem.RequiredAdjacentMeetingType;
-                if (requiredAdjacentMeetingType == null) continue;
-                if (meeting.RequiredAdjacentMeeting != null) continue;
-                var linkedMeeting = notUsedMeetings
-                    .Where(m => m.RequiredAdjacentMeeting == null)
-                    .Where(m => m.Teacher == meeting.Teacher)
-                    .FirstOrDefault(e => e.Discipline.Equals(meeting.Discipline)
-                                         && e.MeetingType.Equals(requiredAdjacentMeetingType)
-                                         && !ReferenceEquals(e, meeting));
-                if (linkedMeeting == null)
-                    throw new ArgumentException(meeting.ToString());
-                meeting.Link(linkedMeeting);
-            }
-        }
-
         private void FillClassroomsBySpec(Dictionary<string, List<RoomSpec>> classroomsWithSpecs)
         {
             foreach (var key in classroomsWithSpecs.Keys)
@@ -351,16 +334,9 @@ namespace Domain
         private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime,
             bool ignoreTimePriorities)
         {
-            var meetingCopy = baseMeeting.BasicCopy();
-            meetingCopy.GroupsChoice = groupsChoice;
-            meetingCopy.MeetingTime = meetingTime;
+            var room = baseMeeting.IsRoomNeeded ? FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs) : null;
 
-            if (baseMeeting.IsRoomNeeded)
-            {
-                var room = FindFreeRoom(meetingTime, baseMeeting.PlanItem.RoomSpecs);
-                if (room == null) return null;
-                meetingCopy.Classroom = room;
-            }
+            if (baseMeeting.IsRoomNeeded && room == null) return null;
 
             WeekType[] weekTypes = baseMeeting.WeekType == WeekType.All
                 ? ArrayExtensions.All
@@ -368,7 +344,7 @@ namespace Domain
 
             foreach (var weekType in weekTypes)
             {
-                meetingCopy.WeekType = weekType;
+                var meetingCopy = baseMeeting.BasicCopy(groupsChoice, meetingTime, room, weekType);
 
                 if (IsMeetingValid(meetingCopy, ignoreTimePriorities)) return meetingCopy;
             }

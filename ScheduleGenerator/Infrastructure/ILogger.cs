@@ -18,16 +18,16 @@ namespace Infrastructure
 
     public class Logger : ILogger
     {
-        private readonly int topN;
-        private readonly string name;
-        private readonly double weight;
         private const string Tab = "\t";
-
-        private double totalScore;
-        private readonly List<LogRecord> records = new();
+        private readonly int level;
+        private readonly string name;
 
         private readonly Logger? parent;
-        private readonly int level;
+        private readonly List<LogRecord> records = new();
+        private readonly int topN;
+        private readonly double weight;
+
+        private double totalScore;
 
         public Logger(string name, double weight = 1, int topN = 100)
         {
@@ -56,6 +56,16 @@ namespace Infrastructure
             return child;
         }
 
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            var message = ToString();
+            if (parent == null)
+                LoggerExtension.WriteLog(message);
+            else
+                parent.Log(message, totalScore * weight);
+        }
+
         public override string ToString()
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -68,16 +78,6 @@ namespace Infrastructure
                 .Prepend($"{name}:");
 
             return string.Join(Environment.NewLine, lines);
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            var message = ToString();
-            if (parent == null)
-                LoggerExtension.WriteLog(message);
-            else
-                parent.Log(message, totalScore * weight);
         }
 
         ~Logger()
@@ -102,6 +102,7 @@ namespace Infrastructure
         {
             Console.WriteLine(message);
             StreamWriter.WriteLine(message);
+            StreamWriter.Flush();
         }
     }
 }

@@ -16,27 +16,36 @@ namespace Domain.Algorithms.Solvers
                 return false;
             if (Math.Abs(this.Score - other.Score) > 0.00001)
                 return false;
+            if (GetMeetingsCount() != other.GetMeetingsCount()) return false;
             var s1 = this.GetMeetings()
                 .ToHashSet();
             var s2 = other.GetMeetings();
             return s1.SetEquals(s2);
         }
 
+        private int GetMeetingsCount()
+        {
+            return Schedule.Meetings.Count + MeetingToAdd.GetLinkedMeetings().Count;
+        }
+
         private IEnumerable<string> GetMeetings()
         {
             return this.Schedule.Meetings
                 .Select(m => m.ToString())
-                .Concat(this.MeetingToAdd.GetLinkedMeetings().Select(m=>m.ToString()));
+                .Concat(this.MeetingToAdd.GetLinkedMeetings().Select(m => m.ToString()));
         }
 
         public override int GetHashCode()
         {
-            //TODO make it better
-            //return 1;
-            return (int) (Score * 100000);
+            var hashCode = Schedule.GetHashCode();
+            foreach (var linkedMeeting in MeetingToAdd.GetLinkedMeetings()) hashCode ^= linkedMeeting.GetHashCode();
+
+            // hashCode ^= Score.GetHashCode();
+
+            return hashCode;
         }
     }
-    
+
     public class BeamSolver : ISolver
     {
         private readonly int beamWidth;
@@ -63,7 +72,7 @@ namespace Domain.Algorithms.Solvers
             var currentSchedules = new List<Solution> {new(new(requisition, classroomsWithSpecs), 0d)};
             var totalCopiesCount = 0;
             var iterationCount = 0;
-            
+
             while (true)
             {
                 iterationCount++;
@@ -77,7 +86,7 @@ namespace Domain.Algorithms.Solvers
                 //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule.ToString()).Distinct().Count()}");
                 //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule).Distinct().Count()}");
                 WriteLog($"{iteratedSolutions.OrderByDescending(s => s.Score).First().Score}");
-                
+
                 currentSchedules = iteratedSolutions;
             }
 

@@ -17,6 +17,16 @@ namespace ScheduleCLI
 {
     public static class Program
     {
+        private static readonly TimeSpan[] TimeSpans =
+        {
+            new(0, 0, 15),
+            new(0, 1, 0),
+            new(0, 10, 0),
+            new(1, 0, 0),
+            new(8, 0, 0),
+            TimeSpan.MaxValue
+        };
+
         private static void Main()
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -42,25 +52,15 @@ namespace ScheduleCLI
             return container;
         }
 
-        private static readonly TimeSpan[] TimeSpans =
-        {
-            new(0, 0, 15),
-            new(0, 1, 0),
-            new(0, 10, 0),
-            new(1, 0, 0),
-            new(8, 0, 0),
-            TimeSpan.MaxValue
-        };
-
 
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[2]);
+            var (schedule, _) = solver.GetSolution(TimeSpans[1]);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
-            
+
             //WriteLog(schedule.ToString());
 
             BuildSchedule(schedule, Repository, config.Schedule);
@@ -82,7 +82,7 @@ namespace ScheduleCLI
 
             // return new GreedySolver(estimator, requisition, classrooms, new(228322), 3);
             return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(228322), 3));
-            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 5);
+            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 50);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }
