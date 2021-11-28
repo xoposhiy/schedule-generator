@@ -22,7 +22,7 @@ namespace Domain.Algorithms.Estimators
 
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
-            var totalInjustice = 0d;
+            var justice = 0d;
             var penalties = new Dictionary<MeetingGroup, double>();
             foreach (var (estimator, weight) in subEstimators)
             {
@@ -40,12 +40,12 @@ namespace Domain.Algorithms.Estimators
                 var groupSetPenalties = byGroupSet.Select(p => p.Value).ToList();
                 var min = groupSetPenalties.Min();
                 // var max = groupSetPenalties.Max();
-                var justice = groupSetPenalties.Sum(p => p - min);
-                logger?.Log($"{-justice} injustice in {byGroupSet.Key}", -justice);
-                totalInjustice -= justice;
+                var injustice = groupSetPenalties.Sum(p => p - min);
+                logger?.Log($"{injustice} injustice in {byGroupSet.Key}", -injustice);
+                justice -= injustice;
             }
 
-            return totalInjustice;
+            return justice;
         }
     }
 }
