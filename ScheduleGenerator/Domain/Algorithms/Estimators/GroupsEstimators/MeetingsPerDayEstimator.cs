@@ -8,7 +8,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public class MeetingsPerDayEstimator : GroupEstimator
     {
-        public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
         {
             var byGroup = schedule.GroupMeetingsByTime[group];
             var penalty = 0;

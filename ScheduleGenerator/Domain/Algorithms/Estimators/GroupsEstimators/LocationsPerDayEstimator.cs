@@ -11,12 +11,11 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
     //TODO count location changes instead of locations
     public class LocationPerDayEstimator : GroupEstimator
     {
-        private const int OptimalLocationsCount = 1;
+        private const int OptimalLocationsChangesCount = 1;
         private const int PossibleMaximumLocationsCount = 4;
 
-        public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
         {
-            // count location changes
             var byGroup = schedule.GroupMeetingsByTime[group];
             var penalty = 0;
             var scorePart = -1 / GetMaxPenalty(schedule);
@@ -24,10 +23,10 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             foreach (var (weekType, byWeekType) in byGroup)
             foreach (var (day, byDay) in byWeekType)
             {
-                var count = byDay.Where(m => m != null).Select(m => m!.Location).Distinct().Count();
-                penalty += count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
-                if (count <= OptimalLocationsCount) continue;
-                logger?.Log(GetLogMessage(group, weekType, day, count), scorePart);
+                var locations = byDay.Select(m => m?.Location);
+                var penaltyPart = GetPenalty(locations);
+                penalty += penaltyPart;
+                logger?.Log(GetLogMessage(group, weekType, day, penaltyPart), scorePart * penaltyPart);
             }
 
             return penalty * scorePart;
@@ -46,16 +45,16 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             foreach (var meetingGroup in groups)
             foreach (var weekType in weekTypes)
             {
-                var locations = new List<Location>();
+                var locations = new Location?[7];
                 if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var byDay))
                 {
                     if (byDay[timeSlot] != null)
                         throw new AggregateException("Placing meeting in taken place");
-                    locations.AddRange(byDay.Where(m => m != null).Select(m => m!.Location));
+                    locations = byDay.Select(m => m?.Location).ToArray();
                 }
 
                 var beforePenalty = GetPenalty(locations);
-                locations.Add(meetingToAdd.Location);
+                locations[meetingToAdd.MeetingTime.TimeSlot - 1] = meetingToAdd.Location;
                 var afterPenalty = GetPenalty(locations);
 
                 penaltyDelta += afterPenalty - beforePenalty;
@@ -68,7 +67,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
         {
             var weekTypeString = weekType.GetPrettyString();
             var dayString = day.GetPrettyString();
-            return $"{group} has bad {weekTypeString} with {count} locations on {dayString}";
+            return $"{group} has bad {weekTypeString} with {count} locations changes on {dayString}";
         }
 
         public override double GetMaxPenalty(Schedule schedule)
@@ -76,10 +75,20 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             return schedule.GroupMeetingsByTime.Count * WeekTypesCount * MaxDaysCount * PossibleMaximumLocationsCount;
         }
 
-        private static int GetPenalty(IEnumerable<Location> meetingsLocations)
+        private static int GetPenalty(IEnumerable<Location?> meetingsLocations)
         {
-            var count = meetingsLocations.Distinct().Count();
-            return count > OptimalLocationsCount ? count - OptimalLocationsCount : 0;
+            var locations = meetingsLocations.Where(l => l.HasValue).Select(l => l!.Value).ToList();
+            var count = 0;
+            if (locations.Count == 0) return 0;
+            var previous = locations[0];
+            for (var i = 1; i < locations.Count; i++)
+            {
+                if (previous == locations[i]) continue;
+                previous = locations[i];
+                count++;
+            }
+
+            return count > OptimalLocationsChangesCount ? count - OptimalLocationsChangesCount : 0;
         }
     }
 }

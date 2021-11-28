@@ -8,7 +8,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public class StudentsSpacesEstimator : GroupEstimator
     {
-        public override double GetScoreByGroup(MeetingGroup @group, Schedule schedule, ILogger? logger = null)
+        public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
         {
             //TODO придумать как учитывать пары, которые идут не весь семестр.
             //Например, учитывать аналогично четным-нечетным неделям (см ниже).
