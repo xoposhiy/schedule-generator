@@ -40,6 +40,7 @@ namespace ScheduleCLI
                 // SpringConfig
                 AutumnConfig
             };
+            WriteLog($"{configs.Length} configs");
 
             foreach (var config in configs) MakeAndWriteSchedule(config);
         }
@@ -55,8 +56,10 @@ namespace ScheduleCLI
 
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
+            var timeLimit = TimeSpans[1];
+            WriteLog($"With time limit of {timeLimit}");
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(TimeSpans[1]);
+            var (schedule, _) = solver.GetSolution(timeLimit);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
@@ -81,8 +84,8 @@ namespace ScheduleCLI
             var estimator = GetDefaultCombinedEstimator();
 
             // return new GreedySolver(estimator, requisition, classrooms, new(228322), 3);
-            return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(22), 3));
-            // return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 50);
+            // return new RepeaterSolver(new GreedySolver(estimator, requisition, classrooms, new(22), 3));
+            return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 30);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }
