@@ -15,39 +15,39 @@ namespace Domain
 
     public class Schedule : IReadonlySchedule
     {
-        private int hashCode;
-
-        public readonly HashSet<Meeting> Meetings = new();
-        public readonly HashSet<Meeting> NotUsedMeetings;
-        public readonly HashSet<Meeting> NonPlaceableMeetings = new();
-
-        public readonly Requisition Requisition;
-        public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
-        public readonly Dictionary<RoomSpec, HashSet<string>> RoomsBySpec = new();
-
-        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
-            GroupMeetingsByTime = new();
-
-        public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
-            TeacherMeetingsByTime = new();
+        public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, double>> GroupLearningPlanItemsCount =
             new();
 
-        public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
+        public readonly Dictionary<MeetingGroup, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
+            GroupMeetingsByTime = new();
 
-        public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
-
-        private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
-            timeConcurrentMeetings = new();
-
-        public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
+        public readonly HashSet<MeetingGroup> Groups;
 
         public readonly Dictionary<MeetingGroup,
             Dictionary<Discipline, Dictionary<MeetingType, Dictionary<Teacher, double>>>> GroupTeachersByDiscipline =
             new();
 
-        public readonly HashSet<MeetingGroup> Groups;
+        public readonly Dictionary<Meeting, int> MeetingFreedomDegree = new();
+
+        public readonly HashSet<Meeting> Meetings = new();
+
+        public readonly Dictionary<MeetingTime, HashSet<Meeting>> MeetingsByTimeSlot = new();
+        public readonly HashSet<Meeting> NonPlaceableMeetings = new();
+        public readonly HashSet<Meeting> NotUsedMeetings;
+
+        public readonly Requisition Requisition;
+        public readonly Dictionary<RoomSpec, HashSet<string>> RoomsBySpec = new();
+        public readonly Dictionary<string, List<RoomSpec>> SpecsByRoom;
+
+        public readonly Dictionary<Teacher, Dictionary<WeekType, Dictionary<DayOfWeek, Meeting?[]>>>
+            TeacherMeetingsByTime = new();
+
+        private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
+            timeConcurrentMeetings = new();
+
+        private int hashCode;
 
         public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
         {
@@ -62,6 +62,11 @@ namespace Domain
             FillRoomPool(specsByRoom.Keys);
             NotUsedMeetings = requisition.ConvertRequisitionToBaseMeeting().ToHashSet();
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
+        }
+
+        public IReadOnlySet<Meeting> GetMeetings()
+        {
+            return Meetings;
         }
 
         public override bool Equals(object? obj)
@@ -133,11 +138,6 @@ namespace Domain
 
                 foreach (var timeChoice in possibleTimeChoices) MeetingsByTimeSlot.SafeAdd(timeChoice, meeting);
             }
-        }
-
-        public IReadOnlySet<Meeting> GetMeetings()
-        {
-            return Meetings;
         }
 
         private void UnsubscribeCollidingMeetings(Meeting meeting)
@@ -304,15 +304,8 @@ namespace Domain
                 if (meetingCopy == null) continue;
                 if (baseMeeting.RequiredAdjacentMeeting != null)
                 {
-                    if (meetingTimeChoice.TimeSlot < 2)
+                    if (!TryCreateLinkedMeeting(meetingCopy, ignoreTimePriorities))
                         continue;
-                    var linkedMeetingTimeChoice = new MeetingTime(meetingTimeChoice.Day,
-                        meetingTimeChoice.TimeSlot - 1);
-                    var linkedMeeting = TryCreateFilledMeeting(baseMeeting.RequiredAdjacentMeeting,
-                        groupsChoice, linkedMeetingTimeChoice, ignoreTimePriorities);
-
-                    if (linkedMeeting == null) continue;
-                    meetingCopy.Link(linkedMeeting);
                 }
 
                 yield return meetingCopy;
@@ -350,6 +343,27 @@ namespace Domain
             }
 
             return null;
+        }
+
+        private bool TryCreateLinkedMeeting(Meeting meetingCopy, bool ignoreTimePriorities)
+        {
+            var (dayOfWeek, timeSlot) = meetingCopy.MeetingTime!;
+            if (timeSlot < 2) return false;
+
+            var time = new MeetingTime(dayOfWeek, timeSlot - 1);
+            var linkedMeeting = meetingCopy.BaseMeeting!.RequiredAdjacentMeeting!;
+
+            var room = linkedMeeting.IsRoomNeeded ? FindFreeRoom(time, linkedMeeting.PlanItem.RoomSpecs) : null;
+            if (linkedMeeting.IsRoomNeeded && room == null) return false;
+
+            var groupsChoice = meetingCopy.GroupsChoice!;
+            var linkedMeetingCopy = linkedMeeting.BasicCopy(groupsChoice, time, room, meetingCopy.WeekType);
+
+            if (!IsMeetingValid(linkedMeetingCopy, ignoreTimePriorities)) return false;
+
+            meetingCopy.Link(linkedMeetingCopy);
+
+            return true;
         }
 
         private bool IsMeetingValid(Meeting meeting, bool ignoreTimePriorities)

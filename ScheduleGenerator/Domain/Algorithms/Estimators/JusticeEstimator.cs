@@ -38,6 +38,8 @@ namespace Domain.Algorithms.Estimators
             foreach (var byGroupSet in penalties.GroupBy(p => p.Key.GetGroupSet()))
             {
                 var groupSetPenalties = byGroupSet.Select(p => p.Value).ToList();
+                LoggerExtension.WriteLog($"Group: {byGroupSet.Key}");
+                foreach (var penalty in byGroupSet) LoggerExtension.WriteLog($"{penalty.Key}: {penalty.Value}");
                 var min = groupSetPenalties.Min();
                 // var max = groupSetPenalties.Max();
                 var injustice = groupSetPenalties.Sum(p => p - min);

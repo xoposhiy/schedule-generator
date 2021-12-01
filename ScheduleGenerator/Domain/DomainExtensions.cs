@@ -17,6 +17,13 @@ namespace Domain
 {
     public static class ArrayExtensions
     {
+        private static readonly Dictionary<MeetingGroup[], HashSet<MeetingGroup>> MeetingGroupsCache = new();
+
+        public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};
+        private static readonly WeekType[] Odd = {WeekType.Odd};
+        private static readonly WeekType[] Even = {WeekType.Even};
+        public static readonly WeekType[] All = {WeekType.All};
+
         public static List<Meeting> GetLinkedMeetings(this Meeting meeting)
         {
             var meetings = new List<Meeting> {meeting};
@@ -24,8 +31,6 @@ namespace Domain
                 meetings.Add(meeting.RequiredAdjacentMeeting);
             return meetings;
         }
-
-        private static readonly Dictionary<MeetingGroup[], HashSet<MeetingGroup>> MeetingGroupsCache = new();
 
         public static HashSet<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
@@ -45,11 +50,6 @@ namespace Domain
 
             return MeetingGroupsCache[groups] = cache;
         }
-
-        public static readonly WeekType[] OddAndEven = {WeekType.Odd, WeekType.Even};
-        private static readonly WeekType[] Odd = {WeekType.Odd};
-        private static readonly WeekType[] Even = {WeekType.Even};
-        public static readonly WeekType[] All = {WeekType.All};
 
         public static WeekType[] GetWeekTypes(this WeekType weekType)
         {
@@ -73,7 +73,7 @@ namespace Domain
             var count = 0;
             var prev = -1;
 
-            for (var i = 1; i < 7; i++)         //index 0 is always null. meetings at 1..6
+            for (var i = 1; i < 7; i++) //index 0 is always null. meetings at 1..6
                 if (byDay[i] != null)
                 {
                     if (prev != -1) count += i - prev - 1;
@@ -87,7 +87,7 @@ namespace Domain
         public static int MeetingsCount(this Meeting?[] byDay)
         {
             var count = 0;
-            for (var i = 1; i < 7; i++)     //meetings at 1..6  always null at 0
+            for (var i = 1; i < 7; i++) //meetings at 1..6  always null at 0
                 if (byDay[i] != null)
                     count++;
 
@@ -149,7 +149,7 @@ namespace Domain
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
                 var byDay = byKey1.SafeAddAndReturn(weekType, day, new Meeting[7]);
-                
+
                 byDay[timeSlot] = meeting;
             }
         }
@@ -272,6 +272,20 @@ namespace Domain
             (new LocationPerDayEstimator(), 1)
         };
 
+        private static readonly Dictionary<RequisitionItem, HashSet<MeetingTime>>
+            RequisitionToMeetingTimesCache = new();
+
+        public static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
+        {
+            {DayOfWeek.Monday, 0},
+            {DayOfWeek.Tuesday, 1},
+            {DayOfWeek.Wednesday, 2},
+            {DayOfWeek.Thursday, 3},
+            {DayOfWeek.Friday, 4},
+            {DayOfWeek.Saturday, 5}
+            // { DayOfWeek.Sunday, 6}
+        };
+
         public static CombinedEstimator GetDefaultCombinedEstimator()
         {
             var weightedEstimators = new List<(IEstimator, double)>
@@ -285,7 +299,7 @@ namespace Domain
                 .AddRange(GroupEstimators.Select(tuple => ((IEstimator) tuple.Item1, tuple.Item2)));
             return new(weightedEstimators.ToArray());
         }
-        
+
         public static JusticeEstimator GetDefaultJusticeEstimator()
         {
             var estimator = new JusticeEstimator(GroupEstimators);
@@ -327,9 +341,6 @@ namespace Domain
                 .Distinct();
         }
 
-        private static readonly Dictionary<RequisitionItem, HashSet<MeetingTime>>
-            RequisitionToMeetingTimesCache = new();
-
         public static IReadOnlyCollection<MeetingTime> GetAllMeetingTimes(this RequisitionItem requisitionItem)
         {
             if (RequisitionToMeetingTimesCache.ContainsKey(requisitionItem))
@@ -341,17 +352,6 @@ namespace Domain
 
             return RequisitionToMeetingTimesCache[requisitionItem] = meetingTimes;
         }
-
-        public static readonly Dictionary<DayOfWeek, int> WeekDayToIntDict = new()
-        {
-            {DayOfWeek.Monday, 0},
-            {DayOfWeek.Tuesday, 1},
-            {DayOfWeek.Wednesday, 2},
-            {DayOfWeek.Thursday, 3},
-            {DayOfWeek.Friday, 4},
-            {DayOfWeek.Saturday, 5}
-            // { DayOfWeek.Sunday, 6}
-        };
 
         public static IEnumerable<MeetingTime> GetAllPossibleMeetingTimes()
         {
@@ -379,11 +379,11 @@ namespace Domain
                 {
                     var timeSlot = linkedMeeting.MeetingTime!.TimeSlot;
                     if (byDay[timeSlot] != null)
-                        throw new ArgumentException("Placing meeting in taken place");
+                        throw new ArgumentException($"Placing {linkedMeeting} in taken place");
 
                     byDay[timeSlot] = meetingToAdd;
                 }
-                
+
                 var after = byDay.GetMeetingsSpacesCount();
 
                 foreach (var linkedMeeting in meetingToAdd.GetLinkedMeetings())
