@@ -98,6 +98,11 @@ namespace Domain.Algorithms.Solvers
             return bestSolution;
         }
 
+        public Solution Solve(Schedule schedule)
+        {
+            throw new NotImplementedException();
+        }
+
         private static List<Solution> GetIteratedSolutions(
             Dictionary<Schedule, List<BeamNode>> bestMeetings, out int copyCount)
         {

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Domain.Enums;
 using Domain.MeetingsParts;
-using static Infrastructure.LoggerExtension;
-
 
 namespace Domain.Algorithms.Solvers
 {
@@ -33,25 +31,30 @@ namespace Domain.Algorithms.Solvers
         {
             // var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
+            return Solve(currentSchedule);
+        }
+
+        public Solution Solve(Schedule schedule)
+        {
             while (true)
             {
-                var meetingsToAdd = currentSchedule.GetMeetingsToAdd()
-                    .Select(meeting => (meeting, scoreDelta: EstimateResult(currentSchedule, meeting)))
+                var meetingsToAdd = schedule.GetMeetingsToAdd()
+                    .Select(meeting => (meeting, scoreDelta: EstimateResult(schedule, meeting)))
                     .OrderByDescending(ms => ms.scoreDelta)
                     .ToList();
                 if (meetingsToAdd.Count == 0) break;
 
                 var nextMeeting = SelectNextMeeting(meetingsToAdd);
-                //WriteLog(nextMeeting);
-                currentSchedule.AddMeeting(nextMeeting, true);
+                //LoggerExtension.WriteLog(nextMeeting);
+                schedule.AddMeeting(nextMeeting, true);
                 //WriteLog($"{estimator.Estimate(currentSchedule)}");
             }
 
             // WriteLog($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             // WriteLog($"Greedy {sw.Elapsed}\n");
 
-            var currentScore = estimator.Estimate(currentSchedule);
-            return new(currentSchedule, currentScore);
+            var currentScore = estimator.Estimate(schedule);
+            return new(schedule, currentScore);
         }
 
         private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)

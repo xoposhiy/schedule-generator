@@ -56,6 +56,11 @@ namespace Domain.Algorithms.Solvers
             return bestSolution;
         }
 
+        public Solution Solve(Schedule schedule)
+        {
+            throw new NotImplementedException();
+        }
+
         private static bool IsSolutionBetter(Solution solution, Solution bestSolution, double bestJustice,
             double justice)
         {
