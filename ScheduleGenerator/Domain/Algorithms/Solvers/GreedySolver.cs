@@ -31,10 +31,10 @@ namespace Domain.Algorithms.Solvers
         {
             // var sw = Stopwatch.StartNew();
             var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
-            return Solve(currentSchedule);
+            return Solve(currentSchedule, timeBudget);
         }
 
-        public Solution Solve(Schedule schedule)
+        public Solution Solve(Schedule schedule, TimeSpan timeBudget)
         {
             var score = 0d;
             while (true)

@@ -68,10 +68,10 @@ namespace Domain.Algorithms.Solvers
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
-            return Solve(new(requisition, classroomsWithSpecs));
+            return Solve(new(requisition, classroomsWithSpecs), timeBudget);
         }
 
-        public Solution Solve(Schedule schedule)
+        public Solution Solve(Schedule schedule, TimeSpan timeBudget)
         {
             var sw = Stopwatch.StartNew();
             var currentSchedules = new List<Solution> {new(schedule, 0d)};

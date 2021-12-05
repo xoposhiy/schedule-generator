@@ -56,7 +56,7 @@ namespace Domain.Algorithms.Solvers
             return bestSolution;
         }
 
-        public Solution Solve(Schedule schedule)
+        public Solution Solve(Schedule schedule, TimeSpan timeBudget)
         {
             throw new NotImplementedException();
         }
