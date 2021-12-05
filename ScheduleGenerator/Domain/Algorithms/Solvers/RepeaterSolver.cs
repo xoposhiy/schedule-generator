@@ -39,7 +39,7 @@ namespace Domain.Algorithms.Solvers
                 scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution, bestJustice, justice))
                 {
-                    WriteLog($"justice: {justice}");
+                    // WriteLog($"justice: {justice}");
                     bestSolution = solution;
                     improvementsCount++;
                     bestIteration = iteration;
@@ -69,15 +69,15 @@ namespace Domain.Algorithms.Solvers
             if (schedule.NotUsedMeetings.Count > bestSchedule.NotUsedMeetings.Count) return false;
             if (schedule.NotUsedMeetings.Count < bestSchedule.NotUsedMeetings.Count)
             {
-                WriteLog(
-                    $"Improvement reason: Not placed meetings count {bestSchedule.NotUsedMeetings.Count} -> {schedule.NotUsedMeetings.Count}");
+                // WriteLog(
+                //     $"Improvement reason: Not placed meetings count {bestSchedule.NotUsedMeetings.Count} -> {schedule.NotUsedMeetings.Count}");
                 return true;
             }
 
             if (score < bestScore) return false;
             if (score > bestScore)
             {
-                WriteLog($"Improvement reason: Score better {bestScore} -> {score}");
+                // WriteLog($"Improvement reason: Score better {bestScore} -> {score}");
                 return true;
             }
 

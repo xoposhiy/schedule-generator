@@ -149,5 +149,11 @@ namespace Domain.Algorithms.Solvers
             var scoreDelta = estimator.EstimateMeetingToAdd(schedule, meeting);
             return baseScore + scoreDelta;
         }
+
+        private double EstimateResult(Schedule schedule, Meeting meeting)
+        {
+            var scheduleCopy = schedule.Copy();
+            throw new NotImplementedException();
+        }
     }
 }

@@ -303,7 +303,6 @@ namespace Domain
         public static JusticeEstimator GetDefaultJusticeEstimator()
         {
             var estimator = new JusticeEstimator(GroupEstimators);
-            ;
             return estimator;
         }
 
