@@ -86,7 +86,8 @@ namespace ScheduleCLI
 
             // var greedy = new GreedySolver(estimator, requisition, classrooms, new(22), 3);
             // return new RepeaterSolver(greedy);
-            return new BeamSolver(estimator, requisition, classrooms, /*new(42),*/ 30);
+            var greedy = new GreedySolver(estimator, requisition, classrooms, new(22));
+            return new BeamSolver(estimator, requisition, classrooms, greedy, /*new(42),*/ 5);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

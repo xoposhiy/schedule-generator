@@ -15,7 +15,7 @@ namespace Testing.SolversTests
         {
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();
             var greedy = new GreedySolver(estimator, AutumnRequisition, ClassRooms, new(42), 5);
-            var beam = new BeamSolver(estimator, AutumnRequisition, ClassRooms, 5);
+            var beam = new BeamSolver(estimator, AutumnRequisition, ClassRooms, greedy, 5);
 
             var (beamSchedule, beamScore) = beam.GetSolution(TimeSpan.Zero);
             var (greedySchedule, greedyScore) = greedy.GetSolution(TimeSpan.Zero);

@@ -55,13 +55,16 @@ namespace Domain.Algorithms.Solvers
 
         //private readonly Random random;
         private readonly Requisition requisition;
+        private readonly ISolver solver;
 
         public BeamSolver(IEstimator estimator, Requisition requisition,
-            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, /*Random random,*/ int beamWidth = 1)
+            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, ISolver solver, /*Random random,*/
+            int beamWidth = 1)
         {
             this.estimator = estimator;
             this.requisition = requisition;
             this.classroomsWithSpecs = classroomsWithSpecs;
+            this.solver = solver;
             //this.random = random;
             this.beamWidth = beamWidth;
         }
@@ -108,16 +111,17 @@ namespace Domain.Algorithms.Solvers
         {
             copyCount = 0;
             var newSchedules = new List<Solution>();
-            foreach (var (schedule, variants) in bestMeetings)
+            foreach (var (_, variants) in bestMeetings)
             {
                 for (var i = 0; i < variants.Count - 1; i++)
                 {
                     copyCount++;
-                    var copy = schedule.Copy();
+                    var copy = variants[i].Schedule.Copy();
                     copy.AddMeeting(variants[i].MeetingToAdd, true);
                     newSchedules.Add(new(copy, variants[i].Score));
                 }
 
+                var schedule = variants[^1].Schedule;
                 schedule.AddMeeting(variants[^1].MeetingToAdd, true);
                 newSchedules.Add(new(schedule, variants[^1].Score));
             }
@@ -131,7 +135,8 @@ namespace Domain.Algorithms.Solvers
             var newNodes = new List<BeamNode>();
             foreach (var (schedule, score) in currentSchedules)
                 newNodes.AddRange(schedule.GetMeetingsToAdd()
-                    .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
+                    // .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
+                    .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting))));
 
             return newNodes
                 .Distinct()
@@ -150,10 +155,12 @@ namespace Domain.Algorithms.Solvers
             return baseScore + scoreDelta;
         }
 
-        private double EstimateResult(Schedule schedule, Meeting meeting)
+        private double EstimateResultByGreedy(Schedule schedule, Meeting meeting)
         {
             var scheduleCopy = schedule.Copy();
-            throw new NotImplementedException();
+            scheduleCopy.AddMeeting(meeting, true);
+            var score = solver.Solve(scheduleCopy, TimeSpan.Zero).Score;
+            return score;
         }
     }
 }

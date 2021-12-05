@@ -36,7 +36,6 @@ namespace Domain.Algorithms.Solvers
 
         public Solution Solve(Schedule schedule, TimeSpan timeBudget)
         {
-            var score = 0d;
             while (true)
             {
                 var meetingsToAdd = schedule.GetMeetingsToAdd()
@@ -48,14 +47,13 @@ namespace Domain.Algorithms.Solvers
                 var (meetingToAdd, scorePart) = SelectNextMeeting(meetingsToAdd);
                 //LoggerExtension.WriteLog(nextMeeting);
                 schedule.AddMeeting(meetingToAdd, true);
-                score += scorePart;
                 //WriteLog($"{estimator.Estimate(currentSchedule)}");
             }
 
             // WriteLog($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             // WriteLog($"Greedy {sw.Elapsed}\n");
 
-            // var currentScore = estimator.Estimate(schedule);
+            var score = estimator.Estimate(schedule);
             return new(schedule, score);
         }
 
