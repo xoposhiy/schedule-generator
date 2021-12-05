@@ -58,6 +58,7 @@ namespace ScheduleCLI
         {
             var timeLimit = TimeSpans[1];
             WriteLog($"With time limit of {timeLimit}");
+            // var blankSchedule = GetBlankSchedule(config, Repository);
             var solver = GetSolver(config, Repository);
             var (schedule, _) = solver.GetSolution(timeLimit);
 

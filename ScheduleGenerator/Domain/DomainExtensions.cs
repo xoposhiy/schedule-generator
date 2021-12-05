@@ -316,6 +316,14 @@ namespace Domain
             return dayOfWeek.ToString().PadRight(10);
         }
 
+        public static Schedule GetBlankSchedule(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
+            var (requirements, learningPlan, _) = sheetNamesConfig;
+            var (requisitions, _, classrooms) = ConvertToRequisitions(
+                repo, requirements, learningPlan, ClassroomsSheetName);
+            return new(new(requisitions.ToArray()), classrooms);
+        }
+
         public static (Requisition, Dictionary<string, List<RoomSpec>>) GetRequisition(
             SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {

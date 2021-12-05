@@ -68,8 +68,13 @@ namespace Domain.Algorithms.Solvers
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
+            return Solve(new(requisition, classroomsWithSpecs));
+        }
+
+        public Solution Solve(Schedule schedule)
+        {
             var sw = Stopwatch.StartNew();
-            var currentSchedules = new List<Solution> {new(new(requisition, classroomsWithSpecs), 0d)};
+            var currentSchedules = new List<Solution> {new(schedule, 0d)};
             var totalCopiesCount = 0;
             var iterationCount = 0;
 
@@ -96,11 +101,6 @@ namespace Domain.Algorithms.Solvers
             WriteLog($"Elapsed: {sw.Elapsed}");
             WriteLog($"Best score: {bestSolution.Score}");
             return bestSolution;
-        }
-
-        public Solution Solve(Schedule schedule)
-        {
-            throw new NotImplementedException();
         }
 
         private static List<Solution> GetIteratedSolutions(

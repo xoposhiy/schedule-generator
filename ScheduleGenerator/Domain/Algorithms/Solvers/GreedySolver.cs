@@ -36,6 +36,7 @@ namespace Domain.Algorithms.Solvers
 
         public Solution Solve(Schedule schedule)
         {
+            var score = 0d;
             while (true)
             {
                 var meetingsToAdd = schedule.GetMeetingsToAdd()
@@ -44,20 +45,22 @@ namespace Domain.Algorithms.Solvers
                     .ToList();
                 if (meetingsToAdd.Count == 0) break;
 
-                var nextMeeting = SelectNextMeeting(meetingsToAdd);
+                var (meetingToAdd, scorePart) = SelectNextMeeting(meetingsToAdd);
                 //LoggerExtension.WriteLog(nextMeeting);
-                schedule.AddMeeting(nextMeeting, true);
+                schedule.AddMeeting(meetingToAdd, true);
+                score += scorePart;
                 //WriteLog($"{estimator.Estimate(currentSchedule)}");
             }
 
             // WriteLog($"Not placed: {currentSchedule.NotUsedMeetings.Count}");
             // WriteLog($"Greedy {sw.Elapsed}\n");
 
-            var currentScore = estimator.Estimate(schedule);
-            return new(schedule, currentScore);
+            // var currentScore = estimator.Estimate(schedule);
+            return new(schedule, score);
         }
 
-        private Meeting SelectNextMeeting(IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
+        private (Meeting meeting, double score) SelectNextMeeting(
+            IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
         {
             var bestScore = orderedMeetings[0].score;
 
@@ -66,7 +69,7 @@ namespace Domain.Algorithms.Solvers
                 : orderedMeetings.Count;
             maxIndex = Math.Min(maxIndex, choiceCount);
 
-            return orderedMeetings[random.Next(maxIndex)].meeting;
+            return orderedMeetings[random.Next(maxIndex)];
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting)
