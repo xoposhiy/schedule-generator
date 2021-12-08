@@ -132,14 +132,17 @@ namespace Domain.Algorithms.Solvers
         private Dictionary<Schedule, List<BeamNode>> GetBestMeetings(
             List<Solution> currentSchedules)
         {
-            var newNodes = new List<BeamNode>();
-            foreach (var (schedule, score) in currentSchedules)
-                newNodes.AddRange(schedule.GetMeetingsToAdd()
-                    // .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
-                    .AsParallel()
-                    .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting))));
+            // var newNodes = new List<BeamNode>();
+            // foreach (var (schedule, score) in currentSchedules)
+            //     newNodes.AddRange(schedule.GetMeetingsToAdd()
+            //         // .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
+            //         .AsParallel()
+            //         .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting))));
 
-            return newNodes
+            return currentSchedules
+                .AsParallel()
+                .Select(s => s.Schedule)
+                .SelectMany(GetBeamNodes)
                 .Distinct()
                 .OrderByDescending(t => t.Score)
                 .Take(beamWidth)
@@ -162,6 +165,13 @@ namespace Domain.Algorithms.Solvers
             scheduleCopy.AddMeeting(meeting, true);
             var score = solver.Solve(scheduleCopy, TimeSpan.Zero).Score;
             return score;
+        }
+
+        private IEnumerable<BeamNode> GetBeamNodes(Schedule schedule)
+        {
+            return schedule.GetMeetingsToAdd()
+                .AsParallel()
+                .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting)));
         }
     }
 }
