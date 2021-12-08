@@ -8,7 +8,6 @@ using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
 using Ninject.Extensions.Conventions;
-using static Domain.Conversions.ScheduleSpreadsheetConverter;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
 using static Infrastructure.LoggerExtension;
@@ -67,7 +66,7 @@ namespace ScheduleCLI
 
             //WriteLog(schedule.ToString());
 
-            BuildSchedule(schedule, Repository, config.Schedule);
+            // BuildSchedule(schedule, Repository, config.Schedule);
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             using var logger = new Logger("Combined");
@@ -87,7 +86,7 @@ namespace ScheduleCLI
             // var greedy = new GreedySolver(estimator, requisition, classrooms, new(22), 3);
             // return new RepeaterSolver(greedy);
             var greedy = new GreedySolver(estimator, requisition, classrooms, new(22));
-            return new BeamSolver(estimator, requisition, classrooms, greedy, /*new(42),*/ 5);
+            return new BeamSolver(estimator, requisition, classrooms, greedy, /*new(42),*/ 1);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

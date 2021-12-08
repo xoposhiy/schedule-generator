@@ -8,7 +8,6 @@ using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
-    //TODO count location changes instead of locations
     public class LocationPerDayEstimator : GroupEstimator
     {
         private const int OptimalLocationsChangesCount = 1;
@@ -25,6 +24,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             {
                 var locations = byDay.Select(m => m?.Location);
                 var penaltyPart = GetPenalty(locations);
+                if (penaltyPart == 0) continue;
                 penalty += penaltyPart;
                 logger?.Log(GetLogMessage(group, weekType, day, penaltyPart), scorePart * penaltyPart);
             }

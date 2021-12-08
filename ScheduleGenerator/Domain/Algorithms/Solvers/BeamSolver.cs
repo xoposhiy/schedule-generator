@@ -136,6 +136,7 @@ namespace Domain.Algorithms.Solvers
             foreach (var (schedule, score) in currentSchedules)
                 newNodes.AddRange(schedule.GetMeetingsToAdd()
                     // .Select(meeting => new BeamNode(schedule, meeting, EstimateResult(schedule, meeting, score))));
+                    .AsParallel()
                     .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting))));
 
             return newNodes

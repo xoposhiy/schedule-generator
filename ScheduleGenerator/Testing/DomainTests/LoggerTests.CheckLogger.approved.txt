@@ -25,9 +25,5 @@ TimePriorityEstimator:
 GroupPriorityEstimator:
 	Total: 0 (BasicScore: 0, Weight: 5)
 LocationPerDayEstimator:
-	ФИИТ-101 Part1 has bad Odd  with 0 locations changes on Monday    
-	ФИИТ-101 Part1 has bad Even with 0 locations changes on Monday    
-	ФИИТ-101 Part2 has bad Odd  with 0 locations changes on Monday    
-	ФИИТ-101 Part2 has bad Even with 0 locations changes on Monday    
 	Total: 0 (BasicScore: 0, Weight: 1)
 Total: -0.36111111111111105 (BasicScore: -0.36111111111111105, Weight: 1)
