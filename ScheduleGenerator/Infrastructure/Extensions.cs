@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Google.Apis.Sheets.v4.Data;
 
@@ -7,6 +6,8 @@ namespace Infrastructure
 {
     public static class Extensions
     {
+        private static readonly DateTime Beginning = new(1899, 12, 30);
+
         public static CellData CommonCellData(string value)
         {
             return new()
@@ -53,8 +54,6 @@ namespace Infrastructure
             };
         }
 
-        private static readonly DateTime Beginning = new(1899, 12, 30);
-
         public static CellData CommonTimeCellData(DateTime dateTime)
         {
             return new()
@@ -84,9 +83,9 @@ namespace Infrastructure
                 yield return batch;
                 batch = new();
             }
+
             if (batch.Count > 0)
                 yield return batch;
         }
-            
     }
 }

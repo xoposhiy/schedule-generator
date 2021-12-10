@@ -106,12 +106,11 @@ namespace Domain.Algorithms.Solvers
             return bestSolution;
         }
 
-        private static List<Solution> GetIteratedSolutions(
-            Dictionary<Schedule, List<BeamNode>> bestMeetings, out int copyCount)
+        private static List<Solution> GetIteratedSolutions(List<List<BeamNode>> bestMeetings, out int copyCount)
         {
             copyCount = 0;
             var newSchedules = new List<Solution>();
-            foreach (var (_, variants) in bestMeetings)
+            foreach (var variants in bestMeetings)
             {
                 for (var i = 0; i < variants.Count - 1; i++)
                 {
@@ -129,8 +128,7 @@ namespace Domain.Algorithms.Solvers
             return newSchedules;
         }
 
-        private Dictionary<Schedule, List<BeamNode>> GetBestMeetings(
-            List<Solution> currentSchedules)
+        private List<List<BeamNode>> GetBestMeetings(List<Solution> currentSchedules)
         {
             return currentSchedules
                 .AsParallel()
@@ -140,7 +138,8 @@ namespace Domain.Algorithms.Solvers
                 .OrderByDescending(t => t.Score)
                 .Take(beamWidth)
                 .GroupBy(t => t.Schedule)
-                .ToDictionary(g => g.Key, g => g.ToList());
+                .Select(g => g.ToList())
+                .ToList();
         }
 
         private double EstimateResult(Schedule schedule, Meeting meeting, double baseScore)

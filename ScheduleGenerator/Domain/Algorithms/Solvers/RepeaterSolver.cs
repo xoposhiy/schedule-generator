@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using static Infrastructure.LoggerExtension;
 using static Domain.DomainExtensions;
 
@@ -42,7 +43,8 @@ namespace Domain.Algorithms.Solvers
                 });
             foreach (var solution in solutions)
             {
-                iteration++;
+                Interlocked.Increment(ref iteration);
+                // iteration++;
                 // var justice = justiceEstimator.Estimate(schedule);
                 // var solution = new Solution(schedule, score + 0.5 * justice);
                 // var solution = new Solution(schedule, score);
