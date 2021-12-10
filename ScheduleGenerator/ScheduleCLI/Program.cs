@@ -83,10 +83,10 @@ namespace ScheduleCLI
             var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
 
-            // var greedy = new GreedySolver(estimator, requisition, classrooms, new(22), 3);
-            // return new RepeaterSolver(greedy);
-            var greedy = new GreedySolver(estimator, requisition, classrooms, new(22));
-            return new BeamSolver(estimator, requisition, classrooms, greedy, /*new(42),*/ 1);
+            var greedy = new GreedySolver(estimator, requisition, classrooms, new(22), 3);
+            return new RepeaterSolver(greedy);
+            // var greedy = new GreedySolver(estimator, requisition, classrooms, new(22));
+            // return new BeamSolver(estimator, requisition, classrooms, greedy, /*new(42),*/ 1);
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

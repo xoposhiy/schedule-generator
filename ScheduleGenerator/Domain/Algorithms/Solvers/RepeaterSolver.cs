@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using static Infrastructure.LoggerExtension;
 using static Domain.DomainExtensions;
 
@@ -29,15 +30,18 @@ namespace Domain.Algorithms.Solvers
             var iteration = 1;
             var improvementsCount = 0;
             var bestIteration = 0;
-            while (sw.Elapsed < timeBudget)
+
+            var solutions = Enumerable.Repeat(0, int.MaxValue)
+                .AsParallel()
+                .Select(_ => solver.GetSolution(timeBudget - sw.Elapsed));
+            foreach (var (schedule, score) in solutions)
             {
                 iteration++;
-                var solution = solver.GetSolution(timeBudget - sw.Elapsed);
-                var justice = justiceEstimator.Estimate(solution.Schedule);
-                solution = solution with {Score = solution.Score + 0.5 * justice};
+                var justice = justiceEstimator.Estimate(schedule);
+                var solution = new Solution(schedule, score + 0.5 * justice);
                 // var solution = new Solution(schedule, score);
                 scoreSum += solution.Score;
-                if (IsSolutionBetter(solution, bestSolution, bestJustice, justice))
+                if (IsSolutionBetter(solution, bestSolution))
                 {
                     // WriteLog($"justice: {justice}");
                     bestSolution = solution;
@@ -47,7 +51,28 @@ namespace Domain.Algorithms.Solvers
                     WriteLog(message);
                     // WriteLog($"Score + Justice = {solution.Score + justice}");
                 }
+
+                if (sw.Elapsed > timeBudget) break;
             }
+            // while (sw.Elapsed < timeBudget)
+            // {
+            //     iteration++;
+            //     var solution = solver.GetSolution(timeBudget - sw.Elapsed);
+            //     var justice = justiceEstimator.Estimate(solution.Schedule);
+            //     solution = solution with {Score = solution.Score + 0.5 * justice};
+            //     // var solution = new Solution(schedule, score);
+            //     scoreSum += solution.Score;
+            //     if (IsSolutionBetter(solution, bestSolution))
+            //     {
+            //         // WriteLog($"justice: {justice}");
+            //         bestSolution = solution;
+            //         improvementsCount++;
+            //         bestIteration = iteration;
+            //         var message = GetImprovementMessage(improvementsCount, iteration, solution);
+            //         WriteLog(message);
+            //         // WriteLog($"Score + Justice = {solution.Score + justice}");
+            //     }
+            // }
 
             sw.Stop();
 
@@ -61,8 +86,7 @@ namespace Domain.Algorithms.Solvers
             throw new NotImplementedException();
         }
 
-        private static bool IsSolutionBetter(Solution solution, Solution bestSolution, double bestJustice,
-            double justice)
+        private static bool IsSolutionBetter(Solution solution, Solution bestSolution)
         {
             var (schedule, score) = solution;
             var (bestSchedule, bestScore) = bestSolution;

@@ -60,8 +60,9 @@ namespace Domain.Algorithms.Solvers
         private (Meeting meeting, double score) SelectNextMeeting(
             IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
         {
+            if (choiceCount == 1) return orderedMeetings[0];
+            
             var bestScore = orderedMeetings[0].score;
-
             var maxIndex = selectWithBestScoreOnly
                 ? orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.001)
                 : orderedMeetings.Count;
