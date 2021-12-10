@@ -54,25 +54,6 @@ namespace Domain.Algorithms.Solvers
 
                 if (sw.Elapsed > timeBudget) break;
             }
-            // while (sw.Elapsed < timeBudget)
-            // {
-            //     iteration++;
-            //     var solution = solver.GetSolution(timeBudget - sw.Elapsed);
-            //     var justice = justiceEstimator.Estimate(solution.Schedule);
-            //     solution = solution with {Score = solution.Score + 0.5 * justice};
-            //     // var solution = new Solution(schedule, score);
-            //     scoreSum += solution.Score;
-            //     if (IsSolutionBetter(solution, bestSolution))
-            //     {
-            //         // WriteLog($"justice: {justice}");
-            //         bestSolution = solution;
-            //         improvementsCount++;
-            //         bestIteration = iteration;
-            //         var message = GetImprovementMessage(improvementsCount, iteration, solution);
-            //         WriteLog(message);
-            //         // WriteLog($"Score + Justice = {solution.Score + justice}");
-            //     }
-            // }
 
             sw.Stop();
 
