@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Google.Apis.Sheets.v4.Data;
 
 namespace Infrastructure
@@ -71,5 +73,20 @@ namespace Infrastructure
                 }
             };
         }
+
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> source, int batchSize)
+        {
+            var batch = new List<T>();
+            foreach (var e in source)
+            {
+                batch.Add(e);
+                if (batch.Count < batchSize) continue;
+                yield return batch;
+                batch = new();
+            }
+            if (batch.Count > 0)
+                yield return batch;
+        }
+            
     }
 }

@@ -10,7 +10,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
 {
     public class LocationPerDayEstimator : GroupEstimator
     {
-        private const int OptimalLocationsChangesCount = 1;
+        private const int OptimalLocationsChangesCount = 0;
         private const int PossibleMaximumLocationsCount = 4;
 
         public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)

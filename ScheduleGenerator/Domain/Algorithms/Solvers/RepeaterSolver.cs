@@ -24,7 +24,7 @@ namespace Domain.Algorithms.Solvers
             // 1. score + 2 * justice
             // // 1. score + 0.5 * justice
             // 2. (score, justice)
-            var bestJustice = justiceEstimator.Estimate(bestSolution.Schedule);
+            // var bestJustice = justiceEstimator.Estimate(bestSolution.Schedule);
 
             var scoreSum = bestSolution.Score;
             var iteration = 1;
@@ -33,12 +33,18 @@ namespace Domain.Algorithms.Solvers
 
             var solutions = Enumerable.Repeat(0, int.MaxValue)
                 .AsParallel()
-                .Select(_ => solver.GetSolution(timeBudget - sw.Elapsed));
-            foreach (var (schedule, score) in solutions)
+                .Select(_ => solver.GetSolution(timeBudget - sw.Elapsed))
+                .Select(sol =>
+                {
+                    var (schedule, score) = sol;
+                    var justice = justiceEstimator.Estimate(schedule);
+                    return new Solution(schedule, score + 0.5 * justice);
+                });
+            foreach (var solution in solutions)
             {
                 iteration++;
-                var justice = justiceEstimator.Estimate(schedule);
-                var solution = new Solution(schedule, score + 0.5 * justice);
+                // var justice = justiceEstimator.Estimate(schedule);
+                // var solution = new Solution(schedule, score + 0.5 * justice);
                 // var solution = new Solution(schedule, score);
                 scoreSum += solution.Score;
                 if (IsSolutionBetter(solution, bestSolution))
