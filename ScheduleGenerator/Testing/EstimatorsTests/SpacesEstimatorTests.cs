@@ -18,7 +18,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void OneDayWithSpaces()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(CalculusRequisition, ClassroomsRequisitions);
             schedule.AddMeeting(schedule.GetMeetingsToAdd()
                 .First(m => m.WeekType == WeekType.All && m.MeetingTime!.TimeSlot == 1));
             while (schedule.NotUsedMeetings.Count != 0)

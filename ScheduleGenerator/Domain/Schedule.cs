@@ -48,21 +48,30 @@ namespace Domain
         private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
             timeConcurrentMeetings = new();
 
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
+
         private int hashCode;
 
-        public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom,
-            Dictionary<string, HashSet<MeetingTime>>? lockedTimeByRoom = null)
+        public Schedule(Requisition requisition, IReadOnlyCollection<RoomRequisition> classroomsRequisitions)
         {
             Groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts).ToHashSet();
+
+            var specsByRoom = classroomsRequisitions
+                .ToDictionary(e => e.Room, e => e.RoomSpecs);
+            var classroomsWithLockedTimes = classroomsRequisitions
+                .ToDictionary(e => e.Room, e => e.LockedTimes);
 
             FillTeachersKeys(requisition);
             FillGroupsKeys();
 
+            this.classroomsRequisitions = classroomsRequisitions;
             Requisition = requisition;
             SpecsByRoom = specsByRoom;
+            
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
-            FillLockedRoomTimes(lockedTimeByRoom);
+            FillLockedRoomTimes(classroomsWithLockedTimes);
+            
             NotUsedMeetings = requisition.ConvertRequisitionToBaseMeeting().ToHashSet();
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
@@ -93,22 +102,20 @@ namespace Domain
 
         public override string ToString()
         {
-            return string.Join("\n", Meetings.Select(m => m.ToString()).OrderBy(s => s));
+            return string
+                .Join("\n", Meetings.Select(m => m.ToString())
+                    .OrderBy(s => s));
         }
 
         public Schedule Copy()
         {
             // TODO: optimize
-            var copy = new Schedule(Requisition, SpecsByRoom);
+            var copy = new Schedule(Requisition, classroomsRequisitions);
             foreach (var meeting in Meetings)
             {
                 if (copy.Meetings.Contains(meeting)) continue;
                 copy.AddMeeting(meeting, true);
             }
-
-            foreach (var (key, value) in FreeRoomsByDay)
-                copy.FreeRoomsByDay[key] = value.ToHashSet();
-
             return copy;
         }
 

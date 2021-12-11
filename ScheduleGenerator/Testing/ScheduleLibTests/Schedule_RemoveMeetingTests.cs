@@ -12,7 +12,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestDeterminateRemove()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(CalculusRequisition, ClassroomsRequisitions);
             var addedMeetings = new List<Meeting>();
 
             for (var i = 0; i < 3; i++)

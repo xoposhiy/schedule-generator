@@ -20,7 +20,7 @@ namespace Testing.ScheduleLibTests
                 new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1)
             });
 
-            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRoomsWithSpecs);
+            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassroomsRequisitions);
             var seminarWithAdjacentRequirement =
                 schedule.GetMeetingsToAdd().First(m => m.MeetingType == MeetingType.Seminar);
 
@@ -41,7 +41,7 @@ namespace Testing.ScheduleLibTests
                 new RequisitionItem(OopSeminar, "ФИИТ-103-2", "вт-пт: 1-2 пара\nвт-пт: 5-6 пара", OopTeacher1)
             });
 
-            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRoomsWithSpecs);
+            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassroomsRequisitions);
             var lab = schedule.GetMeetingsToAdd().First(m => m.MeetingType == MeetingType.ComputerLab);
 
             schedule.AddMeeting(lab);
@@ -63,7 +63,7 @@ namespace Testing.ScheduleLibTests
                     OopTeacher1)
             });
 
-            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRoomsWithSpecs);
+            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassroomsRequisitions);
 
             var daysOfWeeks = schedule.GetMeetingsToAdd().Select(m => m.MeetingTime!.Day);
             Assert.That(daysOfWeeks, Has.All.EqualTo(DayOfWeek.Wednesday), "сдвоенная пара влазит только в среду");
@@ -86,7 +86,7 @@ namespace Testing.ScheduleLibTests
                     OopTeacher1)
             });
 
-            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassRoomsWithSpecs);
+            var schedule = new Schedule(requisitionWithAdjacentRequirement, ClassroomsRequisitions);
 
             var meeting = schedule.GetMeetingsToAdd().First();
             schedule.AddMeeting(meeting);

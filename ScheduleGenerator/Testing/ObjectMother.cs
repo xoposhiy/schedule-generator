@@ -9,12 +9,11 @@ namespace Testing
     public static class ObjectMother
     {
         public static readonly Requisition AutumnRequisition;
-        public static readonly Dictionary<string, List<RoomSpec>> ClassRoomsWithSpecs;
-        public static readonly Dictionary<string, HashSet<MeetingTime>> ClassRoomsWithLockedTimes;
+        public static readonly List<RoomRequisition> ClassroomsRequisitions;
 
         static ObjectMother()
         {
-            (AutumnRequisition, ClassRoomsWithSpecs, ClassRoomsWithLockedTimes) =
+            (AutumnRequisition, ClassroomsRequisitions) =
                 GetRequisition(AutumnConfig, Repository);
         }
 

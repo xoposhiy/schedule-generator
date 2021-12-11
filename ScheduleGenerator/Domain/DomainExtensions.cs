@@ -324,19 +324,14 @@ namespace Domain
         //     return new(new(requisitions.ToArray()), classrooms);
         // }
 
-        public static (Requisition, Dictionary<string, List<RoomSpec>>, Dictionary<string, HashSet<MeetingTime>>)
+        public static (Requisition, List<RoomRequisition>)
             GetRequisition(
             SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
             var (requirements, learningPlan, _) = sheetNamesConfig;
             var (requisitions, _, classrooms) = ConvertToRequisitions(
                 repo, requirements, learningPlan, ClassroomsSheetName);
-
-            var classroomsWithSpecs = classrooms.ToDictionary(e => e.Key,
-                e => e.Value.Item1);
-            var lockedTimes = classrooms.ToDictionary(e => e.Key,
-                e => e.Value.Item2);
-            return (new(requisitions.ToArray()), classroomsWithSpecs, lockedTimes);
+            return (new(requisitions.ToArray()), classrooms);
         }
 
         public static void Link(this Meeting first, Meeting second)

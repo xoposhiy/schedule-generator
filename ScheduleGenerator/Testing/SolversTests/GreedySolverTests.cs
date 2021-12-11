@@ -13,8 +13,7 @@ namespace Testing.SolversTests
         public void FindFullPlaceSolution()
         {
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();
-            var greedy = new GreedySolver(estimator, FullMondayRequisition, ClassRoomsWithSpecs,
-                ClassRoomsWithLockedTimes, new(42), 3);
+            var greedy = new GreedySolver(estimator, FullMondayRequisition, ClassroomsRequisitions, new(42), 3);
             var solution = greedy.GetSolution(TimeSpan.Zero);
             Assert.AreEqual(0, solution.Schedule.NotUsedMeetings.Count);
         }

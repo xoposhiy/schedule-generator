@@ -37,7 +37,7 @@ namespace Testing.EstimatorsTests
 
         private static void AssertSameScoreDelta(IEstimator estimator)
         {
-            var schedule = new Schedule(AutumnRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(AutumnRequisition, ClassroomsRequisitions);
             var previousScheduleScore = estimator.Estimate(schedule);
 
             while (true)

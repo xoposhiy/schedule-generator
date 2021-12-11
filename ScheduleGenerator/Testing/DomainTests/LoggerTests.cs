@@ -16,7 +16,7 @@ namespace Testing.DomainTests
         public void CheckLogger()
         {
             var estimator = GetDefaultCombinedEstimator();
-            var schedule = new Schedule(FullMondayRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(FullMondayRequisition, ClassroomsRequisitions);
 
             while (true)
             {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Domain.Enums;
 using Domain.MeetingsParts;
 using static Infrastructure.LoggerExtension;
 
@@ -49,29 +48,24 @@ namespace Domain.Algorithms.Solvers
     public class BeamSolver : ISolver
     {
         private readonly int beamWidth;
-        private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
-
         private readonly IEstimator estimator;
-
-        //private readonly Random random;
         private readonly Requisition requisition;
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly ISolver solver;
 
         public BeamSolver(IEstimator estimator, Requisition requisition,
-            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, ISolver solver, /*Random random,*/
-            int beamWidth = 1)
+            IReadOnlyCollection<RoomRequisition> classroomsRequisitions, ISolver solver, int beamWidth = 1)
         {
             this.estimator = estimator;
             this.requisition = requisition;
-            this.classroomsWithSpecs = classroomsWithSpecs;
+            this.classroomsRequisitions = classroomsRequisitions;
             this.solver = solver;
-            //this.random = random;
             this.beamWidth = beamWidth;
         }
 
         public Solution GetSolution(TimeSpan timeBudget)
         {
-            return Solve(new(requisition, classroomsWithSpecs), timeBudget);
+            return Solve(new(requisition, classroomsRequisitions), timeBudget);
         }
 
         public Solution Solve(Schedule schedule, TimeSpan timeBudget)

@@ -81,15 +81,19 @@ namespace ScheduleCLI
 
         public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
-            var (requisition, classrooms, classroomsWithLockedTimes) = GetRequisition(sheetNamesConfig, repo);
+            var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
 
             var random = new ThreadSafeRandom();
 
-            var greedy = new GreedySolver(estimator, requisition, classrooms, classroomsWithLockedTimes, random, 3);
-            return new RepeaterSolver(greedy);
-            // var greedy = new GreedySolver(estimator, requisition, classrooms, random);
-            // return new BeamSolver(estimator, requisition, classrooms, greedy, 1);
+            // var greedy = new GreedySolver(estimator, requisition, classrooms, random, 3);
+            // return new RepeaterSolver(greedy);
+
+
+            var greedy = new GreedySolver(estimator, requisition, classrooms, random);
+            return new BeamSolver(estimator, requisition, classrooms, greedy, 1);
+            
+            
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
         }
     }

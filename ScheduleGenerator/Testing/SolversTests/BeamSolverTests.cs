@@ -14,9 +14,9 @@ namespace Testing.SolversTests
         public void BeamBetterThanGreedy()
         {
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();
-            var greedy = new GreedySolver(estimator, AutumnRequisition, ClassRoomsWithSpecs, ClassRoomsWithLockedTimes,
+            var greedy = new GreedySolver(estimator, AutumnRequisition, ClassroomsRequisitions,
                 new(42), 5);
-            var beam = new BeamSolver(estimator, AutumnRequisition, ClassRoomsWithSpecs, greedy, 5);
+            var beam = new BeamSolver(estimator, AutumnRequisition, ClassroomsRequisitions, greedy, 5);
 
             var (beamSchedule, beamScore) = beam.GetSolution(TimeSpan.Zero);
             var (greedySchedule, greedyScore) = greedy.GetSolution(TimeSpan.Zero);

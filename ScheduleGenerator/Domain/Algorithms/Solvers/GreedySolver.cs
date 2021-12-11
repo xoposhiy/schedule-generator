@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Enums;
 using Domain.MeetingsParts;
 
 namespace Domain.Algorithms.Solvers
@@ -9,23 +8,20 @@ namespace Domain.Algorithms.Solvers
     public class GreedySolver : ISolver
     {
         private readonly int choiceCount;
-        private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
         private readonly IEstimator estimator;
-        private readonly Dictionary<string, HashSet<MeetingTime>> classroomsWithLockedTimes;
         private readonly Random random;
         private readonly Requisition requisition;
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly bool selectWithBestScoreOnly;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
-            Dictionary<string, List<RoomSpec>> classroomsWithSpecs,
-            Dictionary<string, HashSet<MeetingTime>> classroomsWithLockedTimes,
+            IReadOnlyCollection<RoomRequisition> classroomsRequisitions,
             Random random, int choiceCount = 1,
             bool selectWithBestScoreOnly = true)
         {
             this.estimator = estimator;
             this.requisition = requisition;
-            this.classroomsWithSpecs = classroomsWithSpecs;
-            this.classroomsWithLockedTimes = classroomsWithLockedTimes;
+            this.classroomsRequisitions = classroomsRequisitions;
             this.random = random;
             this.choiceCount = choiceCount;
             this.selectWithBestScoreOnly = selectWithBestScoreOnly;
@@ -34,7 +30,7 @@ namespace Domain.Algorithms.Solvers
         public Solution GetSolution(TimeSpan timeBudget)
         {
             // var sw = Stopwatch.StartNew();
-            var currentSchedule = new Schedule(requisition, classroomsWithSpecs, classroomsWithLockedTimes);
+            var currentSchedule = new Schedule(requisition, classroomsRequisitions);
             return Solve(currentSchedule, timeBudget);
         }
 

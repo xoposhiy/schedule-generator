@@ -88,7 +88,7 @@ namespace Domain.Conversions
             };
         }
 
-        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)>)
+        public static (List<RequisitionItem>, LearningPlan, List<RoomRequisition>)
             ConvertToRequisitions(GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
@@ -139,18 +139,12 @@ namespace Domain.Conversions
                     .Select(GetRoomSpec).ToArray();
         }
 
-        private static Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)> ParseClassrooms(
-            List<List<string>> sheetData)
+        private static List<RoomRequisition> ParseClassrooms(IEnumerable<List<string>> sheetData)
         {
-            // var dictionary = new Dictionary<string, List<RoomSpec>>();
-            // foreach (var (number, specs) in sheetData.Select(ParseClassroom)) dictionary[number] = specs;
-            //
-            // return dictionary;
-            var dictionary = new Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)>();
-            foreach (var (number, specs, lockedTimes) in sheetData.Select(ParseClassroom))
-                dictionary[number] = (specs, lockedTimes);
-
-            return dictionary;
+            var list = new List<RoomRequisition>();
+            foreach (var (room, specs, lockedTimes) in sheetData.Select(ParseClassroom))
+                list.Add(new(room, specs, lockedTimes));
+            return list;
         }
 
         private static (string room, List<RoomSpec> specs, HashSet<MeetingTime> lockedTimes) ParseClassroom(

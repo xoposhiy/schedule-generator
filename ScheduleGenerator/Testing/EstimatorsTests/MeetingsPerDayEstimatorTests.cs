@@ -22,7 +22,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void SingleMeetingSingleDayTest()
         {
-            var schedule = new Schedule(OsRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(OsRequisition, ClassroomsRequisitions);
             var osLecture = schedule.GetMeetingsToAdd().First();
             var meetingScore = estimator.EstimateMeetingToAdd(schedule, osLecture);
             AssertBetweenZeroAndNegativeOne(meetingScore);
@@ -35,7 +35,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void FewMeetingsSingleDayTest()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(CalculusRequisition, ClassroomsRequisitions);
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var scheduleScore = estimator.Estimate(schedule);
@@ -54,7 +54,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void LotOfMeetingsSingleDay()
         {
-            var schedule = new Schedule(FullMondayRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(FullMondayRequisition, ClassroomsRequisitions);
 
             while (schedule.NotUsedMeetings.Count != 0)
             {
@@ -74,7 +74,7 @@ namespace Testing.EstimatorsTests
                 new RequisitionItem(OopLab, "ФИИТ-101", "пн: 1-6 пара", OopTeacher1),
                 new RequisitionItem(OsLecture, "ФИИТ-101", "вт: 4-6 пара", OsTeacher)
             });
-            var schedule = new Schedule(twoDaysRequisition, ClassRoomsWithSpecs);
+            var schedule = new Schedule(twoDaysRequisition, ClassroomsRequisitions);
 
             var prevScore = 0d;
             while (schedule.NotUsedMeetings.Count != 0)
