@@ -11,17 +11,21 @@ namespace Domain.Algorithms.Solvers
         private readonly int choiceCount;
         private readonly Dictionary<string, List<RoomSpec>> classroomsWithSpecs;
         private readonly IEstimator estimator;
+        private readonly Dictionary<string, HashSet<MeetingTime>> classroomsWithLockedTimes;
         private readonly Random random;
         private readonly Requisition requisition;
         private readonly bool selectWithBestScoreOnly;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
-            Dictionary<string, List<RoomSpec>> classroomsWithSpecs, Random random, int choiceCount = 1,
+            Dictionary<string, List<RoomSpec>> classroomsWithSpecs,
+            Dictionary<string, HashSet<MeetingTime>> classroomsWithLockedTimes,
+            Random random, int choiceCount = 1,
             bool selectWithBestScoreOnly = true)
         {
             this.estimator = estimator;
             this.requisition = requisition;
             this.classroomsWithSpecs = classroomsWithSpecs;
+            this.classroomsWithLockedTimes = classroomsWithLockedTimes;
             this.random = random;
             this.choiceCount = choiceCount;
             this.selectWithBestScoreOnly = selectWithBestScoreOnly;
@@ -30,7 +34,7 @@ namespace Domain.Algorithms.Solvers
         public Solution GetSolution(TimeSpan timeBudget)
         {
             // var sw = Stopwatch.StartNew();
-            var currentSchedule = new Schedule(requisition, classroomsWithSpecs);
+            var currentSchedule = new Schedule(requisition, classroomsWithSpecs, classroomsWithLockedTimes);
             return Solve(currentSchedule, timeBudget);
         }
 

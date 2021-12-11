@@ -16,7 +16,7 @@ namespace Testing.ConversionsTests
         [Test]
         public void ScheduleWriteTest()
         {
-            var testSchedule = new Schedule(FullMondayRequisition, ClassRooms);
+            var testSchedule = new Schedule(FullMondayRequisition, ClassRoomsWithSpecs);
 
             while (testSchedule.NotUsedMeetings.Count != 0)
             {

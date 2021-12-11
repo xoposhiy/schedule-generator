@@ -16,7 +16,8 @@ namespace Testing.SolversTests
             var timeBudget = TimeSpan.FromSeconds(15);
             var estimator = DomainExtensions.GetDefaultCombinedEstimator();
 
-            var greedy = new GreedySolver(estimator, AutumnRequisition, ClassRooms, new(42), 5);
+            var greedy = new GreedySolver(estimator, AutumnRequisition, ClassRoomsWithSpecs, ClassRoomsWithLockedTimes,
+                new(42), 5);
             var repeater = new RepeaterSolver(greedy);
 
             var (greedySchedule, greedyScore) = greedy.GetSolution(timeBudget);

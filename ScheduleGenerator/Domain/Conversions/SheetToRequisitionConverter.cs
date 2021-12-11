@@ -88,8 +88,8 @@ namespace Domain.Conversions
             };
         }
 
-        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, List<RoomSpec>>) ConvertToRequisitions(
-            GsRepository repo,
+        public static (List<RequisitionItem>, LearningPlan, Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)>)
+            ConvertToRequisitions(GsRepository repo,
             string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
             var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, 1, 0, 10);
@@ -97,7 +97,7 @@ namespace Domain.Conversions
             var learningPlan = new LearningPlan(learningPlanItems);
             var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, 1, 0, 7);
             var requisitions = ParseRequisitions(requisitionData, learningPlan);
-            var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, 1, 0, 4);
+            var classroomsData = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, 1, 0, 5);
             var classrooms = ParseClassrooms(classroomsData);
             return (requisitions, learningPlan, classrooms);
         }
@@ -139,15 +139,22 @@ namespace Domain.Conversions
                     .Select(GetRoomSpec).ToArray();
         }
 
-        private static Dictionary<string, List<RoomSpec>> ParseClassrooms(List<List<string>> sheetData)
+        private static Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)> ParseClassrooms(
+            List<List<string>> sheetData)
         {
-            var dictionary = new Dictionary<string, List<RoomSpec>>();
-            foreach (var (number, specs) in sheetData.Select(ParseClassroom)) dictionary[number] = specs;
+            // var dictionary = new Dictionary<string, List<RoomSpec>>();
+            // foreach (var (number, specs) in sheetData.Select(ParseClassroom)) dictionary[number] = specs;
+            //
+            // return dictionary;
+            var dictionary = new Dictionary<string, (List<RoomSpec>, HashSet<MeetingTime>)>();
+            foreach (var (number, specs, lockedTimes) in sheetData.Select(ParseClassroom))
+                dictionary[number] = (specs, lockedTimes);
 
             return dictionary;
         }
 
-        private static (string, List<RoomSpec>) ParseClassroom(List<string> row)
+        private static (string room, List<RoomSpec> specs, HashSet<MeetingTime> lockedTimes) ParseClassroom(
+            List<string> row)
         {
             var number = row[0];
             var specs = new List<RoomSpec>();
@@ -157,7 +164,8 @@ namespace Domain.Conversions
                 specs.Add(RoomSpec.Projector);
             if (!string.IsNullOrWhiteSpace(row[3]))
                 specs.Add(GetRoomSpec(row[3]));
-            return (number, specs);
+            var lockedTimes = ParseRoomsTimeRequisitions(row[4]);
+            return (number, specs, lockedTimes);
         }
 
         private static List<RequisitionItem> ParseRequisitions(List<List<string>> sheetData, LearningPlan learningPlan)
@@ -292,12 +300,13 @@ namespace Domain.Conversions
 
         public static List<MeetingTimeRequisition> ParseMeetingTimeRequisitions(string rawMeetingTime)
         {
-            if (string.IsNullOrWhiteSpace(rawMeetingTime))
-            {
-                var meetingTimes = GetAllPossibleMeetingTimes().ToHashSet();
-                return new() {new(meetingTimes)};
-            }
+            if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseTimes(rawMeetingTime);
+            var meetingTimes = GetAllPossibleMeetingTimes().ToHashSet();
+            return new() {new(meetingTimes)};
+        }
 
+        private static List<MeetingTimeRequisition> ParseTimes(string rawMeetingTime)
+        {
             var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
             var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
@@ -318,12 +327,20 @@ namespace Domain.Conversions
                     foreach (var slot in slots)
                         meetingTimes.Add(new(day, slot));
                 }
-                meetingTimeRequisitions.Add(new MeetingTimeRequisition(meetingTimes));
+
+                meetingTimeRequisitions.Add(new(meetingTimes));
             }
 
             return meetingTimeRequisitions;
         }
 
+        private static HashSet<MeetingTime> ParseRoomsTimeRequisitions(string rawMeetingTime)
+        {
+            return string.IsNullOrWhiteSpace(rawMeetingTime)
+                ? new()
+                : ParseTimes(rawMeetingTime).SelectMany(e => e.MeetingTimeChoices).ToHashSet();
+        }
+        
         private static List<DayOfWeek> GetDays(string dayString)
         {
             var days = new List<DayOfWeek>();

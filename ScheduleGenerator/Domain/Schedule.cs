@@ -50,7 +50,8 @@ namespace Domain
 
         private int hashCode;
 
-        public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom)
+        public Schedule(Requisition requisition, Dictionary<string, List<RoomSpec>> specsByRoom,
+            Dictionary<string, HashSet<MeetingTime>>? lockedTimeByRoom = null)
         {
             Groups = requisition.Items.SelectMany(DomainExtensions.GetAllGroupParts).ToHashSet();
 
@@ -61,8 +62,17 @@ namespace Domain
             SpecsByRoom = specsByRoom;
             FillClassroomsBySpec(specsByRoom);
             FillRoomPool(specsByRoom.Keys);
+            FillLockedRoomTimes(lockedTimeByRoom);
             NotUsedMeetings = requisition.ConvertRequisitionToBaseMeeting().ToHashSet();
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
+        }
+
+        private void FillLockedRoomTimes(Dictionary<string, HashSet<MeetingTime>>? lockedTimeByRoom)
+        {
+            if (lockedTimeByRoom == null) return;
+            foreach (var (key, value) in lockedTimeByRoom)
+            foreach (var time in value)
+                FreeRoomsByDay[time].Remove(key);
         }
 
         public IReadOnlySet<Meeting> GetMeetings()
@@ -95,6 +105,9 @@ namespace Domain
                 if (copy.Meetings.Contains(meeting)) continue;
                 copy.AddMeeting(meeting, true);
             }
+
+            foreach (var (key, value) in FreeRoomsByDay)
+                copy.FreeRoomsByDay[key] = value.ToHashSet();
 
             return copy;
         }

@@ -13,7 +13,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void SetGroupClassroomAndTimeToRequiredValues()
         {
-            var schedule = new Schedule(OsRequisition, ClassRooms);
+            var schedule = new Schedule(OsRequisition, ClassRoomsWithSpecs);
 
             var meeting = schedule.GetMeetingsToAdd().Single();
 

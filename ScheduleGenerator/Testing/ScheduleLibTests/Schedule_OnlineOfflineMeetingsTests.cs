@@ -12,7 +12,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestOnlineLocation()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassRooms);
+            var schedule = new Schedule(CalculusRequisition, ClassRoomsWithSpecs);
 
             var lecturePossibleLocations = schedule.GetMeetingsToAdd()
                 .Where(m => m.MeetingType == MeetingType.Lecture)
@@ -23,7 +23,7 @@ namespace Testing.ScheduleLibTests
         [Test]
         public void TestOnlineOfflineSpace()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassRooms);
+            var schedule = new Schedule(CalculusRequisition, ClassRoomsWithSpecs);
 
             var lecture = schedule
                 .GetMeetingsToAdd()
