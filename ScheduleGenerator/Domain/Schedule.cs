@@ -378,7 +378,7 @@ namespace Domain
         {
             var timeAcceptableForTeacher = ignoreTimePriorities || IsTimeAcceptableForTeacher(meeting);
             return !(HasMeetingAlreadyAtThisTime(meeting) // weekType requires
-                     || IsMeetingIsExtraForGroup(meeting)
+                     || IsMeetingIsExtraForGroup(meeting) // weekType requires
                      || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
                      || !timeAcceptableForTeacher
@@ -446,10 +446,10 @@ namespace Domain
                 if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
             }
 
-            return meetingToAdd.MeetingType == MeetingType.Lecture && IsLectureIsExtraForGroup(meetingToAdd);
+            return meetingToAdd.MeetingType == MeetingType.Lecture && IsHardMeetingIsExtraForGroup(meetingToAdd);
         }
 
-        private bool IsLectureIsExtraForGroup(Meeting meetingToAdd)
+        private bool IsHardMeetingIsExtraForGroup(Meeting meetingToAdd)
         {
             if (!meetingToAdd.PlanItem.IsHard)
                 return false;

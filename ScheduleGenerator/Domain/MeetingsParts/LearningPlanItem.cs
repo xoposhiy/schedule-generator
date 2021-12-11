@@ -10,7 +10,7 @@ namespace Domain.MeetingsParts
         public override string ToString()
         {
             var perWeek = MeetingsPerWeek.ToString(CultureInfo.InvariantCulture);
-            return $"{GroupSet}, {Discipline}, {MeetingType}, {GroupSize}, {perWeek}, {Priority} {IsHard}";
+            return $"{GroupSet}, {Discipline}, {MeetingType}, {GroupSize}, {perWeek}, {Priority}, IsHard: {IsHard}";
         }
     }
 }

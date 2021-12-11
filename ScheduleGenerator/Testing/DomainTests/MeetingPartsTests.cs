@@ -10,7 +10,7 @@ namespace Testing.DomainTests
         public void PlanItemToStringTest()
         {
             var planItemString = CalculusLecture.ToString();
-            Assert.AreEqual("ФИИТ-1, МатАн, Lecture, FullGroup, 1.5, 0", planItemString);
+            Assert.AreEqual("ФИИТ-1, МатАн, Lecture, FullGroup, 1.5, 0, IsHard: False", planItemString);
         }
 
         [Test]
