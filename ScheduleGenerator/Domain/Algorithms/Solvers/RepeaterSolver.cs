@@ -40,27 +40,20 @@ namespace Domain.Algorithms.Solvers
                     var (schedule, score) = sol;
                     var justice = justiceEstimator.Estimate(schedule);
                     return new Solution(schedule, score + 0.5 * justice);
-                });
+                })
+                .TakeWhile(_ => sw.Elapsed < timeBudget);
             foreach (var solution in solutions)
             {
                 Interlocked.Increment(ref iteration);
-                // iteration++;
-                // var justice = justiceEstimator.Estimate(schedule);
-                // var solution = new Solution(schedule, score + 0.5 * justice);
-                // var solution = new Solution(schedule, score);
                 scoreSum += solution.Score;
-                if (IsSolutionBetter(solution, bestSolution))
-                {
-                    // WriteLog($"justice: {justice}");
-                    bestSolution = solution;
-                    improvementsCount++;
-                    bestIteration = iteration;
-                    var message = GetImprovementMessage(improvementsCount, iteration, solution);
-                    WriteLog(message);
-                    // WriteLog($"Score + Justice = {solution.Score + justice}");
-                }
-
-                if (sw.Elapsed > timeBudget) break;
+                if (!IsSolutionBetter(solution, bestSolution)) continue;
+                // WriteLog($"justice: {justice}");
+                bestSolution = solution;
+                improvementsCount++;
+                bestIteration = iteration;
+                var message = GetImprovementMessage(improvementsCount, iteration, solution);
+                WriteLog(message);
+                // WriteLog($"Score + Justice = {solution.Score + justice}");
             }
 
             sw.Stop();

@@ -446,6 +446,29 @@ namespace Domain
                 if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
             }
 
+            return meetingToAdd.MeetingType == MeetingType.Lecture && IsLectureIsExtraForGroup(meetingToAdd);
+        }
+
+        private bool IsLectureIsExtraForGroup(Meeting meetingToAdd)
+        {
+            if (!meetingToAdd.PlanItem.IsHard)
+                return false;
+            foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
+            foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
+            {
+                if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, meetingToAdd.MeetingTime!.Day,
+                    out var meetings))
+                    continue;
+                var f = meetings.Where(m => m != null && m.PlanItem.IsHard).ToList();
+                if (f.Any(m => meetingToAdd.Discipline == m?.Discipline
+                               && meetingToAdd.MeetingType == m.MeetingType))
+                    return true;
+                if (meetingToAdd.MeetingType == MeetingType.Lecture &&
+                    f.Any(m => m!.MeetingType == MeetingType.Lecture &&
+                               Math.Abs(m.MeetingTime!.TimeSlot - meetingToAdd.MeetingTime.TimeSlot) < 2))
+                    return true;
+            }
+
             return false;
         }
 

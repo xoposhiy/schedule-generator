@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using Domain.Algorithms;
 using Domain.Algorithms.Solvers;
+using Domain.Conversions;
 using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
 using Ninject;
@@ -66,7 +67,7 @@ namespace ScheduleCLI
 
             //WriteLog(schedule.ToString());
 
-            // BuildSchedule(schedule, Repository, config.Schedule);
+            ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
             // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             using var logger = new Logger("Combined");
