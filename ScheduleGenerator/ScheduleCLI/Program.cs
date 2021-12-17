@@ -79,22 +79,28 @@ namespace ScheduleCLI
             justiceEstimator.Estimate(schedule, justiceLogger);
         }
 
-        public static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        private static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
+            // return GetRepeaterSolver(sheetNamesConfig, repo);
+            return GetBeamSolver(sheetNamesConfig, repo);
+        }
+
+        public static ISolver GetRepeaterSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
+            var random = new ThreadSafeRandom();
             var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
+            var greedy = new GreedySolver(estimator, requisition, classrooms, random, 3);
+            return new RepeaterSolver(greedy);
+        }
 
+        private static ISolver GetBeamSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        {
             var random = new ThreadSafeRandom();
-
-            // var greedy = new GreedySolver(estimator, requisition, classrooms, random, 3);
-            // return new RepeaterSolver(greedy);
-
-
+            var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
+            var estimator = GetDefaultCombinedEstimator();
             var greedy = new GreedySolver(estimator, requisition, classrooms, random);
-            return new BeamSolver(estimator, requisition, classrooms, greedy, 15);
-            
-            
-            // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
+            return new BeamSolver(estimator, requisition, classrooms, greedy, 5);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Domain
         private bool IsNoSpaceBetweenDifferentLocatedMeetings(Meeting meeting)
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlot;
-            var timeSlots = new[] { -1, 1 }
+            var timeSlots = new[] {-1, 1}
                 .Select(dt => timeSlotIndex + dt)
                 .Where(ts => ts is > 0 and < 7)
                 .ToList();
@@ -76,26 +76,22 @@ namespace Domain
 
             return meetingToAdd.MeetingType == MeetingType.Lecture && IsHardMeetingExtraForGroup(meetingToAdd);
         }
-        
+
         private bool IsDayExtraForDiscipline(Meeting meetingToAdd)
         {
             var discipline = meetingToAdd.Discipline;
             foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
             {
-                var days = 0;
-                foreach (var day in (DayOfWeek[])Enum.GetValues(typeof(DayOfWeek)))
+                var days = 1;
+                if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, out var byWeekType))
+                    continue;
+
+                foreach (var (dayOfWeek, day) in byWeekType)
                 {
-                    if (day == meetingToAdd.MeetingTime?.Day)
-                    {
-                        days += 1;
-                        continue;
-                    }
-                    if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, meetingToAdd.MeetingTime!.Day,
-                        out var meetings))
-                        continue;
-                    if (meetings.Any(m => m?.Discipline == discipline))
-                        days += 1;
+                    if (dayOfWeek == meetingToAdd.MeetingTime!.Day) continue;
+                    if (day.Any(m => m?.Discipline == discipline))
+                        days++;
                 }
 
                 if (days > 2)
@@ -113,7 +109,7 @@ namespace Domain
             foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
             {
                 if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, meetingToAdd.MeetingTime!.Day,
-                    out var meetings))
+                        out var meetings))
                     continue;
                 var f = meetings.Where(m => m != null && m.PlanItem.IsHard).ToList();
                 if (f.Any(m => meetingToAdd.Discipline == m?.Discipline
@@ -131,13 +127,12 @@ namespace Domain
         private bool IsTeacherExtraForGroup(Meeting meetingToAdd)
         {
             var discipline = meetingToAdd.Discipline;
+            var meetingType = meetingToAdd.MeetingType;
 
             foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             {
-                if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup, discipline,
-                    out var byDiscipline)) continue;
-                if (!byDiscipline.TryGetValue(meetingToAdd.MeetingType,
-                    out var byType)) continue;
+                if (!GroupTeachersByDiscipline.TryGetValue(meetingGroup, discipline, meetingType,
+                        out var byType)) continue;
                 if (byType.Any(teacher => teacher.Value > 0
                                           && teacher.Key != meetingToAdd.Teacher))
                     return true;

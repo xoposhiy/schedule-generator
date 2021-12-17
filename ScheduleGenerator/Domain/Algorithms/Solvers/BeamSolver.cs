@@ -48,9 +48,9 @@ namespace Domain.Algorithms.Solvers
     public class BeamSolver : ISolver
     {
         private readonly int beamWidth;
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly IEstimator estimator;
         private readonly Requisition requisition;
-        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly ISolver solver;
 
         public BeamSolver(IEstimator estimator, Requisition requisition,
@@ -85,9 +85,10 @@ namespace Domain.Algorithms.Solvers
                 //WriteLog($"total: {iteratedSolutions.Count}");
                 if (iteratedSolutions.Count == 0)
                     break;
-                //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule.ToString()).Distinct().Count()}");
-                //WriteLog($"distinct: {iteratedSolutions.Select(s=>s.Schedule).Distinct().Count()}");
-                WriteLog($"{iteratedSolutions.OrderByDescending(s => s.Score).First().Score}");
+                var (iterationSchedule, iterationScore) = iteratedSolutions
+                    .OrderByDescending(s => s.Score)
+                    .First();
+                WriteLog(GetIterationMessage(iterationScore, iterationSchedule, iteratedSolutions.Count, sw));
 
                 currentSchedules = iteratedSolutions;
             }
@@ -158,6 +159,20 @@ namespace Domain.Algorithms.Solvers
             return schedule.GetMeetingsToAdd()
                 .AsParallel()
                 .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting)));
+        }
+
+        private static string GetIterationMessage(double iterationScore, Schedule iterationSchedule, int width,
+            Stopwatch sw)
+        {
+            var strings = new[]
+            {
+                $"Elapsed: {sw.Elapsed}",
+                $"Beam width: {width}",
+                $"Best score: {iterationScore:F5}",
+                $"Placed: {iterationSchedule.Meetings.Count}/{iterationSchedule.NotUsedMeetings.Count}"
+            };
+            return string.Join(" | ", strings);
+            // return string.Join("\a", strings);
         }
     }
 }

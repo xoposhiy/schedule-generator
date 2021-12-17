@@ -199,8 +199,7 @@ namespace Domain
             var day = meeting.MeetingTime!.Day;
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!dictionary.TryGetValue(key1, weekType, out var byWeekType)) continue;
-                if (!byWeekType.TryGetValue(day, out var byDay)) continue;
+                if (!dictionary.TryGetValue(key1, weekType, day, out var byDay)) continue;
                 yield return byDay;
             }
         }
@@ -326,7 +325,7 @@ namespace Domain
 
         public static (Requisition, List<RoomRequisition>)
             GetRequisition(
-            SheetNamesConfig sheetNamesConfig, GsRepository repo)
+                SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
             var (requirements, learningPlan, _) = sheetNamesConfig;
             var (requisitions, _, classrooms) = ConvertToRequisitions(
