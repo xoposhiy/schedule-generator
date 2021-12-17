@@ -14,4 +14,10 @@
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="ScheduleMeetingValidity.cs">
+        <DependentUpon>Schedule.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

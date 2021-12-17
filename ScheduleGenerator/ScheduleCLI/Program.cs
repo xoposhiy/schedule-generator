@@ -91,7 +91,7 @@ namespace ScheduleCLI
 
 
             var greedy = new GreedySolver(estimator, requisition, classrooms, random);
-            return new BeamSolver(estimator, requisition, classrooms, greedy, 1);
+            return new BeamSolver(estimator, requisition, classrooms, greedy, 15);
             
             
             // return new RepeaterSolver(new BeamSolver(estimator, requisition, classrooms, new(42), 5));
