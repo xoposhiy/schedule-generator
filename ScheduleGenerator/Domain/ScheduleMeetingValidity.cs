@@ -19,6 +19,7 @@ namespace Domain
                      || IsTeacherExtraForGroup(meeting)
                      || IsGroupExtraForTeacher(meeting)
                      || IsDayExtraForDiscipline(meeting)
+                     || IsUnwanted(meeting)
                 );
             //TODO: Обсудить оптимальный порядок условий
         }
@@ -49,12 +50,13 @@ namespace Domain
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlot;
             var timeSlots = new[] {-1, 1}
+                // var timeSlots = new[] {-2, -1, 1, 2}
                 .Select(dt => timeSlotIndex + dt)
                 .Where(ts => ts is > 0 and < 7)
                 .ToList();
             var location = meeting.Location;
             foreach (var group in meeting.GroupsChoice!.GetGroupParts())
-            foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(@group, meeting))
+            foreach (var day in GroupMeetingsByTime.GetDaysByMeeting(group, meeting))
             foreach (var timeSlot in timeSlots)
             {
                 if (day[timeSlot] == null) continue;
@@ -111,13 +113,13 @@ namespace Domain
                 if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, meetingToAdd.MeetingTime!.Day,
                         out var meetings))
                     continue;
-                var f = meetings.Where(m => m != null && m.PlanItem.IsHard).ToList();
-                if (f.Any(m => meetingToAdd.Discipline == m?.Discipline
-                               && meetingToAdd.MeetingType == m.MeetingType))
+                var hardMeetings = meetings.Where(m => m != null && m.PlanItem.IsHard).ToList();
+                if (hardMeetings.Any(m => meetingToAdd.Discipline == m?.Discipline
+                                          && meetingToAdd.MeetingType == m.MeetingType))
                     return true;
                 if (meetingToAdd.MeetingType == MeetingType.Lecture &&
-                    f.Any(m => m!.MeetingType == MeetingType.Lecture &&
-                               Math.Abs(m.MeetingTime!.TimeSlot - meetingToAdd.MeetingTime.TimeSlot) < 2))
+                    hardMeetings.Any(m => m!.MeetingType == MeetingType.Lecture &&
+                                          Math.Abs(m.MeetingTime!.TimeSlot - meetingToAdd.MeetingTime.TimeSlot) < 2))
                     return true;
             }
 
@@ -150,11 +152,11 @@ namespace Domain
             var usedGroups = new HashSet<MeetingGroup>();
             foreach (var group in allGroups)
             {
-                if (!GroupTeachersByDiscipline.TryGetValue(@group, discipline, out var byDiscipline))
+                if (!GroupTeachersByDiscipline.TryGetValue(group, discipline, out var byDiscipline))
                     continue;
                 if (!byDiscipline.TryGetValue(meetingType, teacher, out var meetingCount)) continue;
                 if (meetingCount > 0)
-                    usedGroups.Add(@group);
+                    usedGroups.Add(group);
             }
 
             usedGroups.UnionWith(meeting.GroupsChoice!.GetGroupParts());
@@ -166,6 +168,22 @@ namespace Domain
                         repetitionCount++;
 
                 if (repetitionCount > meeting.RequisitionItem.RepetitionsCount) return true;
+            }
+
+            return false;
+        }
+
+        private bool IsUnwanted(Meeting meeting)
+        {
+            var dayOfWeek = meeting.MeetingTime!.Day;
+            foreach (var meetingGroup in meeting.GroupsChoice!.GetGroupParts())
+            foreach (var weekType in meeting.WeekType.GetWeekTypes())
+            {
+                if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var meetings))
+                    continue;
+
+                if (meetings.Any(m => m != null && m.MeetingsHasConflict(meeting)))
+                    return true;
             }
 
             return false;

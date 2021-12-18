@@ -13,6 +13,16 @@ namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
     {
+        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
+        {
+            {"пн", DayOfWeek.Monday},
+            {"вт", DayOfWeek.Tuesday},
+            {"ср", DayOfWeek.Wednesday},
+            {"чт", DayOfWeek.Thursday},
+            {"пт", DayOfWeek.Friday},
+            {"сб", DayOfWeek.Saturday}
+        };
+
         private static MeetingType GetMeetingType(string rowMeetingType)
         {
             return rowMeetingType switch
@@ -32,16 +42,6 @@ namespace Domain.Conversions
                 _ => GroupSize.FullGroup
             };
         }
-
-        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
-        {
-            {"пн", DayOfWeek.Monday},
-            {"вт", DayOfWeek.Tuesday},
-            {"ср", DayOfWeek.Wednesday},
-            {"чт", DayOfWeek.Thursday},
-            {"пт", DayOfWeek.Friday},
-            {"сб", DayOfWeek.Saturday}
-        };
 
         private static GroupPart GetGroupPart(int rowGroupPart)
         {
@@ -90,9 +90,9 @@ namespace Domain.Conversions
 
         public static (List<RequisitionItem>, LearningPlan, List<RoomRequisition>)
             ConvertToRequisitions(GsRepository repo,
-            string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
+                string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
         {
-            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, 1, 0, 10);
+            var planData = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, 1, 0, 11);
             var learningPlanItems = ParseLearningPlanItems(planData).ToArray();
             var learningPlan = new LearningPlan(learningPlanItems);
             var requisitionData = SheetTableReader.ReadRowsFromSheet(repo, requisitionSheetName, 1, 0, 7);
@@ -120,13 +120,16 @@ namespace Domain.Conversions
             MeetingType? sameTeacherWith = string.IsNullOrWhiteSpace(row[7]) ? null : GetMeetingType(row[7]);
             int.TryParse(row[8], out var priority);
             var isHard = !string.IsNullOrEmpty(row[9]);
+            var unwantedDisciplines = row[10].Split(',')
+                .Select(s => new Discipline(s))
+                .ToHashSet();
             var discipline = new Discipline(disciplineRow);
 
             var meetingType = GetMeetingType(meetingTypeRow);
             var groupSize = GetGroupSize(groupSizeRow);
             var meetingCountPerWeek = double.Parse(meetingCountPerWeekRow, CultureInfo.InvariantCulture);
             return new(groupsRow, discipline, meetingType, groupSize, meetingCountPerWeek, locationRow,
-                connectAfter,
+                unwantedDisciplines, connectAfter,
                 sameTeacherWith, priority, isHard);
         }
 
@@ -334,7 +337,7 @@ namespace Domain.Conversions
                 ? new()
                 : ParseTimes(rawMeetingTime).SelectMany(e => e.MeetingTimeChoices).ToHashSet();
         }
-        
+
         private static List<DayOfWeek> GetDays(string dayString)
         {
             var days = new List<DayOfWeek>();

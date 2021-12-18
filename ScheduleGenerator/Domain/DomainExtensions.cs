@@ -32,6 +32,13 @@ namespace Domain
             return meetings;
         }
 
+        public static bool MeetingsHasConflict(this Meeting meeting1, Meeting meeting2)
+        {
+            if (meeting1.PlanItem.UnwantedDisciplines.Contains(meeting2.Discipline)) return true;
+            if (meeting2.PlanItem.UnwantedDisciplines.Contains(meeting1.Discipline)) return true;
+            return false;
+        }
+
         public static HashSet<MeetingGroup> GetGroupParts(this MeetingGroup[] groups)
         {
             if (MeetingGroupsCache.ContainsKey(groups)) return MeetingGroupsCache[groups];
