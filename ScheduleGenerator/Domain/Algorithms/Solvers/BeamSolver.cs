@@ -7,13 +7,13 @@ using static Infrastructure.LoggerExtension;
 
 namespace Domain.Algorithms.Solvers
 {
-    public record BeamNode(Schedule Schedule, Meeting MeetingToAdd, double Score)
+    public record BeamNode(Schedule Schedule, Meeting MeetingToAdd, (int, double score) Metric)
     {
         public virtual bool Equals(BeamNode? other)
         {
             if (other is null)
                 return false;
-            if (Math.Abs(this.Score - other.Score) > 0.00001)
+            if (Math.Abs(Metric.score - other.Metric.score) > 0.00001)
                 return false;
             if (GetMeetingsCount() != other.GetMeetingsCount()) return false;
             var s1 = this.GetMeetings()
@@ -93,7 +93,9 @@ namespace Domain.Algorithms.Solvers
                 currentSchedules = iteratedSolutions;
             }
 
-            var bestSolution = currentSchedules.OrderByDescending(s => s.Score).First();
+            var bestSolution = currentSchedules
+                .OrderByDescending(s => (s.Schedule.Meetings.Count, s.Score))
+                .First();
             WriteLog($"Beam width: {beamWidth}");
             WriteLog($"Mean copy count: {(double) totalCopiesCount / iterationCount}");
             WriteLog($"Elapsed: {sw.Elapsed}");
@@ -112,12 +114,12 @@ namespace Domain.Algorithms.Solvers
                     copyCount++;
                     var copy = variants[i].Schedule.Copy();
                     copy.AddMeeting(variants[i].MeetingToAdd, true);
-                    newSchedules.Add(new(copy, variants[i].Score));
+                    newSchedules.Add(new(copy, variants[i].Metric.score));
                 }
 
                 var schedule = variants[^1].Schedule;
                 schedule.AddMeeting(variants[^1].MeetingToAdd, true);
-                newSchedules.Add(new(schedule, variants[^1].Score));
+                newSchedules.Add(new(schedule, variants[^1].Metric.score));
             }
 
             return newSchedules;
@@ -130,7 +132,7 @@ namespace Domain.Algorithms.Solvers
                 .Select(s => s.Schedule)
                 .SelectMany(GetBeamNodes)
                 .Distinct()
-                .OrderByDescending(t => t.Score)
+                .OrderByDescending(t => t.Metric)
                 .Take(beamWidth)
                 .GroupBy(t => t.Schedule)
                 .Select(g => g.ToList())
@@ -146,12 +148,12 @@ namespace Domain.Algorithms.Solvers
             return baseScore + scoreDelta;
         }
 
-        private double EstimateResultByGreedy(Schedule schedule, Meeting meeting)
+        private (int, double score) EstimateResultByGreedy(Schedule schedule, Meeting meeting)
         {
             var scheduleCopy = schedule.Copy();
             scheduleCopy.AddMeeting(meeting, true);
-            var score = solver.Solve(scheduleCopy, TimeSpan.Zero).Score;
-            return score;
+            var (solved, score) = solver.Solve(scheduleCopy, TimeSpan.Zero);
+            return (solved.Meetings.Count, score);
         }
 
         private IEnumerable<BeamNode> GetBeamNodes(Schedule schedule)

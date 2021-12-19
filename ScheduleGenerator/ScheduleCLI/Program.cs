@@ -68,8 +68,8 @@ namespace ScheduleCLI
             //WriteLog(schedule.ToString());
 
             ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
-            // BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
-            // WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
+            // ScheduleSpreadsheetConverter.BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
+            // ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
             using var logger = new Logger("Combined");
             var combinedEstimator = GetDefaultCombinedEstimator();
             combinedEstimator.Estimate(schedule, logger);
@@ -94,13 +94,13 @@ namespace ScheduleCLI
             return new RepeaterSolver(greedy);
         }
 
-        private static ISolver GetBeamSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
+        public static ISolver GetBeamSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo, int beamWidth = 5)
         {
             var random = new ThreadSafeRandom();
             var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
             var greedy = new GreedySolver(estimator, requisition, classrooms, random);
-            return new BeamSolver(estimator, requisition, classrooms, greedy, 5);
+            return new BeamSolver(estimator, requisition, classrooms, greedy, beamWidth);
         }
     }
 }

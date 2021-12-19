@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Domain.Enums;
 using Domain.MeetingsParts;
 
 namespace Domain
@@ -20,6 +18,7 @@ namespace Domain
                      || IsTeacherExtraForGroup(meeting)
                      || IsGroupExtraForTeacher(meeting)
                      || IsDayExtraForDiscipline(meeting)
+                     || IsHardMeetingExtraForGroup(meeting)
                 );
             //TODO: Обсудить оптимальный порядок условий
         }
@@ -76,7 +75,7 @@ namespace Domain
                 if (weight + additionalWeight > planItem.MeetingsPerWeek) return true;
             }
 
-            return meetingToAdd.MeetingType == MeetingType.Lecture && IsHardMeetingExtraForGroup(meetingToAdd);
+            return false;
         }
 
         private bool IsDayExtraForDiscipline(Meeting meetingToAdd)
@@ -107,19 +106,17 @@ namespace Domain
         {
             if (!meetingToAdd.PlanItem.IsHard)
                 return false;
+
+            var dayOfWeek = meetingToAdd.MeetingTime!.Day;
+            var discipline = meetingToAdd.Discipline;
+            var meetingType = meetingToAdd.MeetingType;
+
             foreach (var meetingGroup in meetingToAdd.GroupsChoice!.GetGroupParts())
             foreach (var weekType in meetingToAdd.WeekType.GetWeekTypes())
             {
-                if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, meetingToAdd.MeetingTime!.Day,
-                        out var meetings))
+                if (!GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var meetings))
                     continue;
-                var hardMeetings = meetings.Where(m => m != null && m.PlanItem.IsHard).ToList();
-                if (hardMeetings.Any(m => meetingToAdd.Discipline == m?.Discipline
-                                          && meetingToAdd.MeetingType == m.MeetingType))
-                    return true;
-                if (meetingToAdd.MeetingType == MeetingType.Lecture &&
-                    hardMeetings.Any(m => m!.MeetingType == MeetingType.Lecture &&
-                                          Math.Abs(m.MeetingTime!.TimeSlot - meetingToAdd.MeetingTime.TimeSlot) < 2))
+                if (meetings.Any(m => m != null && m.Discipline == discipline && m.MeetingType == meetingType))
                     return true;
             }
 
