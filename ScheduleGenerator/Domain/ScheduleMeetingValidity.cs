@@ -15,11 +15,11 @@ namespace Domain
                      || IsMeetingExtraForGroup(meeting) // weekType requires
                      || TeacherHasMeetingAlreadyAtThisTime(meeting) // weekType requires
                      || IsNoSpaceBetweenDifferentLocatedMeetings(meeting) // weekType requires
+                     || IsUnwanted(meeting)
                      || !timeAcceptableForTeacher
                      || IsTeacherExtraForGroup(meeting)
                      || IsGroupExtraForTeacher(meeting)
                      || IsDayExtraForDiscipline(meeting)
-                     || IsUnwanted(meeting)
                 );
             //TODO: Обсудить оптимальный порядок условий
         }

@@ -203,12 +203,15 @@ namespace Domain
             TKey1 key1, Meeting meeting)
             where TKey1 : notnull
         {
-            var day = meeting.MeetingTime!.Day;
+            var dayOfWeek = meeting.MeetingTime!.Day;
+            var days = new List<Meeting?[]>();
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                if (!dictionary.TryGetValue(key1, weekType, day, out var byDay)) continue;
-                yield return byDay;
+                if (!dictionary.TryGetValue(key1, weekType, dayOfWeek, out var byDay)) continue;
+                days.Add(byDay);
             }
+
+            return days;
         }
 
         public static bool HasMeetingsAtTime(this IEnumerable<Meeting?[]> days, int timeSlot)
