@@ -271,7 +271,7 @@ namespace Domain
             }
         }
 
-        public IEnumerable<Meeting> GetMeetingsToAdd()
+        public IEnumerable<Meeting> GetMeetingsToAdd(int limit = int.MaxValue)
         {
             var placeableMeetings = NotUsedMeetings
                 .Where(m => !NonPlaceableMeetings.Contains(m))
@@ -292,12 +292,14 @@ namespace Domain
             {
                 var filledMeetings = GetFilledMeetings(baseMeeting).ToList();
                 meetingsCopies.AddRange(filledMeetings);
+                if (meetingsCopies.Count >= limit)
+                    break;
 
                 if (filledMeetings.Count == 0)
                     NonPlaceableMeetings.Add(baseMeeting);
             }
 
-            if (meetingsCopies.Count != 0) return meetingsCopies;
+            if (meetingsCopies.Count != 0) return meetingsCopies.Take(limit);
             return GetMeetingsToAdd();
         }
 

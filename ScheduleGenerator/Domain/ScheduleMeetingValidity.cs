@@ -20,7 +20,6 @@ namespace Domain
                      || IsDayExtraForDiscipline(meeting)
                      || IsHardMeetingExtraForGroup(meeting)
                 );
-            //TODO: Обсудить оптимальный порядок условий
         }
 
         private bool TeacherHasMeetingAlreadyAtThisTime(Meeting meeting)

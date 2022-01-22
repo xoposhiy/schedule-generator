@@ -158,7 +158,7 @@ namespace Domain.Algorithms.Solvers
 
         private IEnumerable<BeamNode> GetBeamNodes(Schedule schedule)
         {
-            return schedule.GetMeetingsToAdd()
+            return schedule.GetMeetingsToAdd(20)
                 .AsParallel()
                 .Select(meeting => new BeamNode(schedule, meeting, EstimateResultByGreedy(schedule, meeting)));
         }
