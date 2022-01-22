@@ -15,6 +15,9 @@ namespace ScheduleCLI
 {
     public static class Program
     {
+        private const int BeamWidth = 5;
+        private const int ChoiceCount = 3;
+
         private static readonly TimeSpan[] TimeSpans =
         {
             new(0, 0, 15),
@@ -26,8 +29,6 @@ namespace ScheduleCLI
         };
 
         private static readonly TimeSpan TimeLimit = TimeSpans[1];
-        private const int BeamWidth = 50;
-        private const int ChoiceCount = 3;
 
         private static void Main()
         {
@@ -54,12 +55,13 @@ namespace ScheduleCLI
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
-            
+
 
             ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
             // ScheduleSpreadsheetConverter.BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
-            
+            // ScheduleSpreadsheetConverter.WriteMeetingRequisition(schedule, Repository, "Быстрые требования");
+
             using var logger = new Logger("Combined");
             var combinedEstimator = GetDefaultCombinedEstimator();
             combinedEstimator.Estimate(schedule, logger);

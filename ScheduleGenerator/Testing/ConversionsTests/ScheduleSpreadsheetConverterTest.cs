@@ -30,6 +30,7 @@ namespace Testing.ConversionsTests
             BuildScheduleByTeacher(testSchedule, Repository, SheetName);
 
             WriteRowMeetings(testSchedule, Repository, SheetConstants.SheetName);
+            WriteMeetingRequisition(testSchedule, Repository, SheetName);
         }
     }
 }

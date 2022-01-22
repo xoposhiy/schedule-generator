@@ -13,7 +13,7 @@ namespace Domain.Conversions
 {
     public static class SheetToRequisitionConverter
     {
-        private static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
+        public static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
         {
             {"пн", DayOfWeek.Monday},
             {"вт", DayOfWeek.Tuesday},
@@ -21,6 +21,14 @@ namespace Domain.Conversions
             {"чт", DayOfWeek.Thursday},
             {"пт", DayOfWeek.Friday},
             {"сб", DayOfWeek.Saturday}
+        };
+
+        public static readonly Dictionary<string, Location> StringToLocation = new()
+        {
+            {"Тургенева 4", Location.MathMeh},
+            {"Физра", Location.Pe},
+            {"Контур", Location.Kontur},
+            {"Онлайн", Location.Online}
         };
 
         private static MeetingType GetMeetingType(string rowMeetingType)
@@ -78,14 +86,7 @@ namespace Domain.Conversions
 
         private static Location GetMeetingLocation(string rowMeetingLocation)
         {
-            return rowMeetingLocation switch
-            {
-                "Тургенева 4" => Location.MathMeh,
-                "Физра" => Location.Pe,
-                "Контур" => Location.Kontur,
-                "Онлайн" => Location.Online,
-                _ => throw new FormatException($"Некорректная локация занятия: {rowMeetingLocation}")
-            };
+            return StringToLocation[rowMeetingLocation];
         }
 
         public static (List<RequisitionItem>, LearningPlan, List<RoomRequisition>)

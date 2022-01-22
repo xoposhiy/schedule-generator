@@ -55,6 +55,8 @@ namespace Domain.Conversions
         private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
         private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
+        private static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 0, 2);
+
         public static void BuildSchedule(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var meetingSet = schedule.GetMeetings();
@@ -114,8 +116,6 @@ namespace Domain.Conversions
 
             return modifier;
         }
-
-        private static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 0, 2);
 
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
@@ -251,18 +251,66 @@ namespace Domain.Conversions
             if (groupPart != GroupPart.FullGroup) return 1;
             return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
         }
-        
+
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
+        {
+            WriteMeetingsData(schedule, repository, sheetName, GetRowMeetingRaw);
+        }
+
+        public static void WriteMeetingRequisition(IReadonlySchedule schedule, GsRepository repository,
+            string sheetName)
+        {
+            WriteMeetingsData(schedule, repository, sheetName, GetRequisitionMeetingRow);
+        }
+
+        private static void WriteMeetingsData(IReadonlySchedule schedule, GsRepository repository, string sheetName,
+            Func<Meeting, List<CellData>> converter)
         {
             var rows = schedule.GetMeetings()
                 .OrderBy(m => (m.MeetingTime!.Day, m.MeetingTime!.TimeSlot))
-                .Select(GetRowMeetingRaw)
+                .Select(converter)
                 .ToList();
 
             repository.ClearCellRange(sheetName, 2, 0, rows.Count + 2, rows[0].Count);
 
             using var modifier = repository.ModifySpreadSheet(sheetName);
             modifier.WriteRange(2, 0, rows);
+        }
+
+        private static List<CellData> GetRequisitionMeetingRow(Meeting meeting)
+        {
+            var groups = meeting.GroupsChoice!.Groups.Select(g =>
+            {
+                var part = g.GroupPart.GroupPartToString();
+                return part != "" ? $"{g.GroupName}-{part}" : g.GroupName;
+            });
+
+            var day = SheetToRequisitionConverter.WeekDaysDict.First(p => p.Value == meeting.MeetingTime!.Day).Key;
+            var location = SheetToRequisitionConverter.StringToLocation.First(p => p.Value == meeting.Location).Key;
+
+            var time = $"{day}: {meeting.MeetingTime!.TimeSlot}";
+            return new()
+            {
+                CommonCellData(meeting.Teacher.Name),
+                CommonCellData(meeting.Discipline.Name),
+                CommonCellData(meeting.MeetingType.GetMeetingTypeString()),
+                CommonCellData("1"),
+                CommonCellData(string.Join("+", groups)),
+                CommonCellData(time),
+                CommonCellData(meeting.WeekType.WeekToString()),
+                CommonCellData(location)
+            };
+        }
+
+        private static string GetMeetingTypeString(this MeetingType meetingType)
+        {
+            return meetingType switch
+            {
+                MeetingType.Lecture => "Лекция",
+                MeetingType.ComputerLab => "КомпПрактика",
+                MeetingType.Seminar => "Семинар",
+                _ => throw new FormatException($"Некорректный тип занятия: {meetingType}")
+            };
         }
 
         private static List<CellData> GetRowMeetingRaw(Meeting meeting)
@@ -304,7 +352,7 @@ namespace Domain.Conversions
             };
         }
 
-        private static string GroupPartToString(GroupPart groupPart)
+        private static string GroupPartToString(this GroupPart groupPart)
         {
             return groupPart switch
             {
@@ -315,7 +363,7 @@ namespace Domain.Conversions
             };
         }
 
-        private static string WeekToString(WeekType weekType)
+        private static string WeekToString(this WeekType weekType)
         {
             return weekType switch
             {
@@ -325,7 +373,7 @@ namespace Domain.Conversions
                 _ => throw new ArgumentOutOfRangeException(nameof(weekType), weekType, "Untranslatable")
             };
         }
-        
+
         public static void BuildScheduleByTeacher(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var meetingSet = schedule.GetMeetings();
