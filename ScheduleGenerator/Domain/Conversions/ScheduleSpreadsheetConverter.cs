@@ -325,8 +325,7 @@ namespace Domain.Conversions
                 _ => throw new ArgumentOutOfRangeException(nameof(weekType), weekType, "Untranslatable")
             };
         }
-
-        // ReSharper disable once UnusedMember.Global
+        
         public static void BuildScheduleByTeacher(IReadonlySchedule schedule, GsRepository repository, string sheetName)
         {
             var meetingSet = schedule.GetMeetings();

@@ -7,8 +7,6 @@ using Domain.Algorithms.Solvers;
 using Domain.Conversions;
 using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
-using Ninject;
-using Ninject.Extensions.Conventions;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
 using static Infrastructure.LoggerExtension;
@@ -27,10 +25,13 @@ namespace ScheduleCLI
             TimeSpan.MaxValue
         };
 
+        private static readonly TimeSpan TimeLimit = TimeSpans[1];
+        private const int BeamWidth = 50;
+        private const int ChoiceCount = 3;
+
         private static void Main()
         {
             Console.OutputEncoding = Encoding.UTF8;
-            //var container = ConfigureContainer();
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
 
             WriteLog("Starting...");
@@ -45,31 +46,20 @@ namespace ScheduleCLI
             foreach (var config in configs) MakeAndWriteSchedule(config);
         }
 
-        // ReSharper disable once UnusedMember.Local
-        private static StandardKernel ConfigureContainer()
-        {
-            var container = new StandardKernel();
-            container.Bind(c => c.FromThisAssembly().SelectAllClasses().BindAllInterfaces());
-            return container;
-        }
-
-
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
-            var timeLimit = TimeSpans[1];
-            WriteLog($"With time limit of {timeLimit}");
-            // var blankSchedule = GetBlankSchedule(config, Repository);
+            WriteLog($"With time limit of {TimeLimit}");
             var solver = GetSolver(config, Repository);
-            var (schedule, _) = solver.GetSolution(timeLimit);
+            var (schedule, _) = solver.GetSolution(TimeLimit);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
-
-            //WriteLog(schedule.ToString());
+            
 
             ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
             // ScheduleSpreadsheetConverter.BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
             // ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
+            
             using var logger = new Logger("Combined");
             var combinedEstimator = GetDefaultCombinedEstimator();
             combinedEstimator.Estimate(schedule, logger);
@@ -82,7 +72,7 @@ namespace ScheduleCLI
         private static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
             // return GetRepeaterSolver(sheetNamesConfig, repo);
-            return GetBeamSolver(sheetNamesConfig, repo);
+            return GetBeamSolver(sheetNamesConfig, repo, BeamWidth);
         }
 
         public static ISolver GetRepeaterSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
@@ -90,7 +80,7 @@ namespace ScheduleCLI
             var random = new ThreadSafeRandom();
             var (requisition, classrooms) = GetRequisition(sheetNamesConfig, repo);
             var estimator = GetDefaultCombinedEstimator();
-            var greedy = new GreedySolver(estimator, requisition, classrooms, random, 3);
+            var greedy = new GreedySolver(estimator, requisition, classrooms, random, ChoiceCount);
             return new RepeaterSolver(greedy);
         }
 
