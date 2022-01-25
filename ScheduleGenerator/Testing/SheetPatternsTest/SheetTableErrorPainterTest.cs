@@ -18,24 +18,24 @@ namespace Testing.SheetPatternsTest
         [TearDown]
         public void SetUp()
         {
-            Repository.ClearSheet(SheetName);
+            TestRepository.ClearSheet(SheetName);
         }
 
         [Test]
         public void PaintErrorsWhenNoMergerCells()
         {
-            PaintErrors(Repository, SheetName, (1, 0), errors);
+            PaintErrors(TestRepository, SheetName, (1, 0), errors);
             var coordsToClear = errors.Select(e => e.Item1);
-            ClearErrorPaint(Repository, SheetName, (1, 0), coordsToClear);
+            ClearErrorPaint(TestRepository, SheetName, (1, 0), coordsToClear);
             //TODO: test should probably check something
         }
 
         [Test]
         public void PaintErrorsAndClear()
         {
-            PaintErrors(Repository, SheetName, (5, 0), errors);
+            PaintErrors(TestRepository, SheetName, (5, 0), errors);
             var coordsToClear = errors.Select(e => e.Item1);
-            ClearErrorPaint(Repository, SheetName, (5, 0), coordsToClear);
+            ClearErrorPaint(TestRepository, SheetName, (5, 0), coordsToClear);
             //TODO: test should probably check something
         }
     }

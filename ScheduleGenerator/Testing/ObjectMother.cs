@@ -84,7 +84,7 @@ namespace Testing
         static ObjectMother()
         {
             (AutumnRequisition, ClassroomsRequisitions) =
-                GetRequisition(AutumnConfig, Repository);
+                GetRequisition(AutumnConfig, TestRepository);
         }
     }
 }

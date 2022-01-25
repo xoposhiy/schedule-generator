@@ -15,7 +15,7 @@ namespace ScheduleCLI
 {
     public static class Program
     {
-        private const int BeamWidth = 5;
+        private const int BeamWidth = 1;
         private const int ChoiceCount = 3;
 
         private static readonly TimeSpan[] TimeSpans =
@@ -40,7 +40,8 @@ namespace ScheduleCLI
             SheetNamesConfig[] configs =
             {
                 // SpringConfig
-                AutumnConfig
+                // AutumnConfig
+                SpringPlusConfig
             };
             WriteLog($"{configs.Length} configs");
 
@@ -50,17 +51,18 @@ namespace ScheduleCLI
         private static void MakeAndWriteSchedule(SheetNamesConfig config)
         {
             WriteLog($"With time limit of {TimeLimit}");
-            var solver = GetSolver(config, Repository);
+            var repository = new GsRepository("main", CredentialPath, config.TableUrl);
+            var solver = GetSolver(config, repository);
             var (schedule, _) = solver.GetSolution(TimeLimit);
 
             var notUsedMeetings = string.Join("\n", schedule.NotUsedMeetings);
             WriteLog(notUsedMeetings);
 
 
-            ScheduleSpreadsheetConverter.BuildSchedule(schedule, Repository, config.Schedule);
-            // ScheduleSpreadsheetConverter.BuildScheduleByTeacher(schedule, Repository, "Расписание по преподу");
+            ScheduleSpreadsheetConverter.BuildSchedule(schedule, repository, config.Schedule);
+            // ScheduleSpreadsheetConverter.BuildScheduleByTeacher(schedule, repository, "Расписание по преподу");
             // ScheduleSpreadsheetConverter.WriteRowMeetings(schedule, RowMeetingsRepository, "Расписание");
-            // ScheduleSpreadsheetConverter.WriteMeetingRequisition(schedule, Repository, "Быстрые требования");
+            // ScheduleSpreadsheetConverter.WriteMeetingRequisition(schedule, repository, "Быстрые требования");
 
             using var logger = new Logger("Combined");
             var combinedEstimator = GetDefaultCombinedEstimator();

@@ -12,7 +12,7 @@ namespace Testing.SheetPatternsTest
         [TearDown]
         public void SetUp()
         {
-            Repository.ClearSheet(SheetName);
+            TestRepository.ClearSheet(SheetName);
         }
         
         private readonly List<(string pattern, string msg)> patternMsgList = new()

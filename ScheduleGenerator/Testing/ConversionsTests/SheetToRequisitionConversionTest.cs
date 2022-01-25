@@ -14,7 +14,7 @@ namespace Testing.ConversionsTests
         public void RequisitionsReadAmountTest()
         {
             var (requisitionItems, learningPlan, classrooms) = ConvertToRequisitions(
-                Repository,
+                TestRepository,
                 InputRequirementsSheetName,
                 LearningPlanSheetName,
                 ClassroomsSheetName);

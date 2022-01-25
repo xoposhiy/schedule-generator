@@ -337,7 +337,7 @@ namespace Domain
             GetRequisition(
                 SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
-            var (requirements, learningPlan, _) = sheetNamesConfig;
+            var (_, requirements, learningPlan, _) = sheetNamesConfig;
             var (requisitions, _, classrooms) = ConvertToRequisitions(
                 repo, requirements, learningPlan, ClassroomsSheetName);
             return (new(requisitions.ToArray()), classrooms);

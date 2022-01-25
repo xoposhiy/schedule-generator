@@ -31,7 +31,7 @@ namespace Testing.ScheduleLibTests
 
         private static string GenerateApprovalString(SheetNamesConfig config)
         {
-            var solver = Program.GetBeamSolver(config, Repository, 1);
+            var solver = Program.GetBeamSolver(config, TestRepository, 1);
             var schedule = solver
                 .GetSolution(new(0, 0, 1, 15, 1))
                 .Schedule;

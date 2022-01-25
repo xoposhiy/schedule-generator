@@ -21,20 +21,20 @@ namespace Testing.GoogleSheetsRepositoryTests
         [TearDown]
         public void SetUp()
         {
-            Repository.ClearCellRange(SheetName, 0, 0, 10, 10);
+            TestRepository.ClearCellRange(SheetName, 0, 0, 10, 10);
         }
 
         [Test]
         public void WriteRead()
         {
-            Repository.SetUpSheetInfo();
-            Repository.ChangeTable(Url);
+            TestRepository.SetUpSheetInfo();
+            TestRepository.ChangeTable(Url1);
 
-            Repository.ModifySpreadSheet(SheetName)
+            TestRepository.ModifySpreadSheet(SheetName)
                 .WriteRange(1, 2, dataToWrite)
                 .Execute();
 
-            var valRange = Repository.ReadCellRange(SheetName, 1, 2, 3, 4)!;
+            var valRange = TestRepository.ReadCellRange(SheetName, 1, 2, 3, 4)!;
             for (var r = 0; r < valRange.Count; r++)
             for (var c = 0; c < valRange[r]!.Count; c++)
                 Assert.AreEqual(dataToWrite[r][c].UserEnteredValue.StringValue, valRange[r]![c]);
@@ -43,9 +43,9 @@ namespace Testing.GoogleSheetsRepositoryTests
         [Test]
         public void WriteReadTwoReposWithSameCredentials()
         {
-            var repo2 = new GsRepository("test", CredentialPath, Url);
+            var repo2 = new GsRepository("test", CredentialPath, Url1);
 
-            Repository.ModifySpreadSheet(SheetName)
+            TestRepository.ModifySpreadSheet(SheetName)
                 .WriteRange(1, 2, dataToWrite)
                 .Execute();
 

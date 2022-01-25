@@ -24,13 +24,13 @@ namespace Testing.ConversionsTests
                 testSchedule.AddMeeting(meeting, true);
             }
 
-            Repository.ClearCellRange(SheetName, 0, 0, 100, 100);
+            TestRepository.ClearCellRange(SheetName, 0, 0, 100, 100);
 
-            BuildSchedule(testSchedule, Repository, SheetName);
-            BuildScheduleByTeacher(testSchedule, Repository, SheetName);
+            BuildSchedule(testSchedule, TestRepository, SheetName);
+            BuildScheduleByTeacher(testSchedule, TestRepository, SheetName);
 
-            WriteRowMeetings(testSchedule, Repository, SheetConstants.SheetName);
-            WriteMeetingRequisition(testSchedule, Repository, SheetName);
+            WriteRowMeetings(testSchedule, TestRepository, SheetConstants.SheetName);
+            WriteMeetingRequisition(testSchedule, TestRepository, SheetName);
         }
     }
 }
