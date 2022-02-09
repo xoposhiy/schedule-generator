@@ -305,31 +305,37 @@ namespace Domain.Conversions
 
         private static List<MeetingTimeRequisition> ParseTimes(string rawMeetingTime)
         {
-            var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
-
-            var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (var record in records)
+            try
             {
-                var meetingTimes = new HashSet<MeetingTime>();
+                var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
 
-                var blocks = record.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var block in blocks)
+                var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var record in records)
                 {
-                    var parts = block.Replace(" ", "").Split(':');
+                    var meetingTimes = new HashSet<MeetingTime>();
 
-                    var days = GetDays(parts[0]);
-                    var slots = GetSlots(parts[1]);
+                    var blocks = record.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var block in blocks)
+                    {
+                        var parts = block.Replace(" ", "").Split(':');
 
-                    foreach (var day in days)
-                    foreach (var slot in slots)
-                        meetingTimes.Add(new(day, slot));
+                        var days = GetDays(parts[0]);
+                        var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots("1-5 пары");
+                        foreach (var day in days)
+                        foreach (var slot in slots)
+                            meetingTimes.Add(new(day, slot));
+                    }
+
+                    meetingTimeRequisitions.Add(new(meetingTimes));
                 }
 
-                meetingTimeRequisitions.Add(new(meetingTimes));
+                return meetingTimeRequisitions;
             }
-
-            return meetingTimeRequisitions;
+            catch (Exception e)
+            {
+                throw new Exception($"Can't parse time '{rawMeetingTime}'", e);
+            }
         }
 
         private static HashSet<MeetingTime> ParseRoomsTimeRequisitions(string rawMeetingTime)

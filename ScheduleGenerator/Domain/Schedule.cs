@@ -399,7 +399,11 @@ namespace Domain
 
         private string? FindFreeRoom(MeetingTime meetingTime, IEnumerable<RoomSpec> roomRequirement)
         {
-            var possibleRooms = (IEnumerable<string>)FreeRoomsByDay[meetingTime];
+            if (!FreeRoomsByDay.TryGetValue(meetingTime, out var rooms))
+            {
+                throw new Exception($"No free rooms for time {meetingTime}");
+            }
+            IEnumerable<string> possibleRooms = rooms;
             foreach (var rs in roomRequirement)
                 possibleRooms = possibleRooms.Intersect(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();

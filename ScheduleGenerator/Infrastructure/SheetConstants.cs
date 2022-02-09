@@ -9,8 +9,8 @@ namespace Infrastructure
         public const string Url1 =
             "https://docs.google.com/spreadsheets/d/1Q9imoj8xLFgp887NsYeW8ngJ53E5GHvKblrnfatEBHk/edit#gid=";
 
-        public const string Url2 =
-            "https://docs.google.com/spreadsheets/d/1JJm-ZBoHfumv82gRpGCdF_XZBPi_wpptUaHooGj3fBU/edit#gid=";
+        public const string Actual2022SpringUrl =
+            "https://docs.google.com/spreadsheets/d/1wilGvPuDGr235DA8k3Wr0MHsUyC7rmVQz2iV1qABdJ4/edit#gid=";
 
         public const string SheetName = "Testing";
         public const string CredentialPath = "..\\..\\..\\..\\Credentials\\client_secrets.json";
@@ -28,7 +28,7 @@ namespace Infrastructure
             LearningPlanSheetName,
             ScheduleSheetName);
         
-        public static readonly SheetNamesConfig SpringPlusConfig = new(Url2, InputRequirementsSheetName,
+        public static readonly SheetNamesConfig ActualSpring2022Config = new(Actual2022SpringUrl, InputRequirementsSheetName,
             LearningPlanSheetName,
             ScheduleSheetName);
 

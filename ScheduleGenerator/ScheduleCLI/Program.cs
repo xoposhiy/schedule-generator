@@ -41,7 +41,7 @@ namespace ScheduleCLI
             {
                 // SpringConfig
                 // AutumnConfig
-                SpringPlusConfig
+                ActualSpring2022Config
             };
             WriteLog($"{configs.Length} configs");
 
