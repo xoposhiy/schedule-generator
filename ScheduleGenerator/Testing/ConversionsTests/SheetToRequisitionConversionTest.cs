@@ -41,6 +41,7 @@ namespace Testing.ConversionsTests
         [TestCase("чт-сб: 4 абгдеёж", "Th4, Fr4, Sa4")]
         [TestCase("пн, вт: 3 пра", "Mo3, Tu3")]
         [TestCase("пн:1 пара", "Mo1")]
+        [TestCase("пн", "Mo1, Mo2, Mo3, Mo4, Mo5, Mo6")]
         [TestCase("",
             "Mo1, Mo2, Mo3, Mo4, Mo5, Mo6, Tu1, Tu2, Tu3, Tu4, Tu5, Tu6, We1, We2, We3, We4, We5, We6, Th1, Th2, Th3, Th4, Th5, Th6, Fr1, Fr2, Fr3, Fr4, Fr5, Fr6, Sa1, Sa2, Sa3, Sa4, Sa5, Sa6")]
         public void TimeRequisitionsParseTest(string rawTimeRequisition, string expected)
@@ -65,7 +66,6 @@ namespace Testing.ConversionsTests
         [TestCase("пн-пт; 3-4 пара")]
         [TestCase("пн-пт; 3-4 пара")]
         [TestCase("пара")]
-        [TestCase("пн-чт")]
         public void WrongTimeRequisitionFormatShouldNotWork(string rawTimeRequisition)
         {
             Assert.Throws(Is.InstanceOf<Exception>(),

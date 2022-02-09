@@ -321,7 +321,7 @@ namespace Domain.Conversions
                         var parts = block.Replace(" ", "").Split(':');
 
                         var days = GetDays(parts[0]);
-                        var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots("1-5 пары");
+                        var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots("1-6 пары");
                         foreach (var day in days)
                         foreach (var slot in slots)
                             meetingTimes.Add(new(day, slot));
