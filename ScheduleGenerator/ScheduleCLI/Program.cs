@@ -28,7 +28,7 @@ namespace ScheduleCLI
             TimeSpan.MaxValue
         };
 
-        private static readonly TimeSpan TimeLimit = TimeSpans[1];
+        private static readonly TimeSpan TimeLimit = TimeSpans[0];
 
         private static void Main()
         {
@@ -39,9 +39,9 @@ namespace ScheduleCLI
 
             SheetNamesConfig[] configs =
             {
-                // SpringConfig
+                SpringConfig
                 // AutumnConfig
-                ActualSpring2022Config
+                // ActualSpring2022Config
             };
             WriteLog($"{configs.Length} configs");
 
@@ -75,8 +75,8 @@ namespace ScheduleCLI
 
         private static ISolver GetSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)
         {
-            // return GetRepeaterSolver(sheetNamesConfig, repo);
-            return GetBeamSolver(sheetNamesConfig, repo, BeamWidth);
+            return GetRepeaterSolver(sheetNamesConfig, repo);
+            //return GetBeamSolver(sheetNamesConfig, repo, BeamWidth);
         }
 
         public static ISolver GetRepeaterSolver(SheetNamesConfig sheetNamesConfig, GsRepository repo)

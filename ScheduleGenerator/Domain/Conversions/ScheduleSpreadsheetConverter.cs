@@ -227,7 +227,7 @@ namespace Domain.Conversions
                 if (height > 1 || width > 1)
                     modifier.MergeCell(startRow, startColumn, height, width);
                 if (i != groups.Count - 1)
-                    firstMeetingPos = groupIndexDict[groups[i + 1].GroupName] + 1;
+                    firstMeetingPos = groupIndexDict[groups[i + 1].GroupName];
             }
         }
 
