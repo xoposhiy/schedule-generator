@@ -12,7 +12,7 @@ namespace Domain.Conversions
 {
     public static class ScheduleSpreadsheetConverter
     {
-        private const int TimeBarRowOffset = 2;
+        private const int TimeBarRowOffset = 1;
         private const int TimeBarColumnOffset = 0;
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 0;
@@ -67,7 +67,7 @@ namespace Domain.Conversions
                 .Distinct()
                 .OrderBy(gn => gn)
                 .ToList();
-            
+
             var groupNames2 = meetingSet
                 .SelectMany(m => m.GroupsChoice!.Groups)
                 .Select(g => g.GroupName)
@@ -80,16 +80,16 @@ namespace Domain.Conversions
             repository.ClearSheet(sheetName);
 
             using var modifier = repository.ModifySpreadSheet(sheetName);
-            modifier.BuildSchedulePattern(groupNames2);
+            modifier.BuildSchedulePattern(groupNames);
 
             modifier.FillScheduleData(meetingSet, groupNames);
 
-            modifier.BuildThickBorders(groupNames2.Count * SubGroupsCount + HeadersColumnOffset);
+            modifier.BuildThickBorders(groupNames.Count + HeadersColumnOffset);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
         {
-            modifier.ColorField(groups.Count * SubGroupsCount)
+            modifier.ColorField(groups.Count)
                 .BuildTimeBar()
                 .BuildGroupHeaders(groups);
         }
@@ -148,11 +148,12 @@ namespace Domain.Conversions
                 modifier
                     .WriteRange(HeadersRowOffset, startColumn, new() {new() {HeaderCellData(group)}})
                     .AddBorders(HeadersRowOffset, startColumn)
-                    .MergeCell(HeadersRowOffset, startColumn, 1, SubGroupsCount)
-                    .WriteRange(SubgroupRowOffset, startColumn, subGroupsRow)
-                    .AddBorders(SubgroupRowOffset, startColumn)
-                    .AddBorders(SubgroupRowOffset, startColumn + 1);
-                startColumn += SubGroupsCount;
+                    // .MergeCell(HeadersRowOffset, startColumn, 1, SubGroupsCount)
+                    // .WriteRange(SubgroupRowOffset, startColumn, subGroupsRow)
+                    // .AddBorders(SubgroupRowOffset, startColumn)
+                    // .AddBorders(SubgroupRowOffset, startColumn + 1)
+                    ;
+                startColumn++;
             }
 
             return modifier;
@@ -258,7 +259,7 @@ namespace Domain.Conversions
 
         private static int GetMeetingWidth(int firstMeetingPos, int meetingPos)
         {
-           // if (groupPart != GroupPart.FullGroup) return 1;
+            // if (groupPart != GroupPart.FullGroup) return 1;
             return (meetingPos - firstMeetingPos + 1);
         }
 
