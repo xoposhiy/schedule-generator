@@ -62,6 +62,14 @@ namespace Domain.Conversions
             var meetingSet = schedule.GetMeetings();
             var groupNames = meetingSet
                 .SelectMany(m => m.GroupsChoice!.Groups)
+                .Where(mg => mg.GroupPart != GroupPart.FullGroup)
+                .Select(g => g.ToString())
+                .Distinct()
+                .OrderBy(gn => gn)
+                .ToList();
+            
+            var groupNames2 = meetingSet
+                .SelectMany(m => m.GroupsChoice!.Groups)
                 .Select(g => g.GroupName)
                 .Distinct()
                 .OrderBy(gn => gn)
@@ -72,11 +80,11 @@ namespace Domain.Conversions
             repository.ClearSheet(sheetName);
 
             using var modifier = repository.ModifySpreadSheet(sheetName);
-            modifier.BuildSchedulePattern(groupNames);
+            modifier.BuildSchedulePattern(groupNames2);
 
             modifier.FillScheduleData(meetingSet, groupNames);
 
-            modifier.BuildThickBorders(groupNames.Count * SubGroupsCount + HeadersColumnOffset);
+            modifier.BuildThickBorders(groupNames2.Count * SubGroupsCount + HeadersColumnOffset);
         }
 
         private static void BuildSchedulePattern(this SheetModifier modifier, List<string> groups)
@@ -209,16 +217,19 @@ namespace Domain.Conversions
             var startRow = GetStartRow(meeting);
             var height = (int) (meeting.Weight * WeekTypesCount);
 
-            var groups = meeting.GroupsChoice!.Groups.OrderBy(m => m.GroupName).ToList();
-            var firstMeetingPos = groupIndexDict[groups[0].GroupName];
+            var groups = meeting.GroupsChoice!.GetGroupParts()
+                .Select(g => g.ToString())
+                .OrderBy(g => g)
+                .ToList();
+            var firstMeetingPos = groupIndexDict[groups[0]];
             for (var i = 0; i < groups.Count; i++)
             {
-                var meetingPos = groupIndexDict[groups[i].GroupName];
-                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1].GroupName] - meetingPos == 1) continue;
+                var meetingPos = groupIndexDict[groups[i]];
+                if (i != groups.Count - 1 && groupIndexDict[groups[i + 1]] - meetingPos == 1) continue;
 
-                var groupPart = groups[i].GroupPart;
-                var startColumn = GetStartColumn(firstMeetingPos, groupPart);
-                var width = GetMeetingWidth(firstMeetingPos, meetingPos, groupPart);
+                //var groupPart = groups[i].GroupPart;
+                var startColumn = GetStartColumn(firstMeetingPos);
+                var width = GetMeetingWidth(firstMeetingPos, meetingPos);
 
                 modifier
                     .WriteRange(startRow, startColumn, payload)
@@ -227,7 +238,7 @@ namespace Domain.Conversions
                 if (height > 1 || width > 1)
                     modifier.MergeCell(startRow, startColumn, height, width);
                 if (i != groups.Count - 1)
-                    firstMeetingPos = groupIndexDict[groups[i + 1].GroupName];
+                    firstMeetingPos = groupIndexDict[groups[i + 1]];
             }
         }
 
@@ -239,17 +250,16 @@ namespace Domain.Conversions
             return startRow + TimeBarRowOffset + weekOffset;
         }
 
-        private static int GetStartColumn(int firstMeetingPos, GroupPart groupPart)
+        private static int GetStartColumn(int firstMeetingPos)
         {
-            var startColumn = firstMeetingPos * SubGroupsCount;
-            var groupOffset = groupPart == GroupPart.Part2 ? 1 : 0;
-            return startColumn + HeadersColumnOffset + groupOffset;
+            var startColumn = firstMeetingPos;
+            return startColumn + HeadersColumnOffset;
         }
 
-        private static int GetMeetingWidth(int firstMeetingPos, int meetingPos, GroupPart groupPart)
+        private static int GetMeetingWidth(int firstMeetingPos, int meetingPos)
         {
-            if (groupPart != GroupPart.FullGroup) return 1;
-            return SubGroupsCount * (meetingPos - firstMeetingPos + 1);
+           // if (groupPart != GroupPart.FullGroup) return 1;
+            return (meetingPos - firstMeetingPos + 1);
         }
 
         public static void WriteRowMeetings(IReadonlySchedule schedule, GsRepository repository, string sheetName)
