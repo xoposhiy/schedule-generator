@@ -7,7 +7,7 @@ namespace Domain.MeetingsParts
     {
         public override string ToString()
         {
-            return $"{GroupName}-{(int) GroupPart}";
+            return $"{GroupName} {GroupPart}";
         }
 
         public string GetGroupSet()

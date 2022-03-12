@@ -61,8 +61,7 @@ namespace Domain.Conversions
         {
             var meetingSet = schedule.GetMeetings();
             var groupNames = meetingSet
-                .SelectMany(m => m.GroupsChoice!.Groups)
-                .Where(mg => mg.GroupPart != GroupPart.FullGroup)
+                .SelectMany(m => m.GroupsChoice!.GetGroupParts())
                 .Select(g => g.ToString())
                 .Distinct()
                 .OrderBy(gn => gn)
@@ -426,7 +425,7 @@ namespace Domain.Conversions
             {
                 modifier.WriteRange(HeadersRowOffset, startColumn, new() {new() {teacher}})
                     .AddBorders(HeadersRowOffset, startColumn)
-                    .MergeCell(HeadersRowOffset, startColumn, 2, 1);
+                    .MergeCell(HeadersRowOffset, startColumn, TimeBarRowOffset, 1);
                 startColumn++;
             }
 

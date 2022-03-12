@@ -47,8 +47,8 @@ namespace Domain
         private bool IsNoSpaceBetweenDifferentLocatedMeetings(Meeting meeting)
         {
             var timeSlotIndex = meeting.MeetingTime!.TimeSlot;
-            var timeSlots = new[] {-1, 1}
-                // var timeSlots = new[] {-2, -1, 1, 2}
+            // var timeSlots = new[] {-1, 1}
+            var timeSlots = new[] {-2, -1, 1, 2}
                 .Select(dt => timeSlotIndex + dt)
                 .Where(ts => ts is > 0 and < 7)
                 .ToList();

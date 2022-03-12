@@ -26,7 +26,7 @@ namespace Testing.EstimatorsTests
             var osLecture = schedule.GetMeetingsToAdd().First();
             var meetingScore = estimator.EstimateMeetingToAdd(schedule, osLecture);
             AssertBetweenZeroAndNegativeOne(meetingScore);
-            
+
             schedule.AddMeeting(osLecture);
             var scheduleScore = estimator.Estimate(schedule);
             AssertBetweenZeroAndNegativeOne(scheduleScore);
@@ -48,7 +48,7 @@ namespace Testing.EstimatorsTests
             }
 
             var finalScore = estimator.Estimate(schedule);
-            Assert.AreEqual(0, finalScore);
+            Assert.Negative(finalScore);
         }
 
         [Test]

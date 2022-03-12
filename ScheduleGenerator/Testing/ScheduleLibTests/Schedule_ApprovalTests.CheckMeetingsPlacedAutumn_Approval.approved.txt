@@ -1,4 +1,4 @@
-﻿Placed:119 Left:0
+﻿Placed:118 Left:1
 Placed:
 Алгем Lecture Александр Гейн
 Алгем Lecture Александр Гейн
@@ -20,7 +20,6 @@ Placed:
 Алгем Seminar Олег Расин
 Алгем Seminar Павел Гейн
 Алгем Seminar Павел Гейн
-ДМ Lecture Арсений Шур
 ДМ Lecture Арсений Шур
 ДМ Seminar Арсений Шур
 ДМ Seminar Инна Михайлова
@@ -120,4 +119,4 @@ Placed:
 Язык Python ComputerLab Зверев
 Язык Python ComputerLab Мясников
 Not placed:
-
+ДМ Lecture Арсений Шур

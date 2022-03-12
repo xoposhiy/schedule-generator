@@ -33,7 +33,7 @@ namespace Testing.ScheduleLibTests
         {
             var solver = Program.GetBeamSolver(config, TestRepository, 1);
             var schedule = solver
-                .GetSolution(new(0, 0, 1, 15, 1))
+                .GetSolution(new(0, 0, 0, 15, 1))
                 .Schedule;
 
             var placedMeetings = GetOrderedMeetings(schedule.Meetings);
