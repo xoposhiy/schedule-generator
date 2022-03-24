@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FirebaseDatabase.net" Version="4.0.5"/>
-        <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2175"/>
+        <PackageReference Include="FirebaseDatabase.net" Version="4.0.5" />
+        <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2175" />
     </ItemGroup>
 
 </Project>

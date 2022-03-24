@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
 
@@ -31,8 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="AlgorithmTests\**"/>
-        <None Remove="ScheduleLibTests\Schedule_ApprovalTests.CheckMeetingsPlaced_Approval.received.txt"/>
+        <None Remove="AlgorithmTests\**" />
+        <None Remove="ScheduleLibTests\Schedule_ApprovalTests.CheckMeetingsPlaced_Approval.received.txt" />
         <None Update="ScheduleLibTests\Schedule_ApprovalTests.CheckMeetingsPlacedAutumn_Approval.approved.txt">
             <DependentUpon>Schedule_ApprovalTests.cs</DependentUpon>
         </None>

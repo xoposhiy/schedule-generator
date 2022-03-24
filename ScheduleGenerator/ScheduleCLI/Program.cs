@@ -28,7 +28,7 @@ namespace ScheduleCLI
             TimeSpan.MaxValue
         };
 
-        private static readonly TimeSpan TimeLimit = TimeSpans[0];
+        private static readonly TimeSpan TimeLimit = TimeSpans[1];
 
         private static void Main()
         {
