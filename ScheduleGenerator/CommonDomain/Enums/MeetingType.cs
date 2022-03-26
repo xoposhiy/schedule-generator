@@ -1,4 +1,4 @@
-﻿namespace Domain.Enums
+﻿namespace CommonDomain.Enums
 {
     public enum MeetingType
     {

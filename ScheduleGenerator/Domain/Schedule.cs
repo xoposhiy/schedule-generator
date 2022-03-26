@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommonDomain.Enums;
 using Domain.Conversions;
 using Domain.Enums;
 using Domain.MeetingsParts;
@@ -16,6 +17,7 @@ namespace Domain
 
     public partial class Schedule : IReadonlySchedule
     {
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, double>> GroupLearningPlanItemsCount =
@@ -48,8 +50,6 @@ namespace Domain
         private readonly Dictionary<MeetingGroup, Dictionary<MeetingTime, Dictionary<WeekType, HashSet<Meeting>>>>
             timeConcurrentMeetings = new();
 
-        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
-
         private int hashCode;
 
         public Schedule(Requisition requisition, IReadOnlyCollection<RoomRequisition> classroomsRequisitions)
@@ -76,17 +76,17 @@ namespace Domain
             FillTimeToMeetingsDictionaries(NotUsedMeetings);
         }
 
+        public IReadOnlySet<Meeting> GetMeetings()
+        {
+            return Meetings;
+        }
+
         private void FillLockedRoomTimes(Dictionary<string, HashSet<MeetingTime>>? lockedTimeByRoom)
         {
             if (lockedTimeByRoom == null) return;
             foreach (var (key, value) in lockedTimeByRoom)
             foreach (var time in value)
                 FreeRoomsByDay[time].Remove(key);
-        }
-
-        public IReadOnlySet<Meeting> GetMeetings()
-        {
-            return Meetings;
         }
 
         public override bool Equals(object? obj)
@@ -206,7 +206,7 @@ namespace Domain
         {
             WeekType[] weekTypes = collidingMeeting.WeekType == WeekType.All
                 ? ArrayExtensions.OddAndEven
-                : new[] { weekType };
+                : new[] {weekType};
             var groupsChoices = collidingMeeting.RequisitionItem.GroupPriorities
                 .SelectMany(g => g.GroupsChoices)
                 .Where(g => g.GetGroupParts().Contains(meetingGroup));
@@ -403,6 +403,7 @@ namespace Domain
             {
                 throw new Exception($"No free rooms for time {meetingTime}");
             }
+
             IEnumerable<string> possibleRooms = rooms;
             foreach (var rs in roomRequirement)
                 possibleRooms = possibleRooms.Intersect(RoomsBySpec[rs]);

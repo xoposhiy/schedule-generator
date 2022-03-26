@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommonDomain.Enums;
 using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;

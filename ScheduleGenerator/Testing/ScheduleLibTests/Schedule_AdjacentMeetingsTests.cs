@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
+using CommonDomain.Enums;
 using Domain;
-using Domain.Enums;
 using Domain.MeetingsParts;
 using NUnit.Framework;
 using static Testing.ObjectMother;

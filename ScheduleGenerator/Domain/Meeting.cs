@@ -1,4 +1,5 @@
 using System;
+using CommonDomain.Enums;
 using Domain.Enums;
 using Domain.MeetingsParts;
 
@@ -6,30 +7,6 @@ namespace Domain
 {
     public class Meeting
     {
-        private bool Equals(Meeting other)
-        {
-            if (BaseMeeting == null)
-                return false;
-            return RequisitionItem.Equals(other.RequisitionItem) 
-                   && WeekType == other.WeekType 
-                   && Equals(GroupsChoice, other.GroupsChoice) 
-                   && Classroom == other.Classroom 
-                   && Equals(MeetingTime, other.MeetingTime);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Meeting) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(RequisitionItem, WeekType, GroupsChoice, Classroom, MeetingTime);
-        }
-
         public const string English = "ИнЯз";
         public readonly RequisitionItem RequisitionItem;
 
@@ -58,6 +35,30 @@ namespace Domain
 
         public Meeting? BaseMeeting { get; private init; }
 
+        private bool Equals(Meeting other)
+        {
+            if (BaseMeeting == null)
+                return false;
+            return RequisitionItem.Equals(other.RequisitionItem)
+                   && WeekType == other.WeekType
+                   && Equals(GroupsChoice, other.GroupsChoice)
+                   && Classroom == other.Classroom
+                   && Equals(MeetingTime, other.MeetingTime);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Meeting) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(RequisitionItem, WeekType, GroupsChoice, Classroom, MeetingTime);
+        }
+
         public Meeting BasicCopy(GroupsChoice groupsChoice, MeetingTime meetingTime, string? room, WeekType weekType)
         {
             return new(WeekType, RequisitionItem)
@@ -81,6 +82,5 @@ namespace Domain
                 $"{Discipline}, Groups:[{groupsString}], Time:[{MeetingTime}, {WeekType.GetPrettyString()}]," +
                 $"Location:[{Location}, {Classroom}], MeetingType: {MeetingType}, Teacher: {Teacher}";
         }
-
     }
 }

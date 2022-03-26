@@ -1,6 +1,6 @@
 using System.Linq;
+using CommonDomain.Enums;
 using Domain;
-using Domain.Enums;
 using NUnit.Framework;
 using static Testing.ObjectMother;
 

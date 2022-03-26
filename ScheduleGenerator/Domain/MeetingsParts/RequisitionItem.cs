@@ -1,17 +1,18 @@
-﻿using Domain.Conversions;
+﻿using CommonDomain.Enums;
+using Domain.Conversions;
 using Domain.Enums;
 
 namespace Domain.MeetingsParts
 {
     public class RequisitionItem // TODO krutovsky: to record?
     {
-        public readonly LearningPlanItem PlanItem;
         public readonly GroupRequisition[] GroupPriorities;
         public readonly Location Location;
 
-        public readonly int RepetitionsCount;
-
         public readonly MeetingTimeRequisition[] MeetingTimePriorities;
+        public readonly LearningPlanItem PlanItem;
+
+        public readonly int RepetitionsCount;
         public readonly Teacher Teacher;
         public readonly WeekType WeekType;
 
