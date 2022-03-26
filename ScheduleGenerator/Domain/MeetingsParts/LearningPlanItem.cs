@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using CommonDomain;
 using CommonDomain.Enums;
 using Domain.Enums;
 

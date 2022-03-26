@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CommonDomain;
 using CommonDomain.Enums;
 using Domain.Enums;
 using Domain.MeetingsParts;

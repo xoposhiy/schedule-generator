@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CommonDomain;
 using CommonDomain.Enums;
 using Domain.Enums;
 using Domain.MeetingsParts;

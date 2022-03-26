@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Domain.Enums;
+using CommonDomain.Enums;
 
 namespace Domain.MeetingsParts
 {

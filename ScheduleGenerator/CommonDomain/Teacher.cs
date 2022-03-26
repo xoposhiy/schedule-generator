@@ -1,4 +1,4 @@
-﻿namespace Domain.MeetingsParts
+﻿namespace CommonDomain
 {
     public record Teacher(string Name)
     {

@@ -1,6 +1,6 @@
 using System;
+using CommonDomain;
 using Domain.Enums;
-using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
 
@@ -10,24 +10,24 @@ namespace Domain.Algorithms.Estimators
     {
         private const int MaxTeacherDays = 2;
         private const int MaxTeacherPenalty = WeekTypesCount * 4; // maxExtraDays
-        
+
         public double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
         {
             var teacher = meetingToAdd.Teacher;
             var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
             var affectedDay = meetingToAdd.MeetingTime!.Day;
-            
-            if (!schedule.TeacherMeetingsByTime.TryGetValue(teacher, out var byTeacher)) 
+
+            if (!schedule.TeacherMeetingsByTime.TryGetValue(teacher, out var byTeacher))
                 return 0;
-            
+
             var penaltyDelta = 0d;
             var maxPenalty = GetMaxPenalty(schedule);
-            
+
             foreach (var weekType in weekTypes)
             {
                 var daysCountBefore = 0;
                 var daysCountAfter = 0;
-                
+
                 if (!byTeacher.TryGetValue(weekType, out var byWeekType))
                     continue;
 
@@ -60,7 +60,7 @@ namespace Domain.Algorithms.Estimators
         public double Estimate(Schedule schedule, ILogger? logger = null)
         {
             var penalty = 0d;
-            var maxPenalty = GetMaxPenalty(schedule); 
+            var maxPenalty = GetMaxPenalty(schedule);
 
             foreach (var (teacher, byTeacher) in schedule.TeacherMeetingsByTime)
             foreach (var (weekType, byWeekType) in byTeacher)

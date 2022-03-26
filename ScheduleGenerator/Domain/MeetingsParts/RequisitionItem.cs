@@ -1,4 +1,5 @@
-﻿using CommonDomain.Enums;
+﻿using CommonDomain;
+using CommonDomain.Enums;
 using Domain.Conversions;
 using Domain.Enums;
 

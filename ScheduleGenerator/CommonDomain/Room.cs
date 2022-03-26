@@ -1,6 +1,6 @@
-﻿using Domain.Enums;
+﻿using CommonDomain.Enums;
 
-namespace Domain.MeetingsParts
+namespace CommonDomain
 {
     public record Room(string Name, RoomSpec[] Specs);
 }
