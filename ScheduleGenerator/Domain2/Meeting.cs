@@ -3,18 +3,22 @@ using CommonDomain.Enums;
 
 namespace Domain2;
 
-public record Meeting
-{
-    public readonly MeetingType? After;
-    public readonly int AmountPerWeek;
-    public readonly string? Classroom;
-    public readonly Discipline Discipline;
-    public readonly int Duration;
-    public readonly List<int> Groups;
-    public readonly bool HasEntranceTest;
-    public readonly Location Location;
-    public readonly List<MeetingTime> MeetingTimePriorities;
-    public readonly RoomSpec[] RoomSpecs;
-    public readonly Teacher Teacher;
-    public bool ShouldBePlaced => AmountPerWeek != 0;
-}
+public record Meeting2(
+    Discipline Discipline,
+    MeetingType MeetingType,
+    Teacher Teacher,
+    List<int> Groups,
+    string Place,
+    RoomSpec[] RoomSpecs,
+    int Duration,
+    WeekType WeekTypeSpec,
+    List<MeetingTime> MeetingTimePriorities,
+    MeetingType? After,
+    bool HasEntranceTest,
+    int Priority,
+    bool IsFixed,
+    bool ShouldBePlaced,
+
+    string? ClassRoom,
+    MeetingTime? MeetingTime
+);
