@@ -1,10 +1,8 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-using CommonDomain;
+﻿using CommonDomain;
 using CommonDomain.Enums;
-using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Domain2;
 
@@ -35,19 +33,22 @@ public static class SheetToRequisitionConverter
 
     private static WeekType GetWeekType(string rowWeekType)
     {
-        return rowWeekType switch
+        return rowWeekType.ToLower() switch
         {
             "чет" => WeekType.Even,
             "нечет" => WeekType.Odd,
+            "четная" => WeekType.Even,
+            "нечетная" => WeekType.Odd,
             _ => throw new FormatException($"Некорректная четность недели: {rowWeekType}")
         };
     }
 
     private static RoomSpec GetRoomSpec(string name)
     {
-        return name switch
+        return name.ToLower() switch
         {
             "компьютеры" => RoomSpec.Computer,
+            "комп" => RoomSpec.Computer,
             "проектор" => RoomSpec.Projector,
             "большая" => RoomSpec.Big,
             "на группу" => RoomSpec.ForGroup,
@@ -55,9 +56,7 @@ public static class SheetToRequisitionConverter
         };
     }
 
-    public static (List<Meeting2>, List<Room>)
-        ConvertToRequisitions(GsRepository repo,
-            string meetingsSheetName, string classroomsSheetName)
+    public static List<Meeting2> ConvertToRequisitions(GsRepository repo, string meetingsSheetName, string classroomsSheetName)
     {
         var dataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 16);
         var positions = new Dictionary<string, int>();
@@ -66,6 +65,7 @@ public static class SheetToRequisitionConverter
             positions[dataRaw[0][i]] = i;
         }
 
+        var meetings = new List<Meeting2>();
         foreach (var row in dataRaw.Skip(1))
         {
             var discipline = new Discipline(row[positions["Discipline"]]);
@@ -74,17 +74,27 @@ public static class SheetToRequisitionConverter
             var groups = ParseGroups(row[positions["Groups"]]);
             var place = row[positions["Place"]];
             var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
-            var duration = ParseDuration(row[positions["Duration"]]);
+            var duration = ParseInt(row[positions["Duration"]], 1);
+            var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
+            var meetingTimePriorities = ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]); //TODO пропихнуть четность
+            var after = string.IsNullOrEmpty(row[positions["After"]]) ? (MeetingType?)null : GetMeetingType(row[positions["After"]]);
+            var hasEntranceTest = Convert.ToBoolean(ParseInt(row[positions["HasEntranceTest"]], 0));
+            var priority = ParseInt(row[positions["Priority"]], 2);   //TODO разобраться с дефолтным приоритетом
+            var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
+            var shouldBePlaced = Convert.ToBoolean(ParseInt(row[positions["ShouldBePlaced"]], 1));
+
+            var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
+            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?)null);
+            meetings.Add(new Meeting2(discipline, meetingType, teacher, groups, place, roomSpecs, duration,
+                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, shouldBePlaced, classRoom, time));
         }
 
-
-
-        throw new NotImplementedException();
+        return meetings;
     }
 
-    private static int ParseDuration(string raw)
+    private static int ParseInt(string raw, int defaultValue)
     {
-        return string.IsNullOrEmpty(raw) ? 1 : int.Parse(raw);
+        return string.IsNullOrEmpty(raw) ? defaultValue : int.Parse(raw);
     }
 
     private static List<int> ParseGroups(string raw)
@@ -131,48 +141,65 @@ public static class SheetToRequisitionConverter
         return string.IsNullOrEmpty(weekTypeRaw) ? WeekType.All : GetWeekType(weekTypeRaw);
     }
 
-    public static List<MeetingTime> ParseMeetingTimeRequisitions(string rawMeetingTime)
+    public static List<MeetingTime> ParseMeetingTimePriorities(string rawMeetingTime)
     {
-        // if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseTimes(rawMeetingTime);
-        // var meetingTimes = GetAllPossibleMeetingTimes().ToHashSet();
-        // return new() {new(meetingTimes)};
-        throw new NotImplementedException();
+        if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseMeetingTimes(rawMeetingTime);
+        return GetAllPossibleMeetingTimes();
     }
 
-    private static IEnumerable<MeetingTime> ParseTimes(string rawMeetingTime)
+    public static List<MeetingTime> GetAllPossibleMeetingTimes()
     {
-        // try
-        // {
-        //     var meetingTimeRequisitions = new List<MeetingTimeRequisition>();
-        //
-        //     var records = rawMeetingTime.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        //
-        //     foreach (var record in records)
-        //     {
-        //         var meetingTimes = new HashSet<MeetingTime>();
-        //
-        //         var blocks = record.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        //         foreach (var block in blocks)
-        //         {
-        //             var parts = block.Replace(" ", "").Split(':');
-        //
-        //             var days = GetDays(parts[0]);
-        //             var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots("1-6 пары");
-        //             foreach (var day in days)
-        //             foreach (var slot in slots)
-        //                 meetingTimes.Add(new(day, slot));
-        //         }
-        //
-        //         meetingTimeRequisitions.Add(new(meetingTimes));
-        //     }
-        //
-        //     return meetingTimeRequisitions;
-        // }
-        // catch (Exception e)
-        // {
-        //     throw new Exception($"Can't parse time '{rawMeetingTime}'", e);
-        // }
-        throw new NotImplementedException();
+        var ans = new List<MeetingTime>();
+        foreach (var weekType in (WeekType[])Enum.GetValues(typeof(WeekType)))
+        {
+            foreach (var dayOfWeek in (DayOfWeek[])Enum.GetValues(typeof(DayOfWeek)))
+            {
+                for (var timeslot = 1; timeslot <= Constants.TimeSlots; timeslot++)
+                {
+                    ans.Add(new MeetingTime(weekType, dayOfWeek, timeslot));
+                }
+            }
+        }
+
+        return ans;
+    }
+
+    private static List<MeetingTime> ParseMeetingTimes(string raw)
+    {
+        try
+        {
+            var meetingTimePriorities = new List<MeetingTime>();
+        
+            var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        
+            foreach (var line in lines)
+            {
+                foreach (var meetingTime in ParseMeetingTime(line))
+                {
+                    meetingTimePriorities.Add(meetingTime);
+                }
+            }
+        
+            return meetingTimePriorities;
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"Can't parse time '{raw}'", e);
+        }
+    }
+
+    private static IEnumerable<MeetingTime> ParseMeetingTime(string line)
+    {
+        var compactedLine = line.Replace(" ", "");
+        if (string.IsNullOrEmpty(compactedLine))
+            yield break;
+        var parts = compactedLine.Split(':');
+
+        var days = GetDays(parts[0]);
+        var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots($"1-{Constants.TimeSlots}");
+        foreach (var day in days)
+            foreach (var slot in slots)
+                yield return new MeetingTime(WeekType.All, day, slot); //TODO: добавить четность
     }
 
     private static List<DayOfWeek> GetDays(string dayString)
@@ -201,8 +228,8 @@ public static class SheetToRequisitionConverter
             var tmp = req.Split('-');
             var firstSlot = int.Parse(tmp[0][0].ToString());
             var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
-            if (firstSlot < 1 || lastSlot > 6)
-                throw new FormatException("meeting slots must be between 1 and 6");
+            if (firstSlot < 1 || lastSlot > Constants.TimeSlots)
+                throw new FormatException($"meeting slots must be between 1 and {Constants.TimeSlots}");
             for (var slot = firstSlot; slot <= lastSlot; slot++)
                 slots.Add(slot);
         }
