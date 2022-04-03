@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using CommonDomain;
 using CommonDomain.Enums;
+using Infrastructure;
 using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
 
@@ -21,14 +22,14 @@ public static class SheetToRequisitionConverter
 
     public static Location StringToLocation(string place) => new Location(place);
 
-    private static MeetingType GetMeetingType(string rowMeetingType)
+    private static MeetingType GetMeetingType(string name)
     {
-        return rowMeetingType switch
+        return name switch
         {
             "Лекция" => MeetingType.Lecture,
             "КомпПрактика" => MeetingType.ComputerLab,
             "Семинар" => MeetingType.Seminar,
-            _ => throw new FormatException($"Некорректный тип занятия: {rowMeetingType}")
+            _ => throw new FormatException($"Некорректный тип занятия: {name}")
         };
     }
 
@@ -42,32 +43,60 @@ public static class SheetToRequisitionConverter
         };
     }
 
-    private static RoomSpec GetRoomSpec(string rowRoomSpec)
+    private static RoomSpec GetRoomSpec(string name)
     {
-        return rowRoomSpec switch
+        return name switch
         {
             "компьютеры" => RoomSpec.Computer,
             "проектор" => RoomSpec.Projector,
             "большая" => RoomSpec.Big,
             "на группу" => RoomSpec.ForGroup,
-            _ => throw new FormatException($"Некорректный тип аудитории: {rowRoomSpec}")
+            _ => throw new FormatException($"Некорректный тип аудитории: {name}")
         };
     }
 
     public static (List<Meeting2>, List<Room>)
         ConvertToRequisitions(GsRepository repo,
-            string requisitionSheetName, string learningPlanSheetName, string classroomsSheetName)
+            string meetingsSheetName, string classroomsSheetName)
     {
-        var requirementsRaw = SheetTableReader.ReadRowsFromSheet(repo, learningPlanSheetName, 1, 0, 11);
-        
+        var dataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 16);
+        var positions = new Dictionary<string, int>();
+        for (int i = 0; i < dataRaw[0].Count; i++)
+        {
+            positions[dataRaw[0][i]] = i;
+        }
+
+        foreach (var row in dataRaw.Skip(1))
+        {
+            var discipline = new Discipline(row[positions["Discipline"]]);
+            var meetingType = GetMeetingType(row[positions["MeetingType"]]);
+            var teacher = new Teacher(row[positions["Teacher"]]);
+            var groups = ParseGroups(row[positions["Groups"]]);
+            var place = row[positions["Place"]];
+            var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
+            var duration = ParseDuration(row[positions["Duration"]]);
+        }
+
+
+
         throw new NotImplementedException();
     }
 
-    private static RoomSpec[] ParseLocationSpec(string rowLocationSpec)
+    private static int ParseDuration(string raw)
     {
-        return string.IsNullOrWhiteSpace(rowLocationSpec)
+        return string.IsNullOrEmpty(raw) ? 1 : int.Parse(raw);
+    }
+
+    private static List<int> ParseGroups(string raw)
+    {
+        return raw.Split(',').Select(int.Parse).ToList();
+    }
+
+    private static RoomSpec[] ParseRoomSpec(string raw)
+    {
+        return string.IsNullOrWhiteSpace(raw)
             ? Array.Empty<RoomSpec>()
-            : rowLocationSpec.Split(',')
+            : raw.Split(',')
                 .Select(mgs => mgs.Trim())
                 .Select(GetRoomSpec).ToArray();
     }
