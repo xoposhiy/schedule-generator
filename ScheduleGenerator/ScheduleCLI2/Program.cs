@@ -9,9 +9,10 @@ public static class Program
 {
     private static void Main()
     {
-        var repository = new GsRepository("main",
+        var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
-        SheetToRequisitionConverter.ConvertToRequisitions(repository, "Форматированные пары весна", "");
+        var meetings = SheetToRequisitionConverter.ReadMeetings(repo, "Форматированные пары весна");
+        var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
     }
 }
