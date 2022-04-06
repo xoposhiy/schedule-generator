@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Google.Apis.Sheets.v4.Data;
 using NUnit.Framework;
-using static Infrastructure.Extensions;
+using static CommonInfrastructure.Extensions;
 using static Infrastructure.SheetConstants;
 
 namespace Testing.GoogleSheetsRepositoryTests
@@ -10,19 +10,19 @@ namespace Testing.GoogleSheetsRepositoryTests
     [TestFixture]
     public class WriteReadTests
     {
-        private readonly List<List<CellData>> dataToWrite = new()
-        {
-            new() {CommonCellData("11"), CommonCellData("12")},
-            new() {CommonCellData("21"), CommonCellData("22")},
-            new() {CommonCellData("31"), CommonCellData("32")}
-        };
-
         [SetUp]
         [TearDown]
         public void SetUp()
         {
             TestRepository.ClearCellRange(SheetName, 0, 0, 10, 10);
         }
+
+        private readonly List<List<CellData>> dataToWrite = new()
+        {
+            new() {CommonCellData("11"), CommonCellData("12")},
+            new() {CommonCellData("21"), CommonCellData("22")},
+            new() {CommonCellData("31"), CommonCellData("32")}
+        };
 
         [Test]
         public void WriteRead()

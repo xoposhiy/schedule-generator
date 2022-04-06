@@ -6,7 +6,7 @@ using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
 using static Domain.DomainExtensions;
-using static Infrastructure.Extensions;
+using static CommonInfrastructure.Extensions;
 using static Infrastructure.LoggerExtension;
 
 namespace Domain.Conversions
@@ -52,9 +52,6 @@ namespace Domain.Conversions
         };
 
         private static readonly int StartsCount = MeetingStartTimes.Length;
-
-        private static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
-        private static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
         private static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 0, 2);
 

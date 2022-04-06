@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using Google.Apis.Sheets.v4.Data;
+﻿using Google.Apis.Sheets.v4.Data;
 
-namespace Infrastructure
+namespace CommonInfrastructure
 {
     public static class Extensions
     {
         private static readonly DateTime Beginning = new(1899, 12, 30);
+        public static readonly Color BackgroundColor = new() {Blue = 15 / 16f, Green = 15 / 16f, Red = 15 / 16f};
+        public static readonly Color OnlineColor = new() {Blue = 1, Red = 15 / 16f, Green = 15 / 16f};
 
         public static CellData CommonCellData(string value)
         {

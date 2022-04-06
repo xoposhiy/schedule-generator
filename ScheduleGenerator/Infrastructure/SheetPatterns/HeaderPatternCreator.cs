@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using CommonInfrastructure.GoogleSheetsRepository;
-using static Infrastructure.Extensions;
+using static CommonInfrastructure.Extensions;
 
 namespace Infrastructure.SheetPatterns
 {
