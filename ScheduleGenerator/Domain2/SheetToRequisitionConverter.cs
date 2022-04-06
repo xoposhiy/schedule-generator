@@ -1,6 +1,6 @@
 ﻿using CommonDomain;
 using CommonDomain.Enums;
-using Infrastructure.GoogleSheetsRepository;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
 // ReSharper disable MemberCanBePrivate.Global
 

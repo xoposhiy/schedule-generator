@@ -2,11 +2,11 @@
 using System.Globalization;
 using System.Text;
 using System.Threading;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Algorithms;
 using Domain.Algorithms.Solvers;
 using Domain.Conversions;
 using Infrastructure;
-using Infrastructure.GoogleSheetsRepository;
 using static Infrastructure.SheetConstants;
 using static Domain.DomainExtensions;
 using static Infrastructure.LoggerExtension;

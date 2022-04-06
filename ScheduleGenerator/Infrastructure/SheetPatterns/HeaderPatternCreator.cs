@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Infrastructure.GoogleSheetsRepository;
+using CommonInfrastructure.GoogleSheetsRepository;
 using static Infrastructure.Extensions;
 
 namespace Infrastructure.SheetPatterns

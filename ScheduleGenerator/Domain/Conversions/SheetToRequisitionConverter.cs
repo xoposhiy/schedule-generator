@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommonDomain;
 using CommonDomain.Enums;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Enums;
 using Domain.MeetingsParts;
-using Infrastructure.GoogleSheetsRepository;
 using Infrastructure.SheetPatterns;
 using static Domain.DomainExtensions;
 

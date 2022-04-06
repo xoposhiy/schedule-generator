@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Infrastructure.GoogleSheetsRepository;
+using CommonInfrastructure.GoogleSheetsRepository;
 
 namespace Infrastructure.SheetPatterns
 {

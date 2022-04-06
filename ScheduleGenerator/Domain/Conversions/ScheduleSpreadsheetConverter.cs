@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommonDomain.Enums;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
-using Infrastructure.GoogleSheetsRepository;
 using static Domain.DomainExtensions;
 using static Infrastructure.Extensions;
 using static Infrastructure.LoggerExtension;

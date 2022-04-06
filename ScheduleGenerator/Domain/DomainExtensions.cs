@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;
 using Domain.Algorithms.Estimators.GroupsEstimators;
@@ -9,7 +10,6 @@ using Domain.Algorithms.Estimators.PriorityEstimators;
 using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
-using Infrastructure.GoogleSheetsRepository;
 using static Domain.Conversions.SheetToRequisitionConverter;
 using static Infrastructure.SheetConstants;
 

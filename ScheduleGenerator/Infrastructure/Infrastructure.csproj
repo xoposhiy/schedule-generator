@@ -11,4 +11,8 @@
         <PackageReference Include="Google.Apis.Sheets.v4" Version="1.49.0.2175" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CommonInfrastructure\CommonInfrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
