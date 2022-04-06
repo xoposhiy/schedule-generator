@@ -6,6 +6,8 @@ namespace Domain2;
 
 public static class Visualizer
 {
+    private const int RowOffset = 1;
+
     public static void DrawMeetings(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
         repository.ClearSheet(sheetName);
@@ -33,6 +35,12 @@ public static class Visualizer
             maximum = Math.Max(maximum, meetingsCount);
         }
 
+        var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
+        var data = new List<List<CellData>> {new() {HeaderCellData(day)}};
+        modifier
+            .WriteRange(0, columnOffset, data)
+            .MergeCell(0, columnOffset, 1, maximum);
+
         modifier.Execute();
         Thread.Sleep(1);
         return maximum;
@@ -43,7 +51,7 @@ public static class Visualizer
         foreach (var meeting in meetings)
         {
             var data = new List<List<CellData>> {new() {MeetingCellData(meeting)}};
-            var row = Math.Max(1, meeting.MeetingTime!.TimeSlot);
+            var row = RowOffset + Math.Max(1, meeting.MeetingTime!.TimeSlot);
             modifier.WriteRange(row, columnOffset++, data);
         }
 
@@ -52,11 +60,16 @@ public static class Visualizer
 
     private static CellData MeetingCellData(Meeting2 meeting)
     {
-        var value = meeting.Discipline.Name;
+        var value = MeetingToString(meeting);
         var cellData = CommonCellData(value);
         if (meeting.Place == "Онлайн")
             cellData.UserEnteredFormat.BackgroundColor = OnlineColor;
 
         return cellData;
+    }
+
+    private static string MeetingToString(Meeting2 meeting)
+    {
+        return meeting.Discipline.Name;
     }
 }
