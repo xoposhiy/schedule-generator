@@ -94,12 +94,12 @@ public static class SheetToRequisitionConverter
             var hasEntranceTest = Convert.ToBoolean(ParseInt(row[positions["HasEntranceTest"]], 0));
             var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
             var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
-            var shouldBePlaced = Convert.ToBoolean(ParseInt(row[positions["ShouldBePlaced"]], 1));
+            var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
             var time = ParseMeetingTime(row[positions["Time"]], weekTypeSpec).FirstOrDefault((MeetingTime?)null);
             meetings.Add(new Meeting2(discipline, meetingType, teacher, groups, place, roomSpecs, duration,
-                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, shouldBePlaced, classRoom, time));
+                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore, classRoom, time));
         }
 
         return meetings;

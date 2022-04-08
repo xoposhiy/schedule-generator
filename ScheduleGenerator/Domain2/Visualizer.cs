@@ -13,7 +13,7 @@ public static class Visualizer
         repository.ClearSheet(sheetName);
         using var modifier = repository.ModifySpreadSheet(sheetName);
         var meetingsByDay = meetings
-            .Where(m => m.ShouldBePlaced)
+            .Where(m => !m.Ignore)
             .GroupBy(m => m.MeetingTime!.DayOfWeek)
             .OrderBy(g => g.Key);
 
