@@ -1,5 +1,6 @@
 ﻿using CommonDomain;
 using CommonDomain.Enums;
+using Domain.Enums;
 
 namespace Domain2;
 
