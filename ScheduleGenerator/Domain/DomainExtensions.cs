@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using CommonDomain.Enums;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Algorithms;
 using Domain.Algorithms.Estimators;

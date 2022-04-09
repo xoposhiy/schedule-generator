@@ -1,6 +1,5 @@
 ﻿using CommonDomain;
 using CommonDomain.Enums;
-using Domain.Enums;
 
 namespace Domain2;
 
@@ -38,7 +37,6 @@ public record Meeting2(
     int Priority,
     bool IsFixed,
     bool Ignore,
-
     string? ClassRoom,
     MeetingTime? MeetingTime
 );

@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+﻿using CommonDomain.Enums;
 
 namespace Domain2;
 

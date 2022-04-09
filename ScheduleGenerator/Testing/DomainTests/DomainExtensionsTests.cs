@@ -1,6 +1,6 @@
 ﻿using System;
+using CommonDomain.Enums;
 using Domain;
-using Domain.Enums;
 using NUnit.Framework;
 
 namespace Testing.DomainTests

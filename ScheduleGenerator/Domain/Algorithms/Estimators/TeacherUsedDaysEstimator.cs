@@ -1,6 +1,6 @@
 using System;
 using CommonDomain;
-using Domain.Enums;
+using CommonDomain.Enums;
 using Infrastructure;
 using static Domain.DomainExtensions;
 

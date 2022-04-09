@@ -1,5 +1,5 @@
 using System;
-using Domain.Enums;
+using CommonDomain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;

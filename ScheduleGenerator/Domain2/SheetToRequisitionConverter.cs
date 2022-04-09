@@ -1,8 +1,8 @@
 ﻿using CommonDomain;
 using CommonDomain.Enums;
 using CommonInfrastructure.GoogleSheetsRepository;
-using Domain.Enums;
 using Infrastructure.SheetPatterns;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Domain2;
@@ -88,18 +88,21 @@ public static class SheetToRequisitionConverter
             var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
             var meetingTimePriorities =
                 ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]], weekTypeSpec);
-                    // .Where(m => weekTypeSpec == WeekType.All || m.WeekType == weekTypeSpec)
-                    // .ToList();
-            var after = string.IsNullOrEmpty(row[positions["After"]]) ? (MeetingType?)null : GetMeetingType(row[positions["After"]]);
+            // .Where(m => weekTypeSpec == WeekType.All || m.WeekType == weekTypeSpec)
+            // .ToList();
+            var after = string.IsNullOrEmpty(row[positions["After"]])
+                ? (MeetingType?) null
+                : GetMeetingType(row[positions["After"]]);
             var hasEntranceTest = Convert.ToBoolean(ParseInt(row[positions["HasEntranceTest"]], 0));
             var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
             var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
             var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            var time = ParseMeetingTime(row[positions["Time"]], weekTypeSpec).FirstOrDefault((MeetingTime?)null);
+            var time = ParseMeetingTime(row[positions["Time"]], weekTypeSpec).FirstOrDefault((MeetingTime?) null);
             meetings.Add(new Meeting2(discipline, meetingType, teacher, groups, place, roomSpecs, duration,
-                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore, classRoom, time));
+                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore, classRoom,
+                time));
         }
 
         return meetings;
@@ -131,7 +134,7 @@ public static class SheetToRequisitionConverter
         {
             positions[roomDataRaw[0][i]] = i;
         }
-        
+
         var rooms = new List<Room>();
         foreach (var row in roomDataRaw.Skip(1))
         {
@@ -171,7 +174,7 @@ public static class SheetToRequisitionConverter
     public static List<MeetingTime> GetAllPossibleMeetingTimes(WeekType weekType)
     {
         var ans = new List<MeetingTime>();
-        foreach (var dayOfWeek in (DayOfWeek[])Enum.GetValues(typeof(DayOfWeek)))
+        foreach (var dayOfWeek in (DayOfWeek[]) Enum.GetValues(typeof(DayOfWeek)))
         {
             for (var timeslot = 1; timeslot <= Constants.TimeSlots; timeslot++)
             {
@@ -187,9 +190,9 @@ public static class SheetToRequisitionConverter
         try
         {
             var meetingTimePriorities = new List<MeetingTime>();
-        
+
             var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        
+
             foreach (var line in lines)
             {
                 foreach (var meetingTime in ParseMeetingTime(line, weekType))
@@ -197,7 +200,7 @@ public static class SheetToRequisitionConverter
                     meetingTimePriorities.Add(meetingTime);
                 }
             }
-        
+
             return meetingTimePriorities;
         }
         catch (Exception e)
@@ -213,12 +216,12 @@ public static class SheetToRequisitionConverter
             yield break;
         var parts = compactedLine.Split(':');
         weekType ??= WeekType.All;
-        
+
         var days = GetDays(parts[0]);
         var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots($"1-{Constants.TimeSlots}");
         foreach (var day in days)
-            foreach (var slot in slots)
-                yield return new MeetingTime(weekType.Value, day, slot);
+        foreach (var slot in slots)
+            yield return new MeetingTime(weekType.Value, day, slot);
     }
 
     private static List<DayOfWeek> GetDays(string dayString)
