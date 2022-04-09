@@ -5,6 +5,7 @@ using CommonDomain.Enums;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
+using static CommonInfrastructure.Constants;
 using static Domain.DomainExtensions;
 using static CommonInfrastructure.Extensions;
 using static Infrastructure.LoggerExtension;
@@ -23,18 +24,10 @@ namespace Domain.Conversions
         private const int TimeStartColumn = TimeBarColumnOffset + 1;
         private const int SubgroupRowOffset = HeadersRowOffset + 1;
 
+        private const int StartsCount = 6;
+
         private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
         private static readonly int WeekDayCount = WeekDays.Length;
-
-        private static readonly string[] RomeNumbers =
-        {
-            "I", "II", "III", "IV", "V", "VI"
-        };
-
-        private static readonly string[] MeetingStartTimes =
-        {
-            "9:00", "10:40", "12:50", "14:30", "16:10", "17:50"
-        };
 
         private static readonly string[] MeetingEndTimes =
         {
@@ -51,8 +44,6 @@ namespace Domain.Conversions
             "10:00", "11:45", "13:30", "15:45", "17:30", "поздно"
         };
 
-        private static readonly int StartsCount = MeetingStartTimes.Length;
-
         private static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 0, 2);
 
         public static void BuildSchedule(IReadonlySchedule schedule, GsRepository repository, string sheetName)
@@ -60,7 +51,7 @@ namespace Domain.Conversions
             var meetingSet = schedule.GetMeetings();
             var groupNames = meetingSet
                 .SelectMany(m => m.GroupsChoice!.GetGroupParts())
-                .Select(g => g.ToString())
+                .Select(g => g.ToScheduleString())
                 .Distinct()
                 .OrderBy(gn => gn)
                 .ToList();
@@ -99,8 +90,7 @@ namespace Domain.Conversions
 
         private static SheetModifier BuildTimeBar(this SheetModifier modifier)
         {
-            var classStarts = RomeNumbers.Select((n, i) => $"{n} {MeetingStartTimes[i]}").ToList();
-            var height = StartsCount * WeekTypesCount;
+            const int height = StartsCount * WeekTypesCount;
             var rowStart = TimeBarRowOffset;
 
             foreach (var weekDay in WeekDays.Select(HeaderCellData))
@@ -108,15 +98,9 @@ namespace Domain.Conversions
                 modifier
                     .WriteRange(rowStart, TimeBarColumnOffset, new() {new() {weekDay}})
                     .AddBorders(rowStart, TimeBarColumnOffset)
-                    .MergeCell(rowStart, TimeBarColumnOffset, height, 1);
-                foreach (var classStart in classStarts.Select(HeaderCellData))
-                {
-                    modifier
-                        .WriteRange(rowStart, TimeStartColumn, new() {new() {classStart}})
-                        .AddBorders(rowStart, TimeStartColumn)
-                        .MergeCell(rowStart, TimeStartColumn, WeekTypesCount, 1);
-                    rowStart += WeekTypesCount;
-                }
+                    .MergeCell(rowStart, TimeBarColumnOffset, height, 1)
+                    .BuildTimeSlotsBar(TimeStartColumn, rowStart, WeekTypesCount, 1, StartsCount);
+                rowStart += height;
             }
 
             return modifier;
@@ -124,7 +108,7 @@ namespace Domain.Conversions
 
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
-            var height = RomeNumbers.Length * WeekTypesCount;
+            const int height = StartsCount * WeekTypesCount;
             var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * height;
             for (var i = 0; i < WeekDayCount; i++)
             {
@@ -216,7 +200,7 @@ namespace Domain.Conversions
             var height = (int) (meeting.Weight * WeekTypesCount);
 
             var groups = meeting.GroupsChoice!.GetGroupParts()
-                .Select(g => g.ToString())
+                .Select(g => g.ToScheduleString())
                 .OrderBy(g => g)
                 .ToList();
             var firstMeetingPos = groupIndexDict[groups[0]];

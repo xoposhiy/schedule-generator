@@ -1,4 +1,6 @@
-﻿using Google.Apis.Sheets.v4.Data;
+﻿using CommonInfrastructure.GoogleSheetsRepository;
+using Google.Apis.Sheets.v4.Data;
+using static CommonInfrastructure.Constants;
 
 namespace CommonInfrastructure
 {
@@ -86,6 +88,28 @@ namespace CommonInfrastructure
 
             if (batch.Count > 0)
                 yield return batch;
+        }
+
+        public static SheetModifier BuildTimeSlotsBar(this SheetModifier modifier,
+            int startColumn, int rowStart,
+            int height, int width,
+            int count)
+        {
+            var classStarts = RomeNumbers
+                .Take(count)
+                .Select((n, i) => $"{n} {MeetingStartTimes[i]}")
+                .ToList();
+
+            foreach (var classStart in classStarts.Select(HeaderCellData))
+            {
+                modifier
+                    .WriteRange(rowStart, startColumn, new() {new() {classStart}})
+                    .AddBorders(rowStart, startColumn)
+                    .MergeCell(rowStart, startColumn, height, width);
+                rowStart += height;
+            }
+
+            return modifier;
         }
     }
 }

@@ -7,6 +7,7 @@ namespace Domain2;
 public static class Visualizer
 {
     private const int RowOffset = 1;
+    private const int ColumnOffset = 1;
 
     public static void DrawMeetings(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
@@ -17,12 +18,14 @@ public static class Visualizer
             .GroupBy(m => m.MeetingTime!.DayOfWeek)
             .OrderBy(g => g.Key);
 
-        var columnOffset = 0;
+        var columnOffset = ColumnOffset;
         foreach (var meetingsSet in meetingsByDay)
             columnOffset += modifier.DrawMeetingsPerDay(meetingsSet.ToList(), columnOffset);
+
+        modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, Constants.TimeSlots);
     }
 
-    public static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
+    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
     {
         var meetingsPerTimeSlot = meetings
             .GroupBy(m => m.MeetingTime!.TimeSlot)
@@ -39,6 +42,7 @@ public static class Visualizer
         var data = new List<List<CellData>> {new() {HeaderCellData(day)}};
         modifier
             .WriteRange(0, columnOffset, data)
+            .AddBorders(0, columnOffset)
             .MergeCell(0, columnOffset, 1, maximum);
 
         modifier.Execute();
@@ -46,7 +50,7 @@ public static class Visualizer
         return maximum;
     }
 
-    public static int DrawMeetingsPerTimeSlot(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
+    private static int DrawMeetingsPerTimeSlot(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
     {
         foreach (var meeting in meetings)
         {

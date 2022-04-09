@@ -17,5 +17,10 @@ namespace Domain.MeetingsParts
             //КН-2
             return $"{parts[0]}-{parts[1][0]}";
         }
+
+        public string ToScheduleString()
+        {
+            return $"{GroupName}-{GroupPart.ToString()[^1]}";
+        }
     }
 }
