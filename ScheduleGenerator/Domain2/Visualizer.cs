@@ -8,6 +8,7 @@ public static class Visualizer
 {
     private const int RowOffset = 1;
     private const int ColumnOffset = 1;
+    public static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 2, 0);
 
     public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
@@ -43,7 +44,8 @@ public static class Visualizer
             .DrawColumns(columns, columnOffset, dayDuration)
             .WriteRange(0, columnOffset, dayData)
             .AddBorders(0, columnOffset)
-            .MergeCell(0, columnOffset, 1, width);
+            .MergeCell(0, columnOffset, 1, width)
+            .AddBorders(RowOffset, columnOffset, dayDuration, width);
 
         return width;
     }
