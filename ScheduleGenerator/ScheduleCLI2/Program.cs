@@ -17,6 +17,6 @@ public static class Program
         for (var i = 0; i < meetings.Count; i++)
             meetings[i] = meetings[i] with {MeetingTime = meetings[i].MeetingTimePriorities.First()};
 
-        Visualizer.DrawMeetings(repo, meetings, "Лист4");
+        Visualizer.DrawSchedule(repo, meetings, "Лист4");
     }
 }

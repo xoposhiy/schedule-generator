@@ -9,33 +9,50 @@ public static class Visualizer
     private const int RowOffset = 1;
     private const int ColumnOffset = 1;
 
-    public static void DrawMeetings(GsRepository repository, List<Meeting2> meetings, string sheetName)
+    public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
-        repository.ClearSheet(sheetName);
-        using var modifier = repository.ModifySpreadSheet(sheetName);
+        var dayDuration = meetings.Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
         var meetingsByDay = meetings
             .Where(m => !m.Ignore)
             .GroupBy(m => m.MeetingTime!.DayOfWeek)
             .OrderBy(g => g.Key);
 
+        repository.ClearSheet(sheetName);
+        using var modifier = repository.ModifySpreadSheet(sheetName);
         var columnOffset = ColumnOffset;
         foreach (var meetingsSet in meetingsByDay)
-            columnOffset += modifier.DrawMeetingsPerDay(meetingsSet.ToList(), columnOffset);
+            columnOffset += modifier.DrawMeetingsPerDay(meetingsSet.ToList(), columnOffset, dayDuration);
 
         modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, Constants.TimeSlots);
     }
 
-    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
+    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset, int dayDuration)
     {
-        var dayDuration = meetings.Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
-        var meetingsByDiscipline = meetings.GroupBy(m => m.Discipline)
+        var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
+        var meetingsByDiscipline = meetings
+            .GroupBy(m => m.Discipline)
             .Select(g => GetDisciplineColumn(g.ToList(), dayDuration))
             .ToList();
         var columns = MergeColumns(meetingsByDiscipline);
-        for (int i = 0; i < columns.Count; i++)
+        var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
+        var width = columns.Count;
+        
+        modifier
+            .ColorizeRange(RowOffset, columnOffset, dayDuration, width, BackgroundColor)
+            .DrawColumns(columns, columnOffset, dayDuration)
+            .WriteRange(0, columnOffset, dayData)
+            .AddBorders(0, columnOffset)
+            .MergeCell(0, columnOffset, 1, width);
+        
+        return width;
+    }
+
+    private static SheetModifier DrawColumns(this SheetModifier modifier, List<Meeting2?[]> columns, int columnOffset, int dayDuration)
+    {
+        for (var i = 0; i < columns.Count; i++)
         {
             var column = columns[i];
-            for (int y = 0; y < dayDuration; y++)
+            for (var y = 0; y < dayDuration; y++)
             {
                 var meeting = column[y];
                 if (meeting == null) continue;
@@ -51,16 +68,8 @@ public static class Visualizer
             }
         }
 
-        var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
-        var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
-        modifier
-            .WriteRange(0, columnOffset, dayData)
-            .AddBorders(0, columnOffset)
-            .MergeCell(0, columnOffset, 1, columns.Count);
-
         modifier.Execute();
-        Thread.Sleep(1);
-        return columns.Count;
+        return modifier;
     }
 
     private static Meeting2?[] GetDisciplineColumn(List<Meeting2> meetings, int dayDuration)
@@ -92,18 +101,14 @@ public static class Visualizer
     private static List<Meeting2?[]> MergeColumns(List<Meeting2?[]> columns)
     {
         var merged = new bool[columns.Count];
-        for (int i = 0; i < columns.Count - 1; i++)
+        for (var i = 0; i < columns.Count - 1; i++)
         {
             if (merged[i]) continue;
-            for (int j = i + 1; j < columns.Count; j++)
+            for (var j = i + 1; j < columns.Count; j++)
             {
-                if (merged[j]) continue;
-                if (AreIntersect(columns[i], columns[j])) continue;
+                if (merged[j] || AreIntersect(columns[i], columns[j])) continue;
                 merged[j] = true;
-                for (int k = 0; k < columns[i].Length; k++)
-                {
-                    columns[i][k] ??= columns[j][k];
-                }
+                columns[j].MergeColumnInto(columns[i]);
             }
         }
 
@@ -113,13 +118,20 @@ public static class Visualizer
     private static bool AreIntersect(Meeting2?[] column1, Meeting2?[] column2)
     {
         var length = column1.Length;
-        var areIntersect = false;
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
-            areIntersect |= column1[i] != null && column2[i] != null;
+            if (column1[i] != null && column2[i] != null) return true;
         }
 
-        return areIntersect;
+        return false;
+    }
+
+    private static void MergeColumnInto(this Meeting2?[] source, Meeting2?[] target)
+    {
+        for (var k = 0; k < source.Length; k++)
+        {
+            target[k] ??= source[k];
+        }
     }
 
     private static CellData MeetingCellData(Meeting2 meeting)
