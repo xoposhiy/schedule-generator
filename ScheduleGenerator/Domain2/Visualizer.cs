@@ -23,10 +23,11 @@ public static class Visualizer
         foreach (var meetingsSet in meetingsByDay)
             columnOffset += modifier.DrawMeetingsPerDay(meetingsSet.ToList(), columnOffset, dayDuration);
 
-        modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, Constants.TimeSlots);
+        modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, dayDuration);
     }
 
-    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset, int dayDuration)
+    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset,
+        int dayDuration)
     {
         var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
         var meetingsByDiscipline = meetings
@@ -36,18 +37,19 @@ public static class Visualizer
         var columns = MergeColumns(meetingsByDiscipline);
         var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
         var width = columns.Count;
-        
+
         modifier
             .ColorizeRange(RowOffset, columnOffset, dayDuration, width, BackgroundColor)
             .DrawColumns(columns, columnOffset, dayDuration)
             .WriteRange(0, columnOffset, dayData)
             .AddBorders(0, columnOffset)
             .MergeCell(0, columnOffset, 1, width);
-        
+
         return width;
     }
 
-    private static SheetModifier DrawColumns(this SheetModifier modifier, List<Meeting2?[]> columns, int columnOffset, int dayDuration)
+    private static SheetModifier DrawColumns(this SheetModifier modifier, List<Meeting2?[]> columns, int columnOffset,
+        int dayDuration)
     {
         for (var i = 0; i < columns.Count; i++)
         {
@@ -90,7 +92,7 @@ public static class Visualizer
                     Console.Error.WriteLine($"Time slot: {meeting.MeetingTime!.TimeSlot}");
                     Console.Error.WriteLine($"MeetingTime1: {column[index]!.MeetingTime}");
                     Console.Error.WriteLine($"MeetingTime2: {meeting.MeetingTime}");
-                    throw new ArgumentException("Same discipline in same time");
+                    throw new ArgumentException("Two meetings with same discipline in same time");
                 }
             }
         }
@@ -136,16 +138,10 @@ public static class Visualizer
 
     private static CellData MeetingCellData(Meeting2 meeting)
     {
-        var value = MeetingToString(meeting);
-        var cellData = CommonCellData(value);
+        var cellData = CommonCellData(meeting.ToString());
         if (meeting.Place == "Онлайн")
             cellData.UserEnteredFormat.BackgroundColor = OnlineColor;
 
         return cellData;
-    }
-
-    private static string MeetingToString(Meeting2 meeting)
-    {
-        return meeting.Discipline.Name;
     }
 }

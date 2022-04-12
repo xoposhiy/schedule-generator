@@ -1,4 +1,5 @@
-﻿using CommonDomain;
+﻿using System.Text;
+using CommonDomain;
 using CommonDomain.Enums;
 
 namespace Domain2;
@@ -39,4 +40,20 @@ public record Meeting2(
     bool Ignore,
     string? ClassRoom,
     MeetingTime? MeetingTime
-);
+)
+{
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder(Discipline.Name);
+        if (ClassRoom != null)
+        {
+            stringBuilder.Append($", {ClassRoom}");
+        }
+
+        if (MeetingTime!.WeekType != WeekType.All)
+        {
+            stringBuilder.Append($" по {MeetingTime.WeekType.ToRuString()} неделям");
+        }
+        return stringBuilder.ToString();
+    }
+}
