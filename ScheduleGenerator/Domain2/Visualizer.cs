@@ -21,20 +21,20 @@ public static class Visualizer
         using var modifier = repository.ModifySpreadSheet(sheetName);
         var columnOffset = ColumnOffset;
         foreach (var meetingsSet in meetingsByDay)
-            columnOffset += modifier.DrawMeetingsPerDay(meetingsSet.ToList(), columnOffset, dayDuration);
+            columnOffset += modifier.DrawMeetingsPerDay(meetingsSet, columnOffset, dayDuration);
 
         modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, dayDuration);
     }
 
-    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset,
-        int dayDuration)
+    private static int DrawMeetingsPerDay(this SheetModifier modifier, IGrouping<DayOfWeek, Meeting2> meetings,
+        int columnOffset, int dayDuration)
     {
-        var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
-        var meetingsByDiscipline = meetings
+        var day = meetings.Key.ToRuString();
+        var columns = meetings
             .GroupBy(m => m.Discipline)
-            .Select(g => GetDisciplineColumn(g.ToList(), dayDuration))
-            .ToList();
-        var columns = MergeColumns(meetingsByDiscipline);
+            .Select(g => g.GetDisciplineColumn(dayDuration))
+            .ToList()
+            .MergeColumns();
         var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
         var width = columns.Count;
 
@@ -72,68 +72,6 @@ public static class Visualizer
 
         modifier.Execute();
         return modifier;
-    }
-
-    private static Meeting2?[] GetDisciplineColumn(List<Meeting2> meetings, int dayDuration)
-    {
-        var column = new Meeting2?[dayDuration];
-        foreach (var meeting in meetings)
-        {
-            for (var i = 0; i < meeting.Duration; i++)
-            {
-                var index = meeting.MeetingTime!.TimeSlot + i;
-                if (column[index] == null)
-                {
-                    column[index] = meeting;
-                }
-                else
-                {
-                    Console.Error.WriteLine($"Discipline: {meeting.Discipline}");
-                    Console.Error.WriteLine($"Time slot: {meeting.MeetingTime!.TimeSlot}");
-                    Console.Error.WriteLine($"MeetingTime1: {column[index]!.MeetingTime}");
-                    Console.Error.WriteLine($"MeetingTime2: {meeting.MeetingTime}");
-                    throw new ArgumentException("Two meetings with same discipline in same time");
-                }
-            }
-        }
-
-        return column;
-    }
-
-    private static List<Meeting2?[]> MergeColumns(List<Meeting2?[]> columns)
-    {
-        var merged = new bool[columns.Count];
-        for (var i = 0; i < columns.Count - 1; i++)
-        {
-            if (merged[i]) continue;
-            for (var j = i + 1; j < columns.Count; j++)
-            {
-                if (merged[j] || AreIntersect(columns[i], columns[j])) continue;
-                merged[j] = true;
-                columns[j].MergeColumnInto(columns[i]);
-            }
-        }
-
-        return columns.Where((_, i) => !merged[i]).ToList();
-    }
-
-    private static bool AreIntersect(Meeting2?[] column1, Meeting2?[] column2)
-    {
-        var length = column1.Length;
-        for (var i = 0; i < length; i++)
-        {
-            if (column1[i] != null && column2[i] != null) return true;
-        }
-
-        return false;
-    }
-
-    private static void MergeColumnInto(this Meeting2?[] source, Meeting2?[] target)
-    {
-        for (var k = 0; k < source.Length; k++)
-        {
-            target[k] ??= source[k];
-        }
     }
 
     private static CellData MeetingCellData(Meeting2 meeting)

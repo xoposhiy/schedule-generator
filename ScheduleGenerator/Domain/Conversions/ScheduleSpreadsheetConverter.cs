@@ -315,7 +315,7 @@ namespace Domain.Conversions
             var timeEnd = meeting.Location == Location.Pe ? PeClassEndTimes : MeetingEndTimes;
             return new()
             {
-                CommonCellData(DayToString(meeting.MeetingTime!.Day)),
+                CommonCellData(meeting.MeetingTime!.Day.ToRuString()),
                 CommonCellData(timeSlot.ToString()),
                 CommonCellData(meeting.Discipline.Name),
                 CommonCellData(string.Join(",", groups)),
@@ -326,21 +326,6 @@ namespace Domain.Conversions
                 CommonCellData(timeStart[timeSlotIndex]),
                 CommonCellData(timeEnd[timeSlotIndex]),
                 CommonTimeCellData(DateTime.Now)
-            };
-        }
-
-        private static string DayToString(DayOfWeek dayOfWeek)
-        {
-            return dayOfWeek switch
-            {
-                DayOfWeek.Monday => "Понедельник",
-                DayOfWeek.Tuesday => "Вторник",
-                DayOfWeek.Wednesday => "Среда",
-                DayOfWeek.Thursday => "Четверг",
-                DayOfWeek.Friday => "Пятница",
-                DayOfWeek.Saturday => "Суббота",
-                DayOfWeek.Sunday => "Воскресенье",
-                _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
             };
         }
 

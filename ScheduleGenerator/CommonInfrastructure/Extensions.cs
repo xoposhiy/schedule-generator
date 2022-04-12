@@ -111,5 +111,20 @@ namespace CommonInfrastructure
 
             return modifier;
         }
+        
+        public static string ToRuString(this DayOfWeek dayOfWeek)
+        {
+            return dayOfWeek switch
+            {
+                DayOfWeek.Monday => "Понедельник",
+                DayOfWeek.Tuesday => "Вторник",
+                DayOfWeek.Wednesday => "Среда",
+                DayOfWeek.Thursday => "Четверг",
+                DayOfWeek.Friday => "Пятница",
+                DayOfWeek.Saturday => "Суббота",
+                DayOfWeek.Sunday => "Воскресенье",
+                _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
+            };
+        }
     }
 }
