@@ -25,41 +25,66 @@ public static class Visualizer
         modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, Constants.TimeSlots);
     }
 
-    private static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
+    public static int DrawMeetingsPerDay(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
     {
-        var meetingsPerTimeSlot = meetings
-            .GroupBy(m => m.MeetingTime!.TimeSlot)
-            .OrderBy(g => g.Key);
-
-        var maximum = 0;
-        foreach (var meetingsSet in meetingsPerTimeSlot)
+        var dayDuration = meetings.Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
+        var meetingsByDiscipline = meetings.GroupBy(m => m.Discipline)
+            .Select(g => GetDisciplineColumn(g.ToList(), dayDuration))
+            .ToList();
+        for (int i = 0; i < meetingsByDiscipline.Count; i++)
         {
-            var meetingsCount = modifier.DrawMeetingsPerTimeSlot(meetingsSet.ToList(), columnOffset);
-            maximum = Math.Max(maximum, meetingsCount);
+            var column = meetingsByDiscipline[i];
+            for (int y = 0; y < dayDuration; y++)
+            {
+                var meeting = column[y];
+                if (meeting == null) continue;
+                var meetingData = new List<List<CellData>> {new() {MeetingCellData(meeting)}};
+                var height = meeting.Duration;
+
+                var startRow = RowOffset + y;
+                var startColumn = columnOffset + i;
+                modifier
+                    .WriteRange(startRow, startColumn, meetingData)
+                    .MergeCell(startRow, startColumn, height, 1);
+                y += height - 1;
+            }
         }
 
         var day = meetings.First().MeetingTime!.DayOfWeek.ToString();
-        var data = new List<List<CellData>> {new() {HeaderCellData(day)}};
+        var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
         modifier
-            .WriteRange(0, columnOffset, data)
+            .WriteRange(0, columnOffset, dayData)
             .AddBorders(0, columnOffset)
-            .MergeCell(0, columnOffset, 1, maximum);
+            .MergeCell(0, columnOffset, 1, meetingsByDiscipline.Count);
 
         modifier.Execute();
         Thread.Sleep(1);
-        return maximum;
+        return meetingsByDiscipline.Count;
     }
 
-    private static int DrawMeetingsPerTimeSlot(this SheetModifier modifier, List<Meeting2> meetings, int columnOffset)
+    public static Meeting2?[] GetDisciplineColumn(List<Meeting2> meetings, int dayDuration)
     {
+        var column = new Meeting2?[dayDuration];
         foreach (var meeting in meetings)
         {
-            var data = new List<List<CellData>> {new() {MeetingCellData(meeting)}};
-            var row = RowOffset + Math.Max(1, meeting.MeetingTime!.TimeSlot);
-            modifier.WriteRange(row, columnOffset++, data);
+            for (var i = 0; i < meeting.Duration; i++)
+            {
+                if (column[meeting.MeetingTime!.TimeSlot + i] == null)
+                {
+                    column[meeting.MeetingTime!.TimeSlot + i] = meeting;
+                }
+                else
+                {
+                    Console.Error.WriteLine($"Discipline: {meeting.Discipline}");
+                    Console.Error.WriteLine($"Time slot: {meeting.MeetingTime!.TimeSlot}");
+                    Console.Error.WriteLine($"MeetingTime1: {column[meeting.MeetingTime!.TimeSlot + i].MeetingTime}");
+                    Console.Error.WriteLine($"MeetingTime2: {meeting.MeetingTime}");
+                    throw new ArgumentException("Same discipline in same time");
+                }
+            }
         }
 
-        return meetings.Count;
+        return column;
     }
 
     private static CellData MeetingCellData(Meeting2 meeting)
