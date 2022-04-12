@@ -22,6 +22,7 @@ namespace Testing.ScheduleLibTests
             Approvals.Verify(unifiedString);
         }
 
+        [Explicit]
         [Test]
         public void CheckMeetingsPlacedAutumn_Approval()
         {

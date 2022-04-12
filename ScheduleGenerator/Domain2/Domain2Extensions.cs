@@ -1,5 +1,5 @@
-using System.Globalization;
 using CommonDomain.Enums;
+using Google.Apis.Sheets.v4.Data;
 
 namespace Domain2;
 
@@ -48,7 +48,7 @@ public static class Domain2Extensions
         return columns.Where((_, i) => !merged[i]).ToList();
     }
 
-    public static bool IsIntersectedWith(this Meeting2?[] column1, Meeting2?[] column2)
+    private static bool IsIntersectedWith(this Meeting2?[] column1, Meeting2?[] column2)
     {
         var length = column1.Length;
         for (var i = 0; i < length; i++)
@@ -59,7 +59,7 @@ public static class Domain2Extensions
         return false;
     }
 
-    public static void MergeColumnInto(this Meeting2?[] source, Meeting2?[] target)
+    private static void MergeColumnInto(this Meeting2?[] source, Meeting2?[] target)
     {
         for (var k = 0; k < source.Length; k++)
         {
@@ -72,5 +72,19 @@ public static class Domain2Extensions
         if (weekType == WeekType.Even) return "чётным";
         if (weekType == WeekType.Odd) return "нечётным";
         return weekType.ToString();
+    }
+
+    public static TextFormatRun GetMeetingTextFormatRun(this Meeting2 meeting2)
+    {
+        var start = meeting2.ToString().IndexOf(meeting2.GetWeekTypeStringPart(), StringComparison.Ordinal);
+        if (start < 0) return new();
+        return new()
+        {
+            StartIndex = start,
+            Format = new()
+            {
+                Bold = true
+            }
+        };
     }
 }

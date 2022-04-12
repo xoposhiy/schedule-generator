@@ -52,8 +52,14 @@ public record Meeting2(
 
         if (MeetingTime!.WeekType != WeekType.All)
         {
-            stringBuilder.Append($" по {MeetingTime.WeekType.ToRuString()} неделям");
+            stringBuilder.Append(GetWeekTypeStringPart());
         }
+
         return stringBuilder.ToString();
+    }
+
+    public string GetWeekTypeStringPart()
+    {
+        return $" по {MeetingTime?.WeekType.ToRuString()} неделям";
     }
 }

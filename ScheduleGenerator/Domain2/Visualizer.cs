@@ -76,9 +76,13 @@ public static class Visualizer
 
     private static CellData MeetingCellData(Meeting2 meeting)
     {
-        var cellData = CommonCellData(meeting.ToString());
+        var meetingString = meeting.ToString();
+        var cellData = CommonCellData(meetingString);
         if (meeting.Place == "Онлайн")
             cellData.UserEnteredFormat.BackgroundColor = OnlineColor;
+
+        var textFormatRun = meeting.GetMeetingTextFormatRun();
+        cellData.TextFormatRuns = new List<TextFormatRun> {textFormatRun};
 
         return cellData;
     }
