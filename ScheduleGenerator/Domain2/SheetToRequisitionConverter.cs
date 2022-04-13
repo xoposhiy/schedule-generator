@@ -1,7 +1,8 @@
 ﻿using CommonDomain;
 using CommonDomain.Enums;
+using CommonInfrastructure;
 using CommonInfrastructure.GoogleSheetsRepository;
-using Infrastructure.SheetPatterns;
+using static CommonDomain.Conversions;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -11,28 +12,7 @@ namespace Domain2;
 
 public static class SheetToRequisitionConverter
 {
-    public static readonly Dictionary<string, DayOfWeek> WeekDaysDict = new()
-    {
-        {"пн", DayOfWeek.Monday},
-        {"вт", DayOfWeek.Tuesday},
-        {"ср", DayOfWeek.Wednesday},
-        {"чт", DayOfWeek.Thursday},
-        {"пт", DayOfWeek.Friday},
-        {"сб", DayOfWeek.Saturday}
-    };
-
     public static Location StringToLocation(string place) => new Location(place);
-
-    private static MeetingType GetMeetingType(string name)
-    {
-        return name switch
-        {
-            "Лекция" => MeetingType.Lecture,
-            "КомпПрактика" => MeetingType.ComputerLab,
-            "Семинар" => MeetingType.Seminar,
-            _ => throw new FormatException($"Некорректный тип занятия: {name}")
-        };
-    }
 
     private static WeekType GetWeekType(string rowWeekType)
     {

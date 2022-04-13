@@ -5,6 +5,7 @@ using CommonDomain.Enums;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain.Enums;
 using Google.Apis.Sheets.v4.Data;
+using static CommonDomain.Conversions;
 using static CommonInfrastructure.Constants;
 using static Domain.DomainExtensions;
 using static CommonInfrastructure.Extensions;
@@ -277,7 +278,7 @@ namespace Domain.Conversions
                 return part != "" ? $"{g.GroupName}-{part}" : g.GroupName;
             });
 
-            var day = SheetToRequisitionConverter.WeekDaysDict.First(p => p.Value == meeting.MeetingTime!.Day).Key;
+            var day = WeekDaysDict.First(p => p.Value == meeting.MeetingTime!.Day).Key;
             var location = SheetToRequisitionConverter.StringToLocation.First(p => p.Value == meeting.Location).Key;
 
             var time = $"{day}: {meeting.MeetingTime!.TimeSlot}";
