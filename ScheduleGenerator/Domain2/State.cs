@@ -2,11 +2,17 @@ namespace Domain2;
 
 public class State
 {
-    public List<Meeting2> NotPlacedMeetings = new List<Meeting2>();
+    public HashSet<Meeting2> NotPlacedMeetings;
     public List<Meeting2> PlacedMeetings = new List<Meeting2>();
 
-    public State(List<Meeting2> meetingsToPlace)
+    public State(IEnumerable<Meeting2> meetingsToPlace)
     {
-        NotPlacedMeetings = meetingsToPlace;
+        NotPlacedMeetings = meetingsToPlace.ToHashSet();
+    }
+
+    public void PlaceMeeting(Meeting2 meeting, MeetingTime meetingTime)
+    {
+        NotPlacedMeetings.Remove(meeting);
+        PlacedMeetings.Add(meeting with {MeetingTime = meetingTime});
     }
 }

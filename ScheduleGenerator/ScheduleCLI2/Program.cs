@@ -12,14 +12,17 @@ public static class Program
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
-        var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
+        var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
-        for (var i = 0; i < meetings.Count; i++)
-            meetings[i] = meetings[i] with {MeetingTime = meetings[i].MeetingTimePriorities.First().First()};
-
+        while (state.NotPlacedMeetings.Count > 0)
+        {
+            var meeting = state.NotPlacedMeetings.First();
+            state.PlaceMeeting(meeting, meeting.MeetingTimePriorities.First().First());
+        }
+        
         var sheetName = "Лист4";
-        Visualizer.DrawSchedule(repo, meetings, sheetName);
-        Visualizer.UpdateMeetingsData(repo, meetingsSource, meetings);
+        Visualizer.DrawSchedule(repo, state, sheetName);
+        Visualizer.UpdateMeetingsData(repo, meetingsSource, state);
     }
 }

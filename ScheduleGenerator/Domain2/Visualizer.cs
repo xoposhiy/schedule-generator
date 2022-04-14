@@ -93,6 +93,9 @@ public static class Visualizer
         return cellData;
     }
 
+    public static void UpdateMeetingsData(GsRepository repo, string sheetName, State state) =>
+        UpdateMeetingsData(repo, sheetName, state.PlacedMeetings);
+
     public static void UpdateMeetingsData(GsRepository repo, string sheetName, List<Meeting2> meetings)
     {
         var meetingsDataRaw = repo.ReadCellRange(sheetName, 0, 0, 0, Constants.FormattedMeetingsRowWidth);

@@ -46,6 +46,9 @@ public static class SheetToRequisitionConverter
         return classrooms;
     }
 
+    public static State ReadState(GsRepository repo, string meetingsSheetName) =>
+        new State(ReadMeetings(repo, meetingsSheetName));
+
     public static List<Meeting2> ReadMeetings(GsRepository repo, string meetingsSheetName)
     {
         var meetingsDataRaw =
@@ -65,8 +68,6 @@ public static class SheetToRequisitionConverter
             var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
             var meetingTimePriorities =
                 ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]], weekTypeSpec);
-            // .Where(m => weekTypeSpec == WeekType.All || m.WeekType == weekTypeSpec)
-            // .ToList();
             var after = string.IsNullOrEmpty(row[positions["After"]])
                 ? (MeetingType?) null
                 : GetMeetingType(row[positions["After"]]);
