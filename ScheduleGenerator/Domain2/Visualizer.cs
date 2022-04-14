@@ -11,6 +11,9 @@ public static class Visualizer
     private const int ColumnOffset = 1;
     public static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 2, 0);
 
+    public static void DrawSchedule(GsRepository repository, State state, string sheetName) =>
+        DrawSchedule(repository, state.PlacedMeetings, sheetName);
+
     public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
         var dayDuration = meetings.Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;

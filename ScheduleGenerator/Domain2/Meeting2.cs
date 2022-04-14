@@ -38,6 +38,7 @@ public record Meeting2(int Id,
     int Priority,
     bool IsFixed,
     bool Ignore,
+    
     string? ClassRoom,
     MeetingTime? MeetingTime
 )
