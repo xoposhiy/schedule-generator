@@ -1,4 +1,5 @@
-﻿using CommonInfrastructure.GoogleSheetsRepository;
+﻿using CommonInfrastructure;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Google.Apis.Sheets.v4.Data;
 using static CommonInfrastructure.Extensions;
 
@@ -87,5 +88,22 @@ public static class Visualizer
         cellData.TextFormatRuns = new List<TextFormatRun> {textFormatRun};
 
         return cellData;
+    }
+
+    public static void UpdateMeetingsData(GsRepository repo, string sheetName, List<Meeting2> meetings)
+    {
+        var meetingsDataRaw = repo.ReadCellRange(sheetName, 0, 0, 0, Constants.FormattedMeetingsRowWidth);
+        var headerRow = meetingsDataRaw?[0];
+        if (headerRow == null) return;
+        var positions = headerRow!.GetPositions();
+        using var modifier = repo.ModifySpreadSheet(sheetName);
+        foreach (var meeting in meetings.Where(m => !m.Ignore))
+        {
+            var classRoom = CommonCellData(meeting.ClassRoom ?? "");
+            var time = CommonCellData(meeting.MeetingTime?.ToString() ?? "alo");
+            modifier
+                .WriteRange(meeting.Id + 1, positions["ClassRoom"], new() {new() {classRoom}})
+                .WriteRange(meeting.Id + 1, positions["Time"], new(){new(){time}});
+        }
     }
 }

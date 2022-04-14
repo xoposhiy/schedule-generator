@@ -126,5 +126,16 @@ namespace CommonInfrastructure
                 _ => throw new ArgumentOutOfRangeException(nameof(dayOfWeek), dayOfWeek, null)
             };
         }
+        
+        public static Dictionary<string, int> GetPositions(this List<string> meetingsDataRaw)
+        {
+            var positions = new Dictionary<string, int>();
+            for (var i = 0; i < meetingsDataRaw.Count; i++)
+            {
+                positions[meetingsDataRaw[i]] = i;
+            }
+
+            return positions;
+        }
     }
 }

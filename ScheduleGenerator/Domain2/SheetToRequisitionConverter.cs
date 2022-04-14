@@ -48,12 +48,9 @@ public static class SheetToRequisitionConverter
 
     public static List<Meeting2> ReadMeetings(GsRepository repo, string meetingsSheetName)
     {
-        var meetingsDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 16);
-        var positions = new Dictionary<string, int>();
-        for (int i = 0; i < meetingsDataRaw[0].Count; i++)
-        {
-            positions[meetingsDataRaw[0][i]] = i;
-        }
+        var meetingsDataRaw =
+            SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, Constants.FormattedMeetingsRowWidth);
+        var positions = meetingsDataRaw[0].GetPositions();
 
         var meetings = new List<Meeting2>();
         foreach (var row in meetingsDataRaw.Skip(1))
@@ -80,9 +77,9 @@ public static class SheetToRequisitionConverter
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
             var time = ParseMeetingTime(row[positions["Time"]], weekTypeSpec).FirstOrDefault((MeetingTime?) null);
-            meetings.Add(new Meeting2(discipline, meetingType, teacher, groups, place, roomSpecs, duration,
-                weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore, classRoom,
-                time));
+            meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
+                duration, weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore,
+                classRoom, time));
         }
 
         return meetings;

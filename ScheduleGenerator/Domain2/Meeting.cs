@@ -23,7 +23,7 @@ namespace Domain2;
 /// <param name="Ignore"></param>
 /// <param name="ClassRoom"></param>
 /// <param name="MeetingTime"></param>
-public record Meeting2(
+public record Meeting2(int Id,
     Discipline Discipline,
     MeetingType MeetingType,
     Teacher Teacher,
