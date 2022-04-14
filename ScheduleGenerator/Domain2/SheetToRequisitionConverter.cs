@@ -76,10 +76,11 @@ public static class SheetToRequisitionConverter
             var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
+            //var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
+            //TODO synchronize write and read mechanics
             meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
                 duration, weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore,
-                classRoom, time));
+                classRoom, null));
         }
 
         return meetings;
@@ -134,7 +135,7 @@ public static class SheetToRequisitionConverter
     {
         return string.IsNullOrWhiteSpace(rawMeetingTime)
             ? new()
-            : ParseMeetingTimes(rawMeetingTime).ToHashSet();
+            : ParseMeetingTimes(rawMeetingTime).SelectMany(x => x).ToHashSet();
     }
 
     private static WeekType ParseWeekType(string? weekTypeRaw)
@@ -142,10 +143,10 @@ public static class SheetToRequisitionConverter
         return string.IsNullOrEmpty(weekTypeRaw) ? WeekType.All : GetWeekType(weekTypeRaw);
     }
 
-    public static List<MeetingTime> ParseMeetingTimePriorities(string rawMeetingTime, WeekType weekType)
+    public static List<List<MeetingTime>> ParseMeetingTimePriorities(string rawMeetingTime, WeekType weekType)
     {
         if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseMeetingTimes(rawMeetingTime);
-        return GetAllPossibleMeetingTimes(weekType);
+        return new List<List<MeetingTime>>() { GetAllPossibleMeetingTimes(weekType) };
     }
 
     public static List<MeetingTime> GetAllPossibleMeetingTimes(WeekType weekType)
@@ -162,20 +163,17 @@ public static class SheetToRequisitionConverter
         return ans;
     }
 
-    private static List<MeetingTime> ParseMeetingTimes(string raw)
+    private static List<List<MeetingTime>> ParseMeetingTimes(string raw)
     {
         try
         {
-            var meetingTimePriorities = new List<MeetingTime>();
+            var meetingTimePriorities = new List<List<MeetingTime>>();
 
             var lines = raw.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var line in lines)
             {
-                foreach (var meetingTime in ParseMeetingTime(line))
-                {
-                    meetingTimePriorities.Add(meetingTime);
-                }
+                meetingTimePriorities.Add(ParseMeetingTime(line).ToList());
             }
 
             return meetingTimePriorities;
@@ -188,15 +186,32 @@ public static class SheetToRequisitionConverter
 
     private static IEnumerable<MeetingTime> ParseMeetingTime(string line)
     {
-        var compactedLine = line.Replace(" ", "");
-        if (string.IsNullOrEmpty(compactedLine))
+        line = line.Replace(" ", "");
+        if (string.IsNullOrEmpty(line))
             yield break;
-        var parts = compactedLine.Split(':');
-        var days = GetDays(parts[0]);
-        var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots($"1-{Constants.TimeSlots}");
-        foreach (var day in days)
-        foreach (var slot in slots)
-            yield return new MeetingTime(WeekType.All, day, slot);
+        int r = 0, l=0;
+
+        while (r < line.Length)
+        {
+            while (!Char.IsDigit(line[r]))
+                r++;
+            var days = GetDays(line[l..r]);
+            l = r;
+            while (r < line.Length && !Char.IsLetter(line[r]))
+                r++;
+            if (r < line.Length)
+                r--;
+            var timeSlots = GetSlots(line[l..r]);
+            r++;
+            l = r;
+            foreach (var day in days)
+            {
+                foreach (var slot in timeSlots)
+                {
+                    yield return new MeetingTime(WeekType.All, day, slot);
+                }
+            }
+        }
     }
 
     private static List<DayOfWeek> GetDays(string dayString)

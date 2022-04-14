@@ -16,7 +16,7 @@ public static class Program
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
         for (var i = 0; i < meetings.Count; i++)
-            meetings[i] = meetings[i] with {MeetingTime = meetings[i].MeetingTimePriorities.First()};
+            meetings[i] = meetings[i] with {MeetingTime = meetings[i].MeetingTimePriorities.First().First()};
 
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, meetings, sheetName);
