@@ -76,7 +76,7 @@ public static class SheetToRequisitionConverter
             var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            var time = ParseMeetingTime(row[positions["Time"]], weekTypeSpec).FirstOrDefault((MeetingTime?) null);
+            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
             meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
                 duration, weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore,
                 classRoom, time));
@@ -134,7 +134,7 @@ public static class SheetToRequisitionConverter
     {
         return string.IsNullOrWhiteSpace(rawMeetingTime)
             ? new()
-            : ParseMeetingTimes(rawMeetingTime, null).ToHashSet();
+            : ParseMeetingTimes(rawMeetingTime).ToHashSet();
     }
 
     private static WeekType ParseWeekType(string? weekTypeRaw)
@@ -144,7 +144,7 @@ public static class SheetToRequisitionConverter
 
     public static List<MeetingTime> ParseMeetingTimePriorities(string rawMeetingTime, WeekType weekType)
     {
-        if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseMeetingTimes(rawMeetingTime, weekType);
+        if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseMeetingTimes(rawMeetingTime);
         return GetAllPossibleMeetingTimes(weekType);
     }
 
@@ -162,7 +162,7 @@ public static class SheetToRequisitionConverter
         return ans;
     }
 
-    private static List<MeetingTime> ParseMeetingTimes(string raw, WeekType? weekType)
+    private static List<MeetingTime> ParseMeetingTimes(string raw)
     {
         try
         {
@@ -172,7 +172,7 @@ public static class SheetToRequisitionConverter
 
             foreach (var line in lines)
             {
-                foreach (var meetingTime in ParseMeetingTime(line, weekType))
+                foreach (var meetingTime in ParseMeetingTime(line))
                 {
                     meetingTimePriorities.Add(meetingTime);
                 }
@@ -186,19 +186,17 @@ public static class SheetToRequisitionConverter
         }
     }
 
-    private static IEnumerable<MeetingTime> ParseMeetingTime(string line, WeekType? weekType)
+    private static IEnumerable<MeetingTime> ParseMeetingTime(string line)
     {
         var compactedLine = line.Replace(" ", "");
         if (string.IsNullOrEmpty(compactedLine))
             yield break;
         var parts = compactedLine.Split(':');
-        weekType ??= WeekType.All;
-
         var days = GetDays(parts[0]);
         var slots = parts.Length > 1 ? GetSlots(parts[1]) : GetSlots($"1-{Constants.TimeSlots}");
         foreach (var day in days)
         foreach (var slot in slots)
-            yield return new MeetingTime(weekType.Value, day, slot);
+            yield return new MeetingTime(WeekType.All, day, slot);
     }
 
     private static List<DayOfWeek> GetDays(string dayString)
