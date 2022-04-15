@@ -7,7 +7,9 @@ public record MeetingTime(WeekType WeekType, DayOfWeek DayOfWeek, int TimeSlot)
     public override string ToString()
     {
         var dayString = CommonDomain.Conversions.WeekDaysDict.FirstOrDefault(pair => pair.Value == DayOfWeek).Key;
-        var weekString = WeekType == WeekType.All ? "" : WeekType.ToRuString()[..3];
-        return $"{dayString}:{TimeSlot}:{weekString}";
+        var res = $"{dayString} {TimeSlot}";
+        if (WeekType != WeekType.All)
+            res += $" {WeekType.ToRuString()[..3]}";
+        return res;
     }
 }

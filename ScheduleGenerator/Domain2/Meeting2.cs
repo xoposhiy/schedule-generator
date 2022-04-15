@@ -4,9 +4,6 @@ using CommonDomain.Enums;
 
 namespace Domain2;
 
-/// <summary>
-/// 
-/// </summary>
 /// <param name="Discipline"></param>
 /// <param name="MeetingType"></param>
 /// <param name="Teacher"></param>
@@ -23,7 +20,8 @@ namespace Domain2;
 /// <param name="Ignore"></param>
 /// <param name="ClassRoom"></param>
 /// <param name="MeetingTime"></param>
-public record Meeting2(int Id,
+public record Meeting2(
+    int Id,
     Discipline Discipline,
     MeetingType MeetingType,
     Teacher Teacher,
