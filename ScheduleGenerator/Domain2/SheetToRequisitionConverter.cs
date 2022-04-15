@@ -38,6 +38,17 @@ public static class SheetToRequisitionConverter
             _ => throw new FormatException($"Некорректный тип аудитории: {name}")
         };
     }
+    
+    private static DisciplineType GetDisciplineType(string rawDisciplineType)
+    {
+        return rawDisciplineType.ToLower() switch
+        {
+            "" => DisciplineType.Free,
+            "with test" => DisciplineType.WithEntranceTest,
+            "obligatory" => DisciplineType.Obligatory,
+            _ => throw new FormatException($"Некорректный тип дисциплины: {rawDisciplineType}")
+        };
+    }
 
     public static List<Room> ReadRooms(GsRepository repo, string classroomsSheetName)
     {
@@ -58,7 +69,8 @@ public static class SheetToRequisitionConverter
         var meetings = new List<Meeting2>();
         foreach (var row in meetingsDataRaw.Skip(1))
         {
-            var discipline = new Discipline(row[positions["Discipline"]]);
+            var disciplineType = GetDisciplineType(row[positions["DisciplineType"]]);
+            var discipline = new Discipline(row[positions["Discipline"]], disciplineType);
             var meetingType = GetMeetingType(row[positions["MeetingType"]]);
             var teacher = new Teacher(row[positions["Teacher"]]);
             var groups = ParseGroups(row[positions["Groups"]]);
@@ -71,7 +83,6 @@ public static class SheetToRequisitionConverter
             var after = string.IsNullOrEmpty(row[positions["After"]])
                 ? (MeetingType?) null
                 : GetMeetingType(row[positions["After"]]);
-            var hasEntranceTest = Convert.ToBoolean(ParseInt(row[positions["HasEntranceTest"]], 0));
             var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
             var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
             var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
@@ -80,7 +91,7 @@ public static class SheetToRequisitionConverter
             //var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
             //TODO synchronize write and read mechanics
             meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
-                duration, weekTypeSpec, meetingTimePriorities, after, hasEntranceTest, priority, isFixed, ignore,
+                duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
                 classRoom, null));
         }
 

@@ -14,7 +14,6 @@ namespace Domain2;
 /// <param name="WeekTypeSpec">Требование четности для пары (в большенсвте случаев оно будет либо All, либо OddOrEven)</param>
 /// <param name="MeetingTimePriorities">Удобство для преподователя, может содержать чётность</param>
 /// <param name="After"></param>
-/// <param name="HasEntranceTest"></param>
 /// <param name="Priority"></param>
 /// <param name="IsFixed"></param>
 /// <param name="Ignore"></param>
@@ -32,7 +31,6 @@ public record Meeting2(
     WeekType WeekTypeSpec,
     List<List<MeetingTime>> MeetingTimePriorities,
     MeetingType? After,
-    bool HasEntranceTest,
     int Priority,
     bool IsFixed,
     bool Ignore,

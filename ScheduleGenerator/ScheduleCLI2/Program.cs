@@ -13,8 +13,11 @@ public static class Program
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
+        var disciplines = state.NotPlacedMeetings.Select(e => e.Discipline).ToHashSet();
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
-
+        SheetToProbabilityConverter.ReadPriorities(repo, disciplines, "Приоритеты для шатания");
+        SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
+        
         while (state.NotPlacedMeetings.Count > 0)
         {
             var meeting = state.NotPlacedMeetings.First();
