@@ -87,4 +87,12 @@ public static class Domain2Extensions
             }
         };
     }
+
+    public static IEnumerable<Meeting2> GetAllPossibleVariants(this State state)
+    {
+        foreach (var meeting in state.NotPlacedMeetings.Values)
+        foreach (var meetingMeetingTimePriority in meeting.MeetingTimePriorities)
+        foreach (var meetingTime in meetingMeetingTimePriority)
+            yield return meeting with {MeetingTime = meetingTime};
+    }
 }

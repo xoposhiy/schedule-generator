@@ -34,11 +34,12 @@ public record Meeting2(
     int Priority,
     bool IsFixed,
     bool Ignore,
-    
     string? ClassRoom,
     MeetingTime? MeetingTime
 )
 {
+    public bool ShouldBePlaced => !Ignore;
+
     public override string ToString()
     {
         var stringBuilder = new StringBuilder(Discipline.Name);

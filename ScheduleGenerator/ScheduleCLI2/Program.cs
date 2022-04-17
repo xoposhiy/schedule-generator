@@ -1,5 +1,6 @@
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
+using Domain2.Algorithms;
 using Infrastructure;
 
 namespace ScheduleCLI2;
@@ -13,19 +14,28 @@ public static class Program
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
-        var disciplines = state.NotPlacedMeetings.Select(e => e.Discipline).ToHashSet();
+        var disciplines = state.NotPlacedMeetings.Values.Select(e => e.Discipline).ToHashSet();
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
         SheetToProbabilityConverter.ReadPriorities(repo, disciplines, "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
-        
-        while (state.NotPlacedMeetings.Count > 0)
-        {
-            var meeting = state.NotPlacedMeetings.First();
-            state.PlaceMeeting(meeting, meeting.MeetingTimePriorities.First().First());
-        }
-        
+
+        SolveGreedy(state);
+
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, state, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, state);
+    }
+
+    private static void SolveGreedy(State state)
+    {
+        var randomEstimator = new RandomEstimator();
+        var greedySolver = new GreedySolver(randomEstimator);
+
+        while (state.NotPlacedMeetings.Count != 0)
+        {
+            var solution = greedySolver.GetSolutions(state).Last();
+            state.PlaceMeeting(solution.Meeting);
+            Console.WriteLine($"Place {solution}");
+        }
     }
 }

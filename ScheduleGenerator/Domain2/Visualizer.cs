@@ -1,5 +1,4 @@
-﻿using CommonInfrastructure;
-using CommonInfrastructure.GoogleSheetsRepository;
+﻿using CommonInfrastructure.GoogleSheetsRepository;
 using Google.Apis.Sheets.v4.Data;
 using static CommonInfrastructure.Extensions;
 
@@ -16,9 +15,11 @@ public static class Visualizer
 
     public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
-        var dayDuration = meetings.Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
+        var dayDuration = meetings
+            .Where(m => m.ShouldBePlaced)
+            .Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
         var meetingsByDay = meetings
-            .Where(m => !m.Ignore)
+            .Where(m => m.ShouldBePlaced)
             .GroupBy(m => m.MeetingTime!.DayOfWeek)
             .OrderBy(g => g.Key);
 
@@ -103,13 +104,13 @@ public static class Visualizer
         if (headerRow == null) return;
         var positions = headerRow!.GetPositions();
         using var modifier = repo.ModifySpreadSheet(sheetName);
-        foreach (var meeting in meetings.Where(m => !m.Ignore))
+        foreach (var meeting in meetings.Where(m => m.ShouldBePlaced))
         {
             var classRoom = CommonCellData(meeting.ClassRoom ?? "");
             var time = CommonCellData(meeting.MeetingTime?.ToString() ?? "alo");
             modifier
                 .WriteRange(meeting.Id + 1, positions["ClassRoom"], new() {new() {classRoom}})
-                .WriteRange(meeting.Id + 1, positions["Time"], new(){new(){time}});
+                .WriteRange(meeting.Id + 1, positions["Time"], new() {new() {time}});
         }
     }
 }
