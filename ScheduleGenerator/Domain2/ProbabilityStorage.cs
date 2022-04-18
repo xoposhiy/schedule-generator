@@ -22,9 +22,9 @@ public static class ProbabilityStorage
         DisciplineWithPriorityToStudents[discipline][priority].Add(student);
     }
 
-    public static double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
+    public static double GetCommonStudents(this Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
-        return 0;
+        return new Random().NextDouble();
     }
     
 }

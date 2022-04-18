@@ -28,7 +28,7 @@ public static class Program
 
     private static void SolveGreedy(State state)
     {
-        var randomEstimator = new RandomEstimator();
+        var randomEstimator = new MeanStudentIntersectionEstimator();
         var greedySolver = new GreedySolver(randomEstimator);
 
         while (state.NotPlacedMeetings.Count != 0)
