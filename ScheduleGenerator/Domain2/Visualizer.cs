@@ -8,7 +8,6 @@ public static class Visualizer
 {
     private const int RowOffset = 1;
     private const int ColumnOffset = 1;
-    public static readonly SheetModifier.BordersWidths ThickBorders = new(0, 2, 2, 0);
 
     public static void DrawSchedule(GsRepository repository, State state, string sheetName) =>
         DrawSchedule(repository, state.PlacedMeetings, sheetName);
