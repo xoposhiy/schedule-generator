@@ -11,10 +11,10 @@ public static class Domain2Extensions
         foreach (var meeting in meetings.OrderBy(m => m.MeetingTime!.TimeSlot))
         {
             var column = new Meeting2?[dayDuration];
-            var timeSlot = meeting.MeetingTime!.TimeSlot;
+            var timeSlotIndex = meeting.MeetingTime!.TimeSlotIndex;
             for (var i = 0; i < meeting.Duration; i++)
             {
-                column[timeSlot + i] ??= meeting;
+                column[timeSlotIndex + i] ??= meeting;
             }
 
             columns.Add(column);

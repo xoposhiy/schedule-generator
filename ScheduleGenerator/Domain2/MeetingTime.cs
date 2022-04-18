@@ -12,4 +12,6 @@ public record MeetingTime(WeekType WeekType, DayOfWeek DayOfWeek, int TimeSlot)
             res += $" {WeekType.ToRuString()[..3]}";
         return res;
     }
+
+    public int TimeSlotIndex => TimeSlot - 1;
 }

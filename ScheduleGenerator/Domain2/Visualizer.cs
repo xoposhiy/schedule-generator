@@ -17,7 +17,7 @@ public static class Visualizer
     {
         var dayDuration = meetings
             .Where(m => m.ShouldBePlaced)
-            .Max(m => m.MeetingTime!.TimeSlot + m.Duration - 1) + 1;
+            .Max(m => m.MeetingTime!.TimeSlotIndex + m.Duration);
         var meetingsByDay = meetings
             .Where(m => m.ShouldBePlaced)
             .GroupBy(m => m.MeetingTime!.DayOfWeek)
