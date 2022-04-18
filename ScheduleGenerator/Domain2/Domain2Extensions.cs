@@ -5,30 +5,22 @@ namespace Domain2;
 
 public static class Domain2Extensions
 {
-    public static Meeting2?[] GetDisciplineColumn(this IEnumerable<Meeting2> meetings, int dayDuration)
+    public static IEnumerable<Meeting2?[]> GetDisciplineColumn(this IEnumerable<Meeting2> meetings, int dayDuration)
     {
-        var column = new Meeting2?[dayDuration];
-        foreach (var meeting in meetings)
+        var columns = new List<Meeting2?[]>();
+        foreach (var meeting in meetings.OrderBy(m => m.MeetingTime!.TimeSlot))
         {
+            var column = new Meeting2?[dayDuration];
+            var timeSlot = meeting.MeetingTime!.TimeSlot;
             for (var i = 0; i < meeting.Duration; i++)
             {
-                var index = meeting.MeetingTime!.TimeSlot + i;
-                if (column[index] == null)
-                {
-                    column[index] = meeting;
-                }
-                else
-                {
-                    Console.Error.WriteLine($"Discipline: {meeting.Discipline}");
-                    Console.Error.WriteLine($"Time slot: {meeting.MeetingTime!.TimeSlot}");
-                    Console.Error.WriteLine($"MeetingTime1: {column[index]!.MeetingTime}");
-                    Console.Error.WriteLine($"MeetingTime2: {meeting.MeetingTime}");
-                    throw new ArgumentException("Two meetings with same discipline in same time");
-                }
+                column[timeSlot + i] ??= meeting;
             }
+
+            columns.Add(column);
         }
 
-        return column;
+        return columns.MergeColumns();
     }
 
     public static List<Meeting2?[]> MergeColumns(this List<Meeting2?[]> columns)

@@ -38,7 +38,7 @@ public static class Visualizer
         var day = meetings.Key.ToRuString();
         var columns = meetings
             .GroupBy(m => m.Discipline)
-            .Select(g => g.GetDisciplineColumn(dayDuration))
+            .SelectMany(g => g.GetDisciplineColumn(dayDuration))
             .ToList()
             .MergeColumns();
         var dayData = new List<List<CellData>> {new() {HeaderCellData(day)}};
