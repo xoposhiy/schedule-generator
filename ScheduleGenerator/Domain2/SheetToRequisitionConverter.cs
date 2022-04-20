@@ -79,7 +79,7 @@ public static class SheetToRequisitionConverter
             var duration = ParseInt(row[positions["Duration"]], 1);
             var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
             var meetingTimePriorities =
-                ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]], weekTypeSpec);
+                ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]);
             var after = string.IsNullOrEmpty(row[positions["After"]])
                 ? (MeetingType?) null
                 : GetMeetingType(row[positions["After"]]);
@@ -155,10 +155,10 @@ public static class SheetToRequisitionConverter
         return string.IsNullOrEmpty(weekTypeRaw) ? WeekType.All : GetWeekType(weekTypeRaw);
     }
 
-    public static List<List<MeetingTime>> ParseMeetingTimePriorities(string rawMeetingTime, WeekType weekType)
+    public static List<List<MeetingTime>> ParseMeetingTimePriorities(string rawMeetingTime)
     {
         if (!string.IsNullOrWhiteSpace(rawMeetingTime)) return ParseMeetingTimes(rawMeetingTime);
-        return new List<List<MeetingTime>>() { GetAllPossibleMeetingTimes(weekType) };
+        return new List<List<MeetingTime>>() { GetAllPossibleMeetingTimes(WeekType.All) };
     }
 
     public static List<MeetingTime> GetAllPossibleMeetingTimes(WeekType weekType)
@@ -250,8 +250,8 @@ public static class SheetToRequisitionConverter
         {
             //пн-пт: 3,4 пара
             var tmp = req.Split('-');
-            var firstSlot = int.Parse(tmp[0][0].ToString());
-            var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1][0].ToString());
+            var firstSlot = int.Parse(tmp[0]);
+            var lastSlot = tmp.Length == 1 ? firstSlot : int.Parse(tmp[1]);
             if (firstSlot < 1 || lastSlot > Constants.TimeSlots)
                 throw new FormatException($"meeting slots must be between 1 and {Constants.TimeSlots}");
             for (var slot = firstSlot; slot <= lastSlot; slot++)
