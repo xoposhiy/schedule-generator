@@ -66,18 +66,32 @@ public static class Visualizer
                 if (meeting == null) continue;
                 var meetingData = new List<List<CellData>> {new() {MeetingCellData(meeting)}};
                 var height = meeting.Duration;
-
+                var width = GetWidth(columns, i, y);
                 var startRow = RowOffset + y;
                 var startColumn = columnOffset + i;
                 modifier
                     .WriteRange(startRow, startColumn, meetingData)
-                    .MergeCell(startRow, startColumn, height, 1);
+                    .MergeCell(startRow, startColumn, height, width);
                 y += height - 1;
             }
         }
 
         modifier.Execute();
         return modifier;
+    }
+
+    private static int GetWidth(IReadOnlyList<Meeting2?[]> columns, int columnIndex, int timeSlotIndex)
+    {
+        var column = columns[columnIndex];
+        var meeting = column[timeSlotIndex];
+
+        var width = 1;
+        for (; columnIndex + width < columns.Count; width++)
+        for (var i = 0; i < meeting!.Duration; i++)
+            if (columns[columnIndex + width][timeSlotIndex + i] != null)
+                return width;
+
+        return width;
     }
 
     private static CellData MeetingCellData(Meeting2 meeting)

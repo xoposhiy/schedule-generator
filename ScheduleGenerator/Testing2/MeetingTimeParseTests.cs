@@ -8,13 +8,13 @@ namespace Testing2;
 [TestFixture]
 public class MeetingTimeParseTests
 {
-    private static string TestFormatMeetingTimes(List<List<MeetingTime>> prioirities)
+    private static string TestFormatMeetingTimes(List<List<MeetingTime>> priorities)
     {
-        var meetingTimeRequisitions = prioirities.Select(p =>
-                string.Join(", ", p.Select(m => $"{m.DayOfWeek.ToString()[..2]}{m.TimeSlot}")));
+        var meetingTimeRequisitions = priorities.Select(p =>
+            string.Join(", ", p.Select(m => $"{m.DayOfWeek.ToString()[..2]}{m.TimeSlot}")));
         return string.Join(";", meetingTimeRequisitions);
     }
-    
+
     [TestCase("пн 1-3 \n пт 4-6", "Mo1, Mo2, Mo3;Fr4, Fr5, Fr6")]
     [TestCase("пн 1 \n вт 5", "Mo1;Tu5")]
     [TestCase("пн, вт 1, 2, вт 4", "Mo1, Mo2, Tu1, Tu2, Tu4")]
@@ -42,12 +42,12 @@ public class MeetingTimeParseTests
     public void EmptyMeetingTimeParseTest()
     {
         var actual = TestFormatMeetingTimes(ParseMeetingTimePriorities(""));
-        var expected = TestFormatMeetingTimes(new List<List<MeetingTime>>(){GetAllPossibleMeetingTimes(WeekType.All)});
+        var expected = TestFormatMeetingTimes(new List<List<MeetingTime>>() {GetAllPossibleMeetingTimes(WeekType.All)});
         Assert.AreEqual(expected, actual);
     }
-    
+
     [TestCase("пн 1 пара")] //лишних слов больше использовать нельзя
-    [TestCase("вт: 7")]     //старый формат
+    [TestCase("вт: 7")] //старый формат
     [TestCase("пн 0")]
     [TestCase("пн 9999")]
     [TestCase("erdtcyvbnm 4")]
@@ -58,7 +58,7 @@ public class MeetingTimeParseTests
     [TestCase("пн-пт; 3-4")]
     [TestCase("пн-пт; 3-4")]
     [TestCase("пара")]
-    [TestCase("пн")]        //Так пока нельзя. возможно потом стоит сделать чтобы было можно
+    [TestCase("пн")] //Так пока нельзя. возможно потом стоит сделать чтобы было можно
     public void WrongTimeRequisitionFormatShouldNotWork(string rawTimeRequisition)
     {
         Assert.Throws(Is.InstanceOf<Exception>(),
