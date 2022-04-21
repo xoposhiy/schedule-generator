@@ -10,7 +10,10 @@ public class MeanStudentIntersectionEstimator : IEstimator
         {
             currentMeetings.AddRange(state[meetingTime with {TimeSlot = meetingTime.TimeSlot + i}]);
         }
-
+        
+        if (currentMeetings.Any(e => e.Teacher == meeting.Teacher))
+            return double.MinValue;
+        
         var sufferingStudents = currentMeetings.Sum(meeting.GetCommonStudents);
         var previousMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot - 1}];
         var nextMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot + meeting.Duration}];
