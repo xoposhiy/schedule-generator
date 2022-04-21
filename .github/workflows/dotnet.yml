@@ -19,11 +19,14 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore ScheduleGenerator/Testing/
+      run: |
+           dotnet restore ScheduleGenerator/Testing/
            dotnet restore ScheduleGenerator/Testing2/
     - name: Build
-      run: dotnet build ScheduleGenerator/Testing/ --no-restore
+      run: |
+           dotnet build ScheduleGenerator/Testing/ --no-restore
            dotnet build ScheduleGenerator/Testing2/ --no-restore
     - name: Test
-      run: dotnet test ScheduleGenerator/Testing/ --no-build --verbosity normal
+      run: |
+           dotnet test ScheduleGenerator/Testing/ --no-build --verbosity normal
            dotnet test ScheduleGenerator/Testing2/ --no-build --verbosity normal
