@@ -1,3 +1,4 @@
+using System.Text;
 using CommonDomain;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
@@ -10,6 +11,7 @@ public static class Program
 {
     private static void Main()
     {
+        Console.OutputEncoding = Encoding.UTF8;
         var meetingsSource = "Форматированные пары весна";
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
@@ -20,23 +22,18 @@ public static class Program
         SheetToProbabilityConverter.ReadPriorities(repo, state.NotPlacedMeetings.Values, "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
 
-        SolveGreedy(state);
+        state = SolveGreedy(state);
 
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, state, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, state);
     }
 
-    private static void SolveGreedy(State state)
+    private static State SolveGreedy(State state)
     {
         var randomEstimator = new MeanStudentIntersectionEstimator();
         var greedySolver = new GreedySolver(randomEstimator);
 
-        while (state.NotPlacedMeetings.Count != 0)
-        {
-            var solution = greedySolver.GetSolutions(state).Last();
-            state.PlaceMeeting(solution.Meeting);
-            Console.WriteLine($"Place {solution}");
-        }
+        return greedySolver.GetSolutions(state).First();
     }
 }

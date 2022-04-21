@@ -34,4 +34,15 @@ public class State
         NotPlacedMeetings.Remove(meeting.Id);
         PlacedMeetings.Add(meeting);
     }
+
+    public State Copy()
+    {
+        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { })); //TODO: разобраться достаточно ли поверхностной копии митингов
+        foreach (var meeting in PlacedMeetings.Select(m => m with { }))
+        {
+            copy.PlaceMeeting(meeting);
+        }
+
+        return copy;
+    }
 }
