@@ -5,11 +5,12 @@ public abstract class FullSolver : ISolver, IStepSolver
     public virtual IEnumerable<State> GetSolutions(State problem)
     {
         var copy = problem.Copy();
+        var name = this.GetType().Name;
         while (copy.NotPlacedMeetings.Count != 0)
         {
             var solution = GetNextSteps(copy).Last();
             copy.PlaceMeeting(solution.Meeting);
-            Console.WriteLine($"Place {solution}");
+            Console.WriteLine($"{name} Placing {solution}");
         }
 
         yield return copy;
