@@ -37,7 +37,7 @@ public static class SheetToProbabilityConverter
                 {
                     for (int i = StartColumn; i < RightBorder; i+=3)
                     {
-                        int.TryParse(row[i], out var priority);
+                        var priority = ParseInt(row[i], 5);
                         // int.TryParse(row[i+1], out var priorityLk);
                         ProbabilityStorage.AddSubjectForStudent(student, IndexToDiscipline[i], priority);
                     }
@@ -56,5 +56,10 @@ public static class SheetToProbabilityConverter
             ProbabilityStorage.PriorityWithEntranceToProbability[priority] = double.Parse(row[1]);
             ProbabilityStorage.PriorityCommonToProbability[priority] = double.Parse(row[4]);
         }
+    }
+    
+    private static int ParseInt(string raw, int defaultValue)
+    {
+        return int.TryParse(raw, out var result) ? result : defaultValue;
     }
 }
