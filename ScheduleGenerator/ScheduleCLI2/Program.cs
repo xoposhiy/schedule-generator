@@ -1,3 +1,4 @@
+using System.Text;
 using CommonDomain;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
@@ -10,6 +11,7 @@ public static class Program
 {
     private static void Main()
     {
+        Console.OutputEncoding = Encoding.UTF8;
         var meetingsSource = "Форматированные пары весна";
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
