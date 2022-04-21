@@ -15,20 +15,9 @@ public static class Program
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
-        var disciplines = state.NotPlacedMeetings.Values.Select(e => e.Discipline).ToHashSet();
-        var dict = new Dictionary<Discipline, HashSet<int>>();
-        foreach (var meeting in state.NotPlacedMeetings.Values)
-        {
-            if (!dict.ContainsKey(meeting.Discipline))
-                dict.Add(meeting.Discipline, new HashSet<int>());
-            dict[meeting.Discipline].UnionWith(meeting.Groups.ToHashSet());
-        }
-        
-        //TODO (MexBanDoc) перенести присваиивание куда-нибудь в хорошее место (может быть просто словарь миитингов прокинуть и уже в конвертере расшатать)
-        ProbabilityStorage.DisciplineToMaxGroups = dict.ToDictionary(e => e.Key, e => e.Value.Count);
         
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
-        SheetToProbabilityConverter.ReadPriorities(repo, disciplines, "Приоритеты для шатания");
+        SheetToProbabilityConverter.ReadPriorities(repo, state.NotPlacedMeetings.Values, "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
 
         SolveGreedy(state);
