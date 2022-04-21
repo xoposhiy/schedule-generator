@@ -1,4 +1,5 @@
 using CommonDomain;
+using CommonDomain.Enums;
 
 namespace Domain2;
 
@@ -9,6 +10,8 @@ public static class ProbabilityStorage
 
     public static readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
     public static readonly Dictionary<int, double> PriorityCommonToProbability = new();
+
+    public const double GroupCollisionsCoef = 1; //Скорее всего не единица :)
 
     public static void AddSubjectForStudent(string student, Discipline discipline, int priority)
     {
@@ -28,26 +31,49 @@ public static class ProbabilityStorage
         var secondDiscipline = secondMeeting.Discipline;
         var firstGroups = firstMeeting.Groups;
         var secondGroups = secondMeeting.Groups;
-        var students1 = DisciplineWithPriorityToStudents[firstDiscipline];
-        var students2 = DisciplineWithPriorityToStudents[secondDiscipline];
-        var intersections = new List<HashSet<string>>();
-        for (var prior = 0; prior < students1.Count; prior++)
+        var intersectionGroupsCount = 0;
+        
+        if (firstDiscipline == secondDiscipline && firstMeeting.MeetingType == secondMeeting.MeetingType)
         {
-            var elem = students1[prior].ToHashSet();
-            elem.IntersectWith(students2[prior]);
-            intersections.Add(elem);
+            intersectionGroupsCount = firstGroups.Intersect(secondGroups).Count();
         }
-
+        
+        var firstStudents = DisciplineWithPriorityToStudents[firstDiscipline];
+        var secondStudents = DisciplineWithPriorityToStudents[secondDiscipline];
+        var intersectionStudents = new List<HashSet<string>>();
+        for (var prior = 0; prior < firstStudents.Count; prior++)
+        {
+            var students = firstStudents[prior].ToHashSet();
+            students.IntersectWith(secondStudents[prior]);
+            intersectionStudents.Add(students);
+        }
+        
+        var softCoef = (firstGroups.Count - intersectionGroupsCount) * secondGroups.Count +
+                       intersectionGroupsCount * (secondGroups.Count - 1);
         if (firstDiscipline.Type == secondDiscipline.Type)
         {
-            if (firstDiscipline.Type == DisciplineType.WithEntranceTest)
-                return intersections.Select((students, priority) =>
-                    students.Count * PriorityWithEntranceToProbability[priority]).Sum();
-            return intersections.Select((students, priority) =>
-                students.Count * PriorityCommonToProbability[priority]).Sum();
+            return CalcStudents(intersectionStudents, softCoef, intersectionGroupsCount,
+                firstDiscipline.Type == DisciplineType.WithEntranceTest 
+                    ? PriorityWithEntranceToProbability 
+                    : PriorityCommonToProbability);
         }
 
-        return intersections.Select((students, priority) =>
-            students.Count * (PriorityCommonToProbability[priority] + PriorityCommonToProbability[priority]) / 2).Sum();
+        return CalcStudents(intersectionStudents, softCoef, intersectionGroupsCount);
+    }
+    
+    private static double CalcStudents(List<HashSet<string>> intersectionStudents, int softCoef,
+        int intersectionGroupsCount)
+    {
+        return intersectionStudents.Select((students, priority) =>
+            students.Count * PriorityCommonToProbability[priority] * PriorityWithEntranceToProbability[priority] * softCoef
+            + students.Count * GroupCollisionsCoef * intersectionGroupsCount).Sum();
+    }
+
+    private static double CalcStudents(List<HashSet<string>> intersectionStudents, int softCoef,
+        int intersectionGroupsCount, Dictionary<int, double> priorityToProbability)
+    {
+        return intersectionStudents.Select((students, priority) =>
+            students.Count * priorityToProbability[priority] * priorityToProbability[priority] * softCoef
+            + students.Count * GroupCollisionsCoef * intersectionGroupsCount).Sum();
     }
 }
