@@ -1,6 +1,6 @@
 ﻿namespace Domain2.Algorithms;
 
-public class GreedySolver : ISolver
+public class GreedySolver : FullSolver
 {
     private readonly IEstimator estimator;
 
@@ -9,7 +9,7 @@ public class GreedySolver : ISolver
         this.estimator = estimator;
     }
 
-    public IEnumerable<Solution> GetSolutions(State problem)
+    public override IEnumerable<SolutionStep> GetNextSteps(State problem)
     {
         var bestScore = double.MinValue;
         foreach (var meeting in problem.GetAllPossibleVariants())
