@@ -31,7 +31,7 @@ public static class Program
         SheetToProbabilityConverter.ReadPriorities(repo, disciplines, "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
 
-        SolveGreedy(state);
+        state = SolveGreedy(state);
 
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, state, sheetName);
