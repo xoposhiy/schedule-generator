@@ -14,8 +14,11 @@ public static class SheetToProbabilityConverter
     private const int RightBorder = DisciplinesCount * 3 + StartColumn;
     private static readonly Dictionary<int, Discipline> IndexToDiscipline = new();
 
-    public static void ReadPriorities(GsRepository repo, HashSet<Discipline> disciplines, string meetingsSheetName)
+    public static void ReadPriorities(GsRepository repo, Dictionary<int, Meeting2>.ValueCollection meetings, string meetingsSheetName)
     {
+        ProbabilityStorage.FillDisciplineToMaxGroups(meetings);
+        
+        var disciplines = meetings.Select(e => e.Discipline).ToHashSet();
         var prioritiesDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName,
             0, 0, RightBorder);
         var header = prioritiesDataRaw[0];

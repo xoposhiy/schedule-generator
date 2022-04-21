@@ -5,14 +5,14 @@ namespace Domain2;
 
 public static class ProbabilityStorage
 {
-    public static readonly Dictionary<string, Dictionary<Discipline, int>> StudentWithDisciplineToPriority = new();
-    public static readonly Dictionary<Discipline, List<HashSet<string>>> DisciplineWithPriorityToStudents = new();
+    private static readonly Dictionary<string, Dictionary<Discipline, int>> StudentWithDisciplineToPriority = new();
+    private static readonly Dictionary<Discipline, List<HashSet<string>>> DisciplineWithPriorityToStudents = new();
     
 
     public static readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
     public static readonly Dictionary<int, double> PriorityCommonToProbability = new();
 
-    public static Dictionary<Discipline, int> DisciplineToMaxGroups = new();
+    private static readonly Dictionary<Discipline, int> DisciplineToMaxGroups = new();
 
     public static void AddSubjectForStudent(string student, Discipline discipline, int priority)
     {
@@ -24,6 +24,19 @@ public static class ProbabilityStorage
             DisciplineWithPriorityToStudents.Add(discipline, Enumerable.Range(0, 6)
                 .Select(_ => new HashSet<string>()).ToList());
         DisciplineWithPriorityToStudents[discipline][priority].Add(student);
+    }
+
+    public static void FillDisciplineToMaxGroups(Dictionary<int, Meeting2>.ValueCollection meetings)
+    {
+        var dict = new Dictionary<Discipline, HashSet<int>>();
+        foreach (var meeting in meetings)
+        {
+            if (!dict.ContainsKey(meeting.Discipline))
+                dict.Add(meeting.Discipline, new HashSet<int>());
+            dict[meeting.Discipline].UnionWith(meeting.Groups.ToHashSet());
+        }
+        foreach (var (discipline, groups) in dict) 
+            DisciplineToMaxGroups.Add(discipline, groups.Count);
     }
 
     public static double GetCommonStudents(this Meeting2 firstMeeting, Meeting2 secondMeeting)
