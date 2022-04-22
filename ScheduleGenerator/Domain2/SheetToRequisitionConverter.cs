@@ -88,11 +88,11 @@ public static class SheetToRequisitionConverter
             var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            //var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
+            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
             //TODO synchronize write and read mechanics
             meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
                 duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
-                classRoom, null));
+                classRoom, time));
         }
 
         return meetings;

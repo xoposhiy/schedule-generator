@@ -2,6 +2,8 @@ namespace Domain2.Algorithms;
 
 public abstract class FullSolver : ISolver, IStepSolver
 {
+    //TODO add score to ISolver
+    //TODO add time limit
     public virtual IEnumerable<State> GetSolutions(State problem)
     {
         var copy = problem.Copy();
