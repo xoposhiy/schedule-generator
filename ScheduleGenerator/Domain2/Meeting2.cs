@@ -14,7 +14,7 @@ namespace Domain2;
 /// <param name="WeekTypeSpec">Требование четности для пары (в большенсвте случаев оно будет либо All, либо OddOrEven)</param>
 /// <param name="MeetingTimePriorities">Удобство для преподователя, может содержать чётность</param>
 /// <param name="After"></param>
-/// <param name="Priority"></param>
+/// <param name="Priority">Задает порядок постановки пар, чем меньше, тем раньше</param>
 /// <param name="IsFixed"></param>
 /// <param name="Ignore"></param>
 /// <param name="ClassRoom"></param>

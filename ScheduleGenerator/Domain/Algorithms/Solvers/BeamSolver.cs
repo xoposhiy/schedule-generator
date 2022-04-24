@@ -139,6 +139,7 @@ namespace Domain.Algorithms.Solvers
                 .ToList();
         }
 
+        // ReSharper disable once UnusedMember.Local
         private double EstimateResult(Schedule schedule, Meeting meeting, double baseScore)
         {
             // schedule.AddMeeting(meeting);

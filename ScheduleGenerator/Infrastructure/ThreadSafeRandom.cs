@@ -5,6 +5,8 @@ namespace Infrastructure
     public class ThreadSafeRandom : Random
     {
         private static readonly Random Global = new(42);
+
+        // ReSharper disable once InconsistentNaming
         [ThreadStatic] private static Random? _local;
 
         public override int Next()

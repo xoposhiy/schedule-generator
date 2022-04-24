@@ -1,5 +1,4 @@
 using System.Text;
-using CommonDomain;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
 using Domain2.Algorithms;
@@ -17,7 +16,7 @@ public static class Program
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
-        
+
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
         SheetToProbabilityConverter.ReadPriorities(repo, state.NotPlacedMeetings.Values, "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");

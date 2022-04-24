@@ -8,10 +8,10 @@ namespace Domain.Algorithms.Solvers
     public class GreedySolver : ISolver
     {
         private readonly int choiceCount;
+        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly IEstimator estimator;
         private readonly Random random;
         private readonly Requisition requisition;
-        private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
         private readonly bool selectWithBestScoreOnly;
 
         public GreedySolver(IEstimator estimator, Requisition requisition,
@@ -44,7 +44,7 @@ namespace Domain.Algorithms.Solvers
                     .ToList();
                 if (meetingsToAdd.Count == 0) break;
 
-                var (meetingToAdd, scorePart) = SelectNextMeeting(meetingsToAdd);
+                var (meetingToAdd, _) = SelectNextMeeting(meetingsToAdd);
                 //LoggerExtension.WriteLog(nextMeeting);
                 schedule.AddMeeting(meetingToAdd, true);
                 //WriteLog($"{estimator.Estimate(currentSchedule)}");
@@ -57,11 +57,12 @@ namespace Domain.Algorithms.Solvers
             return new(schedule, score);
         }
 
+        // ReSharper disable once UnusedTupleComponentInReturnValue
         private (Meeting meeting, double score) SelectNextMeeting(
             IReadOnlyList<(Meeting meeting, double score)> orderedMeetings)
         {
             if (choiceCount == 1) return orderedMeetings[0];
-            
+
             var bestScore = orderedMeetings[0].score;
             var maxIndex = selectWithBestScoreOnly
                 ? orderedMeetings.Count(m => Math.Abs(m.score - bestScore) < 0.001)

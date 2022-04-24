@@ -20,10 +20,7 @@ namespace Domain.Conversions
         private const int HeadersColumnOffset = 2;
         private const int HeadersRowOffset = 0;
 
-        private const int SubGroupsCount = 2;
-
         private const int TimeStartColumn = TimeBarColumnOffset + 1;
-        private const int SubgroupRowOffset = HeadersRowOffset + 1;
 
         private const int StartsCount = 6;
 
@@ -53,13 +50,6 @@ namespace Domain.Conversions
             var groupNames = meetingSet
                 .SelectMany(m => m.GroupsChoice!.GetGroupParts())
                 .Select(g => g.ToScheduleString())
-                .Distinct()
-                .OrderBy(gn => gn)
-                .ToList();
-
-            var groupNames2 = meetingSet
-                .SelectMany(m => m.GroupsChoice!.Groups)
-                .Select(g => g.GroupName)
                 .Distinct()
                 .OrderBy(gn => gn)
                 .ToList();
@@ -107,6 +97,7 @@ namespace Domain.Conversions
             return modifier;
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
             const int height = StartsCount * WeekTypesCount;
@@ -120,11 +111,13 @@ namespace Domain.Conversions
             return modifier;
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private static SheetModifier BuildGroupHeaders(this SheetModifier modifier, List<string> groups)
         {
             var startColumn = HeadersColumnOffset;
             foreach (var group in groups)
             {
+                // ReSharper disable once UnusedVariable
                 var subGroupsRow = new List<List<CellData>>
                     {new() {HeaderCellData(group + "-1"), HeaderCellData(group + "-2")}};
                 modifier
@@ -386,6 +379,7 @@ namespace Domain.Conversions
             // .Execute();
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private static SheetModifier BuildTeachersHeaders(this SheetModifier modifier, List<string> teachers)
         {
             var startColumn = HeadersColumnOffset;

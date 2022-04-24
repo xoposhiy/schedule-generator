@@ -4,7 +4,6 @@ using System.Linq;
 using CommonDomain;
 using CommonDomain.Enums;
 using Domain.Conversions;
-using Domain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
 using static Domain.DomainExtensions;
@@ -98,6 +97,7 @@ namespace Domain
 
         public override int GetHashCode()
         {
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             return hashCode;
         }
 

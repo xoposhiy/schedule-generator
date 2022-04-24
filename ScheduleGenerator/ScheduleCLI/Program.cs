@@ -15,6 +15,7 @@ namespace ScheduleCLI
 {
     public static class Program
     {
+        // ReSharper disable once UnusedMember.Local
         private const int BeamWidth = 1;
         private const int ChoiceCount = 3;
 

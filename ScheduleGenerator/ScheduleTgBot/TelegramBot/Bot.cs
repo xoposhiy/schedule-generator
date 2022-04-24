@@ -21,30 +21,30 @@ namespace Application.TelegramBot
 {
     public class TgBot
     {
-        private StandardKernel container;
         private static readonly Regex LinkRegex = new("https://docs.google.com/spreadsheets/d/([a-zA-Z0-9-_]+)");
-
-        private readonly List<string> requisitionSheetHeaders;
-        private readonly List<string> requirementsSheetHeaderComments;
-
-        private readonly List<string> learningPlanSheetHeaders;
-        private readonly List<string> learningPlanSheetHeaderComments;
-
-        private List<(string pattern, string msg)> requisitionPatternMsgList;
-        private List<(string pattern, string msg)> learningPlanPatternMsgList;
-
-        private readonly SheetTableEvaluator requisitionEvaluator;
-        private readonly SheetTableEvaluator learningPlanEvaluator;
+        private readonly Dictionary<long, AdditionalSessionState> additionalStateDict;
 
         private readonly TelegramBotClient client;
+        private readonly string credentialAddressToShare;
+        private readonly SheetTableEvaluator learningPlanEvaluator;
+        private readonly List<string> learningPlanSheetHeaderComments;
+
+        private readonly List<string> learningPlanSheetHeaders;
+        private readonly Dictionary<long, GsRepository> repoDict;
         private readonly string repoSecret;
+        private readonly List<string> requirementsSheetHeaderComments;
+
+        private readonly SheetTableEvaluator requisitionEvaluator;
+
+        private readonly List<string> requisitionSheetHeaders;
+        private readonly Dictionary<long, ScheduleSession> sessionDict;
 
         //private GSRepository repo;
         private readonly SessionRepository sessionRepository;
-        private readonly string credentialAddressToShare;
-        private readonly Dictionary<long, ScheduleSession> sessionDict;
-        private readonly Dictionary<long, AdditionalSessionState> additionalStateDict;
-        private readonly Dictionary<long, GsRepository> repoDict;
+        private StandardKernel container;
+        private List<(string pattern, string msg)> learningPlanPatternMsgList;
+
+        private List<(string pattern, string msg)> requisitionPatternMsgList;
 
         public TgBot(string token, string repoSecret, string firebaseSecret, string dbBasePath,
             List<string> requisitionSheetHeaders,
@@ -438,6 +438,7 @@ namespace Application.TelegramBot
                     repo, scheduleSession.InputRequirementsSheet, 0, 0, requisitionSheetHeaders.Count);
                 // clear last errors
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (additionalSessionState.RequisitionLastErrorCoords != null &&
                     additionalSessionState.RequisitionLastErrorCoords.Any())
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.InputRequirementsSheet, (0, 0),
@@ -461,6 +462,7 @@ namespace Application.TelegramBot
                     repo, scheduleSession.LearningPlanSheet, 0, 0, learningPlanSheetHeaders.Count);
                 // clear last errors
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
                 if (additionalSessionState.LearningPlanLastErrorCoords != null &&
                     additionalSessionState.LearningPlanLastErrorCoords.Any())
                     SheetTableErrorPainter.ClearErrorPaint(repo, scheduleSession.LearningPlanSheet, (0, 0),
@@ -639,16 +641,13 @@ namespace Application.TelegramBot
 
     public class AdditionalSessionState
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public long Id { get; }
         public bool AccessReceived;
-        public bool TableValidationInProgress;
-        public bool DataIsValid;
         public bool CreatingSchedule;
+        public bool DataIsValid;
+        public IList<(int, int)> LearningPlanLastErrorCoords;
 
         public IList<(int, int)> RequisitionLastErrorCoords;
-        public IList<(int, int)> LearningPlanLastErrorCoords;
+        public bool TableValidationInProgress;
 
         public AdditionalSessionState(long id)
         {
@@ -656,5 +655,9 @@ namespace Application.TelegramBot
             RequisitionLastErrorCoords = new List<(int, int)>();
             LearningPlanLastErrorCoords = new List<(int, int)>();
         }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
+        public long Id { get; }
     }
 }
