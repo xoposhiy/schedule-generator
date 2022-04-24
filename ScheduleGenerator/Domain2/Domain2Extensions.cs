@@ -82,7 +82,15 @@ public static class Domain2Extensions
 
     public static IEnumerable<Meeting2> GetAllPossibleVariants(this State state)
     {
-        foreach (var meeting in state.NotPlacedMeetings.Values)
+        var fixedMeeting = state.NotPlacedMeetings.Values.FirstOrDefault(m => m.IsFixed);
+        if (fixedMeeting != null)
+        {
+            yield return fixedMeeting;
+            yield break;
+        }
+
+        var minPriority = state.NotPlacedMeetings.Values.Min(m => m.Priority);
+        foreach (var meeting in state.NotPlacedMeetings.Values.Where(m => m.Priority == minPriority))
         foreach (var meetingMeetingTimePriority in meeting.MeetingTimePriorities)
         foreach (var meetingTime in meetingMeetingTimePriority)
             yield return meeting with {MeetingTime = meetingTime};

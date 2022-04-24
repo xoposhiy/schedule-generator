@@ -30,8 +30,8 @@ public static class Program
 
     private static State SolveGreedy(State state)
     {
-        var randomEstimator = new MeanStudentIntersectionEstimator();
-        var greedySolver = new GreedySolver(randomEstimator);
+        var estimator = new MeanStudentIntersectionEstimator();
+        var greedySolver = new GreedySolver(estimator);
 
         return greedySolver.GetSolutions(state).First();
     }
