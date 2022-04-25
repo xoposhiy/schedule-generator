@@ -18,8 +18,9 @@ public static class Program
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
-        SheetToProbabilityConverter.ReadPriorities(repo, state.NotPlacedMeetings.Values, "Приоритеты для шатания");
-        SheetToProbabilityConverter.ReadProbabilities(repo, "Вероятности Весна");
+        SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
+            "Приоритеты для шатания");
+        SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
 
         state = SolveGreedy(state);
 

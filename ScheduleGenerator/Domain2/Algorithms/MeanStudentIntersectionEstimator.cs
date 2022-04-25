@@ -16,14 +16,15 @@ public class MeanStudentIntersectionEstimator : IEstimator
         if (currentMeetings.Any(e => e.Teacher == meeting.Teacher))
             return -1;
 
-        var sufferingStudents = currentMeetings.Sum(meeting.GetCommonStudents);
+        var probabilityStorage = state.ProbabilityStorage;
+        var sufferingStudents = currentMeetings.Sum(m => probabilityStorage.GetCommonStudents(meeting, m));
         var previousMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot - 1}];
         var nextMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot + meeting.Duration}];
         var satisfiedStudents = previousMeetings.Concat(nextMeetings)
             .Where(m => !currentMeetings.Contains(m))
-            .Sum(meeting.GetCommonStudents);
+            .Sum(m => probabilityStorage.GetCommonStudents(meeting, m));
         var score = satisfiedStudents - SufferingStudentsImportance * sufferingStudents;
-        var normalizationConstant = SufferingStudentsImportance * ProbabilityStorage.StudentsCount;
+        var normalizationConstant = SufferingStudentsImportance * probabilityStorage.StudentsCount;
         return score / normalizationConstant;
     }
 }

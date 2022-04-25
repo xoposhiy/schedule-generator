@@ -3,32 +3,31 @@ using CommonDomain.Enums;
 
 namespace Domain2;
 
-public static class ProbabilityStorage
+public class ProbabilityStorage
 {
-    private static readonly Dictionary<string, Dictionary<Discipline, int>> StudentWithDisciplineToPriority = new();
-    private static readonly Dictionary<Discipline, List<HashSet<string>>> DisciplineWithPriorityToStudents = new();
+    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
+    private readonly Dictionary<Discipline, List<HashSet<string>>> disciplineWithPriorityToStudents = new();
 
+    public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
+    public readonly Dictionary<int, double> PriorityCommonToProbability = new();
 
-    public static readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
-    public static readonly Dictionary<int, double> PriorityCommonToProbability = new();
+    private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
 
-    private static readonly Dictionary<Discipline, int> DisciplineToMaxGroups = new();
+    public int StudentsCount => studentWithDisciplineToPriority.Count;
 
-    public static int StudentsCount => StudentWithDisciplineToPriority.Count;
-
-    public static void AddSubjectForStudent(string student, Discipline discipline, int priority)
+    public void AddSubjectForStudent(string student, Discipline discipline, int priority)
     {
-        if (!StudentWithDisciplineToPriority.ContainsKey(student))
-            StudentWithDisciplineToPriority.Add(student, new Dictionary<Discipline, int>());
-        StudentWithDisciplineToPriority[student].Add(discipline, priority);
+        if (!studentWithDisciplineToPriority.ContainsKey(student))
+            studentWithDisciplineToPriority.Add(student, new Dictionary<Discipline, int>());
+        studentWithDisciplineToPriority[student].Add(discipline, priority);
 
-        if (!DisciplineWithPriorityToStudents.ContainsKey(discipline))
-            DisciplineWithPriorityToStudents.Add(discipline, Enumerable.Range(0, 6)
+        if (!disciplineWithPriorityToStudents.ContainsKey(discipline))
+            disciplineWithPriorityToStudents.Add(discipline, Enumerable.Range(0, 6)
                 .Select(_ => new HashSet<string>()).ToList());
-        DisciplineWithPriorityToStudents[discipline][priority].Add(student);
+        disciplineWithPriorityToStudents[discipline][priority].Add(student);
     }
 
-    public static void FillDisciplineToMaxGroups(Dictionary<int, Meeting2>.ValueCollection meetings)
+    public void FillDisciplineToMaxGroups(Dictionary<int, Meeting2>.ValueCollection meetings)
     {
         var dict = new Dictionary<Discipline, HashSet<int>>();
         foreach (var meeting in meetings)
@@ -39,65 +38,61 @@ public static class ProbabilityStorage
         }
 
         foreach (var (discipline, groups) in dict)
-            DisciplineToMaxGroups.Add(discipline, groups.Count);
+            disciplineToMaxGroups.Add(discipline, groups.Count);
     }
 
-    public static double GetCommonStudents(this Meeting2 firstMeeting, Meeting2 secondMeeting)
+    public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
         var firstDiscipline = firstMeeting.Discipline;
         var secondDiscipline = secondMeeting.Discipline;
         var firstGroups = firstMeeting.Groups;
         var secondGroups = secondMeeting.Groups;
-        int intersectionGroupsCount;
-        var softCoef = 1d;
+        var groupsIntersectionCoef = 1d;
         var sameDiscipline = firstDiscipline == secondDiscipline;
 
         if (sameDiscipline)
         {
-            intersectionGroupsCount = firstGroups.Intersect(secondGroups).Count();
-            softCoef = (double) intersectionGroupsCount / DisciplineToMaxGroups[firstDiscipline];
+            var intersectionGroupsCount = firstGroups.Intersect(secondGroups).Count();
+            groupsIntersectionCoef = (double) intersectionGroupsCount / disciplineToMaxGroups[firstDiscipline];
         }
 
-        var ans = 0d;
-        foreach (var student in StudentWithDisciplineToPriority.Keys)
+        var result = 0d;
+        foreach (var student in studentWithDisciplineToPriority.Keys)
         {
-            var firstPrior = StudentWithDisciplineToPriority[student][firstDiscipline];
-            var secondPrior = StudentWithDisciplineToPriority[student][secondDiscipline];
-            if (firstDiscipline.Type == secondDiscipline.Type)
-            {
-                ans += CalcStudents(firstPrior, secondPrior, softCoef,
-                    GetPriorityDict(firstDiscipline), sameDiscipline);
-            }
+            var firstPrior = studentWithDisciplineToPriority[student][firstDiscipline];
+            var secondPrior = studentWithDisciplineToPriority[student][secondDiscipline];
+
+            if (sameDiscipline)
+                result += CalcStudents(firstPrior, groupsIntersectionCoef,
+                    GetPriorityDict(firstDiscipline));
             else
-            {
-                ans += CalcStudents(firstPrior, secondPrior,
+                result += CalcStudents(firstPrior, secondPrior,
                     GetPriorityDict(firstDiscipline),
                     GetPriorityDict(secondDiscipline),
-                    softCoef);
-            }
+                    groupsIntersectionCoef);
         }
 
-        return ans;
+        return result;
     }
 
-    private static Dictionary<int, double> GetPriorityDict(Discipline discipline)
+    private Dictionary<int, double> GetPriorityDict(Discipline discipline)
     {
         return discipline.Type == DisciplineType.WithEntranceTest
             ? PriorityWithEntranceToProbability
             : PriorityCommonToProbability;
     }
 
-    private static double CalcStudents(int firstPrior, int secondPrior,
-        double softCoef, Dictionary<int, double> priorityToProbability, bool sameDiscipline)
+    private static double CalcStudents(int firstPrior,
+        double groupsIntersectionCoef, IReadOnlyDictionary<int, double> priorityToProbability)
     {
-        if (sameDiscipline) return priorityToProbability[firstPrior] * softCoef;
-        return priorityToProbability[firstPrior] * priorityToProbability[secondPrior] * softCoef;
+        return priorityToProbability[firstPrior] * groupsIntersectionCoef;
     }
 
     private static double CalcStudents(int firstPrior, int secondPrior,
-        Dictionary<int, double> firstPriorityToProbability,
-        Dictionary<int, double> secondPriorityToProbability, double softCoef)
+        IReadOnlyDictionary<int, double> firstPriorityToProbability,
+        IReadOnlyDictionary<int, double> secondPriorityToProbability, double groupsIntersectionCoef)
     {
-        return firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior] * softCoef;
+        return firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior] *
+               groupsIntersectionCoef;
     }
 }

@@ -6,9 +6,16 @@ public class State
 {
     public Dictionary<int, Meeting2> NotPlacedMeetings;
     public List<Meeting2> PlacedMeetings = new();
+    public ProbabilityStorage ProbabilityStorage = new();
 
     public State(IEnumerable<Meeting2> meetingsToPlace)
     {
+        NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
+    }
+
+    private State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage)
+    {
+        ProbabilityStorage = probabilityStorage;
         NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
     }
 
@@ -37,7 +44,7 @@ public class State
 
     public State Copy()
     {
-        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { })); //TODO: разобраться достаточно ли поверхностной копии митингов
+        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { }), ProbabilityStorage); //TODO: разобраться достаточно ли поверхностной копии митингов
         foreach (var meeting in PlacedMeetings.Select(m => m with { }))
         {
             copy.PlaceMeeting(meeting);
