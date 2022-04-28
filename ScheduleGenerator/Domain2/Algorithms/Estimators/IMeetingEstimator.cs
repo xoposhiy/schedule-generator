@@ -1,6 +1,6 @@
 ﻿namespace Domain2.Algorithms.Estimators;
 
-public interface IEstimator
+public interface IMeetingEstimator
 {
     double EstimateMeeting(State state, Meeting2 meeting);
 }

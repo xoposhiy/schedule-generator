@@ -1,6 +1,6 @@
 namespace Domain2.Algorithms.Estimators;
 
-public class MeanStudentIntersectionEstimator : IEstimator
+public class MeanStudentIntersectionEstimator : IMeetingEstimator
 {
     private const int SufferingStudentsImportance = 100;
 

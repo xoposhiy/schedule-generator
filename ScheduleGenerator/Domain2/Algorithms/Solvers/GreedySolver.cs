@@ -4,9 +4,9 @@ namespace Domain2.Algorithms.Solvers;
 
 public class GreedySolver : FullSolver
 {
-    private readonly IEstimator estimator;
+    private readonly IMeetingEstimator estimator;
 
-    public GreedySolver(IEstimator estimator)
+    public GreedySolver(IMeetingEstimator estimator)
     {
         this.estimator = estimator;
     }

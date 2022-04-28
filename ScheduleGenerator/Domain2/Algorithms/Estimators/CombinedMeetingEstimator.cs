@@ -1,10 +1,10 @@
 namespace Domain2.Algorithms.Estimators;
 
-public class CombinedEstimator : IEstimator
+public class CombinedMeetingEstimator : IMeetingEstimator
 {
-    public readonly IEstimator[] estimators;
+    private readonly IMeetingEstimator[] estimators;
 
-    public CombinedEstimator(IEstimator[] estimators)
+    public CombinedMeetingEstimator(IMeetingEstimator[] estimators)
     {
         this.estimators = estimators.ToArray();
     }

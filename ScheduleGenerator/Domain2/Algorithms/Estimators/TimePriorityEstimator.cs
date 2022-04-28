@@ -1,6 +1,6 @@
 namespace Domain2.Algorithms.Estimators;
 
-public class TimePriorityEstimator : IEstimator
+public class TimePriorityEstimator : IMeetingEstimator
 {
     public double EstimateMeeting(State state, Meeting2 meeting)
     {
