@@ -1,4 +1,4 @@
-﻿namespace Domain2.Algorithms;
+﻿namespace Domain2.Algorithms.Solvers;
 
 public interface IStepSolver
 {

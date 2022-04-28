@@ -2,6 +2,8 @@ using System.Text;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
 using Domain2.Algorithms;
+using Domain2.Algorithms.Estimators;
+using Domain2.Algorithms.Solvers;
 using Infrastructure;
 
 namespace ScheduleCLI2;

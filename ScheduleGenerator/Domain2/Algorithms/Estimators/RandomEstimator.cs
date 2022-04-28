@@ -1,4 +1,4 @@
-﻿namespace Domain2.Algorithms;
+﻿namespace Domain2.Algorithms.Estimators;
 
 public class RandomEstimator : IEstimator
 {

@@ -1,4 +1,6 @@
-﻿namespace Domain2.Algorithms;
+﻿using Domain2.Algorithms.Estimators;
+
+namespace Domain2.Algorithms.Solvers;
 
 public class GreedySolver : FullSolver
 {
