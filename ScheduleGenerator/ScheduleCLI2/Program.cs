@@ -24,16 +24,16 @@ public static class Program
             "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
 
-        state = SolveGreedy(state);
+        var solution = SolveGreedy(state);
 
         var sheetName = "Лист4";
-        Visualizer.DrawSchedule(repo, state, sheetName);
-        Visualizer.UpdateMeetingsData(repo, meetingsSource, state);
+        Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
+        Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
     }
 
-    private static State SolveGreedy(State state)
+    private static (State, double) SolveGreedy(State state)
     {
-        var estimator = new CombinedEstimator(new IEstimator[]{new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
+        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]{new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
         var greedySolver = new GreedySolver(estimator);
 
         return greedySolver.GetSolutions(state).First();
