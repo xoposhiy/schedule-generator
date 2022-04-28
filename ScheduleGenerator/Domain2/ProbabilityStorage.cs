@@ -9,7 +9,7 @@ public class ProbabilityStorage
     private readonly Dictionary<Discipline, List<HashSet<string>>> disciplineWithPriorityToStudents = new();
 
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
-    public readonly Dictionary<int, double> PriorityCommonToProbability = new();
+    public readonly Dictionary<int, double> PriorityToProbability = new();
 
     private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
 
@@ -41,13 +41,30 @@ public class ProbabilityStorage
             disciplineToMaxGroups.Add(discipline, groups.Count);
     }
 
+    public double GetStudentsExpectation(Meeting2 meeting)
+    {
+        //TODO optimize this
+        switch (meeting.Discipline.Type)
+        {
+            case DisciplineType.Free:
+            case DisciplineType.WithEntranceTest:
+                return studentWithDisciplineToPriority.Values
+                    .SelectMany(d => d.Where(p => p.Key == meeting.Discipline).Select(p => p.Value))
+                    .Sum(k => GetPriorityDict(meeting.Discipline)[k]);
+            case DisciplineType.Obligatory:
+                return StudentsCount;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
         var firstDiscipline = firstMeeting.Discipline;
         var secondDiscipline = secondMeeting.Discipline;
         var firstGroups = firstMeeting.Groups;
         var secondGroups = secondMeeting.Groups;
-        var groupsIntersectionCoef = 1d;
+        var groupsIntersectionCoef = 1d;        //TODO WTF is this
         var sameDiscipline = firstDiscipline == secondDiscipline;
 
         if (sameDiscipline)
@@ -79,7 +96,7 @@ public class ProbabilityStorage
     {
         return discipline.Type == DisciplineType.WithEntranceTest
             ? PriorityWithEntranceToProbability
-            : PriorityCommonToProbability;
+            : PriorityToProbability;
     }
 
     private static double CalcStudents(int firstPrior,

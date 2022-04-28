@@ -57,7 +57,7 @@ public static class SheetToProbabilityConverter
         {
             int.TryParse(row[0], out var priority);
             probabilityStorage.PriorityWithEntranceToProbability[priority] = double.Parse(row[1]);
-            probabilityStorage.PriorityCommonToProbability[priority] = double.Parse(row[4]);
+            probabilityStorage.PriorityToProbability[priority] = double.Parse(row[4]);
         }
     }
 

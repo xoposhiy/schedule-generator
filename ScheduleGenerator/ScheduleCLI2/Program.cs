@@ -33,7 +33,7 @@ public static class Program
 
     private static State SolveGreedy(State state)
     {
-        var estimator = new MeanStudentIntersectionEstimator();
+        var estimator = new CombinedEstimator(new IEstimator[]{new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
         var greedySolver = new GreedySolver(estimator);
 
         return greedySolver.GetSolutions(state).First();
