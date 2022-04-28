@@ -89,7 +89,6 @@ public static class SheetToRequisitionConverter
 
             var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
             var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
-            //TODO synchronize write and read mechanics
             meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
                 duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
                 classRoom, time));
