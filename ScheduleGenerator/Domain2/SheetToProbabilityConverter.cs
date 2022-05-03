@@ -1,6 +1,7 @@
 using CommonDomain;
 using CommonInfrastructure;
 using CommonInfrastructure.GoogleSheetsRepository;
+using static Domain2.Constants;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -38,7 +39,7 @@ public static class SheetToProbabilityConverter
                 {
                     for (var i = StartColumn; i < RightBorder; i += 3)
                     {
-                        var priority = ParseInt(row[i], 5);
+                        var priority = ParseInt(row[i], UnselectedPriority);
                         // int.TryParse(row[i+1], out var priorityLk);
                         probabilityStorage.AddSubjectForStudent(student, IndexToDiscipline[i], priority);
                     }

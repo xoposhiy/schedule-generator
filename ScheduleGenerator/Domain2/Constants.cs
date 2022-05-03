@@ -4,4 +4,5 @@ public static class Constants
 {
     public const int TimeSlots = 9;
     public const int FormattedMeetingsRowWidth = 16;
+    public const int UnselectedPriority = 5;
 }

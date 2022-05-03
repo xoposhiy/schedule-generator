@@ -1,5 +1,6 @@
 using CommonDomain;
 using CommonDomain.Enums;
+using static Domain2.Constants;
 
 namespace Domain2;
 
@@ -47,7 +48,7 @@ public class ProbabilityStorage
             case DisciplineType.Free:
             case DisciplineType.WithEntranceTest:
                 return studentWithDisciplineToPriority.Values
-                    .Select(d => d.TryGetValue(meeting.Discipline, out var p) ? p : 5)
+                    .Select(d => d.TryGetValue(meeting.Discipline, out var p) ? p : UnselectedPriority)
                     .Sum(k => GetPriorityDict(meeting.Discipline)[k]);
             case DisciplineType.Obligatory:
                 return StudentsCount;
