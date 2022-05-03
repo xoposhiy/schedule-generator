@@ -50,6 +50,7 @@ public static class Program
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
         var best = solutions.MinBy(s => s.score);
         Console.Error.WriteLine($"Best score: {best.score}");
+        Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");
         return best;
     }
 }

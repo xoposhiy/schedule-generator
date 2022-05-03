@@ -25,18 +25,18 @@ public class ChokudaiSearch : ISolver
         while (!countdown.IsFinished())
             for (var t = 0; t < depth; t++)
             {
-                if (!states[t].TryDequeue(out var state, out var score)) continue;
+                if (!states[t].TryDequeue(out var state, out var penalty)) continue;
 
                 var variants = state.GetAllPossibleVariants().ToList();
 
-                if (variants.Count == 0) yield return (state, -score);
+                if (variants.Count == 0) yield return (state, -penalty);
 
                 foreach (var variant in variants)
                 {
                     var possible = state.Copy();
                     var scoreDelta = estimator.EstimateMeeting(possible, variant);
                     possible.PlaceMeeting(variant);
-                    states[t + 1].Enqueue(possible, score - scoreDelta);
+                    states[t + 1].Enqueue(possible, penalty - scoreDelta);
                 }
             }
     }
