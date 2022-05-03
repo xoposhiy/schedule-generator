@@ -1,9 +1,11 @@
+using CommonInfrastructure;
+
 namespace Domain2.Algorithms.Solvers;
 
 public abstract class FullSolver : ISolver, IStepSolver
 {
     //TODO add time limit
-    public virtual IEnumerable<(State schedule, double score)> GetSolutions(State problem)
+    public virtual IEnumerable<(State schedule, double score)> GetSolutions(State problem, Countdown countdown)
     {
         var copy = problem.Copy();
         var name = this.GetType().Name;

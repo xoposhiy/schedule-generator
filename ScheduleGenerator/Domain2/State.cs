@@ -13,10 +13,9 @@ public class State
         NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
     }
 
-    private State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage)
+    private State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage) : this(meetingsToPlace)
     {
         ProbabilityStorage = probabilityStorage;
-        NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
     }
 
     public IEnumerable<Meeting2> this[MeetingTime meetingTime]
@@ -44,7 +43,8 @@ public class State
 
     public State Copy()
     {
-        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { }), ProbabilityStorage); //TODO: разобраться достаточно ли поверхностной копии митингов
+        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { }),
+            ProbabilityStorage); //TODO: разобраться достаточно ли поверхностной копии митингов
         foreach (var meeting in PlacedMeetings.Select(m => m with { }))
         {
             copy.PlaceMeeting(meeting);

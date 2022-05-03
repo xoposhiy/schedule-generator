@@ -1,7 +1,6 @@
 using System.Text;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
-using Domain2.Algorithms;
 using Domain2.Algorithms.Estimators;
 using Domain2.Algorithms.Solvers;
 using Infrastructure;
@@ -33,9 +32,10 @@ public static class Program
 
     private static (State, double) SolveGreedy(State state)
     {
-        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]{new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
+        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]
+            {new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
         var greedySolver = new GreedySolver(estimator);
 
-        return greedySolver.GetSolutions(state).First();
+        return greedySolver.GetSolutions(state, 0).First();
     }
 }
