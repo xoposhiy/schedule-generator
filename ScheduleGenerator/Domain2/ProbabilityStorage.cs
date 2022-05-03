@@ -5,13 +5,12 @@ namespace Domain2;
 
 public class ProbabilityStorage
 {
-    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
+    private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
     private readonly Dictionary<Discipline, List<HashSet<string>>> disciplineWithPriorityToStudents = new();
-
-    public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
     public readonly Dictionary<int, double> PriorityToProbability = new();
 
-    private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
+    public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
+    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
@@ -43,18 +42,17 @@ public class ProbabilityStorage
 
     public double GetStudentsExpectation(Meeting2 meeting)
     {
-        //TODO optimize this
         switch (meeting.Discipline.Type)
         {
             case DisciplineType.Free:
             case DisciplineType.WithEntranceTest:
                 return studentWithDisciplineToPriority.Values
-                    .SelectMany(d => d.Where(p => p.Key == meeting.Discipline).Select(p => p.Value))
+                    .Select(d => d.TryGetValue(meeting.Discipline, out var p) ? p : 5)
                     .Sum(k => GetPriorityDict(meeting.Discipline)[k]);
             case DisciplineType.Obligatory:
                 return StudentsCount;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(meeting));
         }
     }
 
@@ -64,7 +62,7 @@ public class ProbabilityStorage
         var secondDiscipline = secondMeeting.Discipline;
         var firstGroups = firstMeeting.Groups;
         var secondGroups = secondMeeting.Groups;
-        var groupsIntersectionCoef = 1d;        //TODO WTF is this
+        var groupsIntersectionCoef = 1d; //TODO WTF is this
         var sameDiscipline = firstDiscipline == secondDiscipline;
 
         if (sameDiscipline)

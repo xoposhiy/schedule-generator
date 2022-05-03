@@ -14,7 +14,6 @@ public class ChokudaiSearch : ISolver
         this.estimator = estimator;
     }
 
-
     public IEnumerable<(State schedule, double score)> GetSolutions(State problem, Countdown countdown)
     {
         var depth = problem.NotPlacedMeetings.Count + 1;
