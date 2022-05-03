@@ -23,7 +23,7 @@ public static class Program
             "Приоритеты для шатания");
         SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
 
-        var solution = SolveGreedy(state);
+        var solution = SolveByChokudai(state);
 
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
@@ -37,5 +37,19 @@ public static class Program
         var greedySolver = new GreedySolver(estimator);
 
         return greedySolver.GetSolutions(state, 0).First();
+    }
+
+    private static (State, double) SolveByChokudai(State state)
+    {
+        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]
+            {new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
+
+        var chokudai = new ChokudaiSearch(56, estimator);
+
+        var solutions = chokudai.GetSolutions(state, 10000).ToList();
+        Console.Error.WriteLine($"Solutions count: {solutions.Count}");
+        var best = solutions.MinBy(s => s.score);
+        Console.Error.WriteLine($"Best score: {best.score}");
+        return best;
     }
 }

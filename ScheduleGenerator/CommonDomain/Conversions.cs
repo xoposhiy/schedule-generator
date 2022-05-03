@@ -11,7 +11,8 @@ public static class Conversions
         {"ср", DayOfWeek.Wednesday},
         {"чт", DayOfWeek.Thursday},
         {"пт", DayOfWeek.Friday},
-        {"сб", DayOfWeek.Saturday}
+        {"сб", DayOfWeek.Saturday},
+        {"вс", DayOfWeek.Sunday}
     };
 
     public static MeetingType GetMeetingType(string name)
