@@ -30,14 +30,14 @@ public class ChokudaiSearch : ISolver
 
                 var variants = state.GetAllPossibleVariants().ToList();
 
-                if (variants.Count == 0) yield return (state, score);
+                if (variants.Count == 0) yield return (state, -score);
 
                 foreach (var variant in variants)
                 {
                     var possible = state.Copy();
                     var scoreDelta = estimator.EstimateMeeting(possible, variant);
                     possible.PlaceMeeting(variant);
-                    states[t + 1].Enqueue(possible, score + scoreDelta);
+                    states[t + 1].Enqueue(possible, score - scoreDelta);
                 }
             }
     }
