@@ -30,18 +30,18 @@ public static class Program
             meetingsSource = "Форматированные пары осень";
             state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
             SheetToProbabilityConverter.SetDiciplinesCount(18);
+            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты (Осень)");
-            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
         }
         else
         {
             meetingsSource = "Форматированные пары весна";
             state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
             SheetToProbabilityConverter.SetDiciplinesCount(23);
+            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");   
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты для шатания");
-            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");   
         }
 
         var solution = SolveByChokudai(state);

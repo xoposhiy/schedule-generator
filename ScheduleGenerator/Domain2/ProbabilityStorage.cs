@@ -13,6 +13,8 @@ public class ProbabilityStorage
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
     private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
 
+    private readonly Dictionary<Discipline, double> studentsExpectation = new();
+
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
     public void AddSubjectForStudent(string student, Discipline discipline, int priority)
@@ -25,6 +27,10 @@ public class ProbabilityStorage
             disciplineWithPriorityToStudents.Add(discipline, Enumerable.Range(0, 6)
                 .Select(_ => new HashSet<string>()).ToList());
         disciplineWithPriorityToStudents[discipline][priority].Add(student);
+
+        if (!studentsExpectation.ContainsKey(discipline))
+            studentsExpectation[discipline] = 0;
+        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority];
     }
 
     public void FillDisciplineToMaxGroups(Dictionary<int, Meeting2>.ValueCollection meetings)
@@ -47,9 +53,7 @@ public class ProbabilityStorage
         {
             case DisciplineType.Free:
             case DisciplineType.WithEntranceTest:
-                return studentWithDisciplineToPriority.Values
-                    .Select(d => d.TryGetValue(meeting.Discipline, out var p) ? p : UnselectedPriority)
-                    .Sum(k => GetPriorityDict(meeting.Discipline)[k]);
+                return studentsExpectation[meeting.Discipline];
             case DisciplineType.Obligatory:
                 return StudentsCount;
             default:
