@@ -45,6 +45,7 @@ public static class Program
         }
 
         var solution = SolveByChokudai(state);
+        Console.Error.WriteLine($"Best score: {solution.Item2}");
 
         var sheetName = "Лист4";
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
@@ -69,8 +70,7 @@ public static class Program
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
-        var best = solutions.MinBy(s => s.score);
-        Console.Error.WriteLine($"Best score: {best.score}");
+        var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");
         return best;
     }
