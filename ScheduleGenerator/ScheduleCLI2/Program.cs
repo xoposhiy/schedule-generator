@@ -14,15 +14,16 @@ public static class Program
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "autumn";
         var regime = "spring";
-        
-        string meetingsSource;
-        State state;
-        
+
+
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
+        
+        string meetingsSource;
+        State state;
 
         if (regime == "autumn")
         {
@@ -36,8 +37,8 @@ public static class Program
         else
         {
             meetingsSource = "Форматированные пары весна";
-            SheetToProbabilityConverter.SetDiciplinesCount(23);
             state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
+            SheetToProbabilityConverter.SetDiciplinesCount(23);
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты для шатания");
             SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");   
