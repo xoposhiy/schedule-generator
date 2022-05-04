@@ -12,17 +12,22 @@ public static class Program
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        var meetingsSource = "Форматированные пары весна";
+        // var meetingsSource = "Форматированные пары весна";
+        var meetingsSource = "Форматированные пары осень";
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
         var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
+        // SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
+        //     "Приоритеты для шатания");
+        // SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
+        
         SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
-            "Приоритеты для шатания");
-        SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
-
+            "Приоритеты (Осень)");
+        SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
+        
         var solution = SolveByChokudai(state);
 
         var sheetName = "Лист4";
