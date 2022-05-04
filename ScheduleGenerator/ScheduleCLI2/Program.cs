@@ -12,22 +12,37 @@ public static class Program
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        // var meetingsSource = "Форматированные пары весна";
-        var meetingsSource = "Форматированные пары осень";
+        // var regime = "autumn";
+        var regime = "spring";
+        
+        string meetingsSource;
+        State state;
+        
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
-        var state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
-        // SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
-        //     "Приоритеты для шатания");
-        // SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");
-        
-        SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
-            "Приоритеты (Осень)");
-        SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
-        
+
+        if (regime == "autumn")
+        {
+            meetingsSource = "Форматированные пары осень";
+            state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
+            SheetToProbabilityConverter.SetDiciplinesCount(18);
+            SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
+                "Приоритеты (Осень)");
+            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
+        }
+        else
+        {
+            meetingsSource = "Форматированные пары весна";
+            SheetToProbabilityConverter.SetDiciplinesCount(23);
+            state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
+            SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
+                "Приоритеты для шатания");
+            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");   
+        }
+
         var solution = SolveByChokudai(state);
 
         var sheetName = "Лист4";

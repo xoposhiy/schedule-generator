@@ -10,9 +10,15 @@ namespace Domain2;
 public static class SheetToProbabilityConverter
 {
     private const int StartColumn = 2;
-    private const int DisciplinesCount = 18;
-    private const int RightBorder = DisciplinesCount * 3 + StartColumn;
+    private static int DisciplinesCount;
+    private static int RightBorder;
     private static readonly Dictionary<int, Discipline> IndexToDiscipline = new();
+
+    public static void SetDiciplinesCount(int count)
+    {
+        DisciplinesCount = count;
+        RightBorder = DisciplinesCount * 3 + StartColumn;
+    }
 
     public static void ReadPriorities(GsRepository repo, ProbabilityStorage probabilityStorage,
         Dictionary<int, Meeting2>.ValueCollection meetings, string meetingsSheetName)
