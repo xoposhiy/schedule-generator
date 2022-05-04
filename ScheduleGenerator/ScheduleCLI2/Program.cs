@@ -66,7 +66,7 @@ public static class Program
         var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]
             {new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
 
-        var chokudai = new ChokudaiSearch(56, estimator);
+        var chokudai = new ChokudaiSearch(estimator);
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");

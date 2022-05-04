@@ -43,9 +43,8 @@ public class State
 
     public State Copy()
     {
-        var copy = new State(NotPlacedMeetings.Values.Select(m => m with { }),
-            ProbabilityStorage); //TODO: разобраться достаточно ли поверхностной копии митингов
-        foreach (var meeting in PlacedMeetings.Select(m => m with { }))
+        var copy = new State(NotPlacedMeetings.Values, ProbabilityStorage);
+        foreach (var meeting in PlacedMeetings)
         {
             copy.PlaceMeeting(meeting);
         }

@@ -6,11 +6,9 @@ namespace Domain2.Algorithms.Solvers;
 public class ChokudaiSearch : ISolver
 {
     private readonly IMeetingEstimator estimator;
-    private readonly int maxBeamWidth;
 
-    public ChokudaiSearch(int maxBeamWidth, IMeetingEstimator estimator)
+    public ChokudaiSearch(IMeetingEstimator estimator)
     {
-        this.maxBeamWidth = maxBeamWidth;
         this.estimator = estimator;
     }
 
