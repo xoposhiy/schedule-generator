@@ -13,4 +13,11 @@ public static class ObjectMother2
     public static Meeting2 FirstMeeting =
         new(0, FirstDiscipline, MeetingType.Lecture, FirstTeacher, FirstGroup, "Place1",
             Array.Empty<RoomSpec>(), 1, WeekType.All, new(), MeetingType.Lecture, 2, false, false, null, null);
+
+    public static readonly MeetingTime FirstMeetingTime = new(WeekType.All, DayOfWeek.Monday, 2);
+
+    public static State CreateEmptyState()
+    {
+        return new(Array.Empty<Meeting2>());
+    }
 }
