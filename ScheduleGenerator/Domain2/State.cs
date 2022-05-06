@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using static CommonDomain.CommonDomainExtensions;
 
 namespace Domain2;
@@ -5,18 +6,30 @@ namespace Domain2;
 public class State
 {
     private readonly long hashCode;
-    public readonly Dictionary<int, Meeting2> NotPlacedMeetings;
-    public readonly List<Meeting2> PlacedMeetings = new();
-    public readonly ProbabilityStorage ProbabilityStorage = new();
+    public readonly ImmutableDictionary<int, Meeting2> NotPlacedMeetings;
+    public readonly ImmutableList<Meeting2> PlacedMeetings;
+    public readonly ProbabilityStorage ProbabilityStorage;
+    public readonly ZobristHasher ZobristHasher;
 
-    public State(IEnumerable<Meeting2> meetingsToPlace)
+    public State(IReadOnlyCollection<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage)
     {
-        NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
+        PlacedMeetings = ImmutableList<Meeting2>.Empty;
+        NotPlacedMeetings = meetingsToPlace.ToImmutableDictionary(m => m.Id, m => m);
+        ProbabilityStorage = probabilityStorage;
+        ZobristHasher = new(meetingsToPlace);
     }
 
-    public State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage) : this(meetingsToPlace)
+    private State(ImmutableList<Meeting2> placedMeetings,
+        ImmutableDictionary<int, Meeting2> notPlacedMeetings,
+        ProbabilityStorage probabilityStorage,
+        ZobristHasher hasher,
+        long hashCode)
     {
+        PlacedMeetings = placedMeetings;
+        NotPlacedMeetings = notPlacedMeetings;
         ProbabilityStorage = probabilityStorage;
+        ZobristHasher = hasher;
+        this.hashCode = hashCode;
     }
 
     public IEnumerable<Meeting2> this[MeetingTime meetingTime]
@@ -36,20 +49,11 @@ public class State
         }
     }
 
-    public void PlaceMeeting(Meeting2 meeting)
+    public State AddMeeting(Meeting2 meeting)
     {
-        NotPlacedMeetings.Remove(meeting.Id);
-        PlacedMeetings.Add(meeting);
-    }
-
-    public State Copy()
-    {
-        var copy = new State(NotPlacedMeetings.Values, ProbabilityStorage);
-        foreach (var meeting in PlacedMeetings)
-        {
-            copy.PlaceMeeting(meeting);
-        }
-
-        return copy;
+        var placedMeetings = PlacedMeetings.Add(meeting);
+        var dictionary = NotPlacedMeetings.Remove(meeting.Id);
+        var hash = hashCode ^ ZobristHasher.GetMeetingHash(meeting);
+        return new(placedMeetings, dictionary, ProbabilityStorage, ZobristHasher, hash);
     }
 }

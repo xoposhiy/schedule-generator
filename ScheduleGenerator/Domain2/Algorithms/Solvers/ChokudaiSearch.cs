@@ -31,9 +31,8 @@ public class ChokudaiSearch : ISolver
 
                 foreach (var variant in variants)
                 {
-                    var possible = state.Copy();
-                    var scoreDelta = estimator.EstimateMeeting(possible, variant);
-                    possible.PlaceMeeting(variant);
+                    var scoreDelta = estimator.EstimateMeeting(state, variant);
+                    var possible = state.AddMeeting(variant);
                     states[t + 1].Enqueue(possible, penalty - scoreDelta);
                 }
             }

@@ -21,7 +21,7 @@ public static class SheetToProbabilityConverter
     }
 
     public static void ReadPriorities(GsRepository repo, ProbabilityStorage probabilityStorage,
-        Dictionary<int, Meeting2>.ValueCollection meetings, string meetingsSheetName)
+        IEnumerable<Meeting2> meetings, string meetingsSheetName)
     {
         probabilityStorage.FillDisciplineToMaxGroups(meetings);
 

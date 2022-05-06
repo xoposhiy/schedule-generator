@@ -1,5 +1,4 @@
 ﻿using CommonDomain.Enums;
-using Domain2;
 using NUnit.Framework;
 using static Testing2.ObjectMother2;
 
@@ -10,10 +9,10 @@ public static class StateTests
     [Test]
     public static void AddMeetingTest()
     {
-        var state = new State(new List<Meeting2> {FirstMeeting});
+        var state = CreateEmptyState(FirstMeeting);
         Assert.AreEqual(1, state.NotPlacedMeetings.Count);
         Assert.IsEmpty(state.PlacedMeetings);
-        state.PlaceMeeting(FirstMeeting);
+        state = state.AddMeeting(FirstMeeting);
         Assert.IsEmpty(state.NotPlacedMeetings);
         Assert.IsNotEmpty(state.PlacedMeetings);
     }
@@ -21,42 +20,44 @@ public static class StateTests
     [Test]
     public static void StateIndexerTest()
     {
-        var state = new State(Array.Empty<Meeting2>());
+        var state = CreateEmptyState(FirstMeeting);
         Assert.IsEmpty(state[FirstMeetingTime]);
-        var meetingToPlace = FirstMeeting with {MeetingTime = FirstMeetingTime};
-        state.PlaceMeeting(meetingToPlace);
-        Assert.Contains(meetingToPlace, state[FirstMeetingTime].ToList());
+        state = state.AddMeeting(FirstMeeting);
+        Assert.Contains(FirstMeeting, state[FirstMeetingTime].ToList());
         Assert.AreEqual(state[FirstMeetingTime].Count(), 1);
     }
 
     [Test]
     public static void StateIndexerIgnoreMeetingTest()
     {
-        var state = CreateEmptyState();
+        var ignoreMeeting = FirstMeeting with {Ignore = true};
+        var state = CreateEmptyState(ignoreMeeting);
         Assert.IsEmpty(state[FirstMeetingTime]);
-        var ignoreMeeting = FirstMeeting with {MeetingTime = FirstMeetingTime, Ignore = true};
-        state.PlaceMeeting(ignoreMeeting);
+        state = state.AddMeeting(ignoreMeeting);
         Assert.IsEmpty(state[FirstMeetingTime]);
     }
 
     [Test]
     public static void StateIndexerSelectCorrectDay()
     {
-        var state = CreateEmptyState();
-        var secondMeetingTime = FirstMeetingTime with {DayOfWeek = DayOfWeek.Wednesday};
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = FirstMeetingTime});
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = secondMeetingTime});
-        Assert.That(state[secondMeetingTime].Count() == 1);
+        var secondMeeting = FirstMeeting with {Id = 1, MeetingTime = SecondMeetingTime};
+        var state = CreateEmptyState(FirstMeeting, secondMeeting);
+        state = state.AddMeeting(FirstMeeting);
+        state = state.AddMeeting(secondMeeting);
+        Assert.That(state[FirstMeetingTime].Count() == 1);
+        Assert.That(state[SecondMeetingTime].Count() == 1);
     }
 
     [Test]
     public static void StateIndexerSelectCorrectWeekType()
     {
-        var state = CreateEmptyState();
         var odd = FirstMeetingTime with {WeekType = WeekType.Odd};
         var even = FirstMeetingTime with {WeekType = WeekType.Even};
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = odd});
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = even});
+        var oddMeeting = FirstMeeting with {MeetingTime = odd};
+        var evenMeeting = FirstMeeting with {Id = 1, MeetingTime = even};
+        var state = CreateEmptyState(oddMeeting, evenMeeting);
+        state = state.AddMeeting(oddMeeting);
+        state = state.AddMeeting(evenMeeting);
         Assert.AreEqual(2, state[FirstMeetingTime].Count());
         Assert.AreEqual(1, state[even].Count());
         Assert.AreEqual(1, state[odd].Count());
@@ -67,13 +68,11 @@ public static class StateTests
     [Test]
     public static void StateCopyTest()
     {
-        var state = CreateEmptyState();
-        var secondMeetingTime = FirstMeetingTime with {DayOfWeek = DayOfWeek.Wednesday};
-        var emptyCopy = state.Copy();
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = FirstMeetingTime});
-        state.PlaceMeeting(FirstMeeting with {MeetingTime = secondMeetingTime});
-        var copy = state.Copy();
-        Assert.IsEmpty(emptyCopy.PlacedMeetings);
-        Assert.True(state.PlacedMeetings.SequenceEqual(copy.PlacedMeetings));
+        var secondMeeting = FirstMeeting with {Id = 1, MeetingTime = SecondMeetingTime};
+        var state = CreateEmptyState(FirstMeeting, secondMeeting);
+        var firstState = state.AddMeeting(FirstMeeting);
+        var secondState = firstState.AddMeeting(secondMeeting);
+        Assert.IsEmpty(state.PlacedMeetings);
+        Assert.False(firstState.PlacedMeetings.SequenceEqual(secondState.PlacedMeetings));
     }
 }

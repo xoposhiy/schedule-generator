@@ -1,6 +1,5 @@
 using CommonDomain;
 using CommonDomain.Enums;
-using static Domain2.Constants;
 
 namespace Domain2;
 
@@ -11,9 +10,9 @@ public class ProbabilityStorage
     public readonly Dictionary<int, double> PriorityToProbability = new();
 
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
-    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
 
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
+    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
@@ -33,13 +32,13 @@ public class ProbabilityStorage
         studentsExpectation[discipline] += GetPriorityDict(discipline)[priority];
     }
 
-    public void FillDisciplineToMaxGroups(Dictionary<int, Meeting2>.ValueCollection meetings)
+    public void FillDisciplineToMaxGroups(IEnumerable<Meeting2> meetings)
     {
         var dict = new Dictionary<Discipline, HashSet<int>>();
         foreach (var meeting in meetings)
         {
             if (!dict.ContainsKey(meeting.Discipline))
-                dict.Add(meeting.Discipline, new HashSet<int>());
+                dict.Add(meeting.Discipline, new());
             dict[meeting.Discipline].UnionWith(meeting.Groups.ToHashSet());
         }
 

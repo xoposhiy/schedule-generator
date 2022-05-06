@@ -10,7 +10,7 @@ public static class Visualizer
     private const int ColumnOffset = 1;
 
     public static void DrawSchedule(GsRepository repository, State state, string sheetName) =>
-        DrawSchedule(repository, state.PlacedMeetings, sheetName);
+        DrawSchedule(repository, state.PlacedMeetings.ToList(), sheetName);
 
     public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
     {
@@ -110,7 +110,7 @@ public static class Visualizer
     public static void UpdateMeetingsData(GsRepository repo, string sheetName, State state) =>
         UpdateMeetingsData(repo, sheetName, state.PlacedMeetings);
 
-    public static void UpdateMeetingsData(GsRepository repo, string sheetName, List<Meeting2> meetings)
+    public static void UpdateMeetingsData(GsRepository repo, string sheetName, IEnumerable<Meeting2> meetings)
     {
         var meetingsDataRaw = repo.ReadCellRange(sheetName, 0, 0, 0, Constants.FormattedMeetingsRowWidth);
         var headerRow = meetingsDataRaw?[0];

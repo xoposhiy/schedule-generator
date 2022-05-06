@@ -12,8 +12,8 @@ public static class Program
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        var regime = "autumn";
-        // var regime = "spring";
+        // var regime = "autumn";
+        var regime = "spring";
 
 
         var repo = new GsRepository("main",
@@ -21,7 +21,7 @@ public static class Program
             "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
-        
+
         var meetingsSource = regime == "autumn" ? "Форматированные пары осень" : "Форматированные пары весна";
         var probabilitiesSource = regime == "autumn" ? "Вероятности Осень" : "Вероятности Весна";
         var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
@@ -36,7 +36,7 @@ public static class Program
         }
         else
         {
-            SheetToProbabilityConverter.SetDisciplinesCount(23); 
+            SheetToProbabilityConverter.SetDisciplinesCount(23);
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты для шатания");
         }
@@ -71,6 +71,7 @@ public static class Program
         {
             Console.WriteLine(grouping.Key + " " + grouping.Count());
         }
+
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
         var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");

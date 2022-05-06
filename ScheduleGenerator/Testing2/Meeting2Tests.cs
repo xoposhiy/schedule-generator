@@ -21,6 +21,6 @@ public class Meeting2Tests
     public void ToStringTrowsWhenMeetingTimeIsNull()
     {
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        Assert.Throws<NullReferenceException>(() => FirstMeeting.ToString());
+        Assert.Throws<NullReferenceException>(() => (FirstMeeting with {MeetingTime = null}).ToString());
     }
 }
