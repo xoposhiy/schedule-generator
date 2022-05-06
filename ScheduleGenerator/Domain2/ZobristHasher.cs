@@ -21,7 +21,7 @@ public class ZobristHasher
     {
         if (meeting2.Ignore) return 0;
         var time = meeting2.MeetingTime!;
-        var timeCoordinate = time.TimeSlot * WeekDaysDict.Count + (int) time.DayOfWeek;
+        var timeCoordinate = time.TimeSlotIndex * WeekDaysDict.Count + (int) time.DayOfWeek;
         return randomLongs[meeting2.Id, timeCoordinate];
     }
 }

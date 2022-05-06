@@ -82,7 +82,7 @@ public static class Domain2Extensions
 
     public static IEnumerable<Meeting2> GetAllPossibleVariants(this State state)
     {
-        var meetingsToPlace = state.NotPlacedMeetings.Values;
+        var meetingsToPlace = state.NotPlacedMeetings.Values.ToList();
         if (meetingsToPlace.Count == 0) yield break;
 
         var fixedMeeting = meetingsToPlace.FirstOrDefault(m => m.IsFixed);

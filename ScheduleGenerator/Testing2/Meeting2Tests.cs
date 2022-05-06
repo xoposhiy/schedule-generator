@@ -20,7 +20,7 @@ public class Meeting2Tests
     [Test]
     public void ToStringTrowsWhenMeetingTimeIsNull()
     {
-        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        Assert.Throws<NullReferenceException>(() => FirstMeeting.ToString());
+        var dangerousMeeting = FirstMeeting with {MeetingTime = null};
+        Assert.Throws<NullReferenceException>(() => Console.WriteLine(dangerousMeeting.ToString()));
     }
 }
