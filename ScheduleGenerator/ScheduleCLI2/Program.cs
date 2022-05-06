@@ -69,6 +69,10 @@ public static class Program
         var chokudai = new ChokudaiSearch(estimator);
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
+        foreach (var grouping in solutions.ToLookup(t => t.score))
+        {
+            Console.WriteLine(grouping.Key + " " + grouping.Count());
+        }
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
         var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");
