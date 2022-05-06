@@ -10,9 +10,10 @@ public class Meeting2Tests
     [Test]
     public void ToStringTest()
     {
-        var meeting = FirstMeeting with {MeetingTime = FirstMeetingTime};
+        var time = FirstMeetingTime with {WeekType = WeekType.Odd};
+        var meeting = FirstMeeting with {MeetingTime = time};
         var simpleString = meeting.ToString();
-        var complicatedString = (meeting with {ClassRoom = "512", WeekTypeSpec = WeekType.Odd}).ToString();
+        var complicatedString = (meeting with {ClassRoom = "512"}).ToString();
         Assert.AreNotEqual(simpleString, complicatedString);
     }
 
