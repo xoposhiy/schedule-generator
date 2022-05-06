@@ -4,10 +4,10 @@ namespace Domain2;
 
 public class State
 {
-    public Dictionary<int, Meeting2> NotPlacedMeetings;
-    public List<Meeting2> PlacedMeetings = new();
-    public ProbabilityStorage ProbabilityStorage = new();
     private readonly long hashCode;
+    public readonly Dictionary<int, Meeting2> NotPlacedMeetings;
+    public readonly List<Meeting2> PlacedMeetings = new();
+    public readonly ProbabilityStorage ProbabilityStorage = new();
 
     public State(IEnumerable<Meeting2> meetingsToPlace)
     {
