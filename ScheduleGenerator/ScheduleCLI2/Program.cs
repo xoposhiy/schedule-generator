@@ -44,10 +44,10 @@ public static class Program
 
         var solution = SolveByChokudai(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
-
-        var sheetName = "Лист4";
-        Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
-        Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
+        //
+        // var sheetName = "Лист4";
+        // Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
+        // Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
     }
 
     private static (State, double) SolveGreedy(State state)
@@ -70,8 +70,8 @@ public static class Program
         foreach (var grouping in solutions.ToLookup(t => t.score))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 
-        foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
-            Console.WriteLine(grouping.Key + " " + grouping.Count());
+        // foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
+        //     Console.WriteLine(grouping.Key + " " + grouping.Count());
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
         var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");

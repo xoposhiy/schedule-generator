@@ -12,6 +12,7 @@ public class ProbabilityStorage
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
 
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
+    private readonly Dictionary<(Discipline, Discipline), double> studentsIntersectionExpectation = new();
     private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
@@ -43,7 +44,7 @@ public class ProbabilityStorage
         }
 
         foreach (var (discipline, groups) in dict)
-            disciplineToMaxGroups.Add(discipline, groups.Count);
+            disciplineToMaxGroups.Add(discipline, groups.Max());
     }
 
     public double GetStudentsExpectation(Meeting2 meeting)
@@ -66,32 +67,31 @@ public class ProbabilityStorage
         var secondDiscipline = secondMeeting.Discipline;
         var firstGroups = firstMeeting.Groups;
         var secondGroups = secondMeeting.Groups;
-        var groupsIntersectionCoef = 1d; //TODO WTF is this
-        var sameDiscipline = firstDiscipline == secondDiscipline;
 
-        if (sameDiscipline)
+        if (firstDiscipline == secondDiscipline)
         {
-            var intersectionGroupsCount = firstGroups.Intersect(secondGroups).Count();
-            groupsIntersectionCoef = (double) intersectionGroupsCount / disciplineToMaxGroups[firstDiscipline];
+            var intersectionGroupsCount = (double) firstGroups.Intersect(secondGroups).Count();
+            var groupsIntersection = intersectionGroupsCount / disciplineToMaxGroups[firstDiscipline];
+            return GetStudentsExpectation(firstMeeting) * groupsIntersection;
         }
 
-        var result = 0d;
+        if (studentsIntersectionExpectation.TryGetValue((firstDiscipline, secondDiscipline), out var expectation))
+            return expectation;
+
+        var firstPriorityToProbability = GetPriorityDict(firstDiscipline);
+        var secondPriorityToProbability = GetPriorityDict(secondDiscipline);
         foreach (var student in studentWithDisciplineToPriority.Keys)
         {
             var firstPrior = studentWithDisciplineToPriority[student][firstDiscipline];
             var secondPrior = studentWithDisciplineToPriority[student][secondDiscipline];
 
-            if (sameDiscipline)
-                result += CalcStudents(firstPrior, groupsIntersectionCoef,
-                    GetPriorityDict(firstDiscipline));
-            else
-                result += CalcStudents(firstPrior, secondPrior,
-                    GetPriorityDict(firstDiscipline),
-                    GetPriorityDict(secondDiscipline),
-                    groupsIntersectionCoef);
+            expectation += firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior];
         }
 
-        return result;
+        studentsIntersectionExpectation[(firstDiscipline, secondDiscipline)] = expectation;
+        studentsIntersectionExpectation[(secondDiscipline, firstDiscipline)] = expectation;
+
+        return expectation;
     }
 
     private Dictionary<int, double> GetPriorityDict(Discipline discipline)
@@ -99,19 +99,5 @@ public class ProbabilityStorage
         return discipline.Type == DisciplineType.WithEntranceTest
             ? PriorityWithEntranceToProbability
             : PriorityToProbability;
-    }
-
-    private static double CalcStudents(int firstPrior,
-        double groupsIntersectionCoef, IReadOnlyDictionary<int, double> priorityToProbability)
-    {
-        return priorityToProbability[firstPrior] * groupsIntersectionCoef;
-    }
-
-    private static double CalcStudents(int firstPrior, int secondPrior,
-        IReadOnlyDictionary<int, double> firstPriorityToProbability,
-        IReadOnlyDictionary<int, double> secondPriorityToProbability, double groupsIntersectionCoef)
-    {
-        return firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior] *
-               groupsIntersectionCoef;
     }
 }
