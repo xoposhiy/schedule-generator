@@ -44,10 +44,10 @@ public static class Program
 
         var solution = SolveByChokudai(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
-        //
-        // var sheetName = "Лист4";
-        // Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
-        // Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
+
+        var sheetName = "Лист4";
+        Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
+        Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
     }
 
     private static (State, double) SolveGreedy(State state)
