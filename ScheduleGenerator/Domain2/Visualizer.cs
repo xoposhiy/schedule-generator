@@ -10,9 +10,9 @@ public static class Visualizer
     private const int ColumnOffset = 1;
 
     public static void DrawSchedule(GsRepository repository, State state, string sheetName) =>
-        DrawSchedule(repository, state.PlacedMeetings.ToList(), sheetName);
+        DrawSchedule(repository, state.PlacedMeetings, sheetName);
 
-    public static void DrawSchedule(GsRepository repository, List<Meeting2> meetings, string sheetName)
+    public static void DrawSchedule(GsRepository repository, IReadOnlyCollection<Meeting2> meetings, string sheetName)
     {
         var dayDuration = meetings
             .Where(m => m.ShouldBePlaced)
