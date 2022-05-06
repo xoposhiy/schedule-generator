@@ -7,13 +7,14 @@ public class State
     public Dictionary<int, Meeting2> NotPlacedMeetings;
     public List<Meeting2> PlacedMeetings = new();
     public ProbabilityStorage ProbabilityStorage = new();
+    private readonly long hashCode;
 
     public State(IEnumerable<Meeting2> meetingsToPlace)
     {
         NotPlacedMeetings = meetingsToPlace.ToDictionary(m => m.Id, m => m);
     }
 
-    private State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage) : this(meetingsToPlace)
+    public State(IEnumerable<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage) : this(meetingsToPlace)
     {
         ProbabilityStorage = probabilityStorage;
     }

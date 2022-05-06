@@ -57,9 +57,6 @@ public static class SheetToRequisitionConverter
         return classrooms;
     }
 
-    public static State ReadState(GsRepository repo, string meetingsSheetName) =>
-        new State(ReadMeetings(repo, meetingsSheetName));
-
     public static List<Meeting2> ReadMeetings(GsRepository repo, string meetingsSheetName)
     {
         var meetingsDataRaw =

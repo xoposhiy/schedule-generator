@@ -12,8 +12,8 @@ public static class Program
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        // var regime = "autumn";
-        var regime = "spring";
+        var regime = "autumn";
+        // var regime = "spring";
 
 
         var repo = new GsRepository("main",
@@ -22,27 +22,25 @@ public static class Program
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
         
-        string meetingsSource;
-        State state;
+        var meetingsSource = regime == "autumn" ? "Форматированные пары осень" : "Форматированные пары весна";
+        var probabilitiesSource = regime == "autumn" ? "Вероятности Осень" : "Вероятности Весна";
+        var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
+        var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource);
+        var state = new State(meetings, probabilityStorage);
 
         if (regime == "autumn")
         {
-            meetingsSource = "Форматированные пары осень";
-            state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
-            SheetToProbabilityConverter.SetDiciplinesCount(18);
-            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Осень");
+            SheetToProbabilityConverter.SetDisciplinesCount(18);
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты (Осень)");
         }
         else
         {
-            meetingsSource = "Форматированные пары весна";
-            state = SheetToRequisitionConverter.ReadState(repo, meetingsSource);
-            SheetToProbabilityConverter.SetDiciplinesCount(23);
-            SheetToProbabilityConverter.ReadProbabilities(repo, state.ProbabilityStorage, "Вероятности Весна");   
+            SheetToProbabilityConverter.SetDisciplinesCount(23); 
             SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
                 "Приоритеты для шатания");
         }
+
 
         var solution = SolveByChokudai(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");

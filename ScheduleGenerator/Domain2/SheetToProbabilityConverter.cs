@@ -14,7 +14,7 @@ public static class SheetToProbabilityConverter
     private static int RightBorder;
     private static readonly Dictionary<int, Discipline> IndexToDiscipline = new();
 
-    public static void SetDiciplinesCount(int count)
+    public static void SetDisciplinesCount(int count)
     {
         DisciplinesCount = count;
         RightBorder = DisciplinesCount * 3 + StartColumn;
@@ -56,9 +56,9 @@ public static class SheetToProbabilityConverter
         }
     }
 
-    public static void ReadProbabilities(GsRepository repo, ProbabilityStorage probabilityStorage,
-        string meetingsSheetName)
+    public static ProbabilityStorage ReadProbabilities(GsRepository repo, string meetingsSheetName)
     {
+        var probabilityStorage = new ProbabilityStorage();
         var meetingsDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 10);
         foreach (var row in meetingsDataRaw.Skip(2))
         {
@@ -66,6 +66,8 @@ public static class SheetToProbabilityConverter
             probabilityStorage.PriorityWithEntranceToProbability[priority] = double.Parse(row[1]);
             probabilityStorage.PriorityToProbability[priority] = double.Parse(row[4]);
         }
+
+        return probabilityStorage;
     }
 
     private static int ParseInt(string raw, int defaultValue)
