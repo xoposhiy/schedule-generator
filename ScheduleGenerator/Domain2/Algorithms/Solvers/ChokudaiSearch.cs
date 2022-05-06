@@ -46,7 +46,9 @@ public class ChokudaiSearch : ISolver
                 }
             }
 
-            if (!found) break;
+            if (found) continue;
+            Console.WriteLine("Search complete");
+            break;
         }
     }
 }
