@@ -16,11 +16,18 @@ public class ChokudaiSearch : ISolver
     {
         var depth = problem.NotPlacedMeetings.Count + 1;
         var states = new List<PriorityQueue<State, double>>();
-        for (var i = 0; i < depth + 1; i++) states.Add(new());
+        var visited = new List<HashSet<long>>();
+        for (var i = 0; i < depth + 1; i++)
+        {
+            states.Add(new());
+            visited.Add(new());
+        }
 
         states[0].Enqueue(problem, 0);
 
         while (!countdown.IsFinished())
+        {
+            var found = false;
             for (var t = 0; t < depth; t++)
             {
                 if (!states[t].TryDequeue(out var state, out var penalty)) continue;
@@ -31,10 +38,15 @@ public class ChokudaiSearch : ISolver
 
                 foreach (var variant in variants)
                 {
-                    var scoreDelta = estimator.EstimateMeeting(state, variant);
                     var possible = state.AddMeeting(variant);
+                    if (!visited[t].Add(possible.HashCode)) continue;
+                    var scoreDelta = estimator.EstimateMeeting(state, variant);
                     states[t + 1].Enqueue(possible, penalty - scoreDelta);
+                    found = true;
                 }
             }
+
+            if (!found) break;
+        }
     }
 }

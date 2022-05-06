@@ -68,9 +68,7 @@ public static class Program
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
         foreach (var grouping in solutions.ToLookup(t => t.score))
-        {
             Console.WriteLine(grouping.Key + " " + grouping.Count());
-        }
 
         foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
