@@ -72,6 +72,8 @@ public static class Program
             Console.WriteLine(grouping.Key + " " + grouping.Count());
         }
 
+        foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
+            Console.WriteLine(grouping.Key + " " + grouping.Count());
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
         var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");

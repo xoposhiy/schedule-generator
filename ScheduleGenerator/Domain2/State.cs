@@ -5,18 +5,18 @@ namespace Domain2;
 
 public class State
 {
-    private readonly long hashCode;
+    public readonly long HashCode;
     public readonly ImmutableDictionary<int, Meeting2> NotPlacedMeetings;
     public readonly ImmutableList<Meeting2> PlacedMeetings;
     public readonly ProbabilityStorage ProbabilityStorage;
-    public readonly ZobristHasher ZobristHasher;
+    private readonly ZobristHasher zobristHasher;
 
     public State(IReadOnlyCollection<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage)
     {
         PlacedMeetings = ImmutableList<Meeting2>.Empty;
         NotPlacedMeetings = meetingsToPlace.ToImmutableDictionary(m => m.Id, m => m);
         ProbabilityStorage = probabilityStorage;
-        ZobristHasher = new(meetingsToPlace);
+        zobristHasher = new(meetingsToPlace);
     }
 
     private State(ImmutableList<Meeting2> placedMeetings,
@@ -28,8 +28,8 @@ public class State
         PlacedMeetings = placedMeetings;
         NotPlacedMeetings = notPlacedMeetings;
         ProbabilityStorage = probabilityStorage;
-        ZobristHasher = hasher;
-        this.hashCode = hashCode;
+        zobristHasher = hasher;
+        HashCode = hashCode;
     }
 
     public IEnumerable<Meeting2> this[MeetingTime meetingTime]
@@ -53,7 +53,7 @@ public class State
     {
         var placedMeetings = PlacedMeetings.Add(meeting);
         var dictionary = NotPlacedMeetings.Remove(meeting.Id);
-        var hash = hashCode ^ ZobristHasher.GetMeetingHash(meeting);
-        return new(placedMeetings, dictionary, ProbabilityStorage, ZobristHasher, hash);
+        var hash = HashCode ^ zobristHasher.GetMeetingHash(meeting);
+        return new(placedMeetings, dictionary, ProbabilityStorage, zobristHasher, hash);
     }
 }
