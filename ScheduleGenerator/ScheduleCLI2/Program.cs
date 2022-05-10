@@ -50,10 +50,19 @@ public static class Program
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
     }
 
+    private static IMeetingEstimator GetEstimator()
+    {
+        return new CombinedMeetingEstimator(new IMeetingEstimator[]
+        {
+            new MeanStudentIntersectionEstimator(),
+            new TimePriorityEstimator(),
+            new LateMeetingsEstimator()
+        });
+    }
+
     private static (State, double) SolveGreedy(State state)
     {
-        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]
-            {new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
+        var estimator = GetEstimator();
         var greedySolver = new GreedySolver(estimator);
 
         return greedySolver.GetSolutions(state, 0).First();
@@ -61,8 +70,7 @@ public static class Program
 
     private static (State, double) SolveByChokudai(State state)
     {
-        var estimator = new CombinedMeetingEstimator(new IMeetingEstimator[]
-            {new MeanStudentIntersectionEstimator(), new TimePriorityEstimator()});
+        var estimator = GetEstimator();
 
         var chokudai = new ChokudaiSearch(estimator);
 
