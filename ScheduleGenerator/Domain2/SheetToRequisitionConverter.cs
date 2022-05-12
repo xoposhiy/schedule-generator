@@ -162,6 +162,8 @@ public static class SheetToRequisitionConverter
         var ans = new List<MeetingTime>();
         foreach (var dayOfWeek in (DayOfWeek[]) Enum.GetValues(typeof(DayOfWeek)))
         {
+            if (dayOfWeek == DayOfWeek.Sunday) continue;
+            
             for (var timeslot = 1; timeslot <= Constants.TimeSlots; timeslot++)
             {
                 ans.Add(new MeetingTime(weekType, dayOfWeek, timeslot));
