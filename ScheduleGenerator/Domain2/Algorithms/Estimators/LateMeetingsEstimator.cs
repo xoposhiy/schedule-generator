@@ -6,8 +6,8 @@ public class LateMeetingsEstimator : IMeetingEstimator
 
     public double EstimateMeeting(State state, Meeting2 meeting)
     {
-        if (meeting.Ignore) return 0;
-        if (meeting.Place == "Онлайн") return 0;
+        if (meeting.Ignore || meeting.Place == "Онлайн") 
+            return 0;
         var timeSlot = meeting.MeetingTime!.TimeSlot;
         if (timeSlot < LatestOfflineMeeting) return 0;
         return LatestOfflineMeeting - timeSlot;
