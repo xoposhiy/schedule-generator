@@ -42,7 +42,8 @@ public static class Program
         }
 
 
-        var solution = SolveByChokudai(state);
+        //var solution = SolveByChokudai(state);
+        var solution = SolveRepeater(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
 
         var sheetName = "Лист4";
@@ -60,10 +61,28 @@ public static class Program
         });
     }
 
-    private static (State, double) SolveGreedy(State state)
+    public static (State, double) SolveRepeater(State state)
     {
         var estimator = GetEstimator();
-        var greedySolver = new GreedySolver(estimator);
+    
+        var repeater = new RepeaterSolver(new GreedySolver(estimator, 2));
+    
+        var solutions = repeater.GetSolutions(state, 10000).ToList();
+        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g=>g.Key))
+            Console.WriteLine(grouping.Key + " " + grouping.Count());
+    
+        // foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
+        //     Console.WriteLine(grouping.Key + " " + grouping.Count());
+        Console.Error.WriteLine($"Solutions count: {solutions.Count}");
+        var best = solutions.MaxBy(s => s.score);
+        Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");
+        return best;
+    }
+
+    private static (State, double) SolveGreedy(State state, int randomTopN = 1)
+    {
+        var estimator = GetEstimator();
+        var greedySolver = new GreedySolver(estimator, randomTopN);
 
         return greedySolver.GetSolutions(state, 0).First();
     }
@@ -75,7 +94,7 @@ public static class Program
         var chokudai = new ChokudaiSearch(estimator);
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
-        foreach (var grouping in solutions.ToLookup(t => t.score))
+        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g=>g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 
         // foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))

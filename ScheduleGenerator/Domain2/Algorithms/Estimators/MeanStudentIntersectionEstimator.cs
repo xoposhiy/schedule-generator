@@ -3,7 +3,7 @@ namespace Domain2.Algorithms.Estimators;
 public class MeanStudentIntersectionEstimator : IMeetingEstimator
 {
     private const double SufferingFromIntersection = 100;
-    private const double SufferingFromDifferentLocations = 10;
+    private const double SufferingFromDifferentLocations = 30;
 
     public double EstimateMeeting(State state, Meeting2 meeting)
     {
