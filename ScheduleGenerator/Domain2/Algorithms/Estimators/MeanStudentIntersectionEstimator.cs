@@ -2,7 +2,8 @@ namespace Domain2.Algorithms.Estimators;
 
 public class MeanStudentIntersectionEstimator : IMeetingEstimator
 {
-    private const int SufferingStudentsImportance = 100;
+    private const double SufferingFromIntersection = 100;
+    private const double SufferingFromDifferentLocations = 10;
 
     public double EstimateMeeting(State state, Meeting2 meeting)
     {
@@ -17,14 +18,16 @@ public class MeanStudentIntersectionEstimator : IMeetingEstimator
             return -1;
 
         var probabilityStorage = state.ProbabilityStorage;
-        var sufferingStudents = currentMeetings.Sum(m => probabilityStorage.GetCommonStudents(meeting, m));
+        var intersectionStudents = currentMeetings.Sum(m => probabilityStorage.GetCommonStudents(meeting, m));
         var previousMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot - 1}];
         var nextMeetings = state[meetingTime with {TimeSlot = meetingTime.TimeSlot + meeting.Duration}];
-        var satisfiedStudents = previousMeetings.Concat(nextMeetings)
+        var locationSatisfaction = previousMeetings.Concat(nextMeetings)
             .Where(m => !currentMeetings.Contains(m))
-            .Sum(m => probabilityStorage.GetCommonStudents(meeting, m));
-        var score = satisfiedStudents - SufferingStudentsImportance * sufferingStudents;
-        var normalizationConstant = SufferingStudentsImportance * probabilityStorage.StudentsCount;
+            .Sum(m => probabilityStorage.GetCommonStudents(meeting, m) *
+                      (m.Place == meeting.Place ? 1 : -SufferingFromDifferentLocations));
+        var score = locationSatisfaction - SufferingFromIntersection * intersectionStudents;
+        var normalizationConstant = Math.Max(SufferingFromIntersection, SufferingFromDifferentLocations) *
+                                    probabilityStorage.StudentsCount;
         return score / normalizationConstant;
     }
 }
