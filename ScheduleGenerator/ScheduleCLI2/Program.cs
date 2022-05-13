@@ -42,8 +42,8 @@ public static class Program
         }
 
 
-        //var solution = SolveByChokudai(state);
-        var solution = SolveRepeater(state);
+        var solution = SolveByChokudai(state);
+        //var solution = SolveRepeater(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
 
         var sheetName = "Лист4";

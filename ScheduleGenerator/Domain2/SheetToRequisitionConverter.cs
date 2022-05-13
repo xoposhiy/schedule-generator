@@ -101,7 +101,7 @@ public static class SheetToRequisitionConverter
 
     private static List<int> ParseGroups(string raw)
     {
-        return raw.Split(',').Select(int.Parse).ToList();
+        return raw.Replace(" ", "").Split(',').Select(int.Parse).Distinct().ToList();
     }
 
     private static RoomSpec[] ParseRoomSpec(string raw)
