@@ -37,9 +37,10 @@ public static class SheetToProbabilityConverter
             for (var i = StartColumn; i < rightBorder; i += 3)
             {
                 var priority = ParseInt(row[i], UnselectedPriority);
-                // int.TryParse(row[i + 1], out var priorityLk);
-                // var isChosen = row[i + 2] == "Зачислен";
-                probabilityStorage.AddSubjectForStudent(student, indexToDiscipline[i], priority);
+                var officialPriority = ParseInt(row[i + 1], UnselectedPriority);
+                var enlisted = row[i + 2] == "Зачислен";
+                var studentPriority = new StudentPriorities(priority, officialPriority, enlisted);
+                probabilityStorage.AddSubjectForStudent(student, indexToDiscipline[i], studentPriority.FormPriority);
             }
         }
     }
