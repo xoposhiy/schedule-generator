@@ -40,7 +40,7 @@ public class ProbabilityStorage
         {
             if (!dict.ContainsKey(meeting.Discipline))
                 dict.Add(meeting.Discipline, new());
-            dict[meeting.Discipline].UnionWith(meeting.Groups.ToHashSet());
+            dict[meeting.Discipline].UnionWith(meeting.Groups);
         }
 
         foreach (var (discipline, groups) in dict)
