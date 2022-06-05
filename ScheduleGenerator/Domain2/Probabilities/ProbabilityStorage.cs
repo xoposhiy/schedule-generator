@@ -106,4 +106,9 @@ public class ProbabilityStorage
 
         return students;
     }
+
+    public int GetDisciplineGroupCount(Discipline discipline)
+    {
+        return disciplineToMaxGroups[discipline];
+    }
 }
