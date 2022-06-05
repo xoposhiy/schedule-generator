@@ -12,19 +12,21 @@ public class ProbabilityStorage
 
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
     private readonly Dictionary<(Discipline, Discipline), double> studentsIntersectionExpectation = new();
-    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority = new();
+
+    private readonly Dictionary<string, Dictionary<Discipline, StudentPriorities>> studentWithDisciplineToPriority =
+        new();
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
-    public void AddSubjectForStudent(string student, Discipline discipline, int priority)
+    public void AddSubjectForStudent(string student, Discipline discipline, StudentPriorities priority)
     {
         if (!studentWithDisciplineToPriority.ContainsKey(student))
-            studentWithDisciplineToPriority.Add(student, new Dictionary<Discipline, int>());
+            studentWithDisciplineToPriority.Add(student, new());
         studentWithDisciplineToPriority[student].Add(discipline, priority);
 
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
-        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority];
+        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority.FormPriority];
     }
 
     public void FillDisciplineToMaxGroups(IEnumerable<Meeting2> meetings)
@@ -76,8 +78,8 @@ public class ProbabilityStorage
         var secondPriorityToProbability = GetPriorityDict(secondDiscipline);
         foreach (var student in studentWithDisciplineToPriority.Keys)
         {
-            var firstPrior = studentWithDisciplineToPriority[student][firstDiscipline];
-            var secondPrior = studentWithDisciplineToPriority[student][secondDiscipline];
+            var firstPrior = studentWithDisciplineToPriority[student][firstDiscipline].FormPriority;
+            var secondPrior = studentWithDisciplineToPriority[student][secondDiscipline].FormPriority;
 
             expectation += firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior];
         }
@@ -93,5 +95,15 @@ public class ProbabilityStorage
         return discipline.Type == DisciplineType.WithEntranceTest
             ? PriorityWithEntranceToProbability
             : PriorityToProbability;
+    }
+
+    public List<string> GetAllEnlistedStudents(Discipline discipline)
+    {
+        var students = new List<string>();
+        foreach (var (student, dictionary) in studentWithDisciplineToPriority)
+            if (dictionary[discipline].Enlisted)
+                students.Add(student);
+
+        return students;
     }
 }

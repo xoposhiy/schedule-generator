@@ -40,7 +40,7 @@ public static class SheetToProbabilityConverter
                 var officialPriority = ParseInt(row[i + 1], UnselectedPriority);
                 var enlisted = row[i + 2] == "Зачислен";
                 var studentPriority = new StudentPriorities(priority, officialPriority, enlisted);
-                probabilityStorage.AddSubjectForStudent(student, indexToDiscipline[i], studentPriority.FormPriority);
+                probabilityStorage.AddSubjectForStudent(student, indexToDiscipline[i], studentPriority);
             }
         }
     }
