@@ -24,23 +24,14 @@ public static class Program
 
         var meetingsSource = regime == "autumn" ? "Форматированные пары осень" : "Форматированные пары весна";
         var probabilitiesSource = regime == "autumn" ? "Вероятности Осень" : "Вероятности Весна";
+        var disciplineCount = regime == "autumn" ? 18 : 23;
+        var prioritiesSource = regime == "autumn" ? "Приоритеты (Осень)" : "Приоритеты для шатания";
         var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
         var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource);
         var state = new State(meetings, probabilityStorage);
 
-        if (regime == "autumn")
-        {
-            SheetToProbabilityConverter.SetDisciplinesCount(18);
-            SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
-                "Приоритеты (Осень)");
-        }
-        else
-        {
-            SheetToProbabilityConverter.SetDisciplinesCount(23);
-            SheetToProbabilityConverter.ReadPriorities(repo, state.ProbabilityStorage, state.NotPlacedMeetings.Values,
-                "Приоритеты для шатания");
-        }
-
+        SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);
+        SheetToProbabilityConverter.ReadPriorities(repo, probabilityStorage, meetings, prioritiesSource);
 
         var solution = SolveByChokudai(state);
         //var solution = SolveRepeater(state);
@@ -64,13 +55,13 @@ public static class Program
     public static (State, double) SolveRepeater(State state)
     {
         var estimator = GetEstimator();
-    
+
         var repeater = new RepeaterSolver(new GreedySolver(estimator, 2));
-    
+
         var solutions = repeater.GetSolutions(state, 10000).ToList();
-        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g=>g.Key))
+        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g => g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
-    
+
         // foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
         //     Console.WriteLine(grouping.Key + " " + grouping.Count());
         Console.Error.WriteLine($"Solutions count: {solutions.Count}");
@@ -94,7 +85,7 @@ public static class Program
         var chokudai = new ChokudaiSearch(estimator);
 
         var solutions = chokudai.GetSolutions(state, 10000).ToList();
-        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g=>g.Key))
+        foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g => g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 
         // foreach (var grouping in solutions.ToLookup(t => t.schedule.HashCode))
