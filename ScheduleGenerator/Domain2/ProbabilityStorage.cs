@@ -6,9 +6,8 @@ namespace Domain2;
 public class ProbabilityStorage
 {
     private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
-    private readonly Dictionary<Discipline, List<HashSet<string>>> disciplineWithPriorityToStudents = new();
-    public readonly Dictionary<int, double> PriorityToProbability = new();
 
+    public readonly Dictionary<int, double> PriorityToProbability = new();
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
 
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
@@ -22,11 +21,6 @@ public class ProbabilityStorage
         if (!studentWithDisciplineToPriority.ContainsKey(student))
             studentWithDisciplineToPriority.Add(student, new Dictionary<Discipline, int>());
         studentWithDisciplineToPriority[student].Add(discipline, priority);
-
-        if (!disciplineWithPriorityToStudents.ContainsKey(discipline))
-            disciplineWithPriorityToStudents.Add(discipline, Enumerable.Range(0, 6)
-                .Select(_ => new HashSet<string>()).ToList());
-        disciplineWithPriorityToStudents[discipline][priority].Add(student);
 
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
