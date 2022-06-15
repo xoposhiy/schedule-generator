@@ -1,4 +1,5 @@
-﻿using CommonDomain;
+﻿using System.Text.RegularExpressions;
+using CommonDomain;
 using CommonDomain.Enums;
 using CommonInfrastructure;
 using CommonInfrastructure.GoogleSheetsRepository;
@@ -13,6 +14,46 @@ namespace Domain2;
 public static class SheetToRequisitionConverter
 {
     public static Location StringToLocation(string place) => new Location(place);
+    public static readonly Regex DayOfWeekRegex = new Regex("пн|вт|ср|чт|пт|сб");
+    public static readonly Regex WeekTypeRegex = new Regex("чет|нечет");
+    public static readonly Regex NumberRegex = new Regex("[0-9]+");
+    
+    public static List<Meeting2> ReadMeetings(GsRepository repo, string meetingsSheetName)
+    {
+        var meetingsDataRaw =
+            SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, Constants.FormattedMeetingsRowWidth);
+        var positions = meetingsDataRaw[0].GetPositions();
+
+        var meetings = new List<Meeting2>();
+        foreach (var row in meetingsDataRaw.Skip(1))
+        {
+            var disciplineType = GetDisciplineType(row[positions["DisciplineType"]]);
+            var discipline = new Discipline(row[positions["Discipline"]], disciplineType);
+            var meetingType = GetMeetingType(row[positions["MeetingType"]]);
+            var teacher = new Teacher(row[positions["Teacher"]]);
+            var groups = ParseGroups(row[positions["Groups"]]);
+            var place = row[positions["Place"]];
+            var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
+            var duration = ParseInt(row[positions["Duration"]], 1);
+            var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
+            var meetingTimePriorities =
+                ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]);
+            var after = string.IsNullOrEmpty(row[positions["After"]])
+                ? (MeetingType?) null
+                : GetMeetingType(row[positions["After"]]);
+            var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
+            var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
+            var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
+
+            var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
+            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
+            meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
+                duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
+                classRoom, time));
+        }
+
+        return meetings;
+    }
 
     private static WeekType GetWeekType(string rowWeekType)
     {
@@ -55,43 +96,6 @@ public static class SheetToRequisitionConverter
         var roomDataRaw = SheetTableReader.ReadRowsFromSheet(repo, classroomsSheetName, 0, 0, 5);
         var classrooms = ParseClassrooms(roomDataRaw);
         return classrooms;
-    }
-
-    public static List<Meeting2> ReadMeetings(GsRepository repo, string meetingsSheetName)
-    {
-        var meetingsDataRaw =
-            SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, Constants.FormattedMeetingsRowWidth);
-        var positions = meetingsDataRaw[0].GetPositions();
-
-        var meetings = new List<Meeting2>();
-        foreach (var row in meetingsDataRaw.Skip(1))
-        {
-            var disciplineType = GetDisciplineType(row[positions["DisciplineType"]]);
-            var discipline = new Discipline(row[positions["Discipline"]], disciplineType);
-            var meetingType = GetMeetingType(row[positions["MeetingType"]]);
-            var teacher = new Teacher(row[positions["Teacher"]]);
-            var groups = ParseGroups(row[positions["Groups"]]);
-            var place = row[positions["Place"]];
-            var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
-            var duration = ParseInt(row[positions["Duration"]], 1);
-            var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
-            var meetingTimePriorities =
-                ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]);
-            var after = string.IsNullOrEmpty(row[positions["After"]])
-                ? (MeetingType?) null
-                : GetMeetingType(row[positions["After"]]);
-            var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
-            var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
-            var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
-
-            var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
-            meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
-                duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
-                classRoom, time));
-        }
-
-        return meetings;
     }
 
     private static int ParseInt(string raw, int defaultValue)
@@ -196,38 +200,65 @@ public static class SheetToRequisitionConverter
 
     private static IEnumerable<MeetingTime> ParseMeetingTime(string line)
     {
-        line = line.Replace(" ", "");
+        //line = line.Replace(" ", "");
         if (string.IsNullOrEmpty(line))
             yield break;
-        int r = 0, l=0;
 
-        while (r < line.Length)
+        var last = 0;    //0-none; 1-days; 2-hours; 3-weekType
+        var days = new List<string>();
+        var slots = new List<string>();
+        var weekType = WeekType.All;
+        foreach (var token in line.Split(new []{',', ' '}, StringSplitOptions.RemoveEmptyEntries))
         {
-            while (!Char.IsDigit(line[r]))
-                r++;
-            var days = GetDays(line[l..r]);
-            l = r;
-            while (r < line.Length && !Char.IsLetter(line[r]))
-                r++;
-            if (r < line.Length)
-                r--;
-            var timeSlots = GetSlots(line[l..r]);
-            r++;
-            l = r;
-            foreach (var day in days)
+            var cur = DayOfWeekRegex.Match(token).Success ? 1 :
+                NumberRegex.Match(token).Success ? 2 :
+                WeekTypeRegex.Match(token).Success ? 3 :
+                throw new FormatException();
+            if (last == 0)
+                last = cur;
+
+            if (last == 2 && cur == 1 || last == 3 && cur is 1 or 2)
             {
-                foreach (var slot in timeSlots)
+                foreach (var day in GetDays(days))
                 {
-                    yield return new MeetingTime(WeekType.All, day, slot);
+                    foreach (var slot in GetSlots(slots))
+                    {
+                        yield return new MeetingTime(weekType, day, slot);
+                    }
                 }
+                days.Clear();
+                slots.Clear();
+                weekType = WeekType.All;
+            }
+
+            switch (cur) 
+            {
+                case 1:
+                    days.Add(token);
+                    break;
+                case 2:
+                    slots.Add(token);
+                    break;
+                case 3:
+                    weekType = token == "чет" ? WeekType.Even : WeekType.Odd;
+                    break;
+                default:
+                    throw new FormatException();
+            }
+            last = cur;
+        }
+        foreach (var day in GetDays(days))
+        {
+            foreach (var slot in GetSlots(slots))
+            {
+                yield return new MeetingTime(weekType, day, slot);
             }
         }
     }
 
-    private static List<DayOfWeek> GetDays(string dayString)
+    private static List<DayOfWeek> GetDays(IEnumerable<string> dayReqs)
     {
         var days = new List<DayOfWeek>();
-        var dayReqs = dayString.Split(',');
         foreach (var req in dayReqs)
         {
             var tmp = req.Split('-');
@@ -236,14 +267,16 @@ public static class SheetToRequisitionConverter
             for (var day = firstDay; day <= lastDay; day++)
                 days.Add(day);
         }
-
         return days;
     }
+    
+    private static List<DayOfWeek> GetDays(string dayString) => GetDays(dayString.Split(','));
 
-    private static List<int> GetSlots(string slotString)
+    private static List<int> GetSlots(string slotString) => GetSlots(slotString.Split(','));
+    
+    private static List<int> GetSlots(IEnumerable<string> slotReqs)
     {
         var slots = new List<int>();
-        var slotReqs = slotString.Split(',');
         foreach (var req in slotReqs)
         {
             //пн-пт: 3,4 пара
@@ -255,7 +288,6 @@ public static class SheetToRequisitionConverter
             for (var slot = firstSlot; slot <= lastSlot; slot++)
                 slots.Add(slot);
         }
-
         return slots;
     }
 }
