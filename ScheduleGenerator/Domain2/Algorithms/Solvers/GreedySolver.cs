@@ -6,15 +6,15 @@ namespace Domain2.Algorithms.Solvers;
 public class GreedySolver : FullSolver
 {
     private readonly IMeetingEstimator estimator;
-    private Random random = new Random();
     public readonly int randomTopN = 1;
+    private Random random = new Random();
 
     public GreedySolver(IMeetingEstimator estimator, int randomTopN = 1)
     {
         this.estimator = estimator;
         this.randomTopN = randomTopN;
     }
-    
+
     public override IEnumerable<(State schedule, double score)> GetSolutions(State problem, Countdown countdown)
     {
         var name = GetType().Name;
@@ -23,7 +23,8 @@ public class GreedySolver : FullSolver
         {
             var solutions = GetNextSteps(problem).ToList();
             var solution =
-                solutions[Math.Min(Math.Max(solutions.Count - randomTopN, 0) + random.Next(randomTopN), solutions.Count-1)];
+                solutions[
+                    Math.Min(Math.Max(solutions.Count - randomTopN, 0) + random.Next(randomTopN), solutions.Count - 1)];
             cumulativeScore += solution.Score;
             problem = problem.AddMeeting(solution.Meeting);
             //Console.WriteLine($"{name} Placing {solution}");
@@ -35,7 +36,7 @@ public class GreedySolver : FullSolver
     public override IEnumerable<SolutionStep> GetNextSteps(State problem)
     {
         var bestScore = double.MinValue;
-        foreach (var meeting in problem.GetAllPossibleVariants())
+        foreach (var meeting in problem.GetPossibleVariants())
         {
             var score = estimator.EstimateMeeting(problem, meeting);
             if (score < bestScore) continue;
