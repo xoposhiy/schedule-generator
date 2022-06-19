@@ -40,6 +40,7 @@ public static class Program
         var sheetName = $"Расписание ({regime})";
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
+        LogEstimatorScores(state, solution.Item1, GetEstimator());
     }
 
     private static IMeetingEstimator GetEstimator()
@@ -94,5 +95,19 @@ public static class Program
         var best = solutions.MaxBy(s => s.score);
         Console.Error.WriteLine($"Best Generation: {solutions.FindIndex(s => s == best)}");
         return best;
+    }
+
+    private static void LogEstimatorScores(State problem, State solution, IMeetingEstimator estimator)
+    {
+        var scoredMeetings = new PriorityQueue<Meeting2, double>();
+        foreach (var meeting in solution.PlacedMeetings)
+        {
+            var score = estimator.EstimateMeeting(problem, meeting);
+            scoredMeetings.Enqueue(meeting, score);
+            problem = problem.AddMeeting(meeting);
+        }
+
+        while (scoredMeetings.TryDequeue(out var meeting, out var score))
+            Console.WriteLine($"Meeting {meeting} at {meeting.MeetingTime} was placed with {score} score");
     }
 }
