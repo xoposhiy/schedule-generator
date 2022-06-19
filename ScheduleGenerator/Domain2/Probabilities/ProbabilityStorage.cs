@@ -35,6 +35,13 @@ public class ProbabilityStorage
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
+    private readonly bool IsFinal;
+
+    public ProbabilityStorage(bool isFinal)
+    {
+        IsFinal = isFinal;
+    }
+
     /// <summary>
     /// Добовляет информацию о том, что студент записался на предмет discipline с приоритетом priority
     /// </summary>
@@ -49,7 +56,11 @@ public class ProbabilityStorage
 
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
-        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority.FormPriority];
+        
+        if (IsFinal)
+            studentsExpectation[discipline] += priority.Enlisted ? 1 : 0;
+        else
+            studentsExpectation[discipline] += GetPriorityDict(discipline)[priority.FormPriority];
     }
 
     public void FillDisciplineToMaxGroups(IEnumerable<Meeting2> meetings)

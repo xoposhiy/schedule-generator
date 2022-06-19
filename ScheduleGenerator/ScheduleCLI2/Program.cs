@@ -14,6 +14,7 @@ public static class Program
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
         var regime = "Весна";
+        var isFinal = true;
 
 
         var repo = new GsRepository("main",
@@ -27,7 +28,7 @@ public static class Program
         var disciplineCount = regime == "Осень" ? 18 : 23;
         var prioritiesSource = $"Приоритеты ({regime})";
         var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
-        var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource);
+        var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource, isFinal);
         var state = new State(meetings, probabilityStorage);
 
         SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);

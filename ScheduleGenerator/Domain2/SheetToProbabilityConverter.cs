@@ -45,9 +45,9 @@ public static class SheetToProbabilityConverter
         }
     }
 
-    public static ProbabilityStorage ReadProbabilities(GsRepository repo, string meetingsSheetName)
+    public static ProbabilityStorage ReadProbabilities(GsRepository repo, string meetingsSheetName, bool isFinal)
     {
-        var probabilityStorage = new ProbabilityStorage();
+        var probabilityStorage = new ProbabilityStorage(isFinal);
         var meetingsDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 10);
         foreach (var row in meetingsDataRaw.Skip(2))
         {
