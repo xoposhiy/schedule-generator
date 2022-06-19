@@ -52,13 +52,13 @@ public class MeetingTimeParseTests
     [TestCase("пн 9999")]
     [TestCase("erdtcyvbnm 4")]
     [TestCase("пг, сб 2")]
-    [TestCase("1-2")]
-    [TestCase("вт, 1-5 \n пт, 3-6")]
-    [TestCase("пн-пт, 3-5")]
+    // [TestCase("1-2")]
+    // [TestCase("вт, 1-5 \n пт, 3-6")]
+    // [TestCase("пн-пт, 3-5")]
     [TestCase("пн-пт; 3-4")]
     [TestCase("пн-пт; 3-4")]
     [TestCase("пара")]
-    [TestCase("пн")] //Так пока нельзя. возможно потом стоит сделать чтобы было можно
+    // [TestCase("пн")]
     public void WrongTimeRequisitionFormatShouldNotWork(string rawTimeRequisition)
     {
         Assert.Throws(Is.InstanceOf<Exception>(),

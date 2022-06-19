@@ -32,7 +32,7 @@ public class ChokudaiSearch : ISolver
             {
                 if (!states[t].TryDequeue(out var state, out var penalty)) continue;
 
-                var variants = state.GetAllPossibleVariants().ToList();
+                var variants = state.GetPossibleVariants().ToList();
 
                 if (variants.Count == 0) yield return (state, -penalty);
 

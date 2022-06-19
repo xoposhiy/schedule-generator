@@ -3,14 +3,31 @@ using CommonDomain.Enums;
 
 namespace Domain2;
 
+/// <summary>
+/// Место, где зафиксированны пожелания студентов или их фактическое зачисления на курсы
+/// </summary>
 public class ProbabilityStorage
 {
     private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
 
+    /// <summary>
+    /// Соотношение приоритета студента к вероятности попасть на курс
+    /// </summary>
     public readonly Dictionary<int, double> PriorityToProbability = new();
+
+    /// <summary>
+    /// Соотношение приоритета стедента к вероятности попасть на курс с тестовым
+    /// </summary>
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
 
+    /// <summary>
+    /// Кеш для матожидания студентов на предмете
+    /// </summary>
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
+
+    /// <summary>
+    /// Кеш для матожидания пересечения студентов, ходящих на оба предмета
+    /// </summary>
     private readonly Dictionary<(Discipline, Discipline), double> studentsIntersectionExpectation = new();
 
     private readonly Dictionary<string, Dictionary<Discipline, StudentPriorities>> studentWithDisciplineToPriority =
@@ -18,6 +35,12 @@ public class ProbabilityStorage
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
 
+    /// <summary>
+    /// Добовляет информацию о том, что студент записался на предмет discipline с приоритетом priority
+    /// </summary>
+    /// <param name="student">Имя студента</param>
+    /// <param name="discipline">Дисциплина/предмет</param>
+    /// <param name="priority">Приоритет студента</param>
     public void AddSubjectForStudent(string student, Discipline discipline, StudentPriorities priority)
     {
         if (!studentWithDisciplineToPriority.ContainsKey(student))
@@ -43,6 +66,12 @@ public class ProbabilityStorage
             disciplineToMaxGroups.Add(discipline, groups.Max());
     }
 
+    /// <summary>
+    /// Считает ожидаемое количество студентов на паре
+    /// </summary>
+    /// <param name="meeting">Пара</param>
+    /// <returns>Ожидаемое количество студентов</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Выбрасывется, когда вид пары не учтен</exception>
     public double GetStudentsExpectation(Meeting2 meeting)
     {
         switch (meeting.Discipline.Type)
@@ -57,6 +86,12 @@ public class ProbabilityStorage
         }
     }
 
+    /// <summary>
+    /// Считает ожидаемое количество студентов, которые ходять на обе пары
+    /// </summary>
+    /// <param name="firstMeeting">Первая пара</param>
+    /// <param name="secondMeeting">Вторая пара</param>
+    /// <returns>Количество студентов, которые ходят на обе пары</returns>
     public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
         var firstDiscipline = firstMeeting.Discipline;

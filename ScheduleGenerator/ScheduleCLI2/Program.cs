@@ -12,8 +12,8 @@ public static class Program
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        // var regime = "autumn";
-        var regime = "spring";
+        // var regime = "Осень";
+        var regime = "Весна";
 
 
         var repo = new GsRepository("main",
@@ -22,10 +22,10 @@ public static class Program
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
-        var meetingsSource = regime == "autumn" ? "Форматированные пары осень" : "Форматированные пары весна";
-        var probabilitiesSource = regime == "autumn" ? "Вероятности Осень" : "Вероятности Весна";
-        var disciplineCount = regime == "autumn" ? 18 : 23;
-        var prioritiesSource = regime == "autumn" ? "Приоритеты (Осень)" : "Приоритеты для шатания";
+        var meetingsSource = $"Форматированные пары ({regime})";
+        var probabilitiesSource = $"Вероятности ({regime})";
+        var disciplineCount = regime == "Осень" ? 18 : 23;
+        var prioritiesSource = $"Приоритеты ({regime})";
         var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
         var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource);
         var state = new State(meetings, probabilityStorage);
@@ -37,7 +37,7 @@ public static class Program
         //var solution = SolveRepeater(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
 
-        var sheetName = "Лист4";
+        var sheetName = $"Расписание ({regime})";
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
     }

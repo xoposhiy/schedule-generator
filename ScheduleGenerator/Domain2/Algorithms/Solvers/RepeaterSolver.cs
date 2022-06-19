@@ -4,16 +4,16 @@ namespace Domain2.Algorithms.Solvers;
 
 public class RepeaterSolver : ISolver
 {
-    private ISolver innerSolver;
-    
+    private readonly ISolver innerSolver;
+
     public RepeaterSolver(ISolver innerSolver)
     {
         this.innerSolver = innerSolver;
     }
-    
+
     public IEnumerable<(State schedule, double score)> GetSolutions(State problem, Countdown countdown)
     {
-        (State, double) bestSolution = (null, Double.MinValue);
+        (State, double) bestSolution = (problem, double.MinValue);
         while (!countdown.IsFinished())
         {
             var solution = innerSolver.GetSolutions(problem, countdown).Last();
@@ -21,8 +21,10 @@ public class RepeaterSolver : ISolver
             {
                 bestSolution = solution;
             }
+
             yield return solution;
         }
+
         yield return bestSolution;
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Domain2;
 
+/// <summary>
+/// Ковенция, которая позволяет считает новый хеш рассписания за O(1)
+/// </summary>
 public class ZobristHasher
 {
     private readonly long[,] randomLongs;
@@ -17,6 +20,11 @@ public class ZobristHasher
             randomLongs[i, j] = random.NextInt64();
     }
 
+    /// <summary>
+    /// Хеш элемента расписания
+    /// </summary>
+    /// <param name="meeting2">Элемент расписания</param>
+    /// <returns>Хеш</returns>
     public long GetMeetingHash(Meeting2 meeting2)
     {
         if (meeting2.Ignore) return 0;

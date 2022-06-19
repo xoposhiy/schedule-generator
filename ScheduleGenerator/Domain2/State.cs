@@ -3,12 +3,34 @@ using static CommonDomain.CommonDomainExtensions;
 
 namespace Domain2;
 
+/// <summary>
+/// Состояние расписания
+/// </summary>
 public class State
 {
+    /// <summary>
+    /// Хеш, полученный ZobristHasher-ом
+    /// </summary>
     public readonly long HashCode;
+
+    /// <summary>
+    /// Пары, которые еще не поставленны в расписание
+    /// </summary>
     public readonly ImmutableDictionary<int, Meeting2> NotPlacedMeetings;
+
+    /// <summary>
+    /// Поставленные пары
+    /// </summary>
     public readonly ImmutableList<Meeting2> PlacedMeetings;
+
+    /// <summary>
+    /// Место с вероятностями попадания студентов на курсы
+    /// </summary>
     public readonly ProbabilityStorage ProbabilityStorage;
+
+    /// <summary>
+    /// Алгоримт хеширования, который помогает поддерживать HashCode
+    /// </summary>
     private readonly ZobristHasher zobristHasher;
 
     public State(IReadOnlyCollection<Meeting2> meetingsToPlace, ProbabilityStorage probabilityStorage)
@@ -32,6 +54,10 @@ public class State
         HashCode = hashCode;
     }
 
+    /// <summary>
+    /// Возвращает все пары, которые идут в указанное время
+    /// </summary>
+    /// <param name="meetingTime">Время проведения пары</param>
     public IEnumerable<Meeting2> this[MeetingTime meetingTime]
     {
         get
@@ -49,6 +75,11 @@ public class State
         }
     }
 
+    /// <summary>
+    /// Добавление пары в рассписание
+    /// </summary>
+    /// <param name="meeting">Пара</param>
+    /// <returns>Состояние расписания, после постановки пары</returns>
     public State AddMeeting(Meeting2 meeting)
     {
         var placedMeetings = PlacedMeetings.Add(meeting);
