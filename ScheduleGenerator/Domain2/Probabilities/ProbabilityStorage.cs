@@ -10,7 +10,9 @@ public class ProbabilityStorage
 {
     private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
 
-    private readonly bool IsFinal;
+    private readonly Dictionary<(string, Discipline), double[]> groupOfStudentOnDiscipline = new();
+
+    private readonly bool isFinal;
 
     /// <summary>
     /// Соотношение приоритета студента к вероятности попасть на курс
@@ -37,7 +39,7 @@ public class ProbabilityStorage
 
     public ProbabilityStorage(bool isFinal)
     {
-        IsFinal = isFinal;
+        this.isFinal = isFinal;
     }
 
     public int StudentsCount => studentWithDisciplineToPriority.Count;
@@ -58,7 +60,7 @@ public class ProbabilityStorage
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
 
-        if (IsFinal)
+        if (isFinal)
             studentsExpectation[discipline] += priority.Enlisted ? 1 : 0;
         else
             studentsExpectation[discipline] += GetPriorityDict(discipline)[priority.FormPriority];
@@ -76,6 +78,19 @@ public class ProbabilityStorage
 
         foreach (var (discipline, groups) in dict)
             disciplineToMaxGroups.Add(discipline, groups.Max());
+    }
+
+    public void InitStudentUniformDistribution()
+    {
+        foreach (var discipline in Disciplines)
+        {
+            var groupsCount = GetDisciplineGroupCount(discipline);
+            var groupsDistribution = Enumerable
+                .Repeat(1d / groupsCount, groupsCount)
+                .ToArray();
+            var students = GetAllEnlistedStudents(discipline);
+            foreach (var student in students) groupOfStudentOnDiscipline[(student, discipline)] = groupsDistribution;
+        }
     }
 
     /// <summary>
@@ -148,7 +163,7 @@ public class ProbabilityStorage
     {
         var students = new List<string>();
         foreach (var (student, dictionary) in studentWithDisciplineToPriority)
-            if (dictionary[discipline].Enlisted)
+            if (!isFinal || dictionary[discipline].Enlisted)
                 students.Add(student);
 
         return students;
@@ -161,11 +176,18 @@ public class ProbabilityStorage
 
     public void SetStudentToGroup(string student, Discipline discipline, int group)
     {
-        throw new NotImplementedException();
+        var groupsCount = GetDisciplineGroupCount(discipline);
+        var groupsDistribution = new double[groupsCount];
+        groupsDistribution[group] = 1;
+        groupOfStudentOnDiscipline[(student, discipline)] = groupsDistribution;
     }
 
-    public void RemoveStudentFromGroup(string student, Discipline discipline, int group)
+    public void RemoveStudentFromGroup(string student, Discipline discipline)
     {
-        throw new NotImplementedException();
+        var groupsCount = GetDisciplineGroupCount(discipline);
+        var groupsDistribution = Enumerable
+            .Repeat(1d / groupsCount, groupsCount)
+            .ToArray();
+        groupOfStudentOnDiscipline[(student, discipline)] = groupsDistribution;
     }
 }

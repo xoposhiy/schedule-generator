@@ -34,6 +34,7 @@ public static class Program
 
         SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);
         SheetToProbabilityConverter.ReadPriorities(repo, probabilityStorage, meetings, prioritiesSource);
+        probabilityStorage.InitStudentUniformDistribution();
 
         var solution = SolveByChokudai(state);
         //var solution = SolveRepeater(state);
