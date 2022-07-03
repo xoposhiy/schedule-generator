@@ -10,6 +10,8 @@ public class ProbabilityStorage
 {
     private readonly Dictionary<Discipline, int> disciplineToMaxGroups = new();
 
+    private readonly bool IsFinal;
+
     /// <summary>
     /// Соотношение приоритета студента к вероятности попасть на курс
     /// </summary>
@@ -33,14 +35,13 @@ public class ProbabilityStorage
     private readonly Dictionary<string, Dictionary<Discipline, StudentPriorities>> studentWithDisciplineToPriority =
         new();
 
-    public int StudentsCount => studentWithDisciplineToPriority.Count;
-
-    private readonly bool IsFinal;
-
     public ProbabilityStorage(bool isFinal)
     {
         IsFinal = isFinal;
     }
+
+    public int StudentsCount => studentWithDisciplineToPriority.Count;
+    public IEnumerable<Discipline> Disciplines => disciplineToMaxGroups.Keys;
 
     /// <summary>
     /// Добовляет информацию о том, что студент записался на предмет discipline с приоритетом priority
@@ -56,7 +57,7 @@ public class ProbabilityStorage
 
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
-        
+
         if (IsFinal)
             studentsExpectation[discipline] += priority.Enlisted ? 1 : 0;
         else
@@ -156,5 +157,15 @@ public class ProbabilityStorage
     public int GetDisciplineGroupCount(Discipline discipline)
     {
         return disciplineToMaxGroups[discipline];
+    }
+
+    public void SetStudentToGroup(string student, Discipline discipline, int group)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void RemoveStudentFromGroup(string student, Discipline discipline, int group)
+    {
+        throw new NotImplementedException();
     }
 }
