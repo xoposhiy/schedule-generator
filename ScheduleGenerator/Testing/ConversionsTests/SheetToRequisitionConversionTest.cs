@@ -44,6 +44,7 @@ namespace Testing.ConversionsTests
         [TestCase("пн", "Mo1, Mo2, Mo3, Mo4, Mo5, Mo6")]
         [TestCase("",
             "Mo1, Mo2, Mo3, Mo4, Mo5, Mo6, Tu1, Tu2, Tu3, Tu4, Tu5, Tu6, We1, We2, We3, We4, We5, We6, Th1, Th2, Th3, Th4, Th5, Th6, Fr1, Fr2, Fr3, Fr4, Fr5, Fr6, Sa1, Sa2, Sa3, Sa4, Sa5, Sa6")]
+        [TestCase("вт: 6-8", "Tu6, Tu7, Tu8")]
         public void TimeRequisitionsParseTest(string rawTimeRequisition, string expected)
         {
             var meetingTimeRequisitions = ParseMeetingTimeRequisitions(rawTimeRequisition)
@@ -55,7 +56,7 @@ namespace Testing.ConversionsTests
         }
 
         
-        [TestCase("вт: 7")]
+        [TestCase("вт: 9")]
         [TestCase("пн: 0")]
         [TestCase("erdtcyvbnm")]
         [TestCase("пг, сб: 2 пара")]
