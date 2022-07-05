@@ -156,7 +156,7 @@ namespace Domain
 
             foreach (var weekType in meeting.WeekType.GetWeekTypes())
             {
-                var byDay = byKey1.SafeAddAndReturn(weekType, day, new Meeting[7]);
+                var byDay = byKey1.SafeAddAndReturn(weekType, day, new Meeting[9]);
 
                 byDay[timeSlot] = meeting;
             }

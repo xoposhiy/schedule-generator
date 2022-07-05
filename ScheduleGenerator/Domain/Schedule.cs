@@ -18,7 +18,7 @@ namespace Domain
     public partial class Schedule : IReadonlySchedule
     {
         private readonly IReadOnlyCollection<RoomRequisition> classroomsRequisitions;
-        public readonly Dictionary<MeetingTime, HashSet<string>> FreeRoomsByDay = new();
+        public readonly Dictionary<MeetingTime, HashSet<string>> UsedRoomsByDay = new();
 
         public readonly Dictionary<MeetingGroup, Dictionary<LearningPlanItem, double>> GroupLearningPlanItemsCount =
             new();
@@ -69,7 +69,6 @@ namespace Domain
             SpecsByRoom = specsByRoom;
 
             FillClassroomsBySpec(specsByRoom);
-            FillRoomPool(specsByRoom.Keys);
             FillLockedRoomTimes(classroomsWithLockedTimes);
 
             NotUsedMeetings = requisition.ConvertRequisitionToBaseMeeting().ToHashSet();
@@ -84,9 +83,9 @@ namespace Domain
         private void FillLockedRoomTimes(Dictionary<string, HashSet<MeetingTime>>? lockedTimeByRoom)
         {
             if (lockedTimeByRoom == null) return;
-            foreach (var (key, value) in lockedTimeByRoom)
-            foreach (var time in value)
-                FreeRoomsByDay[time].Remove(key);
+            foreach (var (room, meetingTimes) in lockedTimeByRoom)
+            foreach (var time in meetingTimes)
+                UsedRoomsByDay.SafeAdd(time, room);
         }
 
         public override bool Equals(object? obj)
@@ -235,7 +234,7 @@ namespace Domain
                 TeacherMeetingsByTime.SafeAdd(teacher, meetingToAdd);
 
                 if (meetingToAdd.Classroom != null)
-                    FreeRoomsByDay[meetingTime].Remove(meetingToAdd.Classroom);
+                    UsedRoomsByDay.SafeAdd(meetingTime, meetingToAdd.Classroom);
                 AddMeetingToGroup(meetingToAdd);
 
                 if (!NotUsedMeetings.Remove(meetingToAdd.BaseMeeting!))
@@ -261,7 +260,7 @@ namespace Domain
                     TeacherMeetingsByTime[meetingToRemove.Teacher][weekType][day][timeSlot] = null;
 
                 if (meetingToRemove.Classroom != null)
-                    FreeRoomsByDay[meetingTime].Add(meetingToRemove.Classroom);
+                    UsedRoomsByDay[meetingTime].Remove(meetingToRemove.Classroom);
 
                 RemoveMeetingFromGroup(meetingToRemove);
 
@@ -351,11 +350,6 @@ namespace Domain
                 RoomsBySpec.SafeAdd(spec, key);
         }
 
-        private void FillRoomPool(IReadOnlyCollection<string> rooms)
-        {
-            foreach (var time in GetAllPossibleMeetingTimes()) FreeRoomsByDay.Add(time, rooms.ToHashSet());
-        }
-
         private Meeting? TryCreateFilledMeeting(Meeting baseMeeting, GroupsChoice groupsChoice, MeetingTime meetingTime,
             bool ignoreTimePriorities)
         {
@@ -400,12 +394,14 @@ namespace Domain
 
         private string? FindFreeRoom(MeetingTime meetingTime, IEnumerable<RoomSpec> roomRequirement)
         {
-            if (!FreeRoomsByDay.TryGetValue(meetingTime, out var rooms))
+            IEnumerable<string> possibleRooms = SpecsByRoom.Keys.ToList();
+            if (UsedRoomsByDay.TryGetValue(meetingTime, out var usedRooms))
             {
-                throw new Exception($"No free rooms for time {meetingTime}");
+                if (usedRooms.SetEquals(possibleRooms))
+                    throw new Exception($"No free rooms for time {meetingTime}");
+                possibleRooms = possibleRooms.Except(usedRooms);
             }
 
-            IEnumerable<string> possibleRooms = rooms;
             foreach (var rs in roomRequirement)
                 possibleRooms = possibleRooms.Intersect(RoomsBySpec[rs]);
             return possibleRooms.OrderBy(e => SpecsByRoom[e].Count).FirstOrDefault();
