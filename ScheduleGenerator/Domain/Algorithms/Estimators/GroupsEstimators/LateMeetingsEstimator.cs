@@ -2,14 +2,20 @@ using System;
 using CommonDomain.Enums;
 using Domain.MeetingsParts;
 using Infrastructure;
+using static Domain.DomainExtensions;
 
 namespace Domain.Algorithms.Estimators.GroupsEstimators;
 
 public class LateMeetingsEstimator : GroupEstimator
 {
+    private const int MaxLateMeetingsPerDayCount = 2;
+    private const int NotLateMeetingsPerDayCount = 6;
+    
     public override double GetMaxPenalty(Schedule schedule)
     {
-        return (schedule.Meetings.Count + schedule.NotUsedMeetings.Count); //TODO:(mexbandoc) посчитать нормально максимальный штраф
+        return schedule.GroupMeetingsByTime.Count * WeekTypesCount * 
+               Math.Min(schedule.Meetings.Count + schedule.NotUsedMeetings.Count, 
+                   MaxDaysCount * MaxLateMeetingsPerDayCount);
     }
 
     public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
@@ -22,7 +28,7 @@ public class LateMeetingsEstimator : GroupEstimator
         foreach (var (day, byDay) in byWeekType)
         foreach (var meeting in byDay)
         {
-            if (meeting!.MeetingTime!.TimeSlot <= 6) continue;
+            if (meeting!.MeetingTime!.TimeSlot <= NotLateMeetingsPerDayCount) continue;
             penalty++;
             logger?.Log(GetLogMessage(@group, weekType, day, meeting), scorePart);
         }
@@ -32,7 +38,10 @@ public class LateMeetingsEstimator : GroupEstimator
 
     public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
     {
-        throw new System.NotImplementedException(); //TODO:(mexbandoc) сделать
+        var penaltyDelta = meetingToAdd.MeetingTime!.TimeSlot > NotLateMeetingsPerDayCount ? 1 : 0;
+        var maxPenalty = GetMaxPenalty(schedule);
+        
+        return -penaltyDelta / maxPenalty;
     }
 
     private static string GetLogMessage(MeetingGroup group, WeekType weekType, DayOfWeek day, Meeting meeting)
