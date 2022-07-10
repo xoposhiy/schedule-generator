@@ -85,12 +85,8 @@ public class ProbabilityStorage
     {
         foreach (var discipline in Disciplines)
         {
-            var groupsCount = GetDisciplineGroupCount(discipline);
-            var groupsDistribution = Enumerable
-                .Repeat(1d / groupsCount, groupsCount)
-                .ToArray();
             var students = GetAllEnlistedStudents(discipline);
-            foreach (var student in students) groupOfStudentOnDiscipline[(student, discipline)] = groupsDistribution;
+            foreach (var student in students) RemoveStudentFromGroup(student, discipline);
         }
     }
 
