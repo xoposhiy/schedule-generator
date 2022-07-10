@@ -42,6 +42,7 @@ public class ProbabilityStorage
         this.isFinal = isFinal;
     }
 
+    public IEnumerable<string> Students => studentWithDisciplineToPriority.Keys;
     public int StudentsCount => studentWithDisciplineToPriority.Count;
     public IEnumerable<Discipline> Disciplines => disciplineToMaxGroups.Keys;
 
@@ -121,35 +122,39 @@ public class ProbabilityStorage
     /// <returns>Количество студентов, которые ходят на обе пары</returns>
     public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
-        var firstDiscipline = firstMeeting.Discipline;
-        var secondDiscipline = secondMeeting.Discipline;
-        var firstGroups = firstMeeting.Groups;
-        var secondGroups = secondMeeting.Groups;
+        var isSameDiscipline = firstMeeting.Discipline == secondMeeting.Discipline;
 
-        if (firstDiscipline == secondDiscipline)
+        var expectation = 0d;
+
+        foreach (var student in Students)
         {
-            var intersectionGroupsCount = (double) firstGroups.Intersect(secondGroups).Count();
-            var groupsIntersection = intersectionGroupsCount / disciplineToMaxGroups[firstDiscipline];
-            return GetStudentsExpectation(firstMeeting) * groupsIntersection;
+            var firstProbability = GetProbabilityToBeOnMeeting(student, firstMeeting);
+            var secondProbability = GetProbabilityToBeOnMeeting(student, secondMeeting, isSameDiscipline);
+
+            expectation += firstProbability * secondProbability;
         }
-
-        if (studentsIntersectionExpectation.TryGetValue((firstDiscipline, secondDiscipline), out var expectation))
-            return expectation;
-
-        var firstPriorityToProbability = GetPriorityDict(firstDiscipline);
-        var secondPriorityToProbability = GetPriorityDict(secondDiscipline);
-        foreach (var student in studentWithDisciplineToPriority.Keys)
-        {
-            var firstPrior = studentWithDisciplineToPriority[student][firstDiscipline].FormPriority;
-            var secondPrior = studentWithDisciplineToPriority[student][secondDiscipline].FormPriority;
-
-            expectation += firstPriorityToProbability[firstPrior] * secondPriorityToProbability[secondPrior];
-        }
-
-        studentsIntersectionExpectation[(firstDiscipline, secondDiscipline)] = expectation;
-        studentsIntersectionExpectation[(secondDiscipline, firstDiscipline)] = expectation;
 
         return expectation;
+    }
+
+    private double GetProbabilityToBeOnMeeting(string student, Meeting2 meeting, bool isSameDiscipline = false)
+    {
+        var discipline = meeting.Discipline;
+        if (!groupOfStudentOnDiscipline.TryGetValue((student, discipline), out var cache)) return 0;
+        var probabilityToBe = meeting.Groups.Sum(group => cache[group - 1]);
+        if (isSameDiscipline) return probabilityToBe;
+        return probabilityToBe * GetProbabilityToBeOnDiscipline(student, discipline);
+    }
+
+    private double GetProbabilityToBeOnDiscipline(string student, Discipline discipline)
+    {
+        var priority = GetCurrentPriority(studentWithDisciplineToPriority[student][discipline]);
+        return GetPriorityDict(discipline)[priority];
+    }
+
+    private int GetCurrentPriority(StudentPriorities priorities)
+    {
+        return priorities.FormPriority;
     }
 
     private Dictionary<int, double> GetPriorityDict(Discipline discipline)
@@ -161,6 +166,9 @@ public class ProbabilityStorage
 
     public List<string> GetAllEnlistedStudents(Discipline discipline)
     {
+        if (discipline.Type == DisciplineType.Obligatory)
+            return Students.ToList();
+
         var students = new List<string>();
         foreach (var (student, dictionary) in studentWithDisciplineToPriority)
             if (!isFinal || dictionary[discipline].Enlisted)

@@ -15,7 +15,7 @@ public static class Program
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
         var regime = "Весна";
-        var isFinal = true;
+        var isFinal = false;
 
 
         var repo = new GsRepository("main",
@@ -123,6 +123,7 @@ public static class Program
     {
         foreach (var (discipline, groups) in studentsByGroups)
         {
+            if (groups.Count == 1) continue;
             Console.WriteLine(discipline);
             foreach (var group in groups)
             {
