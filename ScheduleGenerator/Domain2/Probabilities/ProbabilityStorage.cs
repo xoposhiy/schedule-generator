@@ -4,7 +4,7 @@ using CommonDomain.Enums;
 namespace Domain2;
 
 /// <summary>
-/// Место, где зафиксированны пожелания студентов или их фактическое зачисления на курсы
+/// Место, где в виде вероятностной модели зафиксированны пожелания студентов или их фактическое зачисления на курсы
 /// </summary>
 public class ProbabilityStorage
 {
@@ -15,22 +15,22 @@ public class ProbabilityStorage
     private readonly bool isFinal;
 
     /// <summary>
-    /// Соотношение приоритета студента к вероятности попасть на курс
+    /// Выбранный студентом приоритет предмета (без тестового) -> статистическая вероятность того, что он на этот предмет попадет
     /// </summary>
     public readonly Dictionary<int, double> PriorityToProbability = new();
 
     /// <summary>
-    /// Соотношение приоритета стедента к вероятности попасть на курс с тестовым
+    /// Выбранный студентом приоритет предмета с тестовым -> статистическая вероятность того, что он на этот предмет попадет
     /// </summary>
     public readonly Dictionary<int, double> PriorityWithEntranceToProbability = new();
 
     /// <summary>
-    /// Кеш для матожидания студентов на предмете
+    /// Кеш для матожидания количества студентов на предмете
     /// </summary>
     private readonly Dictionary<Discipline, double> studentsExpectation = new();
 
     /// <summary>
-    /// Кеш для матожидания пересечения студентов, ходящих на оба предмета
+    /// Кеш для матожидания количества студентов, ходящих на оба предмета
     /// </summary>
     private readonly Dictionary<(Discipline, Discipline), double> studentsIntersectionExpectation = new();
 
@@ -86,7 +86,7 @@ public class ProbabilityStorage
         foreach (var discipline in Disciplines)
         {
             var students = GetAllEnlistedStudents(discipline);
-            foreach (var student in students) RemoveStudentFromGroup(student, discipline);
+            foreach (var student in students) SplitStudentEvenlyBetweenAllGroups(student, discipline);
         }
     }
 
@@ -111,11 +111,11 @@ public class ProbabilityStorage
     }
 
     /// <summary>
-    /// Считает ожидаемое количество студентов, которые ходять на обе пары
+    /// Считает матожидание количества студентов, которые ходять на обе пары
     /// </summary>
     /// <param name="firstMeeting">Первая пара</param>
     /// <param name="secondMeeting">Вторая пара</param>
-    /// <returns>Количество студентов, которые ходят на обе пары</returns>
+    /// <returns>Матожидание количества студентов, которые ходят на обе пары</returns>
     public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
     {
         var isSameDiscipline = firstMeeting.Discipline == secondMeeting.Discipline;
@@ -186,7 +186,7 @@ public class ProbabilityStorage
         groupOfStudentOnDiscipline[(student, discipline)] = groupsDistribution;
     }
 
-    public void RemoveStudentFromGroup(string student, Discipline discipline)
+    public void SplitStudentEvenlyBetweenAllGroups(string student, Discipline discipline)
     {
         var groupsCount = GetDisciplineGroupCount(discipline);
         var groupsDistribution = Enumerable

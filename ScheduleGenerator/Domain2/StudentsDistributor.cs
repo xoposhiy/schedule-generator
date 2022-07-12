@@ -50,7 +50,7 @@ public class StudentsDistributor
         {
             state.ProbabilityStorage.SetStudentToGroup(student, discipline, group);
             var score = estimator.EstimateSchedule(state);
-            state.ProbabilityStorage.RemoveStudentFromGroup(student, discipline);
+            state.ProbabilityStorage.SplitStudentEvenlyBetweenAllGroups(student, discipline);
             if (score > bestScore)
             {
                 bestScore = score;
