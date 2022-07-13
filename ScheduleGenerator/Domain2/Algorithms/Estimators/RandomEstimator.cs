@@ -14,7 +14,7 @@ public class RandomEstimator : IFullEstimator
         return random.NextDouble();
     }
 
-    public double EstimateStudentSchedule(IEnumerable<Meeting2> meeting)
+    public double EstimateStudentSchedule(List<Meeting2> meetings)
     {
         return random.NextDouble();
     }
