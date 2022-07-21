@@ -35,7 +35,7 @@ namespace Testing.EstimatorsTests
         [Test]
         public void FewMeetingsSingleDayTest()
         {
-            var schedule = new Schedule(CalculusRequisition, ClassroomsRequisitions);
+            var schedule = new Schedule(OsRequisition, ClassroomsRequisitions);
             while (schedule.NotUsedMeetings.Count != 0)
             {
                 var scheduleScore = estimator.Estimate(schedule);

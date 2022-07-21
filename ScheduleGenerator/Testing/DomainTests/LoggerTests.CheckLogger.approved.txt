@@ -24,6 +24,8 @@ TimePriorityEstimator:
 	Total: 0 (BasicScore: 0, Weight: 5)
 GroupPriorityEstimator:
 	Total: 0 (BasicScore: 0, Weight: 5)
+LateMeetingsEstimator:
+	Total: 0 (BasicScore: 0, Weight: 3)
 LocationPerDayEstimator:
 	Total: 0 (BasicScore: 0, Weight: 1)
 Total: -0.36111111111111105 (BasicScore: -0.36111111111111105, Weight: 1)
