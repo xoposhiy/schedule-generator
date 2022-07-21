@@ -54,7 +54,7 @@ namespace Domain.Conversions
                 .OrderBy(gn => gn)
                 .ToList();
 
-            startsCount = meetingSet.Max(e => e.MeetingTime!.TimeSlot);
+            startsCount = Math.Max(meetingSet.Max(e => e.MeetingTime!.TimeSlot), 6);
             
             WriteLog($"Прокинется дальше: {meetingSet.Count}");
 

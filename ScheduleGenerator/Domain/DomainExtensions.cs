@@ -81,7 +81,7 @@ namespace Domain
             var count = 0;
             var prev = -1;
 
-            for (var i = 1; i < 7; i++) //index 0 is always null. meetings at 1..6
+            for (var i = 1; i < byDay.Length; i++) //index 0 is always null. meetings at 1..6
                 if (byDay[i] != null)
                 {
                     if (prev != -1) count += i - prev - 1;
@@ -95,7 +95,7 @@ namespace Domain
         public static int MeetingsCount(this Meeting?[] byDay)
         {
             var count = 0;
-            for (var i = 1; i < 7; i++) //meetings at 1..6  always null at 0
+            for (var i = 1; i < byDay.Length; i++) //meetings at 1..6  always null at 0
                 if (byDay[i] != null)
                     count++;
 
@@ -105,7 +105,7 @@ namespace Domain
         public static List<int> MeetingsTimeSlots(this Meeting?[] byDay)
         {
             var res = new List<int>();
-            for (var i = 1; i < 7; i++) //meetings at 1..6  always null at 0
+            for (var i = 1; i < byDay.Length; i++) //meetings at 1..6  always null at 0
                 if (byDay[i] != null)
                     res.Add(i);
             return res;
@@ -303,7 +303,8 @@ namespace Domain
                 (new TeacherSpacesEstimator(), 1),
                 (new TeacherUsedDaysEstimator(), 1),
                 (new TimePriorityEstimator(), 5),
-                (new GroupPriorityEstimator(), 5)
+                (new GroupPriorityEstimator(), 5),
+                (new LateMeetingsEstimator(), 3)
             };
             weightedEstimators
                 .AddRange(GroupEstimators.Select(tuple => ((IEstimator) tuple.Item1, tuple.Item2)));
@@ -374,7 +375,7 @@ namespace Domain
         {
             foreach (var day in WeekDayToIntDict.Keys.Where(day => day != DayOfWeek.Sunday))
             {
-                for (var i = 1; i < 7; i++) yield return new(day, i);
+                for (var i = 1; i < 9; i++) yield return new(day, i);
             }
         }
 

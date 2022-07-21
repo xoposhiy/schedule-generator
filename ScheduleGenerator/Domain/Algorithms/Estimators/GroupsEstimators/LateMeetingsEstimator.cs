@@ -28,7 +28,7 @@ public class LateMeetingsEstimator : GroupEstimator
         foreach (var (day, byDay) in byWeekType)
         foreach (var meeting in byDay)
         {
-            if (meeting!.MeetingTime!.TimeSlot <= NotLateMeetingsPerDayCount) continue;
+            if (meeting == null || meeting.MeetingTime!.TimeSlot <= NotLateMeetingsPerDayCount) continue;
             penalty++;
             logger?.Log(GetLogMessage(@group, weekType, day, meeting), scorePart);
         }
