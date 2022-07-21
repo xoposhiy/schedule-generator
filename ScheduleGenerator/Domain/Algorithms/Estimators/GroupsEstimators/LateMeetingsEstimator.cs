@@ -38,9 +38,13 @@ public class LateMeetingsEstimator : GroupEstimator
 
     public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
     {
-        var penaltyDelta = meetingToAdd.MeetingTime!.TimeSlot > NotLateMeetingsPerDayCount ? 1 : 0;
+        var penalty = meetingToAdd.MeetingTime!.TimeSlot > NotLateMeetingsPerDayCount ? 1 : 0;
         var maxPenalty = GetMaxPenalty(schedule);
         
+        var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
+        var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
+
+        var penaltyDelta = penalty * groups.Count * weekTypes.Length;
         return -penaltyDelta / maxPenalty;
     }
 
