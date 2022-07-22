@@ -13,9 +13,8 @@ public class LateMeetingsEstimator : GroupEstimator
     
     public override double GetMaxPenalty(Schedule schedule)
     {
-        return schedule.GroupMeetingsByTime.Count * WeekTypesCount * 
-               Math.Min(schedule.Meetings.Count + schedule.NotUsedMeetings.Count, 
-                   MaxDaysCount * MaxLateMeetingsPerDayCount);
+        return schedule.GroupMeetingsByTime.Count * WeekTypesCount *
+               MaxDaysCount * MaxLateMeetingsPerDayCount;
     }
 
     public override double GetScoreByGroup(MeetingGroup group, Schedule schedule, ILogger? logger = null)
@@ -38,13 +37,20 @@ public class LateMeetingsEstimator : GroupEstimator
 
     public override double EstimateMeetingToAdd(Schedule schedule, Meeting meetingToAdd)
     {
-        var penalty = meetingToAdd.MeetingTime!.TimeSlot > NotLateMeetingsPerDayCount ? 1 : 0;
-        var maxPenalty = GetMaxPenalty(schedule);
-        
         var groups = meetingToAdd.GroupsChoice!.GetGroupParts();
         var weekTypes = meetingToAdd.WeekType.GetWeekTypes();
+        var meetingsToAdd = meetingToAdd.GetLinkedMeetings();
+        
+        
+        var penaltyDelta = 0;
+        var maxPenalty = GetMaxPenalty(schedule);
 
-        var penaltyDelta = penalty * groups.Count * weekTypes.Length;
+        foreach (var meeting in meetingsToAdd)
+        {
+            var penalty  = meeting.MeetingTime!.TimeSlot <= NotLateMeetingsPerDayCount ? 0 : 1;
+            penaltyDelta += penalty * groups.Count * weekTypes.Length;
+        }
+        
         return -penaltyDelta / maxPenalty;
     }
 
