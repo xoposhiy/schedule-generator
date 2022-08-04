@@ -46,7 +46,7 @@ namespace Domain.Algorithms.Estimators.GroupsEstimators
             foreach (var meetingGroup in groups)
             foreach (var weekType in weekTypes)
             {
-                var locations = new Location?[7];
+                var locations = new Location?[9];
                 if (schedule.GroupMeetingsByTime.TryGetValue(meetingGroup, weekType, dayOfWeek, out var byDay))
                 {
                     if (byDay[timeSlot] != null)

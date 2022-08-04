@@ -22,7 +22,7 @@ namespace Domain.Conversions
 
         private const int TimeStartColumn = TimeBarColumnOffset + 1;
 
-        private const int StartsCount = 6;
+        private static int startsCount;
 
         private static readonly string[] WeekDays = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ"};
         private static readonly int WeekDayCount = WeekDays.Length;
@@ -54,6 +54,8 @@ namespace Domain.Conversions
                 .OrderBy(gn => gn)
                 .ToList();
 
+            startsCount = Math.Max(meetingSet.Max(e => e.MeetingTime!.TimeSlot), 6);
+            
             WriteLog($"Прокинется дальше: {meetingSet.Count}");
 
             repository.ClearSheet(sheetName);
@@ -75,13 +77,13 @@ namespace Domain.Conversions
 
         private static SheetModifier ColorField(this SheetModifier modifier, int width)
         {
-            var height = WeekDayCount * StartsCount * WeekTypesCount;
+            var height = WeekDayCount * startsCount * WeekTypesCount;
             return modifier.ColorizeRange(TimeBarRowOffset, HeadersColumnOffset, height, width, BackgroundColor);
         }
 
         private static SheetModifier BuildTimeBar(this SheetModifier modifier)
         {
-            const int height = StartsCount * WeekTypesCount;
+            var height = startsCount * WeekTypesCount;
             var rowStart = TimeBarRowOffset;
 
             foreach (var weekDay in WeekDays.Select(HeaderCellData))
@@ -90,7 +92,7 @@ namespace Domain.Conversions
                     .WriteRange(rowStart, TimeBarColumnOffset, new() {new() {weekDay}})
                     .AddBorders(rowStart, TimeBarColumnOffset)
                     .MergeCell(rowStart, TimeBarColumnOffset, height, 1)
-                    .BuildTimeSlotsBar(TimeStartColumn, rowStart, WeekTypesCount, 1, StartsCount);
+                    .BuildTimeSlotsBar(TimeStartColumn, rowStart, WeekTypesCount, 1, startsCount);
                 rowStart += height;
             }
 
@@ -100,7 +102,7 @@ namespace Domain.Conversions
         // ReSharper disable once UnusedMethodReturnValue.Local
         private static SheetModifier BuildThickBorders(this SheetModifier modifier, int width)
         {
-            const int height = StartsCount * WeekTypesCount;
+            var height = startsCount * WeekTypesCount;
             var currentRow = TimeBarRowOffset + (WeekDayCount - 1) * height;
             for (var i = 0; i < WeekDayCount; i++)
             {
@@ -220,7 +222,7 @@ namespace Domain.Conversions
 
         private static int GetStartRow(Meeting meeting)
         {
-            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * StartsCount * WeekTypesCount;
+            var rowNumOff = WeekDayToIntDict[meeting.MeetingTime!.Day] * startsCount * WeekTypesCount;
             var startRow = (meeting.MeetingTime.TimeSlot - 1) * WeekTypesCount + rowNumOff;
             var weekOffset = meeting.WeekType == WeekType.Even ? 1 : 0;
             return startRow + TimeBarRowOffset + weekOffset;
