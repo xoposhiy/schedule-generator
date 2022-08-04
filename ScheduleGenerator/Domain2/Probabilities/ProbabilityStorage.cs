@@ -113,33 +113,38 @@ public class ProbabilityStorage
     /// <summary>
     /// Считает матожидание количества студентов, которые ходять на обе пары
     /// </summary>
-    /// <param name="firstMeeting">Первая пара</param>
-    /// <param name="secondMeeting">Вторая пара</param>
+    /// <param name="first">Первая пара</param>
+    /// <param name="second">Вторая пара</param>
     /// <returns>Матожидание количества студентов, которые ходят на обе пары</returns>
-    public double GetCommonStudents(Meeting2 firstMeeting, Meeting2 secondMeeting)
+    public double GetCommonStudents(Meeting2 first, Meeting2 second)
     {
-        var isSameDiscipline = firstMeeting.Discipline == secondMeeting.Discipline;
-
         var expectation = 0d;
 
         foreach (var student in Students)
         {
-            var firstProbability = GetProbabilityToBeOnMeeting(student, firstMeeting);
-            var secondProbability = GetProbabilityToBeOnMeeting(student, secondMeeting, isSameDiscipline);
+            var bothProbability = GetProbabilityToBeOnBothDiscipline(student, first.Discipline, second.Discipline);
+            var firstProbability = GetProbabilityToBeOnMeeting(student, first);
+            var secondProbability = GetProbabilityToBeOnMeeting(student, second);
 
-            expectation += firstProbability * secondProbability;
+            expectation += firstProbability * secondProbability * bothProbability;
         }
 
         return expectation;
     }
 
-    private double GetProbabilityToBeOnMeeting(string student, Meeting2 meeting, bool isSameDiscipline = false)
+    private double GetProbabilityToBeOnMeeting(string student, Meeting2 meeting)
     {
         var discipline = meeting.Discipline;
         if (!groupOfStudentOnDiscipline.TryGetValue((student, discipline), out var cache)) return 0;
         var probabilityToBe = meeting.Groups.Sum(group => cache[group - 1]);
-        if (isSameDiscipline) return probabilityToBe;
-        return probabilityToBe * GetProbabilityToBeOnDiscipline(student, discipline);
+        return probabilityToBe;
+    }
+
+    private double GetProbabilityToBeOnBothDiscipline(string student, Discipline first, Discipline second)
+    {
+        var firstProbability = GetProbabilityToBeOnDiscipline(student, first);
+        if (first == second) return firstProbability;
+        return firstProbability * GetProbabilityToBeOnDiscipline(student, second);
     }
 
     private double GetProbabilityToBeOnDiscipline(string student, Discipline discipline)
