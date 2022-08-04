@@ -24,40 +24,56 @@ public class StudentsDistributor
     private List<List<string>> DistributeStudentsGreedy(State state, Discipline discipline)
     {
         var groupsCount = state.ProbabilityStorage.GetDisciplineGroupCount(discipline);
-        var groups = Enumerable.Repeat(0, groupsCount)
-            .Select(_ => new List<string>())
-            .ToList();
         var group = 0;
         var students = state.ProbabilityStorage.GetAllEnlistedStudents(discipline).ToHashSet();
+
+        var groups = new List<List<string>>();
+        var scoredStudents = new List<PriorityQueue<string, double>>();
+        for (; group < groupsCount; group++)
+        {
+            groups.Add(new());
+            scoredStudents.Add(GetGroupScoredStudents(state, discipline, group, students));
+        }
+
+        var taken = new HashSet<string>();
+
         while (students.Count != 0)
         {
-            var bestStudentForGroup = GetBestStudentForGroup(state, discipline, group, students);
-            groups[group].Add(bestStudentForGroup);
-            students.Remove(bestStudentForGroup);
-            state.ProbabilityStorage.SetStudentToGroup(bestStudentForGroup, discipline, group);
             group = (group + 1) % groupsCount;
+            var bestStudentForGroup = TakeBestStudent(scoredStudents[group], taken);
+            if (bestStudentForGroup == null) break;
+            groups[group].Add(bestStudentForGroup);
+            taken.Add(bestStudentForGroup);
+            state.ProbabilityStorage.SetStudentToGroup(bestStudentForGroup, discipline, group);
         }
 
         return groups;
     }
 
-    private string GetBestStudentForGroup(State state, Discipline discipline, int group,
+    private PriorityQueue<string, double> GetGroupScoredStudents(
+        State state,
+        Discipline discipline,
+        int group,
         IEnumerable<string> studentsPool)
     {
-        var bestStudent = string.Empty;
-        var bestScore = double.MinValue;
+        var students = new PriorityQueue<string, double>();
         foreach (var student in studentsPool)
         {
             state.ProbabilityStorage.SetStudentToGroup(student, discipline, group);
             var score = estimator.EstimateSchedule(state);
             state.ProbabilityStorage.SplitStudentEvenlyBetweenAllGroups(student, discipline);
-            if (score > bestScore)
-            {
-                bestScore = score;
-                bestStudent = student;
-            }
+            students.Enqueue(student, score);
         }
 
-        return bestStudent;
+        return students;
+    }
+
+    private static string? TakeBestStudent(PriorityQueue<string, double> students, ISet<string> takenStudents)
+    {
+        while (students.TryDequeue(out var student, out _))
+            if (takenStudents.Add(student))
+                return student;
+
+        return null;
     }
 }
