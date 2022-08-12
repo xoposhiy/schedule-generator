@@ -1,4 +1,5 @@
 using System.Text;
+using CommonDomain;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
 using Domain2.Algorithms.Estimators;
@@ -14,7 +15,7 @@ public static class Program
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
         var regime = "Весна";
-        var isFinal = true;
+        var isFinal = false;
 
 
         var repo = new GsRepository("main",
@@ -33,6 +34,7 @@ public static class Program
 
         SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);
         SheetToProbabilityConverter.ReadPriorities(repo, probabilityStorage, meetings, prioritiesSource);
+        probabilityStorage.InitStudentUniformDistribution();
 
         var solution = SolveByChokudai(state);
         //var solution = SolveRepeater(state);
@@ -42,6 +44,11 @@ public static class Program
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
         LogEstimatorScores(state, solution.Item1, GetEstimator());
+
+        var stateEstimator = new StateEstimator(GetEstimator());
+        var studentsDistributor = new StudentsDistributor(stateEstimator);
+        var studentsByGroups = studentsDistributor.DistributeStudentsByGroups(solution.Item1);
+        LogGroups(studentsByGroups);
     }
 
     private static IMeetingEstimator GetEstimator()
@@ -110,5 +117,19 @@ public static class Program
 
         while (scoredMeetings.TryDequeue(out var meeting, out var score))
             Console.WriteLine($"Meeting {meeting} at {meeting.MeetingTime} was placed with {score} score");
+    }
+
+    private static void LogGroups(Dictionary<Discipline, List<List<string>>> studentsByGroups)
+    {
+        foreach (var (discipline, groups) in studentsByGroups)
+        {
+            if (groups.Count == 1) continue;
+            Console.WriteLine(discipline);
+            foreach (var group in groups)
+            {
+                Console.WriteLine($"\t{groups.IndexOf(group)}:");
+                foreach (var student in group) Console.WriteLine($"\t\t{student}");
+            }
+        }
     }
 }
