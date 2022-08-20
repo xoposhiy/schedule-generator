@@ -1,5 +1,6 @@
 using System.Text;
 using CommonDomain;
+using CommonDomain.Enums;
 using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
 using Domain2.Algorithms.Estimators;
@@ -17,7 +18,8 @@ public static class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
-        var regime = "Весна";
+        var termType = TermType.Autumn;
+        var termString = EnumHelper.GetTermString(termType);
         var isFinal = false;
 
         var sourceType = SourcePrioritiesType.GoogleSheet;
@@ -28,49 +30,18 @@ public static class Program
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
-        var meetingsSource = $"Форматированные пары ({regime})";
-        var probabilitiesSource = $"Вероятности ({regime})";
-        var disciplineCount = regime == "Осень" ? 18 : 23;
-        var prioritiesSource = $"Приоритеты ({regime})";
-        var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
+        var parsingHelper = new ParsingHelper(TermType.Spring, isFinal, sourceType, repo);
+
+        var meetingsSource = $"Форматированные пары ({termString})";
+        var meetings = parsingHelper.ReadMeetings(meetingsSource);
         var disciplines = meetings.Select(m => m.Discipline).Distinct().ToDictionary(e => e.Name, e => e);
-        var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource, isFinal);
-        var state = new State(meetings, probabilityStorage);
+        
+        var probabilityStorage = parsingHelper.ReadProbabilities();
         probabilityStorage.FillDisciplineToMaxGroups(meetings);
-        SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);
-        List<(string Student, Discipline Discipline, int priority)> priorities;
-        switch (sourceType)
-        {
-            case SourcePrioritiesType.GoogleSheet:
-                priorities = SheetToProbabilityConverter.ReadPriorities(repo, disciplines.Values.ToHashSet(), prioritiesSource).ToList();
-                break;
-            case SourcePrioritiesType.JsonLk:
-                throw new NotImplementedException();
-            // ReSharper disable once UnreachableSwitchCaseDueToIntegerAnalysis
-            case SourcePrioritiesType.JsonFinal:
-                var content = File.ReadAllText("Probabilities/students_distribution.json");
-                var f = JsonConvert.DeserializeObject<StudentsDistribution>(content);
-                priorities = new List<(string Student, Discipline Discipline, int priority)>();
-                foreach (var studentChoices in f.Students)
-                {
-                    foreach (var mupId in studentChoices.MupIds)
-                    {
-                        var disciplineName = f.MupIdToMupName[mupId];
-                        if (disciplines.TryGetValue(disciplineName, out var dics))
-                        {
-                            priorities.Add((studentChoices.FullName, dics, 1));
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Unknown discipline name: {disciplineName}");
-                        }
-                    }
-                }
-                
-                break;
-            default:
-                throw new ArgumentException("Not supported source type");
-        }
+        
+        SheetToProbabilityConverter.SetDisciplinesCount(disciplines.Count(e => e.Value.Type != DisciplineType.Obligatory));
+
+        var priorities = parsingHelper.ReadPriorities(disciplines);
         foreach (var priority in priorities)
         {
             probabilityStorage.AddSubjectForStudent(priority);
@@ -78,11 +49,13 @@ public static class Program
 
         probabilityStorage.InitStudentUniformDistribution();
 
+        
+        var state = new State(meetings, probabilityStorage);
         var solution = SolveByChokudai(state);
         //var solution = SolveRepeater(state);
         Console.Error.WriteLine($"Best score: {solution.Item2}");
 
-        var sheetName = $"Расписание ({regime})";
+        var sheetName = $"Расписание ({termString})";
         Visualizer.DrawSchedule(repo, solution.Item1, sheetName);
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
         LogEstimatorScores(state, solution.Item1, GetEstimator());

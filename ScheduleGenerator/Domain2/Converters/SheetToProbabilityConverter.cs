@@ -36,7 +36,6 @@ public static class SheetToProbabilityConverter
             for (var i = StartColumn; i < rightBorder; i += 3)
             {
                 var priority = ParseInt(row[i], UnselectedPriority);
-                var officialPriority = ParseInt(row[i + 1], UnselectedPriority);
                 yield return (student, indexToDiscipline[i], priority);
             }
         }

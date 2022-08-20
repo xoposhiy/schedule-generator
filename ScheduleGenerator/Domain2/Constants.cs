@@ -16,4 +16,9 @@ public static class Constants
     /// Значение по умолчанию для отсутствия приоритета
     /// </summary>
     public const int UnselectedPriority = 5;
+
+    /// <summary>
+    /// Путь до json-а из лк УРФУ, с зачислен
+    /// </summary>
+    public const string DistributionJsonPath = "Probabilities/students_distribution.json";
 }
