@@ -1,0 +1,291 @@
+{
+  "students": [
+    {
+      "personalNumber": "56904202",
+      "fullname": "Волкова Александра Алексеевна",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904206",
+      "fullname": "Шрейн Ольга Александровна",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904207",
+      "fullname": "Браун Виктория Михайловна",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904208",
+      "fullname": "Ложкин Александр Алексеевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904210",
+      "fullname": "Фролов Юрий Максимович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904211",
+      "fullname": "Кряжев Александр Анатольевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904212",
+      "fullname": "Рогов Артемий Андреевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904213",
+      "fullname": "Салдина Анжелика Сергеевна",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904215",
+      "fullname": "Миронов Данил Алексеевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904216",
+      "fullname": "Толстогузов Артем Валерьевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904217",
+      "fullname": "Юрченко Степан Валерьевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904218",
+      "fullname": "Вереин Вадим Евгеньевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904219",
+      "fullname": "Шайхуллин Айдар Рустамович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904220",
+      "fullname": "Мурашев Владислав Антонович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904221",
+      "fullname": "Коновалов Артем Сергеевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904222",
+      "fullname": "Князев Игорь Геннадьевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904224",
+      "fullname": "Львов Ярослав Михайлович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904228",
+      "fullname": "Анчутин Никита Сергеевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904229",
+      "fullname": "Гомзяков Андрей Владимирович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904231",
+      "fullname": "Луговых Сергей Владимирович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904233",
+      "fullname": "Пищулов Сергей Сергеевич",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904235",
+      "fullname": "Макаров Егор Антонович",
+      "group": "МЕН-490809",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904301",
+      "fullname": "Габдорахманова Елена Алексеевна",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904302",
+      "fullname": "Белов Тимофей Викторович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904303",
+      "fullname": "Соловьев Андрей Антонович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904304",
+      "fullname": "Казайкин Матвей Викторович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904305",
+      "fullname": "Шушарин Николай Александрович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904306",
+      "fullname": "Качусов Степан Михайлович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904307",
+      "fullname": "Фрицлер Виктор Евгеньевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904308",
+      "fullname": "Бараковский Михаил Сергеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904309",
+      "fullname": "Дейнов Кирилл Дмитриевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904311",
+      "fullname": "Рогачев Евгений Михайлович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904312",
+      "fullname": "Айдарцян Гриша Нверович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904314",
+      "fullname": "Рязанова Яна Андреевна",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904315",
+      "fullname": "Тарасова Виктория Владимировна",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904316",
+      "fullname": "Стуков Дмитрий Алексеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904317",
+      "fullname": "Вихлянцева Дарья Андреевна",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904318",
+      "fullname": "Крутовский Данил Александрович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904319",
+      "fullname": "Гильмутдинов Даниил Расфинович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904323",
+      "fullname": "Трифонов Лев Эдуардович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904324",
+      "fullname": "Гордиенко Артем Андреевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904325",
+      "fullname": "Кузьмин Роман Сергеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904328",
+      "fullname": "Аткишкин Владислав Сергеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904329",
+      "fullname": "Аврискин Денис Владимирович",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904330",
+      "fullname": "Архипов Дмитрий Сергеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904331",
+      "fullname": "Павлов Захар Витальевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    },
+    {
+      "personalNumber": "56904332",
+      "fullname": "Полтораднев Кирилл Алексеевич",
+      "group": "МЕН-490810",
+      "mupIds": []
+    }
+  ],
+  "mupIdToMupName": {
+    "1ec3a412f2d44441bf4b514a23dbdfde": "Аксиоматическая теория множеств и основания математики",
+    "d6c3bd88c97a47319295a1490c5e9789": "Дифференциальные уравнения",
+    "250eb54eb3834a73a2ef8a1477ed226e": "Теория автоматов"
+  }
+}
