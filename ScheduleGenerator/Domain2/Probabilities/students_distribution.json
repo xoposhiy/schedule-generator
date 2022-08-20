@@ -1,291 +1,589 @@
 {
-  "students": [
+  "Students": [
     {
-      "personalNumber": "56904202",
-      "fullname": "Волкова Александра Алексеевна",
+      "PersonalNumber": 2644956550689086724,
+      "fullname": "Студент 1",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "41c614c4-7c61-40de-ac67-cb98a408e2d1"
+      ]
     },
     {
-      "personalNumber": "56904206",
-      "fullname": "Шрейн Ольга Александровна",
+      "PersonalNumber": 6423822938815624113,
+      "fullname": "Студент 2",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904207",
-      "fullname": "Браун Виктория Михайловна",
+      "PersonalNumber": 8520363612099050473,
+      "fullname": "Студент 3",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": []
     },
     {
-      "personalNumber": "56904208",
-      "fullname": "Ложкин Александр Алексеевич",
+      "PersonalNumber": 2209769175148676716,
+      "fullname": "Студент 4",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "50750303-addd-4583-ad32-7abcea482686",
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd"
+      ]
     },
     {
-      "personalNumber": "56904210",
-      "fullname": "Фролов Юрий Максимович",
+      "PersonalNumber": 5905195890418465262,
+      "fullname": "Студент 5",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "73461cbc-da66-4b58-9007-5723a21cfeda",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904211",
-      "fullname": "Кряжев Александр Анатольевич",
+      "PersonalNumber": 4894975934220456120,
+      "fullname": "Студент 6",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904212",
-      "fullname": "Рогов Артемий Андреевич",
+      "PersonalNumber": 1619581570332491811,
+      "fullname": "Студент 7",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "42aad4c9-f91b-4c39-a9d7-f50802cef786",
+        "80fd742c-24bb-4e2b-a555-6db7cd07b12d"
+      ]
     },
     {
-      "personalNumber": "56904213",
-      "fullname": "Салдина Анжелика Сергеевна",
+      "PersonalNumber": 4685578368556392551,
+      "fullname": "Студент 8",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904215",
-      "fullname": "Миронов Данил Алексеевич",
+      "PersonalNumber": 5088512493229536049,
+      "fullname": "Студент 9",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904216",
-      "fullname": "Толстогузов Артем Валерьевич",
+      "PersonalNumber": 3322531090139111325,
+      "fullname": "Студент 10",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904217",
-      "fullname": "Юрченко Степан Валерьевич",
+      "PersonalNumber": 3593618105576526503,
+      "fullname": "Студент 11",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904218",
-      "fullname": "Вереин Вадим Евгеньевич",
+      "PersonalNumber": 4069958892631489296,
+      "fullname": "Студент 12",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "73461cbc-da66-4b58-9007-5723a21cfeda",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904219",
-      "fullname": "Шайхуллин Айдар Рустамович",
+      "PersonalNumber": 5994798401790701608,
+      "fullname": "Студент 13",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904220",
-      "fullname": "Мурашев Владислав Антонович",
+      "PersonalNumber": 6276951150944347493,
+      "fullname": "Студент 14",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904221",
-      "fullname": "Коновалов Артем Сергеевич",
+      "PersonalNumber": 341403695336975787,
+      "fullname": "Студент 15",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904222",
-      "fullname": "Князев Игорь Геннадьевич",
+      "PersonalNumber": 6177558325620457055,
+      "fullname": "Студент 16",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904224",
-      "fullname": "Львов Ярослав Михайлович",
+      "PersonalNumber": 1272349477675006756,
+      "fullname": "Студент 17",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": []
     },
     {
-      "personalNumber": "56904228",
-      "fullname": "Анчутин Никита Сергеевич",
+      "PersonalNumber": 6025239802210892097,
+      "fullname": "Студент 18",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "42aad4c9-f91b-4c39-a9d7-f50802cef786",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e"
+      ]
     },
     {
-      "personalNumber": "56904229",
-      "fullname": "Гомзяков Андрей Владимирович",
+      "PersonalNumber": 3139953351036725949,
+      "fullname": "Студент 19",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904231",
-      "fullname": "Луговых Сергей Владимирович",
+      "PersonalNumber": 1015404580166973344,
+      "fullname": "Студент 20",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "80fd742c-24bb-4e2b-a555-6db7cd07b12d",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904233",
-      "fullname": "Пищулов Сергей Сергеевич",
+      "PersonalNumber": 3130654369847407733,
+      "fullname": "Студент 21",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "50750303-addd-4583-ad32-7abcea482686",
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "80fd742c-24bb-4e2b-a555-6db7cd07b12d",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616"
+      ]
     },
     {
-      "personalNumber": "56904235",
-      "fullname": "Макаров Егор Антонович",
+      "PersonalNumber": 7536973938440850338,
+      "fullname": "Студент 22",
       "group": "МЕН-490809",
-      "mupIds": []
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904301",
-      "fullname": "Габдорахманова Елена Алексеевна",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 3848988537102339475,
+      "fullname": "Студент 23",
+      "group": "МЕН-490809",
+      "MupIds": []
     },
     {
-      "personalNumber": "56904302",
-      "fullname": "Белов Тимофей Викторович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 8899856612309887355,
+      "fullname": "Студент 24",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "41c614c4-7c61-40de-ac67-cb98a408e2d1"
+      ]
     },
     {
-      "personalNumber": "56904303",
-      "fullname": "Соловьев Андрей Антонович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 8790191693287015828,
+      "fullname": "Студент 25",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904304",
-      "fullname": "Казайкин Матвей Викторович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 7568119866738995400,
+      "fullname": "Студент 26",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904305",
-      "fullname": "Шушарин Николай Александрович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 5534223517034073727,
+      "fullname": "Студент 27",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e"
+      ]
     },
     {
-      "personalNumber": "56904306",
-      "fullname": "Качусов Степан Михайлович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2844876217827851524,
+      "fullname": "Студент 28",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904307",
-      "fullname": "Фрицлер Виктор Евгеньевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2266853521292849368,
+      "fullname": "Студент 29",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "73461cbc-da66-4b58-9007-5723a21cfeda",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904308",
-      "fullname": "Бараковский Михаил Сергеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 6173677070098461427,
+      "fullname": "Студент 30",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "50750303-addd-4583-ad32-7abcea482686",
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "80fd742c-24bb-4e2b-a555-6db7cd07b12d",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616"
+      ]
     },
     {
-      "personalNumber": "56904309",
-      "fullname": "Дейнов Кирилл Дмитриевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 4599444640666102676,
+      "fullname": "Студент 31",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904311",
-      "fullname": "Рогачев Евгений Михайлович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 4327570440865963184,
+      "fullname": "Студент 32",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "42aad4c9-f91b-4c39-a9d7-f50802cef786",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904312",
-      "fullname": "Айдарцян Гриша Нверович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 4578408971595536449,
+      "fullname": "Студент 33",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "7cab4d89-1f04-4e56-ac1c-aa4d328576dc",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904314",
-      "fullname": "Рязанова Яна Андреевна",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 3448831473245858715,
+      "fullname": "Студент 34",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "73461cbc-da66-4b58-9007-5723a21cfeda",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904315",
-      "fullname": "Тарасова Виктория Владимировна",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 3692731679218757999,
+      "fullname": "Студент 35",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904316",
-      "fullname": "Стуков Дмитрий Алексеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 7963348732766252881,
+      "fullname": "Студент 36",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904317",
-      "fullname": "Вихлянцева Дарья Андреевна",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 7988930507105096997,
+      "fullname": "Студент 37",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "50750303-addd-4583-ad32-7abcea482686",
+        "7fd8e0e9-7d27-4f70-9b61-c611e53a6846",
+        "b0cd2af9-4783-4a83-9a1a-db33a072d0d4",
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd"
+      ]
     },
     {
-      "personalNumber": "56904318",
-      "fullname": "Крутовский Данил Александрович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2297694904447304528,
+      "fullname": "Студент 38",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904319",
-      "fullname": "Гильмутдинов Даниил Расфинович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2027115213006134613,
+      "fullname": "Студент 39",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904323",
-      "fullname": "Трифонов Лев Эдуардович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 8667332941856273833,
+      "fullname": "Студент 40",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e"
+      ]
     },
     {
-      "personalNumber": "56904324",
-      "fullname": "Гордиенко Артем Андреевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2461812392385152885,
+      "fullname": "Студент 41",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "73461cbc-da66-4b58-9007-5723a21cfeda",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904325",
-      "fullname": "Кузьмин Роман Сергеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 2385156021752309985,
+      "fullname": "Студент 42",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "b55c4921-9692-435e-906e-e2b8146535b8",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904328",
-      "fullname": "Аткишкин Владислав Сергеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 6601604328252563860,
+      "fullname": "Студент 43",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "7cab4d89-1f04-4e56-ac1c-aa4d328576dc",
+        "d06dace0-6109-44a0-8314-1da70e48e04b",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf"
+      ]
     },
     {
-      "personalNumber": "56904329",
-      "fullname": "Аврискин Денис Владимирович",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 3115311171015408908,
+      "fullname": "Студент 44",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "f60c456e-8dd2-40f1-9ffb-514e9789a616",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904330",
-      "fullname": "Архипов Дмитрий Сергеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 3239821299364179656,
+      "fullname": "Студент 45",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "812dc88a-2582-4fec-a4fc-652d1e9ef7dd",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af",
+        "6c328ce5-bfa6-4b77-b906-7cf54fbc84be"
+      ]
     },
     {
-      "personalNumber": "56904331",
-      "fullname": "Павлов Захар Витальевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 8845421905003589366,
+      "fullname": "Студент 46",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "4c789c8e-94a9-4e7f-930c-f5b19f36813e",
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
     },
     {
-      "personalNumber": "56904332",
-      "fullname": "Полтораднев Кирилл Алексеевич",
-      "group": "МЕН-490810",
-      "mupIds": []
+      "PersonalNumber": 904790494374446473,
+      "fullname": "Студент 47",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "94063225-54c5-4028-843c-7ec58edb21c4",
+        "14a808d5-8a03-443f-a443-0f0ecc4848fd",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
+    },
+    {
+      "PersonalNumber": 8704511912975941248,
+      "fullname": "Студент 48",
+      "group": "МЕН-490809",
+      "MupIds": [
+        "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e",
+        "085d2bbe-b09d-4255-aaf7-b2a1457ba38e",
+        "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf",
+        "ca46574f-f73d-4c16-9037-e0905e48f6af"
+      ]
+    },
+    {
+      "PersonalNumber": 437056730260442715,
+      "fullname": "Тестовое",
+      "group": "МЕН-490809",
+      "MupIds": []
+    },
+    {
+      "PersonalNumber": 5131857372450530764,
+      "fullname": "Вес",
+      "group": "МЕН-490809",
+      "MupIds": []
     }
   ],
-  "mupIdToMupName": {
-    "1ec3a412f2d44441bf4b514a23dbdfde": "Аксиоматическая теория множеств и основания математики",
-    "d6c3bd88c97a47319295a1490c5e9789": "Дифференциальные уравнения",
-    "250eb54eb3834a73a2ef8a1477ed226e": "Теория автоматов"
+  "MupIdToMupName": {
+    "50750303-addd-4583-ad32-7abcea482686": "Аксиоматическая теория множеств",
+    "7fd8e0e9-7d27-4f70-9b61-c611e53a6846": "Теория автоматов",
+    "b0cd2af9-4783-4a83-9a1a-db33a072d0d4": "Функциональный анализ",
+    "ed5c5f27-6809-4195-9ca1-bd797ce1cd6e": "UI-дизайн от JetStyle",
+    "2c684d3f-9a5b-44f5-88d3-2b9ca875eaf9": "Анализ данных в индустрии",
+    "b55c4921-9692-435e-906e-e2b8146535b8": "Введение в администрирование Linux",
+    "73461cbc-da66-4b58-9007-5723a21cfeda": "Контроль качества ПО",
+    "94063225-54c5-4028-843c-7ec58edb21c4": "Сетевые технологии. Часть 1",
+    "812dc88a-2582-4fec-a4fc-652d1e9ef7dd": "Системный анализ",
+    "4c789c8e-94a9-4e7f-930c-f5b19f36813e": "Тестирование ПО",
+    "14a808d5-8a03-443f-a443-0f0ecc4848fd": "АИВИ",
+    "42aad4c9-f91b-4c39-a9d7-f50802cef786": "ЛОИ. Часть 1",
+    "80fd742c-24bb-4e2b-a555-6db7cd07b12d": "Строковые алгоритмы",
+    "d06dace0-6109-44a0-8314-1da70e48e04b": "C++. Часть 2",
+    "f60c456e-8dd2-40f1-9ffb-514e9789a616": "Анализ данных на Python",
+    "e4cd56ba-51a3-496e-bda8-afd5ff85e3cf": "Бэкенд на Python",
+    "085d2bbe-b09d-4255-aaf7-b2a1457ba38e": "Верстка от Контура",
+    "ca46574f-f73d-4c16-9037-e0905e48f6af": "Мобильная разработка",
+    "95cb0f81-21d5-4b32-a794-2ccd3ab513e2": "ОС Unix",
+    "6c328ce5-bfa6-4b77-b906-7cf54fbc84be": "Разработка игр",
+    "b5c17d56-a886-489d-ba65-c8d389802925": "OpenSource от Яндекса",
+    "41c614c4-7c61-40de-ac67-cb98a408e2d1": "ШАД",
+    "7cab4d89-1f04-4e56-ac1c-aa4d328576dc": "Спортивное программирование",
+    "659afe11-51d5-4430-9a52-38a7e1b2f8b9": "Физ-ра"
   }
 }
