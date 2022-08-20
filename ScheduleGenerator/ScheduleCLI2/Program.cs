@@ -60,10 +60,35 @@ public static class Program
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
         LogEstimatorScores(state, solution.Item1, GetEstimator());
 
+        WriteStudentsGroupsDistributionToConsole(studentsDistribution, sourceType, solution.Item1);
+    }
+
+    private static void WriteStudentsGroupsDistributionToConsole(
+        StudentsDistribution? studentsDistribution,
+        SourcePrioritiesType sourceType,
+        State state)
+    {
         var stateEstimator = new StateEstimator(GetEstimator());
-        var studentsDistributor = new StudentsDistributor(stateEstimator);
-        var studentsByGroups = studentsDistributor.DistributeStudentsByGroups(solution.Item1);
-        LogGroups(studentsByGroups);
+        var studentsDistributor = new StudentsGroupsDistributor(stateEstimator, studentsDistribution);
+        switch (sourceType)
+        {
+            case SourcePrioritiesType.GoogleSheet:
+            {
+                var studentsByGroups = studentsDistributor.DistributeStudentsByGroups(state);
+                LogGroups(studentsByGroups);
+                break;
+            }
+            case SourcePrioritiesType.JsonFinal:
+            {
+                var groups = studentsDistributor.Distribute(state);
+                Console.WriteLine(JsonConvert.SerializeObject(groups));
+                break;
+            }
+            case SourcePrioritiesType.JsonLk:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(sourceType), sourceType, null);
+        }
     }
 
     private static IMeetingEstimator GetEstimator()
