@@ -4,7 +4,10 @@ using CommonInfrastructure.GoogleSheetsRepository;
 using Domain2;
 using Domain2.Algorithms.Estimators;
 using Domain2.Algorithms.Solvers;
+using Domain2.Converters;
+using Domain2.Probabilities;
 using Infrastructure;
+using Newtonsoft.Json;
 
 namespace ScheduleCLI2;
 
@@ -17,6 +20,7 @@ public static class Program
         var regime = "Весна";
         var isFinal = false;
 
+        var sourceType = SourcePrioritiesType.GoogleSheet;
 
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
@@ -29,11 +33,49 @@ public static class Program
         var disciplineCount = regime == "Осень" ? 18 : 23;
         var prioritiesSource = $"Приоритеты ({regime})";
         var meetings = SheetToRequisitionConverter.ReadMeetings(repo, meetingsSource);
+        var disciplines = meetings.Select(m => m.Discipline).Distinct().ToDictionary(e => e.Name, e => e);
         var probabilityStorage = SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource, isFinal);
         var state = new State(meetings, probabilityStorage);
-
+        probabilityStorage.FillDisciplineToMaxGroups(meetings);
         SheetToProbabilityConverter.SetDisciplinesCount(disciplineCount);
-        SheetToProbabilityConverter.ReadPriorities(repo, probabilityStorage, meetings, prioritiesSource);
+        List<(string Student, Discipline Discipline, int priority)> priorities;
+        switch (sourceType)
+        {
+            case SourcePrioritiesType.GoogleSheet:
+                priorities = SheetToProbabilityConverter.ReadPriorities(repo, disciplines.Values.ToHashSet(), prioritiesSource).ToList();
+                break;
+            case SourcePrioritiesType.JsonLk:
+                throw new NotImplementedException();
+            // ReSharper disable once UnreachableSwitchCaseDueToIntegerAnalysis
+            case SourcePrioritiesType.JsonFinal:
+                var content = File.ReadAllText("Probabilities/students_distribution.json");
+                var f = JsonConvert.DeserializeObject<StudentsDistribution>(content);
+                priorities = new List<(string Student, Discipline Discipline, int priority)>();
+                foreach (var studentChoices in f.Students)
+                {
+                    foreach (var mupId in studentChoices.MupIds)
+                    {
+                        var disciplineName = f.MupIdToMupName[mupId];
+                        if (disciplines.TryGetValue(disciplineName, out var dics))
+                        {
+                            priorities.Add((studentChoices.FullName, dics, 1));
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Unknown discipline name: {disciplineName}");
+                        }
+                    }
+                }
+                
+                break;
+            default:
+                throw new ArgumentException("Not supported source type");
+        }
+        foreach (var priority in priorities)
+        {
+            probabilityStorage.AddSubjectForStudent(priority);
+        }
+
         probabilityStorage.InitStudentUniformDistribution();
 
         var solution = SolveByChokudai(state);

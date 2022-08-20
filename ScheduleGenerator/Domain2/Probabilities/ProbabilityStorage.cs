@@ -34,7 +34,7 @@ public class ProbabilityStorage
     /// </summary>
     private readonly Dictionary<(Discipline, Discipline), double> studentsIntersectionExpectation = new();
 
-    private readonly Dictionary<string, Dictionary<Discipline, StudentPriorities>> studentWithDisciplineToPriority =
+    private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority =
         new();
 
     public ProbabilityStorage(bool isFinal)
@@ -52,19 +52,17 @@ public class ProbabilityStorage
     /// <param name="student">Имя студента</param>
     /// <param name="discipline">Дисциплина/предмет</param>
     /// <param name="priority">Приоритет студента</param>
-    public void AddSubjectForStudent(string student, Discipline discipline, StudentPriorities priority)
+    public void AddSubjectForStudent((string student, Discipline discipline, int priority) Tuple)
     {
+        var (student, discipline, priority) = Tuple;
         if (!studentWithDisciplineToPriority.ContainsKey(student))
             studentWithDisciplineToPriority.Add(student, new());
         studentWithDisciplineToPriority[student].Add(discipline, priority);
 
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
-
-        if (isFinal)
-            studentsExpectation[discipline] += priority.Enlisted ? 1 : 0;
-        else
-            studentsExpectation[discipline] += GetPriorityDict(discipline)[priority.FormPriority];
+        
+        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority];
     }
 
     public void FillDisciplineToMaxGroups(IEnumerable<Meeting2> meetings)
@@ -149,14 +147,10 @@ public class ProbabilityStorage
 
     private double GetProbabilityToBeOnDiscipline(string student, Discipline discipline)
     {
-        var priority = GetCurrentPriority(studentWithDisciplineToPriority[student][discipline]);
+        var priority = studentWithDisciplineToPriority[student][discipline];
         return GetPriorityDict(discipline)[priority];
     }
-
-    private int GetCurrentPriority(StudentPriorities priorities)
-    {
-        return priorities.FormPriority;
-    }
+    
 
     private Dictionary<int, double> GetPriorityDict(Discipline discipline)
     {
@@ -172,8 +166,7 @@ public class ProbabilityStorage
 
         var students = new List<string>();
         foreach (var (student, dictionary) in studentWithDisciplineToPriority)
-            if (!isFinal || dictionary[discipline].Enlisted)
-                students.Add(student);
+            students.Add(student);
 
         return students;
     }

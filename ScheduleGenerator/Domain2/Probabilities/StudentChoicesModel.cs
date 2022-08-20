@@ -15,7 +15,7 @@ public class StudentChoicesModel
     [JsonProperty("group")]
     public string GroupId { get; set; }
     
-    public List<string> MupIds { get; set; }
+    public List<Guid> MupIds { get; set; }
 }
 
 [JsonObject]

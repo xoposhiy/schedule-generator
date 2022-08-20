@@ -17,12 +17,11 @@ public static class SheetToProbabilityConverter
         rightBorder = disciplinesCount * 3 + StartColumn;
     }
 
-    public static void ReadPriorities(GsRepository repo, ProbabilityStorage probabilityStorage,
-        IList<Meeting2> meetings, string meetingsSheetName)
+    public static IEnumerable<(string Student, Discipline Discipline, int priority)> ReadPriorities(
+        GsRepository repo,
+        ISet<Discipline> disciplines,
+        string meetingsSheetName)
     {
-        probabilityStorage.FillDisciplineToMaxGroups(meetings);
-
-        var disciplines = meetings.Select(e => e.Discipline).ToHashSet();
         var prioritiesDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName,
             0, 0, rightBorder);
         var header = prioritiesDataRaw[0];
@@ -38,9 +37,7 @@ public static class SheetToProbabilityConverter
             {
                 var priority = ParseInt(row[i], UnselectedPriority);
                 var officialPriority = ParseInt(row[i + 1], UnselectedPriority);
-                var enlisted = row[i + 2] == "Зачислен";
-                var studentPriority = new StudentPriorities(priority, officialPriority, enlisted);
-                probabilityStorage.AddSubjectForStudent(student, indexToDiscipline[i], studentPriority);
+                yield return (student, indexToDiscipline[i], priority);
             }
         }
     }
