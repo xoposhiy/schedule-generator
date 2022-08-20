@@ -1,7 +1,7 @@
 using CommonDomain.Enums;
 using Domain2;
 using NUnit.Framework;
-using static Domain2.SheetToRequisitionConverter;
+using static Domain2.Converters.SheetToRequisitionConverter;
 
 namespace Testing2;
 

@@ -7,7 +7,7 @@ using static CommonDomain.Conversions;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Domain2;
+namespace Domain2.Converters;
 
 //TODO парсить кабинеты
 

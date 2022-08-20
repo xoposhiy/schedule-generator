@@ -3,7 +3,7 @@ using CommonInfrastructure;
 using CommonInfrastructure.GoogleSheetsRepository;
 using static Domain2.Constants;
 
-namespace Domain2;
+namespace Domain2.Converters;
 
 public static class SheetToProbabilityConverter
 {
