@@ -31,12 +31,15 @@ public class ParsingHelper
         return SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource, isFinal);
     }
 
-    public List<(string Student, Discipline Discipline, int priority)> ReadPriorities(
+    public (List<(string Student, Discipline Discipline, int priority)> priorities,
+        StudentsDistribution? studentsDistribution) ReadPriorities(
         Dictionary<string, Discipline> disciplines)
     {
         var prioritiesSource = $"Приоритеты ({termType}";
-
+        
         List<(string Student, Discipline Discipline, int priority)> priorities;
+        StudentsDistribution? studentsDistribution = null;
+
         switch (sourcePrioritiesType)
         {
             case SourcePrioritiesType.GoogleSheet:
@@ -44,7 +47,9 @@ public class ParsingHelper
                     .ReadPriorities(repo, disciplines.Values.ToHashSet(), prioritiesSource).ToList();
                 break;
             case SourcePrioritiesType.JsonFinal:
-                priorities = FillPrioritiesFromJson(disciplines);
+                var content = File.ReadAllText(Constants.DistributionJsonPath);
+                studentsDistribution = JsonConvert.DeserializeObject<StudentsDistribution>(content);
+                priorities = FillPrioritiesFromJson(studentsDistribution, disciplines);
                 break;
             case SourcePrioritiesType.JsonLk:
                 throw new NotImplementedException();
@@ -52,14 +57,13 @@ public class ParsingHelper
                 throw new ArgumentException("Not supported source type");
         }
 
-        return priorities;
+        return (priorities, studentsDistribution);
     }
 
-    private static List<(string Student, Discipline Discipline, int priority)> FillPrioritiesFromJson(Dictionary<string, Discipline> disciplines)
+    private static List<(string Student, Discipline Discipline, int priority)> FillPrioritiesFromJson(StudentsDistribution? studentsDistribution, 
+        Dictionary<string, Discipline> disciplines)
     {
         List<(string Student, Discipline Discipline, int priority)> priorities;
-        var content = File.ReadAllText(Constants.DistributionJsonPath);
-        var studentsDistribution = JsonConvert.DeserializeObject<StudentsDistribution>(content);
         priorities = new List<(string Student, Discipline Discipline, int priority)>();
         foreach (var studentChoices in studentsDistribution!.Students)
         {

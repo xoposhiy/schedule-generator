@@ -41,7 +41,7 @@ public static class Program
         
         SheetToProbabilityConverter.SetDisciplinesCount(disciplines.Count(e => e.Value.Type != DisciplineType.Obligatory));
 
-        var priorities = parsingHelper.ReadPriorities(disciplines);
+        var (priorities, studentsDistribution) = parsingHelper.ReadPriorities(disciplines);
         foreach (var priority in priorities)
         {
             probabilityStorage.AddSubjectForStudent(priority);
