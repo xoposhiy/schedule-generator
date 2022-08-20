@@ -35,7 +35,7 @@ public class ParsingHelper
         StudentsDistribution? studentsDistribution) ReadPriorities(
         Dictionary<string, Discipline> disciplines)
     {
-        var prioritiesSource = $"Приоритеты ({termType}";
+        var prioritiesSource = $"Приоритеты ({termType})";
         
         List<(string Student, Discipline Discipline, int priority)> priorities;
         StudentsDistribution? studentsDistribution = null;

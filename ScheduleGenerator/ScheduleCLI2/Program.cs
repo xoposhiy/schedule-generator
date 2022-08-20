@@ -30,7 +30,7 @@ public static class Program
 
         var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
-        var parsingHelper = new ParsingHelper(TermType.Spring, isFinal, sourceType, repo);
+        var parsingHelper = new ParsingHelper(termType, isFinal, sourceType, repo);
 
         var meetingsSource = $"Форматированные пары ({termString})";
         var meetings = parsingHelper.ReadMeetings(meetingsSource);
