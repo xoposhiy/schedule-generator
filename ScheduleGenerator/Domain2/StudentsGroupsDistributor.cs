@@ -38,18 +38,12 @@ public class StudentsGroupsDistributor
         
         foreach (var (discipline, groupByDiscipline) in groups)
         {
-            var disciplineMeetings = disciplinesToMeetings[discipline].ToList();
-            // var groupsByType = disciplineMeetings.ToLookup(m => m.MeetingType, m => m.Groups);
-            
             var groupPersonalNumbers = groupByDiscipline
                 .Select(g => g.Select(n => studentsToPersonalNumbers[n]).ToList()).ToList();
-            if (disciplineMeetings.Count == 1)
+            result[discipline.Name] = new()
             {
-                result[discipline.Name] = new()
-                {
-                    ["*"] = groupPersonalNumbers
-                };
-            }
+                ["*"] = groupPersonalNumbers
+            };
         }
 
         return result;

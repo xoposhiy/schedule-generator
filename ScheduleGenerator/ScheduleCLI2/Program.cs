@@ -18,11 +18,11 @@ public static class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
-        var termType = TermType.Autumn;
+        var termType = TermType.Spring;
         var termString = EnumHelper.GetTermString(termType);
-        var isFinal = false;
+        var isFinal = true;
 
-        var sourceType = SourcePrioritiesType.GoogleSheet;
+        var sourceType = SourcePrioritiesType.JsonFinal;
 
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
@@ -81,7 +81,10 @@ public static class Program
             case SourcePrioritiesType.JsonFinal:
             {
                 var groups = studentsDistributor.Distribute(state);
-                Console.WriteLine(JsonConvert.SerializeObject(groups));
+                var jsonGroups = JsonConvert.SerializeObject(groups);
+                var path = "student-subgroups.json";
+                File.WriteAllText(path, jsonGroups);
+                Console.WriteLine(Path.GetFullPath(path));
                 break;
             }
             case SourcePrioritiesType.JsonLk:

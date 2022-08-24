@@ -100,7 +100,7 @@ public class ProbabilityStorage
         {
             case DisciplineType.Free:
             case DisciplineType.WithEntranceTest:
-                return studentsExpectation[meeting.Discipline];
+                return studentsExpectation.GetValueOrDefault(meeting.Discipline, 0);
             case DisciplineType.Obligatory:
                 return StudentsCount;
             default:
@@ -147,7 +147,7 @@ public class ProbabilityStorage
 
     private double GetProbabilityToBeOnDiscipline(string student, Discipline discipline)
     {
-        var priority = studentWithDisciplineToPriority[student][discipline];
+        var priority = studentWithDisciplineToPriority[student].GetValueOrDefault(discipline, 5);
         return GetPriorityDict(discipline)[priority];
     }
     
