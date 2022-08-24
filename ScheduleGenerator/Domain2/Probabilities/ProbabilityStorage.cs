@@ -166,7 +166,8 @@ public class ProbabilityStorage
 
         var students = new List<string>();
         foreach (var (student, dictionary) in studentWithDisciplineToPriority)
-            students.Add(student);
+            if (dictionary.ContainsKey(discipline))
+                students.Add(student);
 
         return students;
     }

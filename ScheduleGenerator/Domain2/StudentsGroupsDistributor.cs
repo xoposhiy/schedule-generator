@@ -29,8 +29,6 @@ public class StudentsGroupsDistributor
     {
         var groups = DistributeStudentsByGroups(state);
         
-        var disciplinesToMeetings = state.PlacedMeetings
-            .ToLookup(m => m.Discipline, m => m);
         var studentsToPersonalNumbers = studentsDistribution!.Students
             .ToDictionary(s => s.FullName, s => s.PersonalNumber);
 
