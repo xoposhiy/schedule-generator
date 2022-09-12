@@ -1,4 +1,5 @@
-﻿using CommonInfrastructure.GoogleSheetsRepository;
+﻿using CommonInfrastructure;
+using CommonInfrastructure.GoogleSheetsRepository;
 using Google.Apis.Sheets.v4.Data;
 using static CommonInfrastructure.Extensions;
 
@@ -9,11 +10,9 @@ public static class Visualizer
     private const int RowOffset = 1;
     private const int ColumnOffset = 1;
 
-    public static void DrawSchedule(GsRepository repository, State state, string sheetName) =>
-        DrawSchedule(repository, state.PlacedMeetings, sheetName);
-
-    public static void DrawSchedule(GsRepository repository, IReadOnlyCollection<Meeting2> meetings, string sheetName)
+    public static void DrawSchedule(GsRepository repository, State state, string sheetName)
     {
+        var meetings = state.PlacedMeetings;
         var dayDuration = meetings
             .Where(m => m.ShouldBePlaced)
             .Max(m => m.MeetingTime!.TimeSlotIndex + m.Duration);
@@ -29,7 +28,41 @@ public static class Visualizer
             columnOffset += modifier.DrawMeetingsPerDay(meetingsSet, columnOffset, dayDuration);
 
         modifier.BuildTimeSlotsBar(0, RowOffset, 1, 1, dayDuration);
+        LogWorstParallelDisciplines(state, modifier);
     }
+
+    public static void LogWorstParallelDisciplines(State state, SheetModifier sheetModifier)
+    {
+        var errors = new List<(string when, double students, Meeting2 m1, Meeting2 m2)>();
+        foreach (var day in state.PlacedMeetings.GroupBy(m => m.MeetingTime.DayOfWeek))
+        {
+            foreach (var slot in day.GroupBy(d => d.MeetingTime.TimeSlot))
+            {
+                var when = day.Key + " " + slot.Key;
+                foreach (var m1 in slot)
+                foreach (var m2 in slot)
+                {
+                    if (m1.Discipline.Name.CompareTo(m2.Discipline.Name) > 0 && !m1.Ignore && !m2.Ignore)
+                    {
+                        var commonStudents = state.ProbabilityStorage.GetCommonStudents(m1, m2);
+                        if (commonStudents > 0)
+                            errors.Add((when, commonStudents, m1, m2));
+                    }
+                }
+            }
+        }
+
+        var data = errors
+            .OrderByDescending(t => t.students)
+            .Select(t => new List<string> { t.students.ToString(), t.when, t.m1.Discipline.Name, t.m2.Discipline.Name }
+                .Select(CommonCellData).ToList())
+            .Prepend(new List<CellData>(){CommonCellData("Пострадало студентов:")})
+            .ToList();
+        sheetModifier.WriteRange(21, 0, data)
+            .Execute();
+
+    }
+
 
     private static int DrawMeetingsPerDay(this SheetModifier modifier, IGrouping<DayOfWeek, Meeting2> meetings,
         int columnOffset, int dayDuration)

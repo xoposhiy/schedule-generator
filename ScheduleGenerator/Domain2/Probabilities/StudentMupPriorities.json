@@ -1,0 +1,4347 @@
+{
+  "studentPriorities": [
+    {
+      "name": "Московченко Иван Дмитриевич",
+      "personalNumber": "56000301",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 2
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 3
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 2
+        },
+        {
+          "mupId": "20ffd62fc6c04aa9ac1cbacb75282819",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Новоселов Кирилл Сергеевич",
+      "personalNumber": "56000305",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 5
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Курганов Артемий Олегович",
+      "personalNumber": "56000306",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Скурихин Максим Алексеевич",
+      "personalNumber": "56000307",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "c4481e7ac5024f74ac9d4327d7a1ff65",
+          "priority": 1
+        },
+        {
+          "mupId": "56bc00df4f0a4d1f86e55cf2c9766123",
+          "priority": 1
+        },
+        {
+          "mupId": "8938a9ae73d0485f9507115253a85544",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Сурков Денис Дмитриевич",
+      "personalNumber": "56000308",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 3
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Максимов Александр Александрович",
+      "personalNumber": "56000309",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 3
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 6
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 5
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 7
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 4
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        },
+        {
+          "mupId": "20ffd62fc6c04aa9ac1cbacb75282819",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Базеев Дамир Шевкетович",
+      "personalNumber": "56000310",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 4
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 2
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 2
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Бугрыменко Даниил Юрьевич",
+      "personalNumber": "56000313",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 3
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 4
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 5
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 6
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 2
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 3
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Каретникова Ольга Алексеевна",
+      "personalNumber": "56000315",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 4
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 3
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Климантова Полина Алексеевна",
+      "personalNumber": "56000316",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 3
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Коптева Татьяна Александровна",
+      "personalNumber": "56000317",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 5
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 3
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 6
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Михалёв Владислав Игоревич",
+      "personalNumber": "56000318",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 5
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 6
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Окуньков Тимофей Михайлович",
+      "personalNumber": "56000319",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 4
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Пласконный Арсений Сергеевич",
+      "personalNumber": "56000320",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Савельева Алёна Максимовна",
+      "personalNumber": "56000321",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "c4481e7ac5024f74ac9d4327d7a1ff65",
+          "priority": 1
+        },
+        {
+          "mupId": "56bc00df4f0a4d1f86e55cf2c9766123",
+          "priority": 1
+        },
+        {
+          "mupId": "8938a9ae73d0485f9507115253a85544",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Кашаев Артем Сергеевич",
+      "personalNumber": "56000322",
+      "groupName": "МЕН-300801",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 5
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Истомина Кристина Андреевна",
+      "personalNumber": "56000601",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 5
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 15
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 7
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 14
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 11
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 13
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 9
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 8
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 6
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 12
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 10
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 2
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Зайцева Александра Владимировна",
+      "personalNumber": "56000603",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 4
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 6
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 7
+        },
+        {
+          "mupId": "1ec3a412f2d44441bf4b514a23dbdfde",
+          "priority": 4
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 2
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 9
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 8
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 5
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Колосов Григорий Валерьевич",
+      "personalNumber": "56000604",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Казаков Даниил Андреевич",
+      "personalNumber": "56000605",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Косов Григорий Сергеевич",
+      "personalNumber": "56000606",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 3
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 7
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 5
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 6
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Морозов Святослав Игоревич",
+      "personalNumber": "56000611",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 5
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Мошков Даниил Сергеевич",
+      "personalNumber": "56000612",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 3
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 8
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 7
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 12
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 10
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 11
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 5
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 6
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 9
+        }
+      ]
+    },
+    {
+      "name": "Соколов Алексей Владимирович",
+      "personalNumber": "56000613",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 5
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 4
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 6
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 3
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Якимов Сергей Сергеевич",
+      "personalNumber": "56000614",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 6
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 5
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 3
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Лиясов Сергей Андреевич",
+      "personalNumber": "56000615",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 3
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 2
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 6
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 5
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Мизурова Дарья Петровна",
+      "personalNumber": "56000616",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 3
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Миков Кирилл Николаевич",
+      "personalNumber": "56000617",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 4
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 5
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 2
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Мошков Александр Алексеевич",
+      "personalNumber": "56000618",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 4
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Пухир Михаил Андреевич",
+      "personalNumber": "56000619",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 3
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Чиркова Юлия Дмитриевна",
+      "personalNumber": "56000620",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 6
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 7
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 3
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 5
+        }
+      ]
+    },
+    {
+      "name": "Краюхин Семен Данилович",
+      "personalNumber": "56000622",
+      "groupName": "МЕН-300802",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Мухаметдинова Валерия Игоревна",
+      "personalNumber": "56704210",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 5
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 4
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Аникина Инна Владимировна",
+      "personalNumber": "56704227",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 3
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 7
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 5
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 4
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 6
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Астахова Ксения Александровна",
+      "personalNumber": "56704233",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Скрипкин Артем Сергеевич",
+      "personalNumber": "56704234",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 2
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 2
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 3
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 5
+        }
+      ]
+    },
+    {
+      "name": "Крашенинников Иван Дмитриевич",
+      "personalNumber": "56704237",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Бикбулатов Владислав Дмитриевич",
+      "personalNumber": "56704240",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Жданов Илья Александрович",
+      "personalNumber": "56704242",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 2
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 3
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 5
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Усов Егор Алексеевич",
+      "personalNumber": "56704243",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 2
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Фатыхова Диляра Раушановна",
+      "personalNumber": "56704244",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 6
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 2
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 5
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Самсонов Иван Александрович",
+      "personalNumber": "56704246",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Казаков Иван Ильич",
+      "personalNumber": "56704247",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 4
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 3
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Мельников Михей Денисович",
+      "personalNumber": "56704248",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 2
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 3
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Мельникова Анастасия Александровна",
+      "personalNumber": "56704249",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 5
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 3
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Хорошавин Евгений Андреевич",
+      "personalNumber": "56704251",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 5
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 6
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Щербакова Полина Денисовна",
+      "personalNumber": "56704252",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 3
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Драпкина Мария Александровна",
+      "personalNumber": "56704253",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Головачёв Георгий Алексеевич",
+      "personalNumber": "56704254",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 2
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 5
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Романенко Михаил Михайлович",
+      "personalNumber": "56704255",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 4
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 3
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 4
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Ланец Михаил Вячеславович",
+      "personalNumber": "56704256",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Соколков Алексей Евгеньевич",
+      "personalNumber": "56704258",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 6
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 5
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Надеждин Михаил Дмитриевич",
+      "personalNumber": "56704261",
+      "groupName": "МЕН-300809",
+      "mupPriorities": [
+        {
+          "mupId": "c4481e7ac5024f74ac9d4327d7a1ff65",
+          "priority": 1
+        },
+        {
+          "mupId": "56bc00df4f0a4d1f86e55cf2c9766123",
+          "priority": 1
+        },
+        {
+          "mupId": "8938a9ae73d0485f9507115253a85544",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Андрианов Павел Михайлович",
+      "personalNumber": "56704301",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 3
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 5
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 3
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Хадыев Вячеслав Валерьевич",
+      "personalNumber": "56704339",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 2
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 3
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Бургарт Артем Андреевич",
+      "personalNumber": "56704340",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 2
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Бирюков Сергей Максимович",
+      "personalNumber": "56704342",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 3
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Крохин Егор Антонович",
+      "personalNumber": "56704343",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Лифанов Фёдор Алексеевич",
+      "personalNumber": "56704345",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 3
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Борисов Артем Николаевич",
+      "personalNumber": "56704346",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 3
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Наумов Игорь Владимирович",
+      "personalNumber": "56704347",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 5
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 4
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 6
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Сергеев Егор Андреевич",
+      "personalNumber": "56704348",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Жукова Дарья Михайловна",
+      "personalNumber": "56704349",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 3
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Карпова Юлия Руслановна",
+      "personalNumber": "56704350",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Колесников Семен Андреевич",
+      "personalNumber": "56704351",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "c4481e7ac5024f74ac9d4327d7a1ff65",
+          "priority": 1
+        },
+        {
+          "mupId": "56bc00df4f0a4d1f86e55cf2c9766123",
+          "priority": 1
+        },
+        {
+          "mupId": "8938a9ae73d0485f9507115253a85544",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Воробьев Леонид Евгеньевич",
+      "personalNumber": "56704353",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 3
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 3
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 7
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 8
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 5
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 9
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 6
+        }
+      ]
+    },
+    {
+      "name": "Пермяков Артем Ильич",
+      "personalNumber": "56704354",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Полуяненко Алёна Алексеевна",
+      "personalNumber": "56704355",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Ильичев Матвей Константинович",
+      "personalNumber": "56704356",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 5
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 1
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Комиссарова Юлия Сергеевна",
+      "personalNumber": "56704357",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 5
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 3
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "50e5ba8f3236474582d6298f248caea0",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Нестеров Дмитрий Денисович",
+      "personalNumber": "56704363",
+      "groupName": "МЕН-300810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 3
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 4
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Волкова Александра Алексеевна",
+      "personalNumber": "56904202",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 3
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 2
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 4
+        },
+        {
+          "mupId": "8f8ac1a133f74174abf9e170c8b20874",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Шрейн Ольга Александровна",
+      "personalNumber": "56904206",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 2
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Браун Виктория Михайловна",
+      "personalNumber": "56904207",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 3
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "8f8ac1a133f74174abf9e170c8b20874",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Ложкин Александр Алексеевич",
+      "personalNumber": "56904208",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "b5f6caa0b9df4b1fb113216115300e81",
+          "priority": 1
+        },
+        {
+          "mupId": "f746b9beef124965906e0843db881d98",
+          "priority": 1
+        },
+        {
+          "mupId": "c2df23a2b654464ca2e0976bd6dc6f02",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Фролов Юрий Максимович",
+      "personalNumber": "56904210",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "cbccb2f60be6478db9a691e2a25517d4",
+          "priority": 2
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 3
+        },
+        {
+          "mupId": "fb54d630f11c4a099d699d46bea8b6aa",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Кряжев Александр Анатольевич",
+      "personalNumber": "56904211",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 2
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Рогов Артемий Андреевич",
+      "personalNumber": "56904212",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "fb54d630f11c4a099d699d46bea8b6aa",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Салдина Анжелика Сергеевна",
+      "personalNumber": "56904213",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 3
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Миронов Данил Алексеевич",
+      "personalNumber": "56904215",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Толстогузов Артем Валерьевич",
+      "personalNumber": "56904216",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Юрченко Степан Валерьевич",
+      "personalNumber": "56904217",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Вереин Вадим Евгеньевич",
+      "personalNumber": "56904218",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 4
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 3
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 2
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 1
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Шайхуллин Айдар Рустамович",
+      "personalNumber": "56904219",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Мурашев Владислав Антонович",
+      "personalNumber": "56904220",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 3
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Коновалов Артем Сергеевич",
+      "personalNumber": "56904221",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 2
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Князев Игорь Геннадьевич",
+      "personalNumber": "56904222",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 1
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Львов Ярослав Михайлович",
+      "personalNumber": "56904224",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Анчутин Никита Сергеевич",
+      "personalNumber": "56904228",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        },
+        {
+          "mupId": "fb54d630f11c4a099d699d46bea8b6aa",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Луговых Сергей Владимирович",
+      "personalNumber": "56904231",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1ec3a412f2d44441bf4b514a23dbdfde",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Пищулов Сергей Сергеевич",
+      "personalNumber": "56904233",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "1ec3a412f2d44441bf4b514a23dbdfde",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 1
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 3
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Макаров Егор Антонович",
+      "personalNumber": "56904235",
+      "groupName": "МЕН-490809",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Габдорахманова Елена Алексеевна",
+      "personalNumber": "56904301",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 4
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 3
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 2
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Белов Тимофей Викторович",
+      "personalNumber": "56904302",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Соловьев Андрей Антонович",
+      "personalNumber": "56904303",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 4
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 2
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 3
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Казайкин Матвей Викторович",
+      "personalNumber": "56904304",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 3
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 4
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 5
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Шушарин Николай Александрович",
+      "personalNumber": "56904305",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Качусов Степан Михайлович",
+      "personalNumber": "56904306",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 2
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 6
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 7
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 4
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 5
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Фрицлер Виктор Евгеньевич",
+      "personalNumber": "56904307",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 2
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "de82d2a8f1554c1a9ba53942963ad344",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Бараковский Михаил Сергеевич",
+      "personalNumber": "56904308",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Дейнов Кирилл Дмитриевич",
+      "personalNumber": "56904309",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 8
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 5
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 7
+        },
+        {
+          "mupId": "7cd5ea24cb0f40078fa044a0d47c5427",
+          "priority": 4
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 6
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 3
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Рогачев Евгений Михайлович",
+      "personalNumber": "56904311",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 3
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "5c3c3cf12b5a4a729ee18b9c6b44cbac",
+          "priority": 1
+        },
+        {
+          "mupId": "33034f95e78e4076b8f890be0c6fc26e",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Айдарцян Гриша Нверович",
+      "personalNumber": "56904312",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 1
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Рязанова Яна Андреевна",
+      "personalNumber": "56904314",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Тарасова Виктория Владимировна",
+      "personalNumber": "56904315",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "920c1ab7c6644b538453825086ecc95d",
+          "priority": 2
+        },
+        {
+          "mupId": "d6c3bd88c97a47319295a1490c5e9789",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 3
+        },
+        {
+          "mupId": "1c00f44a1e514aafa231cda8340d7e66",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Стуков Дмитрий Алексеевич",
+      "personalNumber": "56904316",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "71d54c6825e249549addf8fcafa591bd",
+          "priority": 2
+        },
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "685d08fc05794fab96a95f2ba317a2ee",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Вихлянцева Дарья Андреевна",
+      "personalNumber": "56904317",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 3
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 5
+        },
+        {
+          "mupId": "69dcf80de7a9480c955afe924ab272cc",
+          "priority": 4
+        }
+      ]
+    },
+    {
+      "name": "Крутовский Данил Александрович",
+      "personalNumber": "56904318",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 1
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 1
+        },
+        {
+          "mupId": "8f8ac1a133f74174abf9e170c8b20874",
+          "priority": 1
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Гильмутдинов Даниил Расфинович",
+      "personalNumber": "56904319",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 2
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 4
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "name": "Трифонов Лев Эдуардович",
+      "personalNumber": "56904323",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Гордиенко Артем Андреевич",
+      "personalNumber": "56904324",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 2
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Кузьмин Роман Сергеевич",
+      "personalNumber": "56904325",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "8c818c84497e43958a32291ed201f93c",
+          "priority": 3
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 2
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Аткишкин Владислав Сергеевич",
+      "personalNumber": "56904328",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 8
+        },
+        {
+          "mupId": "70a9f05194634b34bef17feb0adffe25",
+          "priority": 9
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 7
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 2
+        },
+        {
+          "mupId": "c5444fdaed314e74a5b5aa291e17b0d9",
+          "priority": 3
+        },
+        {
+          "mupId": "9e4511898841478e961df494f0deb4cc",
+          "priority": 4
+        },
+        {
+          "mupId": "1bab77820931410a80050ddd2cdfc897",
+          "priority": 6
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 5
+        }
+      ]
+    },
+    {
+      "name": "Аврискин Денис Владимирович",
+      "personalNumber": "56904329",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "96b69b6cae1c4fbdb65789a0f6b9d866",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 1
+        },
+        {
+          "mupId": "1646f655d0d74443b0d0fcfb84ebf7fa",
+          "priority": 1
+        },
+        {
+          "mupId": "b9f246d2647c477b95ef9f920f7ba7f3",
+          "priority": 2
+        },
+        {
+          "mupId": "079201778f334d149ca8de193671c1a4",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 2
+        },
+        {
+          "mupId": "b5f6caa0b9df4b1fb113216115300e81",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Архипов Дмитрий Сергеевич",
+      "personalNumber": "56904330",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "9b1520b8c0614bb4ae01faadc8437db2",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        },
+        {
+          "mupId": "fb54d630f11c4a099d699d46bea8b6aa",
+          "priority": 1
+        },
+        {
+          "mupId": "f85d162236b24721ad286e1c964deb58",
+          "priority": 3
+        }
+      ]
+    },
+    {
+      "name": "Павлов Захар Витальевич",
+      "personalNumber": "56904331",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 1
+        },
+        {
+          "mupId": "0b5008760e1b4ef593799e3c9fd5e010",
+          "priority": 1
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 2
+        },
+        {
+          "mupId": "1f5db6d445ec4a798ef05cdace82b187",
+          "priority": 1
+        },
+        {
+          "mupId": "0d5db2ebdd1f4922aaa2dcf1aa697e3a",
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "name": "Полтораднев Кирилл Алексеевич",
+      "personalNumber": "56904332",
+      "groupName": "МЕН-490810",
+      "mupPriorities": [
+        {
+          "mupId": "ea943c7be3684276884cad5d79af7c5a",
+          "priority": 1
+        },
+        {
+          "mupId": "1c9ddba41a834b29b0e3bd20147cafbe",
+          "priority": 1
+        },
+        {
+          "mupId": "ea71765f3b1b4c70b3501ce347490bca",
+          "priority": 2
+        },
+        {
+          "mupId": "6739eed0c9f24a8bbd9b8cbe9370f69a",
+          "priority": 1
+        },
+        {
+          "mupId": "c7aa8c705c3e42bdb88b139bcdb80f8f",
+          "priority": 3
+        },
+        {
+          "mupId": "d28443a698d24b8d884b67e6941e6346",
+          "priority": 1
+        }
+      ]
+    }
+  ],
+  "mupIdToMupName": {
+    "71d54c6825e249549addf8fcafa591bd": "C++",
+    "ea943c7be3684276884cad5d79af7c5a": "HTML Academy: Node.js. Разработка серверов приложений и API",
+    "1c9ddba41a834b29b0e3bd20147cafbe": "HTML Academy: React. Разработка сложных клиентских приложений",
+    "96b69b6cae1c4fbdb65789a0f6b9d866": "ML4SE: Machine Learning for Software Engineering",
+    "ea71765f3b1b4c70b3501ce347490bca": "NAND to Tetris. Часть 1",
+    "1646f655d0d74443b0d0fcfb84ebf7fa": "OpenSource от Яндекса",
+    "1ec3a412f2d44441bf4b514a23dbdfde": "Аксиоматическая теория множеств и основания математики",
+    "b9f246d2647c477b95ef9f920f7ba7f3": "Алгоритмы на графах",
+    "8c818c84497e43958a32291ed201f93c": "Аналитик в IT от NAUMEN",
+    "70a9f05194634b34bef17feb0adffe25": "Ассемблер",
+    "cbccb2f60be6478db9a691e2a25517d4": "Бэкенд от Контура",
+    "7cd5ea24cb0f40078fa044a0d47c5427": "Введение в ОС Unix",
+    "5c3c3cf12b5a4a729ee18b9c6b44cbac": "Децентрализованные системы",
+    "6739eed0c9f24a8bbd9b8cbe9370f69a": "Инженер облачных сервисов",
+    "c7aa8c705c3e42bdb88b139bcdb80f8f": "Карьерная грамотность и психология деловых коммуникаций",
+    "0b5008760e1b4ef593799e3c9fd5e010": "Клуб дебатов",
+    "d28443a698d24b8d884b67e6941e6346": "Компьютерное зрение",
+    "1f5db6d445ec4a798ef05cdace82b187": "Курирование IT-проектов",
+    "33034f95e78e4076b8f890be0c6fc26e": "Лингвистические основы информатики. Часть 2",
+    "c5444fdaed314e74a5b5aa291e17b0d9": "Логическое программирование",
+    "920c1ab7c6644b538453825086ecc95d": "Методы решения неустойчивых задач",
+    "d6c3bd88c97a47319295a1490c5e9789": "Моделирование динамических процессов: дифференциальные уравнения, анализ и приложения",
+    "8f8ac1a133f74174abf9e170c8b20874": "Нейронные сети и обработка текста (онлайн-курс)",
+    "9b1520b8c0614bb4ae01faadc8437db2": "Олимпиадная математика",
+    "9e4511898841478e961df494f0deb4cc": "Прикладные математические пакеты",
+    "1bab77820931410a80050ddd2cdfc897": "Промышленная разработка на Java от NAUMEN",
+    "0d5db2ebdd1f4922aaa2dcf1aa697e3a": "Работа с требованиями",
+    "de82d2a8f1554c1a9ba53942963ad344": "Редактура для IT",
+    "1c00f44a1e514aafa231cda8340d7e66": "Сетевые технологии. Часть 2",
+    "079201778f334d149ca8de193671c1a4": "Спортивное программирование",
+    "fb54d630f11c4a099d699d46bea8b6aa": "Спортивное программирование. Часть 3",
+    "f85d162236b24721ad286e1c964deb58": "Теория алгоритмов",
+    "50e5ba8f3236474582d6298f248caea0": "Фронтенд от Контура",
+    "685d08fc05794fab96a95f2ba317a2ee": "Хакердом",
+    "c4481e7ac5024f74ac9d4327d7a1ff65": "ШАД, 1 семестр, спецкурс №1",
+    "56bc00df4f0a4d1f86e55cf2c9766123": "ШАД, 1 семестр, спецкурс №2",
+    "8938a9ae73d0485f9507115253a85544": "ШАД, 1 семестр, спецкурс №3 (для поступивших в 2022)",
+    "b5f6caa0b9df4b1fb113216115300e81": "ШАД, 3 семестр, спецкурс №1",
+    "f746b9beef124965906e0843db881d98": "ШАД, 3 семестр, спецкурс №2",
+    "c2df23a2b654464ca2e0976bd6dc6f02": "ШАД, 3 семестр, спецкурс №3",
+    "20ffd62fc6c04aa9ac1cbacb75282819": "Школа бэкенд-разработки от Яндекса",
+    "69dcf80de7a9480c955afe924ab272cc": "Эффективное программирование на Scala от NAUMEN"
+  }
+}

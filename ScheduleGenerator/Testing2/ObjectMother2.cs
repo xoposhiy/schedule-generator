@@ -20,6 +20,6 @@ public static class ObjectMother2
 
     public static State CreateEmptyState(params Meeting2[] meetings)
     {
-        return new(meetings, new ProbabilityStorage(false));
+        return new(meetings, new ProbabilityStorage());
     }
 }

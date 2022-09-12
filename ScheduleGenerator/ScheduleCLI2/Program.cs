@@ -18,19 +18,28 @@ public static class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
-        var termType = TermType.Spring;
+        var termType = TermType.Autumn;
         var termString = EnumHelper.GetTermString(termType);
-        var isFinal = true;
+        var sourceType = SourcePrioritiesType.JsonLk;
+        
+        
+        var lkPriorities = JsonConvert.DeserializeObject<StudentsPriorities>(File.ReadAllText(Constants.PrioritiesJsonPath));
+        foreach (var name in lkPriorities.MupIdToMupName.Values)
+        {
+            Console.WriteLine(name);
+        }
 
-        var sourceType = SourcePrioritiesType.JsonFinal;
+        
+        
+        
 
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
-            "https://docs.google.com/spreadsheets/d/1tPmGnwmLYCauCkbXSbLceb2_kf8N7xGO-OVKrk2hE8c/edit#gid=");
+            "https://docs.google.com/spreadsheets/d/1rTtqtI3LPiV3tte9s_Wa25N59nv-cLmrFu--AgkRT7Y/edit#gid=");
 
-        var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
+        //var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
-        var parsingHelper = new ParsingHelper(termType, isFinal, sourceType, repo);
+        var parsingHelper = new ParsingHelper(termType, sourceType, repo);
 
         var meetingsSource = $"Форматированные пары ({termString})";
         var meetings = parsingHelper.ReadMeetings(meetingsSource);
@@ -49,7 +58,6 @@ public static class Program
 
         probabilityStorage.InitStudentUniformDistribution();
 
-        
         var state = new State(meetings, probabilityStorage);
         var solution = SolveByChokudai(state);
         //var solution = SolveRepeater(state);
@@ -60,8 +68,11 @@ public static class Program
         Visualizer.UpdateMeetingsData(repo, meetingsSource, solution.Item1);
         LogEstimatorScores(state, solution.Item1, GetEstimator());
 
-        WriteStudentsGroupsDistributionToConsole(studentsDistribution, sourceType, solution.Item1);
+        Console.WriteLine();
+
+        //WriteStudentsGroupsDistributionToConsole(studentsDistribution, sourceType, solution.Item1);
     }
+
 
     private static void WriteStudentsGroupsDistributionToConsole(
         StudentsDistribution? studentsDistribution,
@@ -110,7 +121,7 @@ public static class Program
 
         var repeater = new RepeaterSolver(new GreedySolver(estimator, 2));
 
-        var solutions = repeater.GetSolutions(state, 10000).ToList();
+        var solutions = repeater.GetSolutions(state, 60000).ToList();
         foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g => g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 
@@ -130,13 +141,14 @@ public static class Program
         return greedySolver.GetSolutions(state, 0).First();
     }
 
+    // Баг с конфликтами с Obligatory-парами
     private static (State, double) SolveByChokudai(State state)
     {
         var estimator = GetEstimator();
 
         var chokudai = new ChokudaiSearch(estimator);
 
-        var solutions = chokudai.GetSolutions(state, 10000).ToList();
+        var solutions = chokudai.GetSolutions(state, 60000).ToList();
         foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g => g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 

@@ -12,8 +12,6 @@ public class ProbabilityStorage
 
     private readonly Dictionary<(string, Discipline), double[]> groupOfStudentOnDiscipline = new();
 
-    private readonly bool isFinal;
-
     /// <summary>
     /// Выбранный студентом приоритет предмета (без тестового) -> статистическая вероятность того, что он на этот предмет попадет
     /// </summary>
@@ -37,11 +35,6 @@ public class ProbabilityStorage
     private readonly Dictionary<string, Dictionary<Discipline, int>> studentWithDisciplineToPriority =
         new();
 
-    public ProbabilityStorage(bool isFinal)
-    {
-        this.isFinal = isFinal;
-    }
-
     public IEnumerable<string> Students => studentWithDisciplineToPriority.Keys;
     public int StudentsCount => studentWithDisciplineToPriority.Count;
     public IEnumerable<Discipline> Disciplines => disciplineToMaxGroups.Keys;
@@ -62,7 +55,7 @@ public class ProbabilityStorage
         if (!studentsExpectation.ContainsKey(discipline))
             studentsExpectation[discipline] = 0;
         
-        studentsExpectation[discipline] += GetPriorityDict(discipline)[priority];
+        studentsExpectation[discipline] += GetPriorityDict(discipline).GetValueOrDefault(priority, 0);
     }
 
     public void FillDisciplineToMaxGroups(IEnumerable<Meeting2> meetings)

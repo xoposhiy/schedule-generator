@@ -41,15 +41,23 @@ public static class SheetToProbabilityConverter
         }
     }
 
-    public static ProbabilityStorage ReadProbabilities(GsRepository repo, string meetingsSheetName, bool isFinal)
+    public static ProbabilityStorage ReadProbabilities(GsRepository repo, string meetingsSheetName)
     {
-        var probabilityStorage = new ProbabilityStorage(isFinal);
+        var probabilityStorage = new ProbabilityStorage();
         var meetingsDataRaw = SheetTableReader.ReadRowsFromSheet(repo, meetingsSheetName, 0, 0, 10);
         foreach (var row in meetingsDataRaw.Skip(2))
         {
-            int.TryParse(row[0], out var priority);
-            probabilityStorage.PriorityWithEntranceToProbability[priority] = double.Parse(row[1]);
-            probabilityStorage.PriorityToProbability[priority] = double.Parse(row[4]);
+
+            try
+            {
+                int.TryParse(row[0], out var priority);
+                probabilityStorage.PriorityWithEntranceToProbability[priority] = double.Parse(row[1]);
+                probabilityStorage.PriorityToProbability[priority] = double.Parse(row[4]);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Join("|", row), e);
+            }
         }
 
         return probabilityStorage;

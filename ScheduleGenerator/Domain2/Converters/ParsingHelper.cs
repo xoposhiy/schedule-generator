@@ -8,14 +8,12 @@ namespace Domain2.Converters;
 public class ParsingHelper
 {
     private string termType;
-    private bool isFinal;
     private SourcePrioritiesType sourcePrioritiesType;
     private GsRepository repo;
 
-    public ParsingHelper(TermType termType, bool isFinal, SourcePrioritiesType sourcePrioritiesType, GsRepository repo)
+    public ParsingHelper(TermType termType, SourcePrioritiesType sourcePrioritiesType, GsRepository repo)
     {
         this.termType = EnumHelper.GetTermString(termType);
-        this.isFinal = isFinal;
         this.sourcePrioritiesType = sourcePrioritiesType;
         this.repo = repo;
     }
@@ -28,7 +26,7 @@ public class ParsingHelper
     public ProbabilityStorage ReadProbabilities()
     {
         var probabilitiesSource = $"Вероятности ({termType})";
-        return SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource, isFinal);
+        return SheetToProbabilityConverter.ReadProbabilities(repo, probabilitiesSource);
     }
 
     public (List<(string Student, Discipline Discipline, int priority)> priorities,
@@ -52,12 +50,24 @@ public class ParsingHelper
                 priorities = FillPrioritiesFromJson(studentsDistribution, disciplines);
                 break;
             case SourcePrioritiesType.JsonLk:
-                throw new NotImplementedException();
+                var jsonContent = File.ReadAllText(Constants.PrioritiesJsonPath);
+                studentsDistribution = null;
+                var lkPriorities = JsonConvert.DeserializeObject<StudentsPriorities>(jsonContent);
+                priorities = FillPrioritiesFromLkPriorities(lkPriorities, disciplines);
+                break;
             default:
                 throw new ArgumentException("Not supported source type");
         }
 
         return (priorities, studentsDistribution);
+    }
+
+    private List<(string Student, Discipline Discipline, int priority)> FillPrioritiesFromLkPriorities(StudentsPriorities lkPriorities, Dictionary<string, Discipline> disciplines)
+    {
+        return lkPriorities.StudentPriorities
+            .SelectMany(lk => lk.MupPriorities
+                .Select(p => (lk.Name, disciplines[lkPriorities.MupIdToMupName[p.MupId]], p.Priority)))
+            .ToList();
     }
 
     private static List<(string Student, Discipline Discipline, int priority)> FillPrioritiesFromJson(StudentsDistribution? studentsDistribution, 
@@ -79,6 +89,27 @@ public class ParsingHelper
         return priorities;
     }
 }
+
+public class StudentsPriorities
+{
+    public StudentPriorities[] StudentPriorities { get; set; }
+    public Dictionary<string, string> MupIdToMupName { get; set; }
+}
+
+public class StudentPriorities
+{
+    public string Name { get; set; }
+    public string PersonalNumber { get; set; }
+    public string GroupName { get; set; }
+    public List<MupPriority> MupPriorities { get; set; }
+}
+
+public class MupPriority
+{
+    public string MupId { get; set; }
+    public int Priority { get; set; }
+}
+
 
 public enum SourcePrioritiesType
 {

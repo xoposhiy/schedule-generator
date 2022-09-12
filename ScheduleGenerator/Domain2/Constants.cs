@@ -21,4 +21,5 @@ public static class Constants
     /// Путь до json-а из лк УРФУ, с зачислен
     /// </summary>
     public const string DistributionJsonPath = "Probabilities/students_distribution.json";
+    public const string PrioritiesJsonPath = "Probabilities/StudentMupPriorities.json";
 }
