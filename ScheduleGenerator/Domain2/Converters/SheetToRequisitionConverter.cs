@@ -26,31 +26,36 @@ public static class SheetToRequisitionConverter
 
         var meetings = new List<Meeting2>();
         foreach (var row in meetingsDataRaw.Skip(1))
-        {
-            var disciplineType = GetDisciplineType(row[positions["DisciplineType"]]);
-            var discipline = new Discipline(row[positions["Discipline"]], disciplineType);
-            var meetingType = GetMeetingType(row[positions["MeetingType"]]);
-            var teacher = new Teacher(row[positions["Teacher"]]);
-            var groups = ParseGroups(row[positions["Groups"]]);
-            var place = row[positions["Place"]];
-            var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
-            var duration = ParseInt(row[positions["Duration"]], 1);
-            var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
-            var meetingTimePriorities =
-                ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]);
-            var after = string.IsNullOrEmpty(row[positions["After"]])
-                ? (MeetingType?) null
-                : GetMeetingType(row[positions["After"]]);
-            var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
-            var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
-            var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
+            try
+            {
+                var disciplineType = GetDisciplineType(row[positions["DisciplineType"]]);
+                var discipline = new Discipline(row[positions["Discipline"]], disciplineType);
+                var meetingType = GetMeetingType(row[positions["MeetingType"]]);
+                var teacher = new Teacher(row[positions["Teacher"]]);
+                var groups = ParseGroups(row[positions["Groups"]]);
+                var place = row[positions["Place"]];
+                var roomSpecs = ParseRoomSpec(row[positions["RoomSpecs"]]);
+                var duration = ParseInt(row[positions["Duration"]], 1);
+                var weekTypeSpec = ParseWeekType(row[positions["WeekTypeSpec"]]);
+                var meetingTimePriorities =
+                    ParseMeetingTimePriorities(row[positions["MeetingTimePriorities"]]);
+                var after = string.IsNullOrEmpty(row[positions["After"]])
+                    ? (MeetingType?)null
+                    : GetMeetingType(row[positions["After"]]);
+                var priority = ParseInt(row[positions["Priority"]], int.MaxValue);
+                var isFixed = Convert.ToBoolean(ParseInt(row[positions["IsFixed"]], 0));
+                var ignore = Convert.ToBoolean(ParseInt(row[positions["Ignore"]], 0));
 
-            var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
-            var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?) null);
-            meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
-                duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
-                classRoom, time));
-        }
+                var classRoom = string.IsNullOrEmpty(row[positions["ClassRoom"]]) ? null : row[positions["ClassRoom"]];
+                var time = ParseMeetingTime(row[positions["Time"]]).FirstOrDefault((MeetingTime?)null);
+                meetings.Add(new Meeting2(meetings.Count, discipline, meetingType, teacher, groups, place, roomSpecs,
+                    duration, weekTypeSpec, meetingTimePriorities, after, priority, isFixed, ignore,
+                    classRoom, time));
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Join("|", row), e);
+            }
 
         return meetings;
     }

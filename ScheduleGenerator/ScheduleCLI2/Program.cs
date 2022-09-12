@@ -20,7 +20,7 @@ public static class Program
         // var regime = "Осень";
         var termType = TermType.Autumn;
         var termString = EnumHelper.GetTermString(termType);
-        var sourceType = SourcePrioritiesType.JsonLk;
+        var sourceType = SourcePrioritiesType.JsonFinal;
         
         
         var lkPriorities = JsonConvert.DeserializeObject<StudentsPriorities>(File.ReadAllText(Constants.PrioritiesJsonPath));
@@ -70,7 +70,7 @@ public static class Program
 
         Console.WriteLine();
 
-        //WriteStudentsGroupsDistributionToConsole(studentsDistribution, sourceType, solution.Item1);
+        WriteStudentsGroupsDistributionToConsole(studentsDistribution, sourceType, solution.Item1);
     }
 
 
