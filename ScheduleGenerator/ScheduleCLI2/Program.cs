@@ -18,9 +18,9 @@ public static class Program
     {
         Console.OutputEncoding = Encoding.UTF8;
         // var regime = "Осень";
-        var termType = TermType.Autumn;
+        var termType = TermType.Spring;
         var termString = EnumHelper.GetTermString(termType);
-        var sourceType = SourcePrioritiesType.JsonFinal;
+        var sourceType = SourcePrioritiesType.JsonLk;
         
         
         var lkPriorities = JsonConvert.DeserializeObject<StudentsPriorities>(File.ReadAllText(Constants.PrioritiesJsonPath));
@@ -29,13 +29,9 @@ public static class Program
             Console.WriteLine(name);
         }
 
-        
-        
-        
-
         var repo = new GsRepository("main",
             SheetConstants.CredentialPath,
-            "https://docs.google.com/spreadsheets/d/1rTtqtI3LPiV3tte9s_Wa25N59nv-cLmrFu--AgkRT7Y/edit#gid=");
+            "https://docs.google.com/spreadsheets/d/1yv7XiER-a20e3I7-3ILSRE4hPl-X8-168Tv6-M03HKk/edit#gid=");
 
         //var rooms = SheetToRequisitionConverter.ReadRooms(repo, "Аудитории");
 
@@ -148,7 +144,7 @@ public static class Program
 
         var chokudai = new ChokudaiSearch(estimator);
 
-        var solutions = chokudai.GetSolutions(state, 60000).ToList();
+        var solutions = chokudai.GetSolutions(state, 60_000).ToList();
         foreach (var grouping in solutions.ToLookup(t => t.score).OrderBy(g => g.Key))
             Console.WriteLine(grouping.Key + " " + grouping.Count());
 

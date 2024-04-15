@@ -66,6 +66,7 @@ public class ParsingHelper
     {
         return lkPriorities.StudentPriorities
             .SelectMany(lk => lk.MupPriorities
+                .Where(p => disciplines.ContainsKey(lkPriorities.MupIdToMupName[p.MupId]))
                 .Select(p => (lk.Name, disciplines[lkPriorities.MupIdToMupName[p.MupId]], p.Priority)))
             .ToList();
     }

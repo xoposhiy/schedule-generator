@@ -7,6 +7,7 @@ public static class SheetTableReader
     public static List<List<string>> ReadRowsFromSheet(GsRepository repo, string sheetName, int top, int left,
         int width)
     {
+        Console.WriteLine($"Reading {sheetName} from {top} {left} {width}");
         var sheetObj = repo.CurrentSheetInfo!.Spreadsheet.Sheets.First(s => s.Properties.Title == sheetName);
         var actualRowCount = sheetObj.Properties.GridProperties.RowCount!;
         var rowCountToRead = Math.Min((int) actualRowCount, 300);
